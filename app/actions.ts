@@ -4,7 +4,10 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-const Pterodactyl = require("pterodactyl.js");
+
+import { Builder } from 'pterodactyl.js';
+
+
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -28,19 +31,25 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
-  const client = new Pterodactyl.Builder()
-    .setURL("https://pt.scyed.com/")
-    .setAPIKey("ptlc_bnqt7FcFShTcDQy2n4toSExOU2c0VItwEMrA9UpJQEQ")
-    .asAdmin();
 
-  client
-    .getServers()
-    .then(async (servers: any[]) => {
-      let server = servers[0];
+  // -- Creating PT User
+  const url = process.env.PTERODACTYL_URL;
+  const apiKey = process.env.PTERODACTYL_API_KEY;
 
-      console.log(server.toJSON());
-    })
-    .catch((error: any) => console.log(error));
+  if (!url || !apiKey) {
+    throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
+  }
+
+  const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
+
+  client.createUser({
+    email : email,
+    firstName : "",
+    lastName : "",
+    username: ""
+  });
+
+  // -- Done: Creating PT User
 
   if (error) {
     console.error(error.code + " " + error.message);
