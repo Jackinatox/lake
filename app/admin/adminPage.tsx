@@ -11,7 +11,7 @@ const AdminPage = () => {
         {
             name: 'Users',
             imageUrl: '/images/users.png',
-            link: '/admin/usertest',
+            link: '/admin/user',
         },
         {
             name: 'Servers',
