@@ -11,7 +11,7 @@ function createUser() {
       <form action={newUserAction}>
         <FormControl>
           <FormLabel>Label</FormLabel>
-          <Input placeholder="Placeholder"/>
+          <Input name='name' placeholder="Placeholder"/>
           <FormHelperText>This is a helper text.</FormHelperText>
         </FormControl>
         <Button type="submit">Submit</Button>
