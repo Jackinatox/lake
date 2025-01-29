@@ -1,20 +1,28 @@
-"use server"
+"use client"
 
 import React from 'react'
 import newUserAction from './newUserAction'
 import { Button, FormControl, FormHelperText, FormLabel, Input } from '@mui/joy'
-import { MailIcon } from 'lucide-react'
 
 function createUser() {
   return (
     <>
       <form action={newUserAction}>
         <FormControl>
-          <FormLabel>Label</FormLabel>
-          <Input name='name' placeholder="Placeholder"/>
-          <FormHelperText>This is a helper text.</FormHelperText>
+          <FormLabel>Name</FormLabel>
+          <Input name='name' placeholder="Name" />
         </FormControl>
-        <Button type="submit">Submit</Button>
+        <FormControl>
+          <FormLabel>Email</FormLabel>
+          <Input name='email' placeholder="Email" />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Password</FormLabel>
+          <Input name='password' placeholder="Passwort" />
+        </FormControl>
+
+
+        <Button type="submit" sx={{ marginTop: '1rem'}}>Submit</Button>
       </form>
     </>
   )
