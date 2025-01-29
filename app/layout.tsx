@@ -7,6 +7,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
+import { Button, ButtonGroup, IconButton } from "@mui/joy";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -42,11 +43,28 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
-                    <Link href={"/"}>Next.js Supabase Starter</Link>
-                    <div className="flex items-center gap-2">
-                      <DeployButton />
-                    </div>
+                    {/* left topbar */}
+
+                    <Link href="/">Scyed</Link>
+
+                        <ButtonGroup color="primary" size="lg" spacing={0} variant="plain">
+
+                          <Button variant="plain" size="lg" href="/">
+                            <Link href="/admin">Admin</Link>
+                          </Button>
+                          <Button variant="plain" size="lg" href="/admin">
+                            <Link href="/protected">Protected</Link>
+                          </Button>
+
+                        </ButtonGroup>
+
+                        <div className="flex items-center gap-2">
+                          <DeployButton />
+                        </div>
+
+                    {/* left topbar end */}
                   </div>
+
                   {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                 </div>
               </nav>
@@ -68,6 +86,7 @@ export default function RootLayout({
                 </p>
                 <ThemeSwitcher />
               </footer>
+
             </div>
           </main>
         </ThemeProvider>
