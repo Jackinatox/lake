@@ -1,4 +1,3 @@
-import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -7,7 +6,7 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
-import { Button, ButtonGroup, IconButton } from "@mui/joy";
+import { Button, ButtonGroup } from "@mui/joy";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -15,8 +14,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Scyed #lake",
+  description: "with Next.js and Supabase",
 };
 
 const geistSans = Geist({
@@ -47,20 +46,13 @@ export default function RootLayout({
 
                     <Link href="/">Scyed</Link>
 
-                        <ButtonGroup color="primary" size="lg" spacing={0} variant="plain">
+                        <ButtonGroup color="primary" size="md" spacing={0} variant="outlined">
 
-                          <Button variant="plain" size="lg" href="/">
-                            <Link href="/admin">Admin</Link>
-                          </Button>
-                          <Button variant="plain" size="lg" href="/admin">
-                            <Link href="/protected">Protected</Link>
-                          </Button>
+                          <Button component={Link} href="/admin"> Admin </Button>
+                          <Button component={Link} href="/protected"> Protected </Button>
+                          <Button component={Link} href="/na"> Something </Button>
 
                         </ButtonGroup>
-
-                        <div className="flex items-center gap-2">
-                          <DeployButton />
-                        </div>
 
                     {/* left topbar end */}
                   </div>
