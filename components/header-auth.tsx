@@ -79,3 +79,4 @@ export default async function AuthButton() {
     </div>
   );
 }
+
