@@ -23,7 +23,8 @@ export default async function newUserAction(formData: FormData) {
             lastName: '',
             username: name,
             email: email,
-            password: password
+            password: password,
+            externalId: `scy-${name}`
         });
 
         console.log('logged from form: ', name);
