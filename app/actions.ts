@@ -5,10 +5,6 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Builder } from 'pterodactyl.js';
-
-
-
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -30,26 +26,6 @@ export const signUpAction = async (formData: FormData) => {
       emailRedirectTo: `${origin}/auth/callback`,
     },
   });
-
-
-  // -- Creating PT User
-  const url = process.env.PTERODACTYL_URL;
-  const apiKey = process.env.PTERODACTYL_API_KEY;
-
-  if (!url || !apiKey) {
-    throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
-  }
-
-  const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
-
-  client.createUser({
-    email : email,
-    firstName : "",
-    lastName : "",
-    username: ""
-  });
-
-  // -- Done: Creating PT User
 
   if (error) {
     console.error(error.code + " " + error.message);
