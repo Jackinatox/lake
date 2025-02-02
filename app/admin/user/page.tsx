@@ -1,6 +1,8 @@
 // app/admin/page.js
 import { Builder } from 'pterodactyl.js';
 import UserTable from './userTable';
+import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
+import { SettingsIcon, UserIcon } from 'lucide-react';
 
 export default async function AdminPage() {
   const url = process.env.PTERODACTYL_URL;
@@ -16,11 +18,25 @@ export default async function AdminPage() {
     const users = await client.getUsers();
 
     return (
-      <div>
-        <h1>Admin Panel</h1>
-        
-        <UserTable users={users}></UserTable>
-      </div>
+      <>
+          <Breadcrumbs separator="›">
+
+            <Link color="primary" href="/admin">
+              <SettingsIcon />
+              Admin Panel
+            </Link>
+
+            <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+              <UserIcon />
+              Users
+            </Typography>
+
+          </Breadcrumbs>
+
+
+
+          <UserTable users={users}></UserTable>
+      </>
     );
   } catch (error: any) {
     return (
