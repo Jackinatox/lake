@@ -1,9 +1,8 @@
-import { WidthFull } from '@mui/icons-material';
-import { Box, Sheet, Table } from '@mui/joy';
-import { TableBody, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
+import { Box, Breadcrumbs, Button, Link, Table, Typography } from '@mui/joy';
+import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { SettingsIcon, UserIcon } from 'lucide-react';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'
-import { json } from 'stream/consumers';
 
 async function User({ params }: { params: Promise<{ userId: string }> }) {
     const userId = (await params).userId;
@@ -25,11 +24,32 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
 
 
         return (
+            <>
+                <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
-            <Box sx={{ overflow: "auto" }}>
-                <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+                    <Link color="primary" href="/admin">
+                        <SettingsIcon />
+                        Admin Panel
+                    </Link>
+
+                    <Link color="primary" href="/admin/user">
+                        <UserIcon />
+                        User
+                    </Link>
+
+                    <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                        <UserIcon /> 
+                        {user.id} - {user.username}
+                    </Typography>
                     
-                        <Table borderAxis="x" variant="plain" width="500">
+                </Breadcrumbs>
+
+
+
+                <Box sx={{ overflow: "auto" }}>
+                    <Box sx={{ width: "100%", display: "table" }}>
+
+                        <Table borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
                             <TableHead >
                                 <TableRow>
                                     <TableCell>id          </TableCell>
@@ -67,10 +87,12 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
                                 </TableRow>
                             </TableBody>
                         </Table>
-                    
-                </Box>
-            </Box>
 
+                    </Box>
+                </Box>
+
+
+            </>
         )
     } catch (e) {
         return (

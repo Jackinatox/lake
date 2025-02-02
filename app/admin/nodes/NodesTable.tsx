@@ -8,14 +8,14 @@ interface NodesTableProps {
 
 const NodeTable: React.FC<NodesTableProps> = ({ nodes }) => {
   return (
-    <Table aria-label="user table" variant='outlined'>
+    <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
       <thead>
         <tr>
           <th>ID</th>
           <th>Name</th>
           <th>Location ID</th>
-          <th>Disk</th>
-          <th>Memoy</th>
+          <th>Disk (GB)</th>
+          <th>Memory (GB)</th>
           <th>FQDN</th>
         </tr>
       </thead>
@@ -25,13 +25,13 @@ const NodeTable: React.FC<NodesTableProps> = ({ nodes }) => {
             <td>{node.id}</td>
             <td>{node.name}</td>
             <td>{node.locationId}</td>
-            <td>{node.disk}</td>
-            <td>{node.memory}</td>
+            <td>{node.disk/1000}</td>
+            <td>{node.memory/1000}</td>
             <td>{node.fqdn}</td>
           </tr>
         ))}
       </tbody>
-    </Table>
+    </Table >
   );
 };
 
