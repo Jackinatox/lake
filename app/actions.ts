@@ -4,6 +4,10 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { createPtClient } from "@/lib/ptClient";
+import { generateFromEmail } from "unique-username-generator";
+import createUserApiKey from "@/lib/userApiKey";
+
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -19,7 +23,10 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const {
+    data: { user },
+    error: signUpError,
+  } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -27,15 +34,42 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+  if (signUpError) {
+    console.error(signUpError.code + " " + signUpError.message);
+    return encodedRedirect("error", "/sign-up", signUpError.message);
   } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link."
-    );
+    //supbase user succesfully created
+
+    const pt = createPtClient();
+
+    if (user?.email) {
+      let ptuser;
+
+      try {
+        ptuser = await pt.createUser({
+          firstName: "Jakob",
+          lastName: "Schulze",
+          username: generateFromEmail(user.email, 10),
+          email: user.email,
+          password: password,
+        });
+
+        const userApiKey = createUserApiKey(ptuser.id);
+        const { data, error } = await supabase.auth.updateUser({
+          data: { pt_api_Key: userApiKey },
+        });
+      } catch (e) {
+        console.error("PT User Creation: ", e);
+      }
+      //save this in supoabase user
+
+
+      return encodedRedirect(
+        "success",
+        "/sign-up",
+        "Thanks for signing up! Please check your email for a verification link."
+      );
+    }
   }
 };
 
