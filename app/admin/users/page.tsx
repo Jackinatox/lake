@@ -1,6 +1,6 @@
 // app/admin/user/page.tsx
 import { Builder } from 'pterodactyl.js';
-import UserTable from './userTable';
+import UsersTable from './usersTable';
 import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
 import { SettingsIcon, UserIcon } from 'lucide-react';
 
@@ -35,7 +35,7 @@ export default async function AdminPage() {
 
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: 'auto', alignItems: 'flex-start' }}>
-          <UserTable users={users}></UserTable>
+          <UsersTable users={users}></UsersTable>
         </Box>
       </>
     );

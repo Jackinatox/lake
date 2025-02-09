@@ -1,12 +1,12 @@
 import React from 'react';
-import { NodeModel, UserModel } from 'pterodactyl.js';
+import { NodeModel } from 'pterodactyl.js';
 import Table from '@mui/joy/Table';
 
 interface NodesTableProps {
   nodes: NodeModel[];
 }
 
-const NodeTable: React.FC<NodesTableProps> = ({ nodes }) => {
+const NodesTable: React.FC<NodesTableProps> = ({ nodes }) => {
   return (
     <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
       <thead>
@@ -35,4 +35,4 @@ const NodeTable: React.FC<NodesTableProps> = ({ nodes }) => {
   );
 };
 
-export default NodeTable;
+export default NodesTable;
