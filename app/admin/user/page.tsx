@@ -1,4 +1,4 @@
-// app/admin/page.js
+// app/admin/user/page.tsx
 import { Builder } from 'pterodactyl.js';
 import UserTable from './userTable';
 import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
@@ -19,23 +19,24 @@ export default async function AdminPage() {
 
     return (
       <>
-          <Breadcrumbs separator="›">
+        <Breadcrumbs separator="›">
 
-            <Link color="primary" href="/admin">
-              <SettingsIcon />
-              Admin Panel
-            </Link>
+          <Link color="primary" href="/admin">
+            <SettingsIcon />
+            Admin Panel
+          </Link>
 
-            <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-              <UserIcon />
-              Users
-            </Typography>
+          <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+            <UserIcon />
+            Users
+          </Typography>
 
-          </Breadcrumbs>
+        </Breadcrumbs>
 
 
-
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: 'auto', alignItems: 'flex-start' }}>
           <UserTable users={users}></UserTable>
+        </Box>
       </>
     );
   } catch (error: any) {
