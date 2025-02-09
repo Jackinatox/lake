@@ -2,11 +2,11 @@ import React from 'react';
 import { ServerModel } from 'pterodactyl.js';
 import Table from '@mui/joy/Table';
 
-interface ServerTableProps {
+interface ServersTableProps {
   servers: ServerModel[];
 }
 
-const ServerTable: React.FC<ServerTableProps> = ({ servers }) => {
+const ServersTable: React.FC<ServersTableProps> = ({ servers }) => {
   return (
     <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
       <thead>
@@ -20,11 +20,11 @@ const ServerTable: React.FC<ServerTableProps> = ({ servers }) => {
           <th>Nest</th>
           <th>Egg</th>
           <th>Pack</th>
+
           <th>externalId</th>
           <th>internalId</th>
           <th>uuid</th>
           <th>identifier</th>
-          <th>user</th>
         </tr>
       </thead>
       <tbody>
@@ -44,7 +44,6 @@ const ServerTable: React.FC<ServerTableProps> = ({ servers }) => {
             <td>{server.internalId}</td>
             <td>{server.uuid}</td>
             <td>{server.identifier}</td>
-            <td>{server.user}</td>
             
           </tr>
         ))}
@@ -53,4 +52,4 @@ const ServerTable: React.FC<ServerTableProps> = ({ servers }) => {
   );
 };
 
-export default ServerTable;
+export default ServersTable;
