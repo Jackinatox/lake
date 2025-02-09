@@ -2,7 +2,7 @@ import React from 'react'
 import ServerTable from './ServerTable';
 import { Builder } from 'pterodactyl.js';
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
-import { SettingsIcon, UserIcon } from 'lucide-react';
+import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
 
 async function Server() {
   const url = process.env.PTERODACTYL_URL;
@@ -27,7 +27,7 @@ async function Server() {
           </Link>
 
           <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <UserIcon />
+            <Gamepad2Icon />
             Server
           </Typography>
 
