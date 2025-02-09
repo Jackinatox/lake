@@ -1,5 +1,5 @@
 import React from 'react'
-import NodeTable from './NodesTable';
+import NodesTable from './NodesTable';
 import { Builder } from 'pterodactyl.js';
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, UserIcon } from 'lucide-react';
@@ -32,7 +32,7 @@ async function Nodes() {
           </Typography>
 
         </Breadcrumbs>
-        <NodeTable nodes={nodes}></NodeTable>
+        <NodesTable nodes={nodes}></NodesTable>
       </>
     );
   } catch (error: any) {

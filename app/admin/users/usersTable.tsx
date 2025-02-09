@@ -5,11 +5,11 @@ import { Box, Button } from '@mui/joy';
 import { redirect } from 'next/dist/server/api-utils';
 import Link from 'next/link';
 
-interface UserTableProps {
+interface UsersTableProps {
   users: UserModel[];
 }
 
-const UserTable: React.FC<UserTableProps> = ({ users }) => {
+const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
   return (
       <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
         <thead>
@@ -40,4 +40,4 @@ const UserTable: React.FC<UserTableProps> = ({ users }) => {
   );
 };
 
-export default UserTable;
+export default UsersTable;
