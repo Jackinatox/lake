@@ -9,8 +9,7 @@ function Admin() {
       <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
         <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-          <SettingsIcon />
-          Admin Panel
+          <SettingsIcon /> &nbsp; Admin Panel
         </Typography>
 
       </Breadcrumbs>

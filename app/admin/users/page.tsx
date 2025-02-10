@@ -2,7 +2,7 @@
 import { Builder } from 'pterodactyl.js';
 import UsersTable from './usersTable';
 import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
-import { SettingsIcon, UserIcon } from 'lucide-react';
+import { SettingsIcon, UsersIcon } from 'lucide-react';
 
 export default async function AdminPage() {
   const url = process.env.PTERODACTYL_URL;
@@ -22,13 +22,11 @@ export default async function AdminPage() {
         <Breadcrumbs separator="›">
 
           <Link color="primary" href="/admin">
-            <SettingsIcon />
-            Admin Panel
+            <SettingsIcon /> &nbsp; Admin Panel
           </Link>
 
           <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <UserIcon />
-            Users
+            <UsersIcon /> &nbsp; Users
           </Typography>
 
         </Breadcrumbs>

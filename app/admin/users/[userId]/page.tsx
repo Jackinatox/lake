@@ -1,7 +1,7 @@
 // app/admin/user/[userId]/page.tsx
 import { Box, Breadcrumbs, Button, Link, Table, Typography } from '@mui/joy';
 import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { EditIcon, SettingsIcon, UserIcon } from 'lucide-react';
+import { SettingsIcon, UserIcon } from 'lucide-react';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'

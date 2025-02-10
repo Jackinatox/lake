@@ -28,7 +28,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
               <td>{user.email}</td>
               <td>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button component={Link} href={`user/${user.id}`} size="sm" variant="plain" color="neutral">
+                  <Button component={Link} href={`users/${user.id}`} size="sm" variant="plain" color="neutral">
                     Edit
                   </Button>
                 </Box>
