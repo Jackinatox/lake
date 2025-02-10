@@ -1,8 +1,7 @@
 // app/admin/user/[userId]/page.tsx
 import { Box, Breadcrumbs, Button, Link, Table, Typography } from '@mui/joy';
 import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { SettingsIcon, UserIcon } from 'lucide-react';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { PencilLine, SettingsIcon, UserIcon } from 'lucide-react';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'
 
@@ -40,7 +39,7 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
                     </Link>
 
                     <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                        <EditOutlinedIcon /> &nbsp;
+                        <PencilLine /> &nbsp;
                         {user.id} - {user.username}
                     </Typography>
                     
