@@ -33,7 +33,7 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
                         Admin Panel
                     </Link>
 
-                    <Link color="primary" href="/admin/user">
+                    <Link color="primary" href="/admin/users">
                         <UserIcon />
                         User
                     </Link>

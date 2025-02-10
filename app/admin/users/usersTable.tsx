@@ -4,6 +4,7 @@ import Table from '@mui/joy/Table';
 import { Box, Button } from '@mui/joy';
 import { redirect } from 'next/dist/server/api-utils';
 import Link from 'next/link';
+import { PencilLine } from 'lucide-react';
 
 interface UsersTableProps {
   users: UserModel[];
@@ -29,7 +30,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
               <td>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Button component={Link} href={`users/${user.id}`} size="sm" variant="plain" color="neutral">
-                    Edit
+                    <PencilLine />
                   </Button>
                 </Box>
               </td>
