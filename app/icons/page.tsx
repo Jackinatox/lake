@@ -1,5 +1,5 @@
-import { Box, Table, Sheet } from '@mui/joy'
-import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon } from 'lucide-react'
+import { Table, Sheet } from '@mui/joy'
+import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon, PencilLine, } from 'lucide-react'
 import React from 'react'
 
 function Icons() {
@@ -29,13 +29,25 @@ function Icons() {
             name: 'Wings',
             code: '<SquarePlay />',
         },
+        {
+            id: 2,
+            _icon: <PencilLine />,
+            get icon() {
+                return this._icon;
+            },
+            set icon(value) {
+                this._icon = value;
+            },
+            name: 'Edit',
+            code: '<PencilLine />',
+        },
     ];
 
     return (
         <>
             {'&nbsp;'}
             <Sheet>
-                <Table borderAxis="both" variant="plain" sx={{ tableLayout: "auto" }}>
+                <Table borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
                     <thead>
                         <tr>
                             <th>Icon</th>
