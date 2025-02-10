@@ -27,7 +27,8 @@
     "pterodactyl.js": "^2.1.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "unique-username-generator": "^1.4.0"
+    "unique-username-generator": "^1.4.0",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@types/node": "22.10.2",

@@ -7,13 +7,21 @@ import { redirect } from "next/navigation";
 import { createPtClient } from "@/lib/ptClient";
 import { generateFromEmail } from "unique-username-generator";
 import createUserApiKey from "@/lib/userApiKey";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from 'uuid';
 
+const supabaseAdmin = createAdminClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Service role key (⚠️ Only use server-side)
+);
 
 export const signUpAction = async (formData: FormData) => {
+  
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
-  const supabase = await createClient();
   const origin = (await headers()).get("origin");
+  
+  const supabase = await createClient();
 
   if (!email || !password) {
     return encodedRedirect(
@@ -23,10 +31,7 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const {
-    data: { user },
-    error: signUpError,
-  } = await supabase.auth.signUp({
+  const { data: { user }, error: signUpError, } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -36,6 +41,7 @@ export const signUpAction = async (formData: FormData) => {
 
   if (signUpError) {
     console.error(signUpError.code + " " + signUpError.message);
+
     return encodedRedirect("error", "/sign-up", signUpError.message);
   } else {
     //supbase user succesfully created
@@ -43,26 +49,27 @@ export const signUpAction = async (formData: FormData) => {
     const pt = createPtClient();
 
     if (user?.email) {
-      let ptuser;
-
       try {
-        ptuser = await pt.createUser({
+        const ptuser = await pt.createUser({
           firstName: "Jakob",
           lastName: "Schulze",
-          username: generateFromEmail(user.email, 10),
+          username: generateFromEmail(user.email) + uuidv4(),
           email: user.email,
           password: password,
         });
 
-        const userApiKey = createUserApiKey(ptuser.id);
-        const { data, error } = await supabase.auth.updateUser({
-          data: { pt_api_Key: userApiKey },
-        });
+        const userApiKey = await createUserApiKey(ptuser.id);
+
+        const { error: updateError } =
+          await supabaseAdmin.auth.admin.updateUserById(user.id, {
+            user_metadata: { pt_api_Key: userApiKey }, // Store API key securely
+          });
+        
+        console.log("userid: admin update: ", user.id, updateError);
+
       } catch (e) {
         console.error("PT User Creation: ", e);
       }
-      //save this in supoabase user
-
 
       return encodedRedirect(
         "success",
