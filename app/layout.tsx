@@ -51,7 +51,7 @@ export default function RootLayout({
 
                           <Button component={Link} href="/admin"> Admin </Button>
                           <Button component={Link} href="/protected"> Protected </Button>
-                          <Button component={Link} href="/na"> Something </Button>
+                          <Button component={Link} href="/icons"> Icons </Button>
 
                         </ButtonGroup>
 

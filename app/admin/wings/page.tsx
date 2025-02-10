@@ -1,10 +1,10 @@
 import React from 'react'
-import ServersTable from './ServersTable';
+import WingsTable from './WingsTable';
 import { Builder } from 'pterodactyl.js';
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
-import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
+import { SettingsIcon, SquarePlay } from 'lucide-react';
 
-async function Servers() {
+async function Wings() {
   const url = process.env.PTERODACTYL_URL;
   const apiKey = process.env.PTERODACTYL_API_KEY;
 
@@ -15,24 +15,22 @@ async function Servers() {
   const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
 
   try {
-    const servers = await client.getServers();
+    const wings = await client.getNodes();
 
     return (
       <>
         <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
           <Link color="primary" href="/admin">
-            <SettingsIcon />
-            Admin Panel
+            <SettingsIcon /> &nbsp; Admin Panel
           </Link>
 
           <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <Gamepad2Icon />
-            Servers
+            <SquarePlay /> &nbsp; Wings
           </Typography>
 
         </Breadcrumbs>
-        <ServersTable servers={servers}></ServersTable>
+        <WingsTable wings={wings}></WingsTable>
       </>
     );
   } catch (error: any) {
@@ -45,4 +43,4 @@ async function Servers() {
   }
 }
 
-export default Servers
+export default Wings
