@@ -1,10 +1,11 @@
 "use client";
 
+import { GameServerSettings } from '@/models/settings';
 import { Grid, Button, ButtonGroup, Card } from '@mui/joy'
 import { CircleStop, Play, Power as Stop, RotateCcw, Copy } from 'lucide-react';
 import React from 'react'
 
-const settings = {
+const settings = new GameServerSettings({
     egg: 'Minecraft',
     ver: '1.17.1',
     flavour: 'Paper',
@@ -14,7 +15,7 @@ const settings = {
     vCores: 4,
     mem: 4096,
     addr: 'w1.scyed.com:2134',
-};
+});
 
 export function Power() {
 
