@@ -1,5 +1,5 @@
 import { Table, Sheet } from '@mui/joy'
-import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon, PencilLine, } from 'lucide-react'
+import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon, PencilLine, CircleStop, Power, RotateCcw, Play, } from 'lucide-react'
 import React from 'react'
 
 function Icons() {
@@ -8,38 +8,68 @@ function Icons() {
         {
             id: 1,
             icon: <SettingsIcon />,
-            name: 'Admin',
+            usage: 'Admin',
             code: '<SettingsIcon />',
         },
         {
-            id: 1,
+            id: 2,
             icon: <UsersIcon />,
-            name: 'Users',
+            usage: 'Users',
             code: '<UsersIcon />',
         },
         {
-            id: 2,
+            id: 3,
             icon: <Gamepad2Icon />,
-            name: 'Gameservers',
+            usage: 'Gameservers',
             code: '<UsersIcon />',
         },
         {
-            id: 2,
+            id: 4,
             icon: <SquarePlay />,
-            name: 'Wings',
+            usage: 'Wings',
             code: '<SquarePlay />',
         },
         {
-            id: 2,
-            _icon: <PencilLine />,
-            get icon() {
-                return this._icon;
-            },
-            set icon(value) {
-                this._icon = value;
-            },
-            name: 'Edit',
+            id: 5,
+            icon: <PencilLine />,
+            usage: 'Edit',
             code: '<PencilLine />',
+        },
+        {
+            id: 6,
+            icon: '',
+            usage: 'GAMESERVER',
+            code: '',
+        },
+        {
+            id: 7,
+            icon: <Play />,
+            usage: 'Start',
+            code: '<Play />',
+        },
+        {
+            id: 8,
+            icon: <RotateCcw />,
+            usage: 'Restart',
+            code: '<RotateCcw />',
+        },
+        {
+            id: 9,
+            icon: <Power />,
+            usage: 'Stop',
+            code: '<Power />',
+        },
+        {
+            id: 10,
+            icon: <CircleStop />,
+            usage: 'Kill',
+            code: '<CircleStop />',
+        },
+        {
+            id: 11,
+            icon: '',
+            usage: '',
+            code: '',
         },
     ];
 
@@ -59,7 +89,7 @@ function Icons() {
                         {icons.map((line) => (
                             <tr key={line.id}>
                                 <td>{line.icon}</td>
-                                <td>{line.name}</td>
+                                <td>{line.usage}</td>
                                 <td>{line.code}</td>
                             </tr>
                         ))}
