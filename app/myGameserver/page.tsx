@@ -26,8 +26,10 @@ function Dashboard() {
         <>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
 
-                <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid xs={6} sm={6} md={6} lg={12} xl={12}>
                     <CopyAddress settings={settings} />
+                </Grid>
+                <Grid xs={6} sm={6} md={6} lg={12} xl={12}>
                     <PowerBtns />
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
