@@ -8,13 +8,13 @@ function Dashboard() {
         <>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 
-                <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid size={12}>
                     <Power />
                 </Grid>
-                <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid size={12}>
                     <Console></Console>
                 </Grid>           
-                <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid size={12}>
                     <Info />
                 </Grid>
 

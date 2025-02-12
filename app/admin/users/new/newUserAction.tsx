@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server';
 import { encodedRedirect } from '@/utils/utils';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
-import { Builder } from 'pterodactyl.js';
+import { Builder, User } from 'pterodactyl.js';
 import React from 'react'
 
 export default async function newUserAction(formData: FormData) {
@@ -22,7 +22,7 @@ export default async function newUserAction(formData: FormData) {
             throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
         }
 
-        let user;
+        let user: User;
 
         const pt = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
 
