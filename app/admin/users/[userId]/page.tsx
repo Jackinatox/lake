@@ -8,7 +8,7 @@ import React from 'react'
 async function User({ params }: { params: Promise<{ userId: string }> }) {
     const userId = (await params).userId;
 
-    const url = process.env.PTERODACTYL_URL;
+    const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const apiKey = process.env.PTERODACTYL_API_KEY;
 
     if (!url || !apiKey) {

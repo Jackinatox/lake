@@ -4,7 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createPtClient } from "@/lib/Pterodactyl/ptClient";
+import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { generateFromEmail } from "unique-username-generator";
 import createUserApiKey from "@/lib/Pterodactyl/userApiKey";
 import { createClient as createAdminClient } from "@supabase/supabase-js";

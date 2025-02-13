@@ -1,4 +1,4 @@
-"use client"
+"use server"
 
 import React from 'react'
 import { Grid } from '@mui/joy'
@@ -9,7 +9,7 @@ import { Info } from '@/components/gameServer/dashboard/info';
 import CopyAddress from '@/components/gameServer/dashboard/copyAddress';
 
 
-const settings = new GameServerSettings({
+const settings : GameServerSettings = {
     egg: 'Minecraft',
     ver: '1.17.1',
     flavour: 'Paper',
@@ -19,7 +19,7 @@ const settings = new GameServerSettings({
     vCores: 4,
     mem: 4096,
     addr: 'w1.scyed.com:2134',
-});
+}
 
 function Dashboard() {
     return (
@@ -33,7 +33,7 @@ function Dashboard() {
                     <PowerBtns />
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Console></Console>
+                    {/* <Console></Console> */}
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Info settings={settings} />

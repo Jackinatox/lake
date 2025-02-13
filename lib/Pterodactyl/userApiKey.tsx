@@ -1,5 +1,5 @@
 async function createUserApiKey(userId: number): Promise<any> {
-    const pturl = process.env.PTERODACTYL_URL;
+    const pturl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const apiKey = process.env.PTERODACTYL_API_KEY;
     const url = `${pturl}/api/application/users/${userId}/api-keys`;
     const data = {
