@@ -15,7 +15,7 @@ export default async function newUserAction(formData: FormData) {
 
     if (name && email && password && lastname) {
         const sbclient = await createClient();
-        const url = process.env.PTERODACTYL_URL;
+        const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
         const apiKey = process.env.PTERODACTYL_API_KEY;
 
         if (!url || !apiKey) {

@@ -5,7 +5,7 @@ import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
 import { SettingsIcon, UsersIcon } from 'lucide-react';
 
 export default async function AdminPage() {
-  const url = process.env.PTERODACTYL_URL;
+  const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
   const apiKey = process.env.PTERODACTYL_API_KEY;
 
   if (!url || !apiKey) {

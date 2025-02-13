@@ -1,3 +1,5 @@
+"use client"
+
 import { GameServerSettings } from "@/models/settings";
 import { Card } from "@mui/joy";
 

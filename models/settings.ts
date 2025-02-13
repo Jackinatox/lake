@@ -1,4 +1,4 @@
-export class GameServerSettings {
+export type GameServerSettings = {
     egg?: string;
     ver?: string;
     flavour?: string;
@@ -8,12 +8,4 @@ export class GameServerSettings {
     vCores?: number;
     mem?: number;
     addr?: string;
-
-    constructor(data: Partial<GameServerSettings>) {
-        Object.assign(this, data);
-    }
-
-    getFormattedAddress(): string {
-        return this.addr ? `http://${this.addr}` : 'Address not set';
-    }
 }
