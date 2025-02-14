@@ -1,6 +1,6 @@
 "use server"
 
-import GameDashboard from '@/components/gameserver/dashboard/gameDashboard';
+import Console from '@/components/gamegerver/dashboard/console';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { createClient } from '@/utils/supabase/server';
 import React from 'react'
@@ -18,7 +18,8 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     return (
         <div style={{ width: '1400px' }}>
-            <GameDashboard server={serverId} ptApiKey={ptApiKey}></GameDashboard>
+            <div>{serverId}</div>
+            <Console server={serverId} ptApiKey={ptApiKey} ></Console>
         </div>
     )
 }

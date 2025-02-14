@@ -2,13 +2,13 @@
 
 import React from 'react'
 import { Grid } from '@mui/joy'
-import Console from '@/components/gameServer/dashboard/console'
+import Console from '@/components/gameserver/dashboard/console'
 import { GameServerSettings } from '@/models/settings';
-import { PowerBtns } from '@/components/gameServer/dashboard/powerBtns';
-import { Info } from '@/components/gameServer/dashboard/info';
-import CopyAddress from '@/components/gameServer/dashboard/copyAddress';
+import { PowerBtns } from '@/components/gameserver/dashboard/powerBtns';
+import { Info } from '@/components/gameserver/dashboard/info';
+import CopyAddress from '@/components/gameserver/dashboard/copyAddress';
 import BreakpointDisplay from '@/components/BreakpointDisplay';
-import { Status } from '@/components/gameServer/dashboard/status';
+import { Status } from '@/components/gameserver/dashboard/status';
 
 
 const settings: GameServerSettings = {
