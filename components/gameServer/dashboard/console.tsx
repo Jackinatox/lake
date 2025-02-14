@@ -5,12 +5,12 @@ import { Textarea } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useState } from "react"
 
-interface serevrProps {
+interface serverProps {
   server: string;
   ptApiKey: string;
 }
 
-function Console({ server, ptApiKey }: serevrProps) {
+function Console({ server, ptApiKey }: serverProps) {
   const [logs, setLogs] = useState('Test log');
   const [cpu, setCpu] = useState<number>(0.0);
   const [mem, setMem] = useState<number>(0.0);
