@@ -5,7 +5,7 @@ import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { createClient } from '@/utils/supabase/server';
 import React from 'react'
 
-async function serevrCrap({ params }: { params: Promise<{ server_id: string }> }) {
+async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
     const serverId = (await params).server_id;
     const pt = createPtClient();
 
@@ -24,4 +24,4 @@ async function serevrCrap({ params }: { params: Promise<{ server_id: string }> }
     )
 }
 
-export default serevrCrap
+export default serverCrap
