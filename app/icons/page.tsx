@@ -1,5 +1,5 @@
 import { Table, Sheet } from '@mui/joy'
-import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon, PencilLine, CircleStop, Power, RotateCcw, Play, } from 'lucide-react'
+import { Gamepad2Icon, SettingsIcon, SquarePlay, UsersIcon, PencilLine, CircleStop, Power, RotateCcw, Play, Server, } from 'lucide-react'
 import React from 'react'
 
 function Icons() {
@@ -37,9 +37,9 @@ function Icons() {
         },
         {
             id: 6,
-            icon: '',
-            usage: 'GAMESERVER',
-            code: '',
+            icon: <Server />,
+            usage: '**GAMESERVER**',
+            code: '<Server />',
         },
         {
             id: 7,
