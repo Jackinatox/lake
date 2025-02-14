@@ -7,9 +7,11 @@ import { GameServerSettings } from '@/models/settings';
 import { PowerBtns } from '@/components/gameServer/dashboard/powerBtns';
 import { Info } from '@/components/gameServer/dashboard/info';
 import CopyAddress from '@/components/gameServer/dashboard/copyAddress';
+import BreakpointDisplay from '@/components/BreakpointDisplay';
+import { Status } from '@/components/gameServer/dashboard/status';
 
 
-const settings : GameServerSettings = {
+const settings: GameServerSettings = {
     egg: 'Minecraft',
     ver: '1.17.1',
     flavour: 'Paper',
@@ -19,21 +21,26 @@ const settings : GameServerSettings = {
     vCores: 4,
     mem: 4096,
     addr: 'w1.scyed.com:2134',
+    status: 'running',
 }
 
 function Dashboard() {
     return (
         <>
-            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+            <BreakpointDisplay />
+            <Grid container spacing={2}>
 
-                <Grid xs={6} sm={6} md={6} lg={12} xl={12}>
+                <Grid>
                     <CopyAddress settings={settings} />
                 </Grid>
-                <Grid xs={6} sm={6} md={6} lg={12} xl={12}>
+                <Grid sx={{ flexGrow: 1 }}>
+                    <Status settings={settings} />
+                </Grid>
+                <Grid xs={12} sm={8.5} md={6} lg={6} xl={6}>
                     <PowerBtns />
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-                    {/* <Console></Console> */}
+                    <Console></Console>
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Info settings={settings} />

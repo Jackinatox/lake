@@ -8,4 +8,5 @@ export type GameServerSettings = {
     vCores?: number;
     mem?: number;
     addr?: string;
+    status?: string;
 }
