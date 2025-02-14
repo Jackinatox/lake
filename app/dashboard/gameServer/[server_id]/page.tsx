@@ -17,10 +17,10 @@ async function serevrCrap({ params }: { params: Promise<{ server_id: string }> }
     console.log('api key und server: ', ptApiKey, serverId)
 
     return (
-        <>
+        <div style={{ width: '1400px' }}>
             <div>{serverId}</div>
             <Console server={serverId} ptApiKey={ptApiKey} ></Console>
-        </>
+        </div>
     )
 }
 
