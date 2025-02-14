@@ -4,12 +4,12 @@ import webSocket from "@/lib/Pterodactyl/webSocket";
 import { Textarea } from "@mui/joy"
 import { useEffect, useState } from "react"
 
-interface serevrProps {
+interface serverProps {
   server: string;
   ptApiKey: string;
 }
 
-function Console({ server, ptApiKey }: serevrProps) {
+function Console({ server, ptApiKey }: serverProps) {
   const [logs, setLogs] = useState('Test log');
 
   useEffect(() => {
