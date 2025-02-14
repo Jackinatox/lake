@@ -10,6 +10,8 @@ interface serverProps {
   ptApiKey: string;
 }
 
+
+
 function Console({ server, ptApiKey }: serverProps) {
   const [logs, setLogs] = useState('Test log');
   const [cpu, setCpu] = useState<number>(0.0);

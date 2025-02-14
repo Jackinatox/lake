@@ -34,7 +34,7 @@ function ServersTable({servers}: serverProps) {
                             <td>{server.limits.cpu}</td>
                             <td>{server.limits.memory}</td>
                             <td>{server.limits.disk}</td>
-                            <td>{<Button><Link href={`/dashboard/gameServer/${server.identifier}`}> Connect </Link></Button>}</td>
+                            <td>{<Button><Link href={`/gameserver/${server.identifier}`}> Connect </Link></Button>}</td>
                         </tr>
                     ))}
                 </tbody>
