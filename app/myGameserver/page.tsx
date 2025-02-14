@@ -40,7 +40,7 @@ function Dashboard() {
                     <PowerBtns />
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Console></Console>
+                    {/*<Console />*/}
                 </Grid>
                 <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Info settings={settings} />
