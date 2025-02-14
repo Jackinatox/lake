@@ -1,6 +1,7 @@
 "use server"
 
 import Console from '@/components/gameServer/dashboard/console';
+import GameDashboard from '@/components/gameServer/dashboard/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { createClient } from '@/utils/supabase/server';
 import React from 'react'
@@ -18,8 +19,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     return (
         <div style={{ width: '1400px' }}>
-            <div>{serverId}</div>
-            <Console server={serverId} ptApiKey={ptApiKey} ></Console>
+            <GameDashboard server={serverId} ptApiKey={ptApiKey}></GameDashboard>
         </div>
     )
 }
