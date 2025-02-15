@@ -3,7 +3,7 @@
 import webSocket from "@/lib/Pterodactyl/webSocket";
 import { Box, Breadcrumbs, Grid, Link, Textarea, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Console from "./console";
 import { Gamepad2Icon, Server } from "lucide-react";
 import CopyAddress from "./copyAddress";
@@ -31,25 +31,22 @@ interface serverProps {
 }
 
 function GameDashboard({ server, ptApiKey }: serverProps) {
-  const [logs, setLogs] = useState('Test log');
-  const [cpu, setCpu] = useState<number>(0.0);
-  const [mem, setMem] = useState<number>(0.0);
-  const [disk, setDisk] = useState<number>(0.0);
+  const [logs, setLogs] = useState('');
+  const [loading, setLoading] = useState(true);
+  const wsRef = useRef<WebSocket | null>(null);
+  const wsCreds = useRef<any>(null);
 
   const [serverStats, setServerStats] = useState<any>();
 
-
   useEffect(() => {
-    let ws: WebSocket;
-
     function handleWsMessage(msg: string) {
       const data = JSON.parse(msg);
+      console.log('event: ', data.event);
 
       switch (data.event) {
+
         case 'stats': {
           const stats = JSON.parse(data.args[0]);
-          console.log('stats: ', stats)
-          setCpu(parseFloat(stats.cpu_absolute.toFixed(2)));
 
           const roundedStats = {
             cpu_absolute: parseFloat(stats.cpu_absolute.toFixed(1)),
@@ -64,47 +61,81 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             uptime: parseFloat((stats.uptime / 1000).toFixed(2)),
           }
           setServerStats(roundedStats);
+        }
+          break;
 
+        case 'console output': {
+          const consoleLine = data.args[0];
+          setLogs(prevLogs => consoleLine + '\n' + prevLogs);
+          console.log('consoleLine: ', consoleLine)
+        }
+          break;
 
+        case 'token expiring': {
+          wsRef.current?.send(JSON.stringify({
+            event: 'auth',
+            args: [wsCreds.current?.data.token]
+          }));
         }
       }
-
-
-      setLogs(prevLogs => prevLogs + '\n' + msg);
     }
 
     const startWebSocket = async () => {
-      const wsCreds = await webSocket(server, ptApiKey);
-      console.log('socket and token: ', wsCreds?.data.socket, wsCreds?.data.token);
+      const wsCred = await webSocket(server, ptApiKey);
+      wsCreds.current = wsCred;
 
-      ws = new WebSocket(wsCreds?.data.socket);
+      console.log('socket and token: ', wsCred?.data.socket, wsCred?.data.token);
+
+      const ws: WebSocket = new WebSocket(wsCred?.data.socket);
+      wsRef.current = ws;
 
       ws.onopen = () => {
         console.log("Connected to WebSocket");
+
+
         ws.send(JSON.stringify({
           event: "auth",
-          args: [wsCreds?.data.token], // token as an array element
+          args: [wsCred?.data.token], // token as an array element
         }));
-      }
+
+        if (ws.OPEN) {
+          setLoading(false);
+        }
+      };
 
       ws.onmessage = (ev: MessageEvent) => {
         handleWsMessage(ev.data);
       }
-
     }
 
     startWebSocket();
 
     return () => {
-      if (ws) {
-        ws.close();
-      }
+      wsRef.current?.close();
     };
   }, []);
 
   const days = Math.floor(serverStats?.uptime / 86400); // 86400 Sekunden pro Tag
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
+
+  const handleStop = () => {
+    if (!loading && wsRef.current){
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["stop"]
+      }));
+    }  
+  }
+
+  const handleStart = () => {
+    if (!loading && wsRef.current){
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["start"]
+      }));
+    }  
+  }
 
   return (
     <>
@@ -134,9 +165,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <Status settings={settings} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
-          <PowerBtns />
+          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart}/>
         </Grid>
-        <Grid sx={{ flexGrow: 1 }}>
+        <Grid xs={12} sx={{ flexGrow: 1 }}>
           <Console logs={logs} />
         </Grid>
 
@@ -152,10 +183,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
 
       </Grid >
-
-
-
-
 
       <Box sx={{ display: 'inline-flex' }}>
         CPU
