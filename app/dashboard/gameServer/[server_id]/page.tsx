@@ -1,6 +1,6 @@
 "use server"
 
-import Console from '@/components/gamegerver/dashboard/console';
+import Console from '@/components/gameserver/dashboard/console';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { createClient } from '@/utils/supabase/server';
 import React from 'react'

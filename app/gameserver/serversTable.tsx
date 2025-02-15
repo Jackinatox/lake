@@ -1,6 +1,7 @@
 "use server"
 
-import { Button, Table } from '@mui/joy';
+import { Breadcrumbs, Button, Table, Typography } from '@mui/joy';
+import { Gamepad2Icon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ClientServer } from 'pterodactyl.js';
@@ -11,9 +12,17 @@ interface serverProps {
 }
 
 
-function ServersTable({servers}: serverProps) {
+function ServersTable({ servers }: serverProps) {
     return (
         <>
+            <Breadcrumbs separator="›" aria-label="breadcrumbs">
+
+                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Gamepad2Icon /> &nbsp; Gameservers
+                </Typography>
+
+            </Breadcrumbs>
+
             {JSON.stringify(servers[0])}
             <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
                 <thead>
@@ -34,7 +43,7 @@ function ServersTable({servers}: serverProps) {
                             <td>{server.limits.cpu}</td>
                             <td>{server.limits.memory}</td>
                             <td>{server.limits.disk}</td>
-                            <td>{<Button><Link href={`/gameserver/${server.identifier}`}> Connect </Link></Button>}</td>
+                            <td>{<Button component={Link} href={`/gameserver/${server.identifier}`}> Connect </Button>}</td>
                         </tr>
                     ))}
                 </tbody>
