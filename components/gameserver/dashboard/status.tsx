@@ -1,14 +1,13 @@
 "use client"
 
-import { GameServerSettings } from "@/models/settings";
-import { Box, Button, Textarea, useTheme } from "@mui/joy";
+import { Box, Button, useTheme } from "@mui/joy";
 import { useMediaQuery } from "@mui/material";
 
-interface InfoProps { settings: GameServerSettings }
+interface InfoProps { state: string }
 
 
 
-export function Status({ settings }: InfoProps) {
+export function Status({ state }: InfoProps) {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -17,9 +16,10 @@ export function Status({ settings }: InfoProps) {
     const getColor = (status: string | undefined) => {
 
         switch (status) {
-            case 'running': return 'success';
-            case 'restarting': return 'warning';
-            case 'stopped': return 'danger';
+            case 'starting': return 'warning'; //verified
+            case 'running': return 'success'; //verified
+            case 'stopping': return 'warning'; //verified
+            case 'offline': return 'danger'; //verified
             default: return 'neutral';
         }
     };
@@ -27,8 +27,8 @@ export function Status({ settings }: InfoProps) {
     return (
         <>
             <Box sx={{ display: "flex", justifyContent: isSmallScreen ? 'flex-end' : 'center' }}>
-                <Button variant='outlined' color={getColor(settings.status)} size="sm" sx={{ pointerEvents: 'none', width: '12ch' }}>
-                    {settings.status}
+                <Button variant='outlined' color={getColor(state)} size="sm" sx={{ pointerEvents: 'none', width: '12ch' }}>
+                    {state}
                 </Button>
             </Box>
         </>

@@ -162,7 +162,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <CopyAddress settings={settings} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
-          <Status settings={settings} />
+          <Status state={serverStats?.state} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
           <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart}/>
