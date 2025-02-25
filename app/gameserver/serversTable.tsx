@@ -23,7 +23,7 @@ function ServersTable({ servers }: serverProps) {
 
             </Breadcrumbs>
 
-            {JSON.stringify(servers[0])}
+            {/* {JSON.stringify(servers[0])} */}
             <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
                 <thead>
                     <tr>
