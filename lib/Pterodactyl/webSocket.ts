@@ -5,13 +5,12 @@ async function webSocket(serverId: string, apiKey: string) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      apiKey: apiKey,  // or get it from somewhere secure
+      apiKey: apiKey,
       serverId: serverId,
     }),
   });
 
   if (!response.ok) {
-    // handle error
     throw new Error(`Error: ${response.status}`);
   }
 
