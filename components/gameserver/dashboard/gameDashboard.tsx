@@ -39,7 +39,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const [serverStats, setServerStats] = useState<any>();
 
   useEffect(() => {
-    function handleWsMessage(msg: string) {
+    const handleWsMessage = async (msg: string) => {
       const data = JSON.parse(msg);
       console.log('event: ', data.event);
 
@@ -66,16 +66,21 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         case 'console output': {
           const consoleLine = data.args[0];
-          setLogs(prevLogs => consoleLine + '\n' + prevLogs);
+          const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
+          setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
           console.log('consoleLine: ', consoleLine)
         }
           break;
 
-        case 'token expiring': {
-          wsRef.current?.send(JSON.stringify({
-            event: 'auth',
-            args: [wsCreds.current?.data.token]
-          }));
+        case "token expiring": {
+          console.log("Token expiring... fetching new token.");
+          const newToken = await fetchNewWebSocketToken();
+
+          if (newToken) {
+            wsRef.current?.send(JSON.stringify({ event: "auth", args: [newToken], }));
+            console.log("Re-authenticated WebSocket.");
+          }
+          break;
         }
       }
     }
@@ -108,6 +113,30 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       }
     }
 
+    const fetchNewWebSocketToken = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server}/websocket`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${ptApiKey}`,
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch new WebSocket token");
+          return null;
+        }
+
+        const data = await response.json();
+        wsCreds.current = data; // Update the stored credentials
+        return data.data.token;
+      } catch (error) {
+        console.error("Error fetching new WebSocket token:", error);
+        return null;
+      }
+    };
+
     startWebSocket();
 
     return () => {
@@ -120,21 +149,21 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
 
   const handleStop = () => {
-    if (!loading && wsRef.current){
+    if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
         event: 'set state',
         args: ["stop"]
       }));
-    }  
+    }
   }
 
   const handleStart = () => {
-    if (!loading && wsRef.current){
+    if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
         event: 'set state',
         args: ["start"]
       }));
-    }  
+    }
   }
 
   return (
@@ -165,7 +194,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <Status state={serverStats?.state} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
-          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart}/>
+          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} />
         </Grid>
         <Grid xs={12} sx={{ flexGrow: 1 }}>
           <Console logs={logs} />
