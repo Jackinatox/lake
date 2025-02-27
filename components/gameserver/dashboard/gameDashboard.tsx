@@ -1,7 +1,7 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, Grid, Link, Textarea, Typography } from "@mui/joy"
+import { Box, Breadcrumbs, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
@@ -148,6 +148,51 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
 
+  // START
+  const handleStart = () => {
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["start"]
+      }));
+    }
+  }
+  
+  //const [restartModalOpen, setRestartModalOpen] = useState(false);
+
+  // RESTART
+  const handleRestart = async () => { //TODO: Fix this function
+    /*handleStop();
+
+    const waitUntilOffline = () => {
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("Timeout")), 90 * 1000); // Timeout after 90 seconds
+        const interval = setInterval(() => {
+          console.log("Server state:", serverStats?.state); // Debugging output
+          if (serverStats?.state === 'running') {
+            clearTimeout(timeout);
+            clearInterval(interval);
+            resolve(null);
+          }
+        }, 1000); // Check every second
+      });
+    };
+
+    try {
+      await waitUntilOffline();
+      handleStart();
+    } catch (error) {
+      setRestartModalOpen(true);
+      <Modal open={restartModalOpen} onClose={() => setRestartModalOpen(false)} aria-labelledby="modal-title" aria-describedby="modal-description">
+        <ModalDialog>
+          <DialogTitle>{"Restart failed"}</DialogTitle>
+          //<DialogContent>{error.message}</DialogContent>
+        </ModalDialog>
+      </Modal>
+    }*/
+  };
+
+  // STOP
   const handleStop = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -157,13 +202,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  const handleStart = () => {
-    if (!loading && wsRef.current) {
-      wsRef.current.send(JSON.stringify({
-        event: 'set state',
-        args: ["start"]
-      }));
-    }
+  // KILL
+  const handleKill = () => {
+    // ToDo: Implement this function
   }
 
   return (
@@ -194,7 +235,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <Status state={serverStats?.state} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
-          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} />
+          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} onKill={handleKill} onRestart={handleRestart} state={serverStats?.state} />
         </Grid>
         <Grid xs={12} sx={{ flexGrow: 1 }}>
           <Console logs={logs} />
