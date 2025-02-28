@@ -58,7 +58,7 @@ function CPUChart({ newData }: CPUChartProps) {
                             tickFormatter={(time) => {
                                 const now = Math.floor(Date.now() / 1000);
                                 const secondsAgo = now - time;
-                                return secondsAgo < 60 ? `${secondsAgo}s ago` : `${Math.floor(secondsAgo / 60)}m`;
+                                return secondsAgo < 60 ? `${secondsAgo}s` : `${Math.floor(secondsAgo / 60)}m`;
                             }}
                         />
 
@@ -66,7 +66,7 @@ function CPUChart({ newData }: CPUChartProps) {
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            domain={["auto", "auto"]}
+                            domain={[0, "auto"]}
                             tickFormatter={(value) => `${value}%`}
                         />
 
