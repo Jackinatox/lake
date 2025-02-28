@@ -68,7 +68,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           const consoleLine = data.args[0];
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
           setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
-          console.log('consoleLine: ', consoleLine)
+          // console.log('consoleLine: ', consoleLine)
         }
           break;
 
@@ -157,42 +157,19 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       }));
     }
   }
-  
+
   //const [restartModalOpen, setRestartModalOpen] = useState(false);
 
   // RESTART
-  const handleRestart = async () => { //TODO: Fix this function
-    /*handleStop();
-
-    const waitUntilOffline = () => {
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("Timeout")), 90 * 1000); // Timeout after 90 seconds
-        const interval = setInterval(() => {
-          console.log("Server state:", serverStats?.state); // Debugging output
-          if (serverStats?.state === 'running') {
-            clearTimeout(timeout);
-            clearInterval(interval);
-            resolve(null);
-          }
-        }, 1000); // Check every second
-      });
-    };
-
-    try {
-      await waitUntilOffline();
-      handleStart();
-    } catch (error) {
-      setRestartModalOpen(true);
-      <Modal open={restartModalOpen} onClose={() => setRestartModalOpen(false)} aria-labelledby="modal-title" aria-describedby="modal-description">
-        <ModalDialog>
-          <DialogTitle>{"Restart failed"}</DialogTitle>
-          //<DialogContent>{error.message}</DialogContent>
-        </ModalDialog>
-      </Modal>
-    }*/
+  const handleRestart = async () => {
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["restart"]
+      }));
+    }
   };
 
-  // STOP
   const handleStop = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -204,7 +181,12 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
   // KILL
   const handleKill = () => {
-    // ToDo: Implement this function
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["kill"]
+      }));
+    }
   }
 
   return (
@@ -212,7 +194,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       {/* <BreakpointDisplay /> */}
 
       <Grid container spacing={2}>
-
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
           <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
@@ -227,7 +208,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           </Breadcrumbs>
         </Grid>
 
-
         <Grid sx={{ flexGrow: 1 }}>
           <CopyAddress settings={settings} />
         </Grid>
@@ -241,17 +221,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <Console logs={logs} />
         </Grid>
 
-
-        {/*<Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <GameDashboard server={server} ptApiKey={ptApiKey}></GameDashboard>
-        </Grid>*/}
-
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
           <Info settings={settings} />
         </Grid>
-
-
-
       </Grid >
 
       <Box sx={{ display: 'inline-flex' }}>
@@ -294,10 +266,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         <p>State: {serverStats?.state}</p>
         {/*<p>Uptime: {serverStats?.uptime} sek</p>*/}
       </div>
-
-
-
-
     </>
   )
 }
