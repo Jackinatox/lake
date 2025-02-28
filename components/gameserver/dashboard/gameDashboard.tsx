@@ -69,17 +69,18 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
           setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
           console.log('consoleLine: ', consoleLine)
-        }
           break;
+        }
 
         case "token expiring": {
           console.log("Token expiring... fetching new token.");
-          const newToken = await fetchNewWebSocketToken();
 
-          if (newToken) {
-            wsRef.current?.send(JSON.stringify({ event: "auth", args: [newToken], }));
-            console.log("Re-authenticated WebSocket.");
-          }
+          const wsCred = await webSocket(server, ptApiKey);
+          wsCreds.current = wsCred;
+
+          wsRef.current?.send(JSON.stringify({ event: "auth", args: [wsCred?.data.token], }));
+          console.log("Re-authenticated WebSocket.");
+
           break;
         }
       }
@@ -112,30 +113,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         handleWsMessage(ev.data);
       }
     }
-
-    const fetchNewWebSocketToken = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server}/websocket`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${ptApiKey}`,
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.error("Failed to fetch new WebSocket token");
-          return null;
-        }
-
-        const data = await response.json();
-        wsCreds.current = data; // Update the stored credentials
-        return data.data.token;
-      } catch (error) {
-        console.error("Error fetching new WebSocket token:", error);
-        return null;
-      }
-    };
 
     startWebSocket();
 
