@@ -45,7 +45,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       console.log('event: ', data.event);
 
       switch (data.event) {
-
         case 'stats': {
           const stats = JSON.parse(data.args[0]);
 
@@ -62,15 +61,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             uptime: parseFloat((stats.uptime / 1000).toFixed(2)),
           }
           setServerStats(roundedStats);
-        }
           break;
+        }
 
         case 'console output': {
           const consoleLine = data.args[0];
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
           setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
           // console.log('consoleLine: ', consoleLine)
-        }
           break;
         }
 
