@@ -27,9 +27,7 @@ export function Status({ state }: InfoProps) {
     return (
         <>
             <Box sx={{ display: "flex", justifyContent: isSmallScreen ? 'flex-end' : 'center' }}>
-                <Button variant='outlined' color={getColor(state)} size="sm" sx={{ pointerEvents: 'none', width: '12ch' }}>
-                    {state}
-                </Button>
+                <Button variant='outlined' color={getColor(state)} size="sm" sx={{ pointerEvents: 'none', width: 90 }}> {state} </Button>
             </Box>
         </>
     )
