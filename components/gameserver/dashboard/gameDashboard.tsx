@@ -85,6 +85,16 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
           break;
         }
+
+        case 'auth success': {
+          if (loading) {
+            wsRef.current?.send(JSON.stringify({
+              event: 'send logs'
+            }));
+          }
+
+          setLoading(false);
+        }
       }
     }
 
@@ -107,10 +117,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         }));
 
         if (ws.OPEN) {
-          setLoading(false);
-          ws.send(JSON.stringify({
-            event: 'send logs'
-          }));
+
         }
       };
 
