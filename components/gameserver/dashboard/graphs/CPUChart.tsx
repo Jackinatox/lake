@@ -49,8 +49,8 @@ function CPUChart({ newData }: CPUChartProps) {
 
                         <XAxis
                             dataKey="time"
-                            tickLine={false}
-                            axisLine={false}
+                            tickLine={true}
+                            axisLine={true}
                             tickMargin={8}
                             domain={["auto", "auto"]} // Dynamically adjust X-axis
                             interval={29} // Label every 30s
@@ -62,8 +62,8 @@ function CPUChart({ newData }: CPUChartProps) {
                         />
 
                         <YAxis
-                            tickLine={false}
-                            axisLine={false}
+                            tickLine={true}
+                            axisLine={true}
                             tickMargin={8}
                             domain={[0, "auto"]}
                             tickFormatter={(value) => `${value}%`}
