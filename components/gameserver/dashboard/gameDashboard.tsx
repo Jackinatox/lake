@@ -1,7 +1,7 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
+import { Box, Breadcrumbs, Card, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
@@ -172,18 +172,20 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
       <Grid container spacing={2}>
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Breadcrumbs separator="›" aria-label="breadcrumbs">
+          <Card variant="outlined" size="sm">
+            <Breadcrumbs separator="›" aria-label="breadcrumbs">
+              <Link color="primary" href="/gameserver" sx={{ display: 'flex' }}>
+                <Server /> &nbsp; Gameservers
+              </Link>
 
-            <Link color="primary" href="/gameserver" sx={{ display: 'flex' }}>
-              <Server /> &nbsp; Gameservers
-            </Link>
-
-            <Typography sx={{ display: 'flex' }}>
-              <Gamepad2Icon /> &nbsp; {server}
-            </Typography>
-
-          </Breadcrumbs>
+              <Typography sx={{ display: 'flex' }}>
+                <Gamepad2Icon /> &nbsp; {server}
+              </Typography>
+            </Breadcrumbs>
+          </Card>
         </Grid>
+
+
 
         <Grid sx={{ flexGrow: 1 }}>
           <CopyAddress settings={settings} />
@@ -204,28 +206,28 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       </Grid >
 
       <Grid container spacing={2}>
-    {/* Left Side: CPU Chart (Takes 50%) */}
-    <Grid xs={12} md={6}>
-        <CPUChart newData={serverStats} />
-    </Grid>
+        {/* Left Side: CPU Chart (Takes 50%) */}
+        <Grid xs={12} md={6}>
+          <CPUChart newData={serverStats} />
+        </Grid>
 
-    {/* Right Side: RAM Gauge (Takes 50%) */}
-    <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
-      <Box textAlign="center">
+        {/* Right Side: RAM Gauge (Takes 50%) */}
+        <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
+          <Box textAlign="center">
             <Typography variant="outlined">RAM Usage</Typography>
-            <Gauge 
-                width={200} height={200}
-                value={serverStats?.memory_bytes}
-                valueMax={serverStats?.memory_limit_bytes}
-                startAngle={-120}
-                endAngle={120}
-                innerRadius="80%"
-                outerRadius="100%"
-                text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
+            <Gauge
+              width={200} height={200}
+              value={serverStats?.memory_bytes}
+              valueMax={serverStats?.memory_limit_bytes}
+              startAngle={-120}
+              endAngle={120}
+              innerRadius="80%"
+              outerRadius="100%"
+              text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
             />
-        </Box>
-    </Grid>
-</Grid>
+          </Box>
+        </Grid>
+      </Grid>
 
 
       <div>
