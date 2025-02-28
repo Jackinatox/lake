@@ -1,7 +1,7 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, Grid, Link, Textarea, Typography } from "@mui/joy"
+import { Box, Breadcrumbs, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
@@ -11,6 +11,7 @@ import { Status } from "./status";
 import { PowerBtns } from "./powerBtns";
 import { Info } from "./info";
 import { GameServerSettings } from "@/models/settings";
+import CPUChart from "./graphs/CPUChart";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -68,7 +69,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           const consoleLine = data.args[0];
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
           setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
-          console.log('consoleLine: ', consoleLine)
+          // console.log('consoleLine: ', consoleLine)
+        }
           break;
         }
 
@@ -125,15 +127,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
 
-  const handleStop = () => {
-    if (!loading && wsRef.current) {
-      wsRef.current.send(JSON.stringify({
-        event: 'set state',
-        args: ["stop"]
-      }));
-    }
-  }
-
+  // START
   const handleStart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -143,12 +137,42 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
+  //const [restartModalOpen, setRestartModalOpen] = useState(false);
+
+  // RESTART
+  const handleRestart = async () => {
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["restart"]
+      }));
+    }
+  };
+
+  const handleStop = () => {
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["stop"]
+      }));
+    }
+  }
+
+  // KILL
+  const handleKill = () => {
+    if (!loading && wsRef.current) {
+      wsRef.current.send(JSON.stringify({
+        event: 'set state',
+        args: ["kill"]
+      }));
+    }
+  }
+
   return (
     <>
       {/* <BreakpointDisplay /> */}
 
       <Grid container spacing={2}>
-
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
           <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
@@ -163,7 +187,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           </Breadcrumbs>
         </Grid>
 
-
         <Grid sx={{ flexGrow: 1 }}>
           <CopyAddress settings={settings} />
         </Grid>
@@ -171,52 +194,40 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <Status state={serverStats?.state} />
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
-          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} />
+          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} onKill={handleKill} onRestart={handleRestart} state={serverStats?.state} />
         </Grid>
         <Grid xs={12} sx={{ flexGrow: 1 }}>
           <Console logs={logs} />
         </Grid>
 
-
-        {/*<Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <GameDashboard server={server} ptApiKey={ptApiKey}></GameDashboard>
-        </Grid>*/}
-
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
           <Info settings={settings} />
         </Grid>
-
-
-
       </Grid >
 
-      <Box sx={{ display: 'inline-flex' }}>
-        CPU
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.cpu_absolute}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} %`
-          }
-        />
-        RAM
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.memory_bytes}
-          valueMax={serverStats?.memory_limit_bytes}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} GiB`
-          }
-        />
-      </Box>
+      <Grid container spacing={2}>
+    {/* Left Side: CPU Chart (Takes 50%) */}
+    <Grid xs={12} md={6}>
+        <CPUChart newData={serverStats} />
+    </Grid>
+
+    {/* Right Side: RAM Gauge (Takes 50%) */}
+    <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
+      <Box textAlign="center">
+            <Typography variant="outlined">RAM Usage</Typography>
+            <Gauge 
+                width={200} height={200}
+                value={serverStats?.memory_bytes}
+                valueMax={serverStats?.memory_limit_bytes}
+                startAngle={-120}
+                endAngle={120}
+                innerRadius="80%"
+                outerRadius="100%"
+                text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
+            />
+        </Box>
+    </Grid>
+</Grid>
 
 
       <div>
@@ -230,10 +241,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         <p>State: {serverStats?.state}</p>
         {/*<p>Uptime: {serverStats?.uptime} sek</p>*/}
       </div>
-
-
-
-
     </>
   )
 }
