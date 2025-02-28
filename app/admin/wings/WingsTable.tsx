@@ -1,6 +1,8 @@
 import React from 'react';
 import { NodeModel as WingModel } from 'pterodactyl.js';
 import Table from '@mui/joy/Table';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface WingsTableProps {
   wings: WingModel[];
@@ -17,6 +19,7 @@ const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
           <th>Disk (GB)</th>
           <th>Memory (GB)</th>
           <th>FQDN</th>
+          <th>Edit</th>
         </tr>
       </thead>
       <tbody>
@@ -25,9 +28,10 @@ const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
             <td>{wing.id}</td>
             <td>{wing.name}</td>
             <td>{wing.locationId}</td>
-            <td>{wing.disk/1000}</td>
-            <td>{wing.memory/1000}</td>
+            <td>{wing.disk / 1000}</td>
+            <td>{wing.memory / 1000}</td>
             <td>{wing.fqdn}</td>
+            <td> <Link href={`/admin/wings/${wing.id}`}><Button>Edit</Button></Link> </td>
           </tr>
         ))}
       </tbody>
