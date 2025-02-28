@@ -11,6 +11,7 @@ import { Status } from "./status";
 import { PowerBtns } from "./powerBtns";
 import { Info } from "./info";
 import { GameServerSettings } from "@/models/settings";
+import CPUChart from "./graphs/CPUChart";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -226,33 +227,29 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         </Grid>
       </Grid >
 
-      <Box sx={{ display: 'inline-flex' }}>
-        CPU
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.cpu_absolute}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} %`
-          }
-        />
-        RAM
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.memory_bytes}
-          valueMax={serverStats?.memory_limit_bytes}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} GiB`
-          }
-        />
-      </Box>
+      <Grid container spacing={2}>
+    {/* Left Side: CPU Chart (Takes 50%) */}
+    <Grid xs={12} md={6}>
+        <CPUChart newData={serverStats} />
+    </Grid>
+
+    {/* Right Side: RAM Gauge (Takes 50%) */}
+    <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
+      <Box textAlign="center">
+            <Typography variant="outlined">RAM Usage</Typography>
+            <Gauge 
+                width={200} height={200}
+                value={serverStats?.memory_bytes}
+                valueMax={serverStats?.memory_limit_bytes}
+                startAngle={-120}
+                endAngle={120}
+                innerRadius="80%"
+                outerRadius="100%"
+                text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
+            />
+        </Box>
+    </Grid>
+</Grid>
 
 
       <div>
