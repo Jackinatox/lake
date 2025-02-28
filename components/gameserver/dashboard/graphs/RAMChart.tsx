@@ -42,18 +42,16 @@ function RAMChart({ newData }: RAMChartProps) {
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig}>
-                    <AreaChart
-                        data={chartData}
-                        margin={{ left: 12, right: 12 }}
-                    >
+                    <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+                        
                         <CartesianGrid vertical={false} />
 
                         <XAxis
                             dataKey="time"
-                            tickLine={false}
-                            axisLine={false}
+                            tickLine={true}
+                            axisLine={true}
                             tickMargin={8}
-                            domain={["auto", "auto"]} // Dynamically adjust X-axis
+                            domain={['auto', 'auto']} // Dynamically adjust X-axis
                             interval={29} // Label every 30s
                             tickFormatter={(time) => {
                                 const now = Math.floor(Date.now() / 1000);
@@ -63,10 +61,10 @@ function RAMChart({ newData }: RAMChartProps) {
                         />
 
                         <YAxis
-                            tickLine={false}
-                            axisLine={false}
+                            tickLine={true}
+                            axisLine={true}
                             tickMargin={8}
-                            domain={[0, "auto"]}
+                            domain={[0, newData?.memory_limit_bytes]} // soft-min, soft-max
                             tickFormatter={(value) => `${value} GiB`}
                         />
 
@@ -78,12 +76,12 @@ function RAMChart({ newData }: RAMChartProps) {
                             fill={chartConfig.desktop.color}
                             fillOpacity={0.4}
                             stroke={chartConfig.desktop.color}
-                            // animationDuration={500} // Smooth 500ms animation
-                            // animationEasing="ease-out" // Makes data slide in naturally
+                            //animationDuration={500} // Smooth 500ms animation
+                            //animationEasing="ease-out" // Makes data slide in naturally
                             isAnimationActive={false}
                         />
-                    </AreaChart>
 
+                    </AreaChart>
                 </ChartContainer>
             </CardContent>
         </Card>

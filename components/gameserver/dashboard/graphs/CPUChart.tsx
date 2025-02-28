@@ -40,12 +40,11 @@ function CPUChart({ newData }: CPUChartProps) {
             <CardHeader>
                 <CardTitle>CPU Usage</CardTitle>
             </CardHeader>
+
             <CardContent>
                 <ChartContainer config={chartConfig}>
-                    <AreaChart
-                        data={chartData}
-                        margin={{ left: 12, right: 12 }}
-                    >
+                    <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+                        
                         <CartesianGrid vertical={false} />
 
                         <XAxis
@@ -82,8 +81,8 @@ function CPUChart({ newData }: CPUChartProps) {
                             // animationEasing="ease-out" // Makes data slide in naturally
                             isAnimationActive={false}
                         />
-                    </AreaChart>
 
+                    </AreaChart>
                 </ChartContainer>
             </CardContent>
         </Card>
