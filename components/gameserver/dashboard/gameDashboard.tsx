@@ -148,6 +148,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
+  // STOP
   const handleStop = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -227,7 +228,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         <p>Network RX: {serverStats?.network.rx_bytes} bytes</p>
         <p>Network TX: {serverStats?.network.tx_bytes} bytes</p>
         <p>State: {serverStats?.state}</p>
-        {/*<p>Uptime: {serverStats?.uptime} sek</p>*/}
+        <p>Uptime: {serverStats?.uptime} sek</p>
+        <p>{days}d {hours}h {minutes}min</p>
       </div>
     </>
   )
