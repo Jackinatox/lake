@@ -13,6 +13,7 @@ import { Info } from "./info";
 import { GameServerSettings } from "@/models/settings";
 import CPUChart from "./graphs/CPUChart";
 import { Button } from "@/components/ui/button";
+import RAMChart from "./graphs/RAMChart";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -211,20 +212,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         </Grid>
 
         {/* Right Side: RAM Gauge (Takes 50%) */}
-        <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
-          <Box textAlign="center">
-            <Typography variant="outlined">RAM Usage</Typography>
-            <Gauge
-              width={200} height={200}
-              value={serverStats?.memory_bytes}
-              valueMax={serverStats?.memory_limit_bytes}
-              startAngle={-120}
-              endAngle={120}
-              innerRadius="80%"
-              outerRadius="100%"
-              text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
-            />
-          </Box>
+        <Grid xs={12} md={6} >
+          <RAMChart newData={serverStats} />
         </Grid>
       </Grid>
 
