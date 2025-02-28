@@ -1,7 +1,7 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, Grid, Link, Typography } from "@mui/joy"
+import { Box, Breadcrumbs, Card, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
@@ -11,6 +11,8 @@ import { Status } from "./status";
 import { PowerBtns } from "./powerBtns";
 import { Info } from "./info";
 import { GameServerSettings } from "@/models/settings";
+import CPUChart from "./graphs/CPUChart";
+import { Button } from "@/components/ui/button";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -44,7 +46,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       console.log('event: ', data.event);
 
       switch (data.event) {
-
         case 'stats': {
           const stats = JSON.parse(data.args[0]);
 
@@ -61,25 +62,26 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             uptime: parseFloat((stats.uptime / 1000).toFixed(2)),
           }
           setServerStats(roundedStats);
-        }
           break;
+        }
 
         case 'console output': {
           const consoleLine = data.args[0];
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
           setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
           // console.log('consoleLine: ', consoleLine)
-        }
           break;
+        }
 
         case "token expiring": {
           console.log("Token expiring... fetching new token.");
-          const newToken = await fetchNewWebSocketToken();
 
-          if (newToken) {
-            wsRef.current?.send(JSON.stringify({ event: "auth", args: [newToken], }));
-            console.log("Re-authenticated WebSocket.");
-          }
+          const wsCred = await webSocket(server, ptApiKey);
+          wsCreds.current = wsCred;
+
+          wsRef.current?.send(JSON.stringify({ event: "auth", args: [wsCred?.data.token], }));
+          console.log("Re-authenticated WebSocket.");
+
           break;
         }
       }
@@ -105,6 +107,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         if (ws.OPEN) {
           setLoading(false);
+          ws.send(JSON.stringify({
+            event: 'send logs'
+          }));
         }
       };
 
@@ -112,30 +117,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         handleWsMessage(ev.data);
       }
     }
-
-    const fetchNewWebSocketToken = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server}/websocket`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${ptApiKey}`,
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.error("Failed to fetch new WebSocket token");
-          return null;
-        }
-
-        const data = await response.json();
-        wsCreds.current = data; // Update the stored credentials
-        return data.data.token;
-      } catch (error) {
-        console.error("Error fetching new WebSocket token:", error);
-        return null;
-      }
-    };
 
     startWebSocket();
 
@@ -148,7 +129,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
 
-  // START
   const handleStart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -158,15 +138,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  // RESTART
-  const handleRestart = async () => {
+  const handleRestart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
         event: 'set state',
         args: ["restart"]
       }));
     }
-  };
+  }
 
   // STOP
   const handleStop = () => {
@@ -178,7 +157,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  // KILL
   const handleKill = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -194,18 +172,20 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
       <Grid container spacing={2}>
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Breadcrumbs separator="›" aria-label="breadcrumbs">
+          <Card variant="outlined" size="sm">
+            <Breadcrumbs separator="›" aria-label="breadcrumbs">
+              <Link color="primary" href="/gameserver" sx={{ display: 'flex' }}>
+                <Server /> &nbsp; Gameservers
+              </Link>
 
-            <Link color="primary" href="/gameserver" sx={{ display: 'flex' }}>
-              <Server /> &nbsp; Gameservers
-            </Link>
-
-            <Typography sx={{ display: 'flex' }}>
-              <Gamepad2Icon /> &nbsp; {server}
-            </Typography>
-
-          </Breadcrumbs>
+              <Typography sx={{ display: 'flex' }}>
+                <Gamepad2Icon /> &nbsp; {server}
+              </Typography>
+            </Breadcrumbs>
+          </Card>
         </Grid>
+
+
 
         <Grid sx={{ flexGrow: 1 }}>
           <CopyAddress settings={settings} />
@@ -225,33 +205,29 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         </Grid>
       </Grid >
 
-      <Box sx={{ display: 'inline-flex' }}>
-        CPU
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.cpu_absolute}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} %`
-          }
-        />
-        RAM
-        <Gauge
-          width={200} height={200}
-          value={serverStats?.memory_bytes}
-          valueMax={serverStats?.memory_limit_bytes}
-          startAngle={-120}
-          endAngle={120}
-          innerRadius="80%"
-          outerRadius="100%"
-          text={
-            ({ value, valueMax }) => `${value} / ${valueMax} GiB`
-          }
-        />
-      </Box>
+      <Grid container spacing={2}>
+        {/* Left Side: CPU Chart (Takes 50%) */}
+        <Grid xs={12} md={6}>
+          <CPUChart newData={serverStats} />
+        </Grid>
+
+        {/* Right Side: RAM Gauge (Takes 50%) */}
+        <Grid xs={12} md={6} component={Box} display="flex" justifyContent="center" alignItems="center">
+          <Box textAlign="center">
+            <Typography variant="outlined">RAM Usage</Typography>
+            <Gauge
+              width={200} height={200}
+              value={serverStats?.memory_bytes}
+              valueMax={serverStats?.memory_limit_bytes}
+              startAngle={-120}
+              endAngle={120}
+              innerRadius="80%"
+              outerRadius="100%"
+              text={({ value, valueMax }) => `${value} / ${valueMax} GiB`}
+            />
+          </Box>
+        </Grid>
+      </Grid>
 
 
       <div>
