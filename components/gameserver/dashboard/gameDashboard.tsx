@@ -12,6 +12,7 @@ import { PowerBtns } from "./powerBtns";
 import { Info } from "./info";
 import { GameServerSettings } from "@/models/settings";
 import CPUChart from "./graphs/CPUChart";
+import { Button } from "@/components/ui/button";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -106,6 +107,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         if (ws.OPEN) {
           setLoading(false);
+          ws.send(JSON.stringify({
+            event: 'send logs'
+          }));
         }
       };
 
@@ -125,7 +129,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
 
-  // START
   const handleStart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -135,17 +138,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  //const [restartModalOpen, setRestartModalOpen] = useState(false);
-
-  // RESTART
-  const handleRestart = async () => {
+  const handleRestart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
         event: 'set state',
         args: ["restart"]
       }));
     }
-  };
+  }
 
   const handleStop = () => {
     if (!loading && wsRef.current) {
@@ -156,7 +156,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  // KILL
   const handleKill = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
