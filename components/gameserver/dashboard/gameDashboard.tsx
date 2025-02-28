@@ -1,7 +1,7 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
+import { Box, Breadcrumbs, Grid, Link, Typography } from "@mui/joy"
 import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
@@ -158,8 +158,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
-  //const [restartModalOpen, setRestartModalOpen] = useState(false);
-
   // RESTART
   const handleRestart = async () => {
     if (!loading && wsRef.current) {
@@ -170,6 +168,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   };
 
+  // STOP
   const handleStop = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(JSON.stringify({
@@ -264,7 +263,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         <p>Network RX: {serverStats?.network.rx_bytes} bytes</p>
         <p>Network TX: {serverStats?.network.tx_bytes} bytes</p>
         <p>State: {serverStats?.state}</p>
-        {/*<p>Uptime: {serverStats?.uptime} sek</p>*/}
+        <p>Uptime: {serverStats?.uptime} sek</p>
+        <p>{days}d {hours}h {minutes}min</p>
       </div>
     </>
   )
