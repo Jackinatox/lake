@@ -18,16 +18,15 @@ export interface CPU {
   MultiScore: number,
 }
 
-
-interface FormValues {
+export interface WingSettingsFormValues {
   id: string
   name: string
-  processor: string
+  processorId: string
 }
 
 interface WingSettingsProps {
-  initialValues?: FormValues
-  onSubmit?: (values: FormValues) => void
+  initialValues: WingSettingsFormValues
+  onSubmit?: (values: WingSettingsFormValues) => void
   processors?: CPU[]
 }
 
@@ -36,19 +35,13 @@ export default function WingSettings({
   onSubmit = (values) => console.log(values),
   processors
 }: WingSettingsProps) {
-  const [values, setValues] = useState<FormValues>(initialValues || { id: "", name: "", processor: "" });
-
-
-  const handleChange = (field: keyof FormValues, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
+  const [id, setId] = useState<string>(initialValues?.id || "");
+  const [name, setName] = useState<string>(initialValues?.name || "");
+  const [processorId, setProcessorId] = useState<string>(String(initialValues?.processorId) || "");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(values)
+    e.preventDefault();
+    onSubmit({ id, name, processorId });
   }
 
   return (
@@ -63,8 +56,8 @@ export default function WingSettings({
             <Label htmlFor="id">ID</Label>
             <Input
               id="id"
-              value={values.id}
-              onChange={(e) => handleChange("id", e.target.value)}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
               placeholder="Enter device ID"
             />
           </div>
@@ -73,21 +66,24 @@ export default function WingSettings({
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
-              value={values.name}
-              onChange={(e) => handleChange("name", e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter device name"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="processor">Processor</Label>
-            <Select value={values.processor} onValueChange={(value) => handleChange("processor", value)}>
+            <Select value={processorId} onValueChange={(value) => {
+              console.log("New Value:", value);
+              setProcessorId(value);
+            }} disabled={processors.length === 0}>
               <SelectTrigger id="processor">
                 <SelectValue placeholder="Select processor" />
               </SelectTrigger>
               <SelectContent>
                 {processors.map((processor) => (
-                  <SelectItem key={processor.id} value={processor.Name}>
+                  <SelectItem key={processor.id} value={String(processor.id)}>
                     {processor.Name}
                   </SelectItem>
                 ))}
@@ -97,7 +93,11 @@ export default function WingSettings({
         </CardContent>
 
         <CardFooter className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => setValues(initialValues)}>
+          <Button type="button" variant="outline" onClick={() => {
+            setId(initialValues.id);
+            setName(initialValues.name);
+            setProcessorId(initialValues.processorId);
+          }}>
             Reset
           </Button>
           <Button type="submit">Save Configuration</Button>
@@ -106,4 +106,3 @@ export default function WingSettings({
     </Card>
   )
 }
-

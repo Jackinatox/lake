@@ -31,7 +31,7 @@ const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
             <td>{wing.disk / 1000}</td>
             <td>{wing.memory / 1000}</td>
             <td>{wing.fqdn}</td>
-            <td> <Link href={`/admin/wings/${wing.id}`}><Button>Edit</Button></Link> </td>
+            <td> <Link href={`/admin/wings/${wing.id}`}><Button>Edit CPU</Button></Link> </td>
           </tr>
         ))}
       </tbody>
