@@ -7,8 +7,6 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
-import { Button, ButtonGroup } from "@mui/joy";
-import { Menu } from "@/components/Menu/Menu";
 import MainMenu from "@/components/Menu/main-menu";
 
 const defaultUrl = process.env.VERCEL_URL
