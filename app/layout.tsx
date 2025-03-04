@@ -9,6 +9,7 @@ import Link from "next/link";
 import "./globals.css";
 import { Button, ButtonGroup } from "@mui/joy";
 import { Menu } from "@/components/Menu/Menu";
+import MainMenu from "@/components/Menu/main-menu";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -55,7 +56,7 @@ export default function RootLayout({
                           <Button component={Link} href="/icons"> Icons </Button>
 
                         </ButtonGroup> */}
-                        <Menu />
+                        <MainMenu />
 
                     {/* left topbar end */}
                   </div>
