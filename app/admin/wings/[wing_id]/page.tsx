@@ -1,72 +1,25 @@
-import WingSettings, { CPU, WingSettingsFormValues } from '@/components/admin/wings/WingSettings';
+import WingSettings, { PXNode } from '@/components/admin/wings/WingSettings';
 import { createClient } from '@/utils/supabase/client';
 import React from 'react'
 
 async function page({ params }: { params: Promise<{ wing_id: string }> }) {
     const wing_id = (await params).wing_id;
 
-    let cpus: CPU[] = [];
-
     const supabase = createClient();
-    const { data, error } = await supabase.from('CPUs').select('*');
 
+    const { data: nodeData, error: nodeError } = await supabase.from('ProxmoxNodes').select('*');
+    const { data: wingData, error: wingError } = await supabase.from('Wings').select('id, Name, Node').eq('PtWingId', wing_id).single();
+    
 
-    if (!error) {
-        cpus = data.map(cpu => ({
-            id: cpu.id,
-            Name: cpu.Name,
-            Cores: cpu.Cores,
-            Threads: cpu.Threads,
-            SingleScore: cpu.SingleScore, // Fixing the naming issue
-            MultiScore: cpu.MultiScore    // Fixing the naming issue
-        }));
-    } else {
-        console.log('error: ', error);
-    }
-
-    const { data: wingData, error: wingError } = await supabase.from('Wings')
-        .select(`
-        id, 
-        Name, 
-        Location:Locations!inner (
-            id, 
-            Name, 
-            CPU:CPUs!inner (
-                id, 
-                Name, 
-                Cores, 
-                Price
-            ), 
-            RAM
-        )
-    `)
-        .eq('WingId', wing_id)
-        .maybeSingle(); // Ensure only one result is returned
-
-
-    // console.log(wingData, wingError);
-    const location = wingData?.Location?.[0]; // Location is still an array
-    const cpu = location?.CPU?.[0]; // CPU is also an array
-
-    const processorId = cpu?.id; // Access safely
-
-    const initialData: WingSettingsFormValues = wingData ? {
-        id: wingData.id,
-        name: wingData.Name,
-        processorId: processorId
-    } : {
-        id: "",
-        name: "",
-        processorId: ""
-    };
-
-    console.log(initialData)
-
+    const mapedNodes: PXNode[] = nodeData.map((node) => ({
+        id: node.id,
+        CPUId: node.CPUId,
+        RAMId: node.RAMId,
+        Name: node.Name
+    }));
 
     return (
-        <>
-            <WingSettings processors={cpus} initialValues={initialData} />
-        </>
+        <WingSettings wingId={wing_id} nodes={mapedNodes} selectedNode={2}/>
     )
 }
 
