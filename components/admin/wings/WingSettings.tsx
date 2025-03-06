@@ -1,10 +1,12 @@
 "use client"
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import React from 'react'
+import React, { useActionState } from 'react'
+import saveWingAction from './saveWingSetting'
 
 export interface PXNode {
     id: number,
@@ -16,39 +18,44 @@ export interface PXNode {
 interface WingSettingsProps{
     wingId: string,
     nodes: PXNode[],
-    selectedNode: number
+    selectedNode: number,
+    name: string
 }
 
-function WingSettings({ nodes, selectedNode }: WingSettingsProps) {
+function WingSettings({ wingId, nodes, selectedNode, name }: WingSettingsProps) {
+
+  const [error, action, isPending] =  useActionState(saveWingAction, null);
+
   return (
     <Card className="w-full max-w-md mx-auto">
     <CardHeader>
       <CardTitle>Wing Configuration</CardTitle>
       <CardDescription>Select a Name and the Proxmox Node</CardDescription>
     </CardHeader>
-    <form>
+    { error && <p className='text-red-600'>{JSON.stringify(error)}</p> }
+    <form action={action}>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="id">ID</Label>
-          <Input id="id" disabled className="bg-muted cursor-not-allowed" aria-readonly="true" />
+          <Input name="wingId" id="id" readOnly className="bg-muted cursor-not-allowed" aria-readonly="true" defaultValue={wingId}/>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input
             id="name"
-            // value={values.name}
+            defaultValue={name}
+            name='name'
             // onChange={(e) => handleChange("name", e.target.value)}
             placeholder="Enter device name"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="processor">Processor</Label>
-          {/* <Select value={values.processor} onValueChange={(value) => handleChange("processor", value)}> */}
-          <Select value={String(selectedNode)}>
-            <SelectTrigger id="processor">
-              <SelectValue placeholder="Select processor" />
+          <Label htmlFor="Proxmox Node">Proxmox Node</Label>
+          <Select defaultValue={String(selectedNode)} name='pxnode'>
+            <SelectTrigger id="node">
+              <SelectValue placeholder="Select Proxmox Node" />
             </SelectTrigger>
             <SelectContent>
               {nodes.map((node) => (
@@ -61,12 +68,12 @@ function WingSettings({ nodes, selectedNode }: WingSettingsProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-end gap-2">
+      <CardFooter className="flex justify-between gap-2">
         {/* <Button type="button" variant="outline" onClick={() => setValues(initialValues)}> */}
         <Button type="button" variant="outline">
           Reset
         </Button>
-        <Button type="submit">Save Configuration</Button>
+        <Button>Save Configuration</Button>
       </CardFooter>
     </form>
   </Card>
