@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --1: 222.2 24% 4.9%; /*background*/
+    --1: 222.2 84% 4.9%; /*background*/
     --2: 210 40% 98%; /*text*/
     --3: 217.2 32.6% 17.5%; /*accent*/
 
@@ -41,7 +41,7 @@
   .dark {
     --background: var(--1);
     --foreground: var(--2);
-    --card: var(--1);
+    --card: var(--2);
     --card-foreground: var(--2);
     --popover: var(--1);
     --popover-foreground: var(--2);
