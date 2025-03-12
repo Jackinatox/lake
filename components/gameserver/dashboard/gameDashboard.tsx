@@ -2,7 +2,6 @@
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
 import { Box, Breadcrumbs, Card, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
-import { Gauge } from "@mui/x-charts";
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
 import { Gamepad2Icon, Server } from "lucide-react";
