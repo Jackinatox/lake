@@ -25,7 +25,7 @@ function GameSelect() {
             {game.map((card) => {
                 const imgPath = "/images/games/" + card.name + ".jpg";
                 return (
-                    <GameCard card={card} imgPath={imgPath} />
+                    <GameCard key={card.id} card={card} imgPath={imgPath} />
                 );
             })}
         </Box>

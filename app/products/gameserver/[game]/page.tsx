@@ -1,5 +1,7 @@
 // Component so that the user can select Locations (PGroups)
 
+// kann alles weg
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { LocationSettings } from '@/models/dbTypes';
 import { createClient } from '@/utils/supabase/client';
@@ -33,9 +35,6 @@ async function Game() {
     }
 
     try {
-
-
-
         return (
             <>
                 {locations.map((location) => (
