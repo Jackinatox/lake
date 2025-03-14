@@ -10,9 +10,12 @@ import { CustomSlider } from "@/components/general/CustomSlider"
 
 export default function ServerConfigurator() {
   const [cpuCores, setCpuCores] = useState(4)
-  const [ramSize, setRamSize] = useState(8)
+  const [ramSize, setRamSize] = useState(2)
   const [totalPrice, setTotalPrice] = useState(0)
   const [selectedPlan, setSelectedPlan] = useState("besser")
+
+  const ramSteps = ["1GB", "6.5GB", "12GB"];
+  const CPUSteps = ["1", "6.5", "12"];
 
   // Calculate price based on current configuration
   useEffect(() => {
@@ -23,7 +26,7 @@ export default function ServerConfigurator() {
   }, [cpuCores, ramSize, selectedPlan])
 
   return (
-    <div className="max-w-5xl mx-auto border border-gray-200 rounded-lg shadow-sm">
+    <div className="w-full mx-auto border border-gray-300 rounded-lg shadow-sm">
 
       <div className="p-6 space-y-6">
         <div className="flex items-center gap-4">
@@ -61,14 +64,16 @@ export default function ServerConfigurator() {
             <div className="text-sm font-medium text-gray-600">0,4€/Kern</div>
           </div>
           <div className="flex items-center gap-4">
-            <CustomSlider
-              value={[cpuCores]}
-              min={1}
-              max={16}
-              step={1}
-              onValueChange={(value) => setCpuCores(value[0])}
-              className="flex-1"
-            />
+
+            <div className="w-full">
+              <Slider defaultValue={[1]} min={1} max={12} step={1} onValueChange={(e) => setCpuCores(e[0])} />
+              <div className="mt-2 -mx-1.5 flex items-center justify-between text-muted-foreground text-xs">
+                {CPUSteps.map((expansion) => (
+                  <span key={expansion}>{expansion}</span>
+                ))}
+              </div>
+            </div>
+
             <span className="min-w-12 text-right">{cpuCores}</span>
           </div>
         </div>
@@ -86,14 +91,14 @@ export default function ServerConfigurator() {
             <div className="text-sm font-medium text-gray-600">0,5€/GiB</div>
           </div>
           <div className="flex items-center gap-4">
-            <CustomSlider
-              value={[ramSize]}
-              min={1}
-              max={20}
-              step={1}
-              onValueChange={(value) => setRamSize(value[0])}
-              className="flex-1"
-            />
+            <div className="w-full">
+              <Slider defaultValue={[2]} max={12} step={0.5} min={1} onValueChange={(value) => setRamSize(value[0])} />
+              <div className="mt-2 -mx-1.5 flex items-center justify-between text-muted-foreground text-xs">
+                {ramSteps.map((expansion) => (
+                  <span key={expansion}>{expansion}</span>
+                ))}
+              </div>
+            </div>
             <span className="min-w-12 text-right">{ramSize}</span>
           </div>
         </div>
@@ -115,18 +120,17 @@ export default function ServerConfigurator() {
         </div>
 
         {/* Bottom Buttons */}
-        <div className="grid grid-cols-2 gap-4 mt-8">
-          <Button variant="outline" size="lg" className="h-16 text-lg">
+        <div className="flex gap-4 mt-8">
+          <Button variant="outline" size="lg" disabled className="flex-1 h-16 text-lg border-gray-300">
             Advanced
           </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-16 border-dashed flex-none px-3">
-              <span className="text-sm">Mehr Info</span>
-            </Button>
-            <Button variant="default" size="lg" className="h-16 text-lg flex-1">
-              Weiter
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" className="w-2/12 h-16 border-dashed border-gray-300 flex-none px-3">
+            <span className="text-sm">Mehr Info</span>
+          </Button>
+
+          <Button variant="default" size="lg" className="flex-1 gap-2 h-16 text-lg">
+            Weiter
+          </Button>
         </div>
       </div>
     </div>
