@@ -33,7 +33,7 @@ function GameCard({ card, imgPath }) {
                     </Text>
                 </Container>
             </Link>
-            {"/images/games/" + card.name + ".jpg"}
+            {/* {"/images/games/" + card.name + ".jpg"} */}
         </Box>
     )
 }

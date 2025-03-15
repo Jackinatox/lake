@@ -9,13 +9,16 @@ import { Card } from "@/components/ui/card"
 import { CustomSlider } from "@/components/general/CustomSlider"
 
 export default function ServerConfigurator() {
+  // Config to show most Values on the page  
+  const ramSteps = ["1GB", "6.5GB", "12GB"];
+  const CPUSteps = ["1", "6.5", "12"];
+  const CPUs = ["Ryzen 5", "Ryzen 9", "Intel I9"];
+
   const [cpuCores, setCpuCores] = useState(4)
   const [ramSize, setRamSize] = useState(2)
   const [totalPrice, setTotalPrice] = useState(0)
-  const [selectedPlan, setSelectedPlan] = useState("besser")
+  const [selectedPlan, setSelectedPlan] = useState(CPUs[0])
 
-  const ramSteps = ["1GB", "6.5GB", "12GB"];
-  const CPUSteps = ["1", "6.5", "12"];
 
   // Calculate price based on current configuration
   useEffect(() => {
@@ -39,15 +42,11 @@ export default function ServerConfigurator() {
         {/* Plan Selection Tabs */}
         <Tabs defaultValue={selectedPlan} onValueChange={setSelectedPlan} className="w-full">
           <TabsList className="w-full grid grid-cols-3 h-12 rounded-full p-1">
-            <TabsTrigger value="gut" className="rounded-full">
-              Gut
-            </TabsTrigger>
-            <TabsTrigger value="besser" className="rounded-full">
-              Besser
-            </TabsTrigger>
-            <TabsTrigger value="am-besten" className="rounded-full">
-              Am Besten
-            </TabsTrigger>
+            {CPUs.map((cpu => (
+              <TabsTrigger value={cpu} key={cpu} className="rounded-full">
+                {cpu}
+              </TabsTrigger>
+            )))}
           </TabsList>
         </Tabs>
 
@@ -122,7 +121,7 @@ export default function ServerConfigurator() {
         {/* Bottom Buttons */}
         <div className="flex gap-4 mt-8">
           <Button variant="outline" size="lg" disabled className="flex-1 h-16 text-lg border-gray-300">
-            Advanced
+            Advanced (Kommt später)
           </Button>
           <Button variant="outline" size="sm" className="w-2/12 h-16 border-dashed border-gray-300 flex-none px-3">
             <span className="text-sm">Mehr Info</span>

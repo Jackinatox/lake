@@ -31,7 +31,7 @@ export default function MainMenu() {
               icon={<Package className="h-4 w-4 mr-1.5" />}
               items={[
                 { title: "Games", href: "/products/gameserver", icon: <Gamepad2 className="h-4 w-4" /> },
-                { title: "Hardware", href: "/products/hardware", icon: <Server className="h-4 w-4" /> },
+                { title: "Server konfigurieren", href: "/products/server", icon: <Server className="h-4 w-4" /> },
                 // { title: "Updates", href: "/packages/updates", icon: <RefreshCw className="h-4 w-4" /> },
               ]}
             />
