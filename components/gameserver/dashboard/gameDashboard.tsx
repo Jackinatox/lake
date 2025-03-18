@@ -13,6 +13,8 @@ import { GameServerSettings } from "@/models/settings";
 import CPUChart from "./graphs/CPUChart";
 import { Button } from "@/components/ui/button";
 import RAMChart from "./graphs/RAMChart";
+import NewConsole from "./newConsole";
+import { comma } from "postcss/lib/list";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -33,6 +35,7 @@ interface serverProps {
 }
 
 function GameDashboard({ server, ptApiKey }: serverProps) {
+  const terminalRef = useRef(null);
   const [logs, setLogs] = useState('');
   const [loading, setLoading] = useState(true);
   const wsRef = useRef<WebSocket | null>(null);
@@ -68,7 +71,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         case 'console output': {
           const consoleLine = data.args[0];
           const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
-          setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
+          // setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
+          terminalRef.current.sendData(cleanLog);
           // console.log('consoleLine: ', consoleLine)
           break;
         }
@@ -204,7 +208,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} onKill={handleKill} onRestart={handleRestart} state={serverStats?.state} />
         </Grid>
         <Grid xs={12} sx={{ flexGrow: 1 }}>
-          <Console logs={logs} />
+          <NewConsole ref={terminalRef} />
         </Grid>
 
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
