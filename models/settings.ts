@@ -10,3 +10,4 @@ export type GameServerSettings = {
     addr?: string;
     status?: string;
 }
+
