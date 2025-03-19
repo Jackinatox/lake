@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
 import GameCard from './gameCard';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 const game = [
     {
@@ -21,14 +22,19 @@ const game = [
 
 function GameSelect() {
     return (
-        <Box display="flex" flexWrap="wrap" gap={3}>
-            {game.map((card) => {
-                const imgPath = "/images/games/" + card.name + ".jpg";
-                return (
-                    <GameCard key={card.id} card={card} imgPath={imgPath} />
-                );
-            })}
-        </Box>
+        <>
+            <div className='flex justify-center'>
+                <h2 className="text-3xl font-bold">Games</h2>
+            </div>
+            <div className="flex flex-wrap gap-4 justify-center">
+                {game.map((card) => {
+                    const imgPath = "/images/games/" + card.name + ".jpg";
+                    return (
+                        <GameCard key={card.id} card={card} imgPath={imgPath} />
+                    );
+                })}
+            </div>
+        </>
     );
 }
 

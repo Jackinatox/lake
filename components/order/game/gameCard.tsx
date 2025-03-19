@@ -1,41 +1,29 @@
 "use client"
 
-import React from 'react';
-import { Box, Typography, Link } from '@mui/material';
-import { styled } from '@mui/system';
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
 
-const Container = styled(Box)({
-    overflow: 'hidden',
-    transition: 'transform 0.3s ease',
-    '&:hover': {
-        transform: 'scale(1.075)',
-    },
-});
-
-const Image = styled('img')({
-    display: 'block',
-    width: '100%',
-});
-
-const Text = styled(Typography)({
-    marginTop: '1rem',
-});
-
-function GameCard({ card, imgPath }) {
-    return (
-        <Box key={card.id} width={300}>
-            <Link href={`gameserver/${card.name}`} underline="none" color="">
-
-                <Container>
-                    <Image src={imgPath} alt={card.name} />
-                    <Text variant="h5" gutterBottom>
-                        {card.fullName}
-                    </Text>
-                </Container>
-            </Link>
-            {/* {"/images/games/" + card.name + ".jpg"} */}
-        </Box>
-    )
+interface GameCardProps {
+  card: {
+    id: string | number
+    name: string
+    fullName: string
+  }
+  imgPath: string
 }
 
-export default GameCard;
+export default function GameCard({ card, imgPath }: GameCardProps) {
+  return (
+    <Link href={`/gameserver/${card.name}`} className="block w-[280px]">
+      <Card className="overflow-hidden transition-transform duration-300 hover:scale-[1.075] shadow-lg">
+        <div>
+          <img src={imgPath || "/placeholder.svg"} alt={card.fullName} className="w-full h-auto rounded-t-lg" />
+        </div>
+        <CardContent className="pt-4">
+          <h3 className="text-xl font-semibold">{card.fullName}</h3>
+        </CardContent>
+      </Card>
+    </Link>
+  )
+}
+
