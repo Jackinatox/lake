@@ -37,7 +37,7 @@ interface serverProps {
 
 function GameDashboard({ server, ptApiKey }: serverProps) {
   const terminalRef = useRef(null);
-  const [logs, setLogs] = useState('');
+  const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const wsRef = useRef<WebSocket | null>(null);
   const wsCreds = useRef<any>(null);
@@ -72,7 +72,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         case 'console output': {
           const consoleLine = data.args[0];
           // const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
-          setLogs(consoleLine);
+          // setLogs(consoleLine);
+          setLogs((prevLogs) => [...prevLogs, consoleLine]);
           // terminalRef.current.sendData(cleanLog);
           // console.log('consoleLine: ', consoleLine)
           break;

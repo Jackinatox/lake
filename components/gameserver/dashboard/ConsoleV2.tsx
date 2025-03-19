@@ -4,36 +4,60 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 
 interface ConsoleV2Props {
-    logs: string;
+    logs: string[];
     handleCommand: (command: string) => void;
 }
 
 const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
-    useEffect(() => {
-        terminal && terminal.writeln(logs);
-    }, [logs])
     // Reference to the container for xterm
     const terminalRef = useRef<HTMLDivElement>(null);
+    const lastLogRef = useRef<string[]>([]);
     // Create a terminal instance (using custom properties similar to the original)
+    
     const [terminal] = useState(
         () =>
             new Terminal({
                 cursorBlink: true,
                 fontSize: 14,
-                fontFamily: 'monospace',
+                scrollback: 400,
+                fontFamily: '"Fira Code", monospace',
+                fontWeight: 'normal',
+                lineHeight: 1.2,
+                letterSpacing: 0,
+                allowTransparency: true,
+                cols: 80,
+                rows: 24,
                 theme: {
-                    background: '#000000',
-                    foreground: '#ffffff',
+                    background: '#1e1e1e',
+                    foreground: '#f0f0f0',
+                    cursor: '#ffffff',
+                    cursorAccent: '#000000',
+                    black: '#000000',
+                    red: '#cd3131',
+                    green: '#0dbc79',
+                    yellow: '#e5e510',
+                    blue: '#2472c8',
+                    magenta: '#bc3fbc',
+                    cyan: '#11a8cd',
+                    white: '#e5e5e5',
+                    brightBlack: '#666666',
+                    brightRed: '#f14c4c',
+                    brightGreen: '#23d18b',
+                    brightYellow: '#f5f543',
+                    brightBlue: '#3b8eea',
+                    brightMagenta: '#d670d6',
+                    brightCyan: '#29b8db',
+                    brightWhite: '#e5e5e5'
                 },
             })
     );
+    
     const fitAddon = new FitAddon();
 
     // Command history state for arrow-key navigation
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
 
-    // Function to handle key events on the input
     const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const input = e.currentTarget;
         // Navigate history: ArrowUp
@@ -76,17 +100,43 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
         }
     }, [terminal, fitAddon]);
 
+    useEffect(() => {
+        const newLogs = logs.slice(lastLogRef.current.length); // Get only new logs
+        newLogs.forEach(log => terminal.writeln(log)); // Append each log entry
+        lastLogRef.current = logs; // Update the last known log state
+    }, [logs, terminal]);
+
     return (
         <div>
             <div
                 ref={terminalRef}
-                style={{ height: '300px', width: '100%', backgroundColor: '#000000' }}
+                style={{
+                    // height: '300px',
+                    // width: '100%',
+                    backgroundColor: '#1e1e1e',
+                    padding: '10px',
+                    borderTopRightRadius : '5px',
+                    borderTopLeftRadius: '5px',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }}
             />
             <input
                 type="text"
                 placeholder="Type a command..."
                 onKeyDown={handleCommandKeyDown}
-                style={{ width: '100%', padding: '8px', fontSize: '16px' }}
+                style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    fontSize: '16px',
+                    backgroundColor: '#2a2a2a',
+                    color: '#f0f0f0',
+                    border: 'none',
+                    borderTop: '1px solid #3a3a3a',
+                    outline: 'none',
+                    fontFamily: '"Fira Code", monospace',
+                    borderBottomRightRadius : '5px',
+                    borderBottomLeftRadius: '5px',
+                }}
             />
         </div>
     );
