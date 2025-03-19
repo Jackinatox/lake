@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import RAMChart from "./graphs/RAMChart";
 import NewConsole from "./newConsole";
 import { comma } from "postcss/lib/list";
+import ConsoleV2 from "./ConsoleV2";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -70,9 +71,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         case 'console output': {
           const consoleLine = data.args[0];
-          const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
-          // setLogs((prevLogs) => cleanLog + "\n" + prevLogs);
-          terminalRef.current.sendData(cleanLog);
+          // const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
+          setLogs(consoleLine);
+          // terminalRef.current.sendData(cleanLog);
           // console.log('consoleLine: ', consoleLine)
           break;
         }
@@ -177,6 +178,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
   }
 
+  const handleCommand = (command: string) => {
+    console.log(command)
+    wsRef.current?.send(JSON.stringify({
+      event: 'send command',
+      args: [command]
+    }));
+  }
+
   return (
     <>
       {/* <BreakpointDisplay /> */}
@@ -208,7 +217,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} onKill={handleKill} onRestart={handleRestart} state={serverStats?.state} />
         </Grid>
         <Grid xs={12} sx={{ flexGrow: 1 }}>
-          <NewConsole ref={terminalRef} />
+          {/* <NewConsole ref={terminalRef} /> */}
+          <ConsoleV2 logs={logs} handleCommand={handleCommand} />
         </Grid>
 
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -224,7 +234,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         {/* Right Side: RAM Gauge (Takes 50%) */}
         <Grid xs={12} md={6} >
-          <RAMChart newData={serverStats} />
+          <div className="w-full">
+            <RAMChart newData={serverStats} />
+          </div>
         </Grid>
       </Grid>
 

@@ -36,7 +36,7 @@ function CPUChart({ newData }: CPUChartProps) {
 
 
     return (
-        <Card>
+        <Card className="w-full h-full">
             <CardHeader>
                 <CardTitle>CPU Usage</CardTitle>
             </CardHeader>
