@@ -14,7 +14,7 @@ interface GameCardProps {
 
 export default function GameCard({ card, imgPath }: GameCardProps) {
   return (
-    <Link href={`/gameserver/${card.name}`} className="block w-[280px]">
+    <Link href={`/booking/${card.name}`} className="block w-[280px]">
       <Card className="overflow-hidden transition-transform duration-300 hover:scale-[1.075] shadow-lg">
         <div>
           <img src={imgPath || "/placeholder.svg"} alt={card.fullName} className="w-full h-auto rounded-t-lg" />
