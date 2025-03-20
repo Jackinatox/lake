@@ -8,15 +8,15 @@ const game = [
         id: '1',
         name: 'minecraft',
         fullName: 'Minecraft',
-        img: '',
-        desc: 'Minecraft is a sandbox video game developed and published by Mojang Studios. It is a survival game set in a vast open world filled with creatures, natural landscapes,',
+        img: '/images/games/minecraft.jpg',
+        link: '',
     },
     {
         id: 2,
         name: 'satisfactory',
         fullName: 'Satisfactory',
-        img: '',
-        desc: 'Satisfactory is a survival game developed and published by Paradox Studios. It is a first-person survival game set in a sandbox environment,',
+        img: '/images/games/satisfactory.jpg',
+        link: '',
     },
 ];
 
@@ -28,9 +28,8 @@ function GameSelect() {
             </div>
             <div className="flex flex-wrap gap-4 justify-center">
                 {game.map((card) => {
-                    const imgPath = "/images/games/" + card.name + ".jpg";
                     return (
-                        <GameCard key={card.id} card={card} imgPath={imgPath} />
+                        <GameCard key={card.id} card={card} imgPath={card.img} />
                     );
                 })}
             </div>

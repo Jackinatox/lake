@@ -8,7 +8,7 @@ import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { generateFromEmail } from "unique-username-generator";
 import createUserApiKey from "@/lib/Pterodactyl/userApiKey";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,11 +16,10 @@ const supabaseAdmin = createAdminClient(
 );
 
 export const signUpAction = async (formData: FormData) => {
-  
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const origin = (await headers()).get("origin");
-  
+
   const supabase = await createClient();
 
   if (!email || !password) {
@@ -31,7 +30,10 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
-  const { data: { user }, error: signUpError, } = await supabase.auth.signUp({
+  const {
+    data: { user },
+    error: signUpError,
+  } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -62,11 +64,10 @@ export const signUpAction = async (formData: FormData) => {
 
         const { error: updateError } =
           await supabaseAdmin.auth.admin.updateUserById(user.id, {
-            user_metadata: { pt_api_Key: userApiKey }, // Store API key securely
+            user_metadata: { pt_api_Key: userApiKey, ptUser: ptuser.id }, // Store API key securely
           });
-        
-        console.log("userid: admin update: ", user.id, updateError);
 
+        console.log("userid: admin update: ", user.id, updateError);
       } catch (e) {
         console.error("PT User Creation: ", e);
       }
