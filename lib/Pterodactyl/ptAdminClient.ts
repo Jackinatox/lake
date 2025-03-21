@@ -1,4 +1,4 @@
-import { Builder } from 'pterodactyl.js'; // Import Builder from your actual library
+import { Builder } from "@avionrx/pterodactyl-js";// Import Builder from your actual library
 
 export function createPtClient() {
     const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;

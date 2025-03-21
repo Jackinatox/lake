@@ -1,5 +1,5 @@
 // app/admin/user/page.tsx
-import { Builder } from 'pterodactyl.js';
+import { Builder } from "@avionrx/pterodactyl-js";
 import UsersTable from './usersTable';
 import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
 import { SettingsIcon, UsersIcon } from 'lucide-react';
