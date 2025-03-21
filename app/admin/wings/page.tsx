@@ -1,6 +1,6 @@
 import React from 'react'
 import WingsTable from './WingsTable';
-import { Builder } from 'pterodactyl.js';
+import { Builder } from "@avionrx/pterodactyl-js";
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, SquarePlay } from 'lucide-react';
 

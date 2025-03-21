@@ -1,6 +1,6 @@
 import React from 'react'
 import GameserversTable from './GameserversTable';
-import { Builder } from 'pterodactyl.js';
+import { Builder } from "@avionrx/pterodactyl-js";
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
 
