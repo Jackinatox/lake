@@ -5,6 +5,6 @@ export interface PTServerConf {
     ram: number,
     disk: number,
     allocations: number,
-    backup: number,
+    backup: number, 
     performanceGroup: PerformanceGroup
 }

@@ -1,0 +1,14 @@
+{
+  "falvours": {
+    "vanilla": {
+        "egg": 1,
+		"available_versions": ["1.12", "1.13"],
+		"available_envs": ["version", ""]
+	},
+    "forge": {
+        "egg": 2,
+		"available_versions": ["1.8", "1.15"],
+		"available_envs": ["version", ""]
+	}
+  }
+}
