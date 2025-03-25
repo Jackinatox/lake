@@ -15,7 +15,7 @@ import RAMChart from "./graphs/RAMChart";
 import ConsoleV2 from "./ConsoleV2";
 import { Card } from "@/components/ui/card";
 import { Grid } from "@mui/joy";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/dist/client/link";
 
 const settings: GameServerSettings = {
@@ -196,13 +196,17 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
           <Card className="p-2">
             <Breadcrumb separator="›" aria-label="breadcrumbs">
-              <Link color="primary" href="/gameserver">
-                <Server /> &nbsp; <p className="text-foreground">Gameservers</p>
-              </Link>
-
-              <p>
-                <Gamepad2Icon /> &nbsp; <p className="text-foreground">{server}</p>
-              </p>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <Link className="text-foreground" href="/gameserver">
+                    Gameservers
+                  </Link>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <p className="text-foreground">{server}</p>
+                </BreadcrumbItem>
+              </BreadcrumbList>
             </Breadcrumb>
           </Card>
         </Grid>
