@@ -1,7 +1,6 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Box, Breadcrumbs, Card, DialogContent, DialogTitle, Grid, Link, Modal, ModalDialog, Textarea, Typography } from "@mui/joy"
 import { useEffect, useRef, useState } from "react"
 import Console from "./console";
 import { Gamepad2Icon, Server } from "lucide-react";
@@ -13,9 +12,11 @@ import { GameServerSettings } from "@/models/settings";
 import CPUChart from "./graphs/CPUChart";
 import { Button } from "@/components/ui/button";
 import RAMChart from "./graphs/RAMChart";
-import NewConsole from "./newConsole";
-import { comma } from "postcss/lib/list";
 import ConsoleV2 from "./ConsoleV2";
+import { Card } from "@/components/ui/card";
+import { Grid } from "@mui/joy";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import Link from "next/dist/client/link";
 
 const settings: GameServerSettings = {
   egg: 'Minecraft',
@@ -193,16 +194,16 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
       <Grid container spacing={2}>
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Card variant="outlined" size="sm">
-            <Breadcrumbs separator="›" aria-label="breadcrumbs">
-              <Link color="primary" href="/gameserver" sx={{ display: 'flex' }}>
-                <Server /> &nbsp; Gameservers
+          <Card className="p-2">
+            <Breadcrumb separator="›" aria-label="breadcrumbs">
+              <Link color="primary" href="/gameserver">
+                <Server /> &nbsp; <p className="text-foreground">Gameservers</p>
               </Link>
 
-              <Typography sx={{ display: 'flex' }}>
-                <Gamepad2Icon /> &nbsp; {server}
-              </Typography>
-            </Breadcrumbs>
+              <p>
+                <Gamepad2Icon /> &nbsp; <p className="text-foreground">{server}</p>
+              </p>
+            </Breadcrumb>
           </Card>
         </Grid>
 
