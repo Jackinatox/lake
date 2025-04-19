@@ -5,7 +5,9 @@ export type ServerConf = {
     CPU? : number;
     RAM? : number;
     Disk? : number;
-    Backups? : number;    
+    Backups? : number;  
+    Allocations? : number;  
+    EggId?: number;
 }
 
 export const ServerConfCookiesName = 'serverSettings';

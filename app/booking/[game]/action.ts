@@ -1,43 +1,49 @@
 "use server";
 
+import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { Builder } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function bookServer(prev, formData: FormData): Promise<void> {
+  const gameName = formData.get('game').toString();
   const cpuCores = Number(formData.get("cpuCores"));
   const ramSize = Number(formData.get("ramSize"));
   const selectedPlan = formData.get("performanceGroup") as PerformanceGroup;
 
-  const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+  const PTUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-  const supabase = await createClient();
-  const ptAdmin = new Builder()
-    .setURL(url)
-    .setAPIKey(process.env.PTERODACTYL_API_KEY)
-    .asAdmin();
+  try {
+    const supabase = await createClient();
+    const ptAdmin = new Builder()
+      .setURL(PTUrl)
+      .setAPIKey(process.env.PTERODACTYL_API_KEY)
+      .asAdmin();
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  const ptUser = user?.user_metadata?.ptUser;
+    const ptUser = user?.user_metadata?.ptUser;
 
-  if (user && ptUser) {
-    const serverConfig: ServerConf = {
-      CPU: cpuCores,
-      RAM: ramSize,
-      Backups: 2,
-      Disk: 20480,
-      pGroup: selectedPlan,
-    };
-    try {
-      // const test = await ptAdmin.get();
-      // console.log(test);
+    if (user && ptUser) {
+      const serverConfig: ServerConf = {
+        CPU: cpuCores * 100,
+        RAM: ramSize * 1024,
+        Backups: calcBackups(cpuCores * 100, ramSize * 1024),
+        Disk: calcDiskSize(cpuCores * 100, ramSize * 1024),
+        pGroup: selectedPlan,
+        Allocations: 2,
+        EggId: getEggId(gameName),
+      };
 
-      
+      // const test = await ptAdmin.getNodes();
+      // console.log(serverConfig);
+      // return;
+
       const server = await ptAdmin.createServer({
         name: "serverino",
         user: ptUser,
@@ -49,15 +55,29 @@ export async function bookServer(prev, formData: FormData): Promise<void> {
           swap: 500,
         },
         egg: 5,
-        environment: { VANILLA_VERSION: "1.20.4", SERVER_JARFILE: "server.jar" },
-        featureLimits: { allocations: 5, backups: 2, databases: 0, split_limit: 0 },
-        startup: "java",
-        image: 'ghcr.io/pterodactyl/yolks:java_21',
-        deploy: {dedicatedIp: false, locations: [3,5], portRange: ['2002']}
+        environment: {
+          VANILLA_VERSION: "1.20.4",
+          SERVER_JARFILE: "server.jar",
+        },
+        startWhenInstalled: true,
+        featureLimits: {
+          allocations: serverConfig.Allocations,
+          backups: serverConfig.Backups,
+          databases: 0,
+          split_limit: 0,
+        },
+        startup: "java -Xms128M -XX:MaxRAMPercentage=99.0 -jar {{SERVER_JARFILE}} nogui",
+        image: "ghcr.io/pterodactyl/yolks:java_21",
+        deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
-    } catch (e) {
-      console.error(e);
+      console.log(server)
+      revalidatePath("/");
+    } else {
+      console.error("User not found");
+      //TODO: Logtail Lok
     }
-    revalidatePath("/");
+  } catch (e) {
+    console.error(e);
   }
+
 }
