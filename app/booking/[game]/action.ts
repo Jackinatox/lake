@@ -1,13 +1,14 @@
 "use server";
 
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
+import { checkIfServerIsReady } from "@/lib/Pterodactyl/checkServerReady";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { encodedRedirect } from "@/utils/utils";
-// import { Builder, Server } from "@avionrx/pterodactyl-js";
+import { Builder, Server } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Builder, Server } from "pterodactyl.js";
+// import { Builder, Server } from "pterodactyl.js";
 
 export async function bookServer(prev, formData: FormData) {
   const gameName = formData.get('game').toString();
@@ -48,7 +49,7 @@ export async function bookServer(prev, formData: FormData) {
       // console.log(serverConfig);
       // return;
 
-      server = await ptAdmin.createServer({
+      const sev = {
         name: "serverino",
         user: ptUser,
         limits: {
@@ -74,10 +75,37 @@ export async function bookServer(prev, formData: FormData) {
         startup: "java -Xms128M -XX:MaxRAMPercentage=99.0 -jar {{SERVER_JARFILE}} nogui",
         image: "ghcr.io/pterodactyl/yolks:java_21",
         deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
+      };
+  
+
+      server = await ptAdmin.createServer({
+        name: "serverino",
+        user: ptUser,
+        limits: {
+          cpu: serverConfig.CPU,
+          disk: serverConfig.Disk,
+          io: 500,
+          memory: serverConfig.RAM,
+          swap: 500,
+        },
+        egg: 5,
+        environment: {
+          VANILLA_VERSION: "1.20.4",
+          SERVER_JARFILE: "server.jar",
+        },
+        startWhenInstalled: true,
+        featureLimits: {
+          allocations: serverConfig.Allocations,
+          backups: serverConfig.Backups,
+          databases: 0,
+          split_limit: 0,
+        },
+        startup: "java -Xms128M -XX:MaxRAMPercentage=99.0 -jar {{SERVER_JARFILE}} nogui",
+        image: "ghcr.io/pterodactyl/yolks:java_21",
+        deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
       // console.log('server:', server);
-      const gotten = await ptAdmin.getServer(server.identifier);
-      console.log('gotteb: ', gotten);
+      return JSON.stringify(await checkIfServerIsReady(server.identifier));
       // revalidatePath("/");
     } else {
       console.error("User not found or doesnt ");

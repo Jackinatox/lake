@@ -1,5 +1,6 @@
-export function createServer(){
+export function createServer(server: NewServerOptions){
     // TODO: Implement the createServer function
+    
 }
 
 export interface NewServerOptions {
