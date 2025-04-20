@@ -4,6 +4,7 @@ import { Builder } from "@avionrx/pterodactyl-js";
 import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { deleteAllServers } from './deleteAllServers';
 
 async function Gameservers() {
   const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -20,7 +21,9 @@ async function Gameservers() {
 
     return (
       <>
-        <Button variant='destructive' >Delete all "Serverino" Servers</Button>
+        <form action={deleteAllServers}>
+          <Button variant='destructive' >Delete all "Serverino" Servers</Button>
+        </form>
         <Breadcrumbs separator="›" aria-label="breadcrumbs">
 
           <Link color="primary" href="/admin">
