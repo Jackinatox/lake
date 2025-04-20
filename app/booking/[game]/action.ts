@@ -4,9 +4,10 @@ import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { encodedRedirect } from "@/utils/utils";
-import { Builder, Server } from "@avionrx/pterodactyl-js";
+// import { Builder, Server } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { Builder, Server } from "pterodactyl.js";
 
 export async function bookServer(prev, formData: FormData) {
   const gameName = formData.get('game').toString();
@@ -65,9 +66,10 @@ export async function bookServer(prev, formData: FormData) {
         startWhenInstalled: true,
         featureLimits: {
           allocations: serverConfig.Allocations,
-          backups: serverConfig.Backups,
+          backups: 5,
+          // backups: serverConfig.Backups,
           databases: 0,
-          split_limit: 0,
+          // split_limit: 0,
         },
         startup: "java -Xms128M -XX:MaxRAMPercentage=99.0 -jar {{SERVER_JARFILE}} nogui",
         image: "ghcr.io/pterodactyl/yolks:java_21",
