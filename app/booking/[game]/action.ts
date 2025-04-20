@@ -1,7 +1,7 @@
 "use server";
 
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
-import { checkIfServerIsReady } from "@/lib/Pterodactyl/checkServerReady";
+import { checkIfServerIsReady, sleep } from "@/lib/Pterodactyl/checkServerReady";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { encodedRedirect } from "@/utils/utils";
@@ -105,7 +105,9 @@ export async function bookServer(prev, formData: FormData) {
         deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
       // console.log('server:', server);
-      return JSON.stringify(await checkIfServerIsReady(server.identifier));
+      await sleep(5000);
+      // return await checkIfServerIsReady(server.identifier);
+
       // revalidatePath("/");
     } else {
       console.error("User not found or doesnt ");
@@ -117,5 +119,5 @@ export async function bookServer(prev, formData: FormData) {
     return 'An Error occured. We will fix it as fast as possible. Try again later';
   }
 
-  encodedRedirect('success', `/gameserver/${server.identifier}`, 'Server created Successfully');
+  redirect(`/gameserver/${server.identifier}`);
 }

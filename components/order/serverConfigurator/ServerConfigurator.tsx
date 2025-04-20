@@ -47,7 +47,7 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
   return (
     <div className="w-full mx-auto border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm dark:bg-gray-900">
       {/* <FormMessage message={message} /> */}
-      { orderResponse ? JSON.stringify(orderResponse) : 'Kein fehler'}
+      { orderResponse ? JSON.stringify(orderResponse, null, 2) : 'Kein fehler'}
       <div className="p-6 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" className="rounded-full">
