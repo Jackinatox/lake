@@ -4,7 +4,7 @@ import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { encodedRedirect } from "@/utils/utils";
-import { Builder } from "@avionrx/pterodactyl-js";
+import { Builder, Server } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -15,6 +15,8 @@ export async function bookServer(prev, formData: FormData) {
   const selectedPlan = formData.get("performanceGroup") as PerformanceGroup;
 
   const PTUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+
+  let server: Server;
 
   try {
     const supabase = await createClient();
@@ -45,7 +47,7 @@ export async function bookServer(prev, formData: FormData) {
       // console.log(serverConfig);
       // return;
 
-      const server = await ptAdmin.createServer({
+      server = await ptAdmin.createServer({
         name: "serverino",
         user: ptUser,
         limits: {
@@ -71,7 +73,9 @@ export async function bookServer(prev, formData: FormData) {
         image: "ghcr.io/pterodactyl/yolks:java_21",
         deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
-      console.log(server);
+      // console.log('server:', server);
+      const gotten = await ptAdmin.getServer(server.identifier);
+      console.log('gotteb: ', gotten);
       // revalidatePath("/");
     } else {
       console.error("User not found or doesnt ");
@@ -79,8 +83,9 @@ export async function bookServer(prev, formData: FormData) {
       //TODO: Logtail Log
     }
   } catch (e) {
-    console.error(e);
+    console.error('Exception: ', e);
     return 'An Error occured. We will fix it as fast as possible. Try again later';
   }
-  // encodedRedirect('success', `/gameserver/${server.id}`, 'Server created Successfully');
+
+  encodedRedirect('success', `/gameserver/${server.identifier}`, 'Server created Successfully');
 }
