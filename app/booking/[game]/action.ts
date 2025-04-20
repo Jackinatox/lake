@@ -3,11 +3,12 @@
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
+import { encodedRedirect } from "@/utils/utils";
 import { Builder } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function bookServer(prev, formData: FormData): Promise<void> {
+export async function bookServer(prev, formData: FormData) {
   const gameName = formData.get('game').toString();
   const cpuCores = Number(formData.get("cpuCores"));
   const ramSize = Number(formData.get("ramSize"));
@@ -70,14 +71,16 @@ export async function bookServer(prev, formData: FormData): Promise<void> {
         image: "ghcr.io/pterodactyl/yolks:java_21",
         deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
-      console.log(server)
-      revalidatePath("/");
+      console.log(server);
+      // revalidatePath("/");
     } else {
-      console.error("User not found");
-      //TODO: Logtail Lok
+      console.error("User not found or doesnt ");
+      return 'An error in our auth-logik occured. We will fix it as fast as possible';
+      //TODO: Logtail Log
     }
   } catch (e) {
     console.error(e);
+    return 'An Error occured. We will fix it as fast as possible. Try again later';
   }
-
+  // encodedRedirect('success', `/gameserver/${server.id}`, 'Server created Successfully');
 }

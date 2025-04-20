@@ -10,23 +10,26 @@ import { bookServer } from "@/app/booking/[game]/action"
 import { ServerConf } from "@/models/cookies"
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions"
 import { redirect } from "next/navigation"
+import { FormMessage, Message } from "@/components/form-message"
 
 interface ServerConfiguratorProps {
   game: string;
+  message: Message;
 }
 
-export default function ServerConfigurator({ game }: ServerConfiguratorProps) {
-    // Some Validation
-    if (getEggId(game) === -1){
-      redirect('/products/gameserver');
-    }
-  
+export default function ServerConfigurator({ game, message }: ServerConfiguratorProps) {
+  // Some Validation
+  if (getEggId(game) === -1) {
+    redirect('/products/gameserver');
+  }
+
+
   // Config to show most Values on the page
   const ramSteps = ["1GB", "6.5GB", "12GB"]
   const CPUSteps = ["1", "6.5", "12"]
   const CPUs = ["Ryzen 5", "Ryzen 9", "Intel I9"]
 
-  const [error, orderAction, orderPending] = useActionState(bookServer, null);
+  const [orderResponse, orderAction, orderPending] = useActionState(bookServer, null);
 
   const [cpuCores, setCpuCores] = useState(4)
   const [ramSize, setRamSize] = useState(2)
@@ -43,6 +46,8 @@ export default function ServerConfigurator({ game }: ServerConfiguratorProps) {
 
   return (
     <div className="w-full mx-auto border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm dark:bg-gray-900">
+      {/* <FormMessage message={message} /> */}
+      { orderResponse ? JSON.stringify(orderResponse) : 'Kein fehler'}
       <div className="p-6 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" className="rounded-full">
@@ -123,7 +128,7 @@ export default function ServerConfigurator({ game }: ServerConfiguratorProps) {
           {/* Option Cards */}
           <div className="grid grid-cols-3 gap-4">
             <Card className="p-4 flex items-center justify-center h-24 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:bg-gray-900 dark:border-gray-700">
-              <span className="font-medium text-lg">Disk: {Math.round(calcDiskSize(cpuCores * 100, ramSize * 1024)/ 1024)} GiB</span>
+              <span className="font-medium text-lg">Disk: {Math.round(calcDiskSize(cpuCores * 100, ramSize * 1024) / 1024)} GiB</span>
             </Card>
             <Card className="p-4 flex items-center justify-center h-24 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors dark:bg-gray-900 dark:border-gray-700">
               <span className="font-medium text-lg">Backups: {calcBackups(cpuCores * 100, ramSize * 1024)}</span>
