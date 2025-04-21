@@ -105,30 +105,32 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     }
 
     const startWebSocket = async () => {
-      const wsCred = await webSocket(server, ptApiKey);
-      wsCreds.current = wsCred;
+      if (!wsCreds.current) {
+        const wsCred = await webSocket(server, ptApiKey);
+        wsCreds.current = wsCred;
 
-      console.log('socket and token: ', wsCred?.data.socket, wsCred?.data.token);
+        console.log('socket and token: ', wsCred?.data.socket, wsCred?.data.token);
 
-      const ws: WebSocket = new WebSocket(wsCred?.data.socket);
-      wsRef.current = ws;
+        const ws: WebSocket = new WebSocket(wsCred?.data.socket);
+        wsRef.current = ws;
 
-      ws.onopen = () => {
-        console.log("Connected to WebSocket");
+        ws.onopen = () => {
+          console.log("Connected to WebSocket");
 
 
-        ws.send(JSON.stringify({
-          event: "auth",
-          args: [wsCred?.data.token], // token as an array element
-        }));
+          ws.send(JSON.stringify({
+            event: "auth",
+            args: [wsCred?.data.token], // token as an array element
+          }));
 
-        if (ws.OPEN) {
+          if (ws.OPEN) {
 
+          }
+        };
+
+        ws.onmessage = (ev: MessageEvent) => {
+          handleWsMessage(ev.data);
         }
-      };
-
-      ws.onmessage = (ev: MessageEvent) => {
-        handleWsMessage(ev.data);
       }
     }
 
@@ -200,9 +202,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Server /> &nbsp; <p className="text-foreground">Gameservers</p>
               </Link>
 
-              <p>
-                <Gamepad2Icon /> &nbsp; <p className="text-foreground">{server}</p>
-              </p>
+
+              <Gamepad2Icon /> &nbsp; <p className="text-foreground">{server}</p>
+
             </Breadcrumb>
           </Card>
         </Grid>

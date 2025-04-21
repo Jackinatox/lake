@@ -1,7 +1,7 @@
 "use server";
 
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
-import { checkIfServerIsReady, sleep } from "@/lib/Pterodactyl/checkServerReady";
+import { waitForServerInstallation, sleep } from "@/lib/Pterodactyl/checkServerReady";
 import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { encodedRedirect } from "@/utils/utils";
@@ -105,8 +105,7 @@ export async function bookServer(prev, formData: FormData) {
         deploy: { dedicatedIp: false, locations: [3, 5], portRange: [] },
       });
       // console.log('server:', server);
-      await sleep(5000);
-      // return await checkIfServerIsReady(server.identifier);
+      await waitForServerInstallation(server.identifier);
 
       // revalidatePath("/");
     } else {

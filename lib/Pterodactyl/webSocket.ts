@@ -14,10 +14,8 @@ async function webSocket(serverId: string, apiKey: string) {
     throw new Error(`Error: ${response.status}`);
   }
 
-    const data = await response.json();
-    console.log('Pterodactyl data:', data);
-
-    return data;
+  const data = await response.json();
+  return data;
 }
 
 export default webSocket;
