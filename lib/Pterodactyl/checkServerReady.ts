@@ -1,7 +1,8 @@
-export async function checkIfServerIsReady(identifier: string): Promise<any[]> {
+export async function waitForServerInstallation(identifier: string): Promise<void> {
     let result: any[] = [];
 
-    for (let i = 0; i < 10; i++) {
+    // TODO: Improve this code
+    for (let i = 0; i < 40; i++) {
         const response = await fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${identifier}`, {
             method: 'GET',
             headers: {
@@ -11,11 +12,15 @@ export async function checkIfServerIsReady(identifier: string): Promise<any[]> {
         });
         const data = await response.json();
         result.push(data);
-        await sleep(500);
+        
+        if (data.is_installing === true) {
+                        
+            break;
+        }
+        await sleep(1000);
     }
-
-    // Return the JSON as a formatted string with line breaks
-    return result;
+    console.log(result);
+    return;
 }
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
