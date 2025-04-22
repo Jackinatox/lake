@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
 import { bookServer } from "@/app/booking/[game]/action"
-import { ServerConf } from "@/models/cookies"
+// import { ServerConf } from "@/models/cookies"
 
 interface ServerConfiguratorProps {
   game: string;

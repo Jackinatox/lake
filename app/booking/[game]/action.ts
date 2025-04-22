@@ -1,6 +1,7 @@
 "use server";
 
-import { PerformanceGroup, ServerConf } from "@/models/cookies";
+import { PerformanceGroup, PTServerConf } from "@/models/Pterodactyl/ServerModel";
+// import { PerformanceGroup, ServerConf } from "@/models/cookies";
 import { createClient } from "@/utils/supabase/server";
 import { Builder } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
@@ -26,12 +27,13 @@ export async function bookServer(prev, formData: FormData): Promise<void> {
   const ptUser = user?.user_metadata?.ptUser;
 
   if (user && ptUser) {
-    const serverConfig: ServerConf = {
-      CPU: cpuCores,
-      RAM: ramSize,
-      Backups: 2,
-      Disk: 20480,
-      pGroup: selectedPlan,
+    const serverConfig: PTServerConf = {
+      cpu: cpuCores,
+      ram: ramSize,
+      disk: 20480,
+      allocations: 5,
+      backup: 2,
+      performanceGroup: selectedPlan,
     };
     try {
       // const test = await ptAdmin.get();
@@ -42,18 +44,18 @@ export async function bookServer(prev, formData: FormData): Promise<void> {
         name: "serverino",
         user: ptUser,
         limits: {
-          cpu: serverConfig.CPU,
-          disk: serverConfig.Disk,
+          cpu: serverConfig.cpu,
+          disk: serverConfig.disk,
           io: 500,
-          memory: serverConfig.RAM,
+          memory: serverConfig.ram,
           swap: 500,
         },
         egg: 5,
         environment: { VANILLA_VERSION: "1.20.4", SERVER_JARFILE: "server.jar" },
-        featureLimits: { allocations: 5, backups: 2, databases: 0, split_limit: 0 },
+        featureLimits: { allocations: serverConfig.allocations, backups: serverConfig.backup, databases: 0, split_limit: 0 },
         startup: "java",
         image: 'ghcr.io/pterodactyl/yolks:java_21',
-        deploy: {dedicatedIp: false, locations: [3,5], portRange: ['2002']}
+        deploy: { dedicatedIp: false, locations: [3, 5], portRange: ['2002'] }
       });
     } catch (e) {
       console.error(e);
