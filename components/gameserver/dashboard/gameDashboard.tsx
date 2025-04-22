@@ -18,19 +18,6 @@ import { Grid } from "@mui/joy";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import Link from "next/dist/client/link";
 
-const settings: GameServerSettings = {
-  egg: 'Minecraft',
-  ver: '1.17.1',
-  flavour: 'Paper',
-  node: '01',
-  wing: '01',
-  cpuModel: 'Ryzen 5 5950X',
-  vCores: 4,
-  mem: 4096,
-  addr: 'w1.scyed.com:2134',
-  status: 'restarting',
-}
-
 interface serverProps {
   server: string;
   ptApiKey: string;
@@ -45,101 +32,95 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
   const [serverStats, setServerStats] = useState<any>();
 
-  useEffect(() => {
-    const handleWsMessage = async (msg: string) => {
-      const data = JSON.parse(msg);
-      console.log('event: ', data.event);
+  const handleWsMessage = async (msg: string) => {
+    const data = JSON.parse(msg);
+    console.log('event: ', data.event);
 
-      switch (data.event) {
-        case 'stats': {
-          const stats = JSON.parse(data.args[0]);
+    switch (data.event) {
+      case 'stats': {
+        const stats = JSON.parse(data.args[0]);
 
-          const roundedStats = {
-            cpu_absolute: parseFloat(stats.cpu_absolute.toFixed(1)),
-            disk_bytes: parseFloat((stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2)),
-            memory_bytes: parseFloat((stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2)),
-            memory_limit_bytes: parseFloat((stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2)),
-            network: {
-              rx_bytes: stats.network.rx_bytes,
-              tx_bytes: stats.network.tx_bytes
-            },
-            state: stats.state,
-            uptime: parseFloat((stats.uptime / 1000).toFixed(2)),
-          }
-          setServerStats(roundedStats);
-          break;
+        const roundedStats = {
+          cpu_absolute: parseFloat(stats.cpu_absolute.toFixed(1)),
+          disk_bytes: parseFloat((stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2)),
+          memory_bytes: parseFloat((stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2)),
+          memory_limit_bytes: parseFloat((stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2)),
+          network: {
+            rx_bytes: stats.network.rx_bytes,
+            tx_bytes: stats.network.tx_bytes
+          },
+          state: stats.state,
+          uptime: parseFloat((stats.uptime / 1000).toFixed(2)),
         }
-
-        case 'console output': {
-          const consoleLine = data.args[0];
-          // const cleanLog = consoleLine.replace(/\x1B\[[0-9;]*[mK]/g, ""); // Remove ANSI codes
-          // setLogs(consoleLine);
-          setLogs((prevLogs) => [...prevLogs, consoleLine]);
-          // terminalRef.current.sendData(cleanLog);
-          // console.log('consoleLine: ', consoleLine)
-          break;
-        }
-
-        case "token expiring": {
-          console.log("Token expiring... fetching new token.");
-
-          const wsCred = await webSocket(server, ptApiKey);
-          wsCreds.current = wsCred;
-
-          wsRef.current?.send(JSON.stringify({ event: "auth", args: [wsCred?.data.token], }));
-          console.log("Re-authenticated WebSocket.");
-
-          break;
-        }
-
-        case 'auth success': {
-          if (loading) {
-            wsRef.current?.send(JSON.stringify({
-              event: 'send logs'
-            }));
-          }
-
-          setLoading(false);
-        }
+        setServerStats(roundedStats);
+        break;
       }
+
+      case 'console output': {
+        const consoleLine = data.args[0];
+        setLogs((prevLogs) => {
+            if (prevLogs[prevLogs.length - 1] === consoleLine) {
+                return prevLogs; // Avoid duplicate log
+            }
+            return [...prevLogs, consoleLine];
+        });
+        break;
     }
 
-    const startWebSocket = async () => {
-      if (!wsCreds.current) {
+      case "token expiring": {
+        console.log("Token expiring... fetching new token.");
+
         const wsCred = await webSocket(server, ptApiKey);
         wsCreds.current = wsCred;
 
-        console.log('socket and token: ', wsCred?.data.socket, wsCred?.data.token);
+        wsRef.current?.send(JSON.stringify({ event: "auth", args: [wsCred?.data.token], }));
+        console.log("Re-authenticated WebSocket.");
+
+        break;
+      }
+
+      case 'auth success': {
+        if (loading) {
+          wsRef.current?.send(JSON.stringify({
+            event: 'send logs'
+          }));
+        }
+
+        setLoading(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    const startWebSocket = async () => {
+      if (!wsRef.current) {
+        const wsCred = await webSocket(server, ptApiKey);
+        wsCreds.current = wsCred;
 
         const ws: WebSocket = new WebSocket(wsCred?.data.socket);
         wsRef.current = ws;
 
         ws.onopen = () => {
-          console.log("Connected to WebSocket");
-
-
           ws.send(JSON.stringify({
             event: "auth",
-            args: [wsCred?.data.token], // token as an array element
+            args: [wsCred?.data.token],
           }));
-
-          if (ws.OPEN) {
-
-          }
         };
 
         ws.onmessage = (ev: MessageEvent) => {
           handleWsMessage(ev.data);
-        }
+        };
       }
-    }
+    };
 
     startWebSocket();
 
     return () => {
       wsRef.current?.close();
+      wsRef.current = null;
     };
   }, []);
+
 
   const days = Math.floor(serverStats?.uptime / 86400); // 86400 Sekunden pro Tag
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
@@ -212,7 +193,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
 
         <Grid sx={{ flexGrow: 1 }}>
-          <CopyAddress settings={settings} />
+          {/* <CopyAddress settings={settings} /> */}
         </Grid>
         <Grid sx={{ flexGrow: 1 }}>
           <Status state={serverStats?.state} />
@@ -226,7 +207,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         </Grid>
 
         <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Info settings={settings} />
+          {/* <Info settings={settings} /> */}
         </Grid>
       </Grid >
 
