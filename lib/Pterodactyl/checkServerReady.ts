@@ -12,14 +12,15 @@ export async function waitForServerInstallation(identifier: string): Promise<voi
         });
         const data = await response.json();
         result.push(data);
-        
-        if (data.is_installing === true) {
+        // console.log('installling: ', data.attributes.is_installing);
+
+        if (data.attributes.is_installing === false) {
                         
             break;
         }
         await sleep(1000);
     }
-    console.log(result);
+    // console.log(result);
     return;
 }
 
