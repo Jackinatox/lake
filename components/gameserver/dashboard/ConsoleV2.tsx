@@ -15,9 +15,9 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
     // Create a terminal instance (using custom properties similar to the original)
     
     const [terminal] = useState(
-        () =>
+        () => 
             new Terminal({
-                cursorBlink: true,
+                cursorBlink: false,
                 fontSize: 14,
                 scrollback: 400,
                 fontFamily: '"Fira Code", monospace',
@@ -98,21 +98,31 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
             terminal.open(terminalRef.current);
             fitAddon.fit();
         }
-    }, [terminal, fitAddon]);
+    }, [terminal]);
 
     useEffect(() => {
-        const newLogs = logs.slice(lastLogRef.current.length); // Get only new logs
-        newLogs.forEach(log => terminal.writeln(log)); // Append each log entry
-        lastLogRef.current = logs; // Update the last known log state
-    }, [logs, terminal]);
+        const newLogs = logs.slice(lastLogRef.current.length).filter(log => log.trim() !== ''); // Get only new logs and filter out empty strings
+
+        console.log('printed');
+        if (newLogs.length > 0) { // Check if there are new logs
+            newLogs.forEach(log => terminal.writeln(log)); // Append each log entry
+            lastLogRef.current = logs; // Update the last known log state
+        }
+    }, [logs]);
+
+    const handleResize = () => {
+        fitAddon.fit();
+    }
+
+    window.addEventListener('resize', handleResize);
 
     return (
         <div>
             <div
                 ref={terminalRef}
                 style={{
-                    // height: '300px',
-                    // width: '100%',
+                    height: '100%',
+                    width: '100%',
                     backgroundColor: '#1e1e1e',
                     padding: '10px',
                     borderTopRightRadius : '5px',

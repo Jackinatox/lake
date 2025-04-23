@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useActionState } from "react"
-import { ArrowLeft, HelpCircle } from "lucide-react"
+import { ArrowLeft, HelpCircle, Loader2 } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -160,7 +160,8 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
               <span className="text-sm">Mehr Info</span>
             </Button>
 
-            <Button type="submit" variant="default" size="lg" className="flex-1 gap-2 h-16 text-lg">
+            <Button disabled={orderPending} type="submit" variant="default" size="lg" className="flex-1 gap-2 h-16 text-lg">
+              { orderPending && <Loader2 className="animate-spin" /> }
               Weiter
             </Button>
           </div>
