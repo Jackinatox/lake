@@ -1,23 +1,22 @@
 "use client"
 
-import { useState, useEffect, useActionState } from "react"
-import { ArrowLeft, HelpCircle, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { ArrowLeft, HelpCircle } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card } from "@/components/ui/card"
 import { bookServer } from "@/app/booking/[game]/action"
-import { ServerConf } from "@/models/cookies"
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions"
 import { redirect } from "next/navigation"
-import { FormMessage, Message } from "@/components/form-message"
 
 interface ServerConfiguratorProps {
   game: string;
-  message: Message;
+  setStep: (step: number) => void;
+  setConfig: (config: any) => void;
 }
 
-export default function ServerConfigurator({ game, message }: ServerConfiguratorProps) {
+export default function ServerConfigurator({ game, setStep, setConfig }: ServerConfiguratorProps) {
   // Some Validation
   if (getEggId(game) === -1) {
     redirect('/products/gameserver');
@@ -28,8 +27,6 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
   const ramSteps = ["1GB", "6.5GB", "12GB"]
   const CPUSteps = ["1", "6.5", "12"]
   const CPUs = ["Ryzen 5", "Ryzen 9", "Intel I9"]
-
-  const [orderResponse, orderAction, orderPending] = useActionState(bookServer, null);
 
   const [cpuCores, setCpuCores] = useState(4)
   const [ramSize, setRamSize] = useState(2)
@@ -44,10 +41,19 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
     setTotalPrice(basePrice + cpuPrice + ramPrice)
   }, [cpuCores, ramSize, selectedPlan])
 
+  const handleNext = () => {
+
+    setConfig({
+      "cpuCores": cpuCores,
+      "ramSize": ramSize,
+      "selectedPlan": selectedPlan
+    });
+    setStep(1);
+  }
+
   return (
     <div className="w-full mx-auto border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm dark:bg-gray-900">
       {/* <FormMessage message={message} /> */}
-      { orderResponse ? JSON.stringify(orderResponse, null, 2) : 'Kein fehler'}
       <div className="p-6 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" className="rounded-full">
@@ -57,9 +63,8 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
         </div>
 
 
-        {orderPending && <p className="bg-red-500"> es Lädt!!!!! </p>}
 
-        <form action={orderAction}>
+        <form>
           {/* Plan Selection Tabs */}
           <Tabs defaultValue={selectedPlan} onValueChange={setSelectedPlan} className="w-full">
             <TabsList className="w-full grid grid-cols-3 h-12 rounded-full p-1">
@@ -160,8 +165,7 @@ export default function ServerConfigurator({ game, message }: ServerConfigurator
               <span className="text-sm">Mehr Info</span>
             </Button>
 
-            <Button disabled={orderPending} type="submit" variant="default" size="lg" className="flex-1 gap-2 h-16 text-lg">
-              { orderPending && <Loader2 className="animate-spin" /> }
+            <Button onClick={() => { handleNext() }} type="button" variant="default" size="lg" className="flex-1 gap-2 h-16 text-lg">
               Weiter
             </Button>
           </div>
