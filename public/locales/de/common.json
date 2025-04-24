@@ -1,4 +1,5 @@
 {
-    "welcome": "Wilkommen Lake"
-  }
-  
+    "welcome": "Wilkommen Lake",
+    "register": "Registrieren",
+    "login": "Einloggen"
+}
