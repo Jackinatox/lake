@@ -1,6 +1,10 @@
+"use server"
+
 import { Message } from '@/components/form-message';
+import MinecraftConfig from '@/components/order/games/minecraft';
 import ServerConfigurator from '@/components/order/serverConfigurator/ServerConfigurator';
-import React from 'react'
+import StepManager from '@/components/order/stepManager';
+import React, { useState } from 'react'
 
 async function page({ params, searchParams }: { params: Promise<{ game: string }>, searchParams: Promise<Message> }) {
     const game = (await params).game;
@@ -8,8 +12,7 @@ async function page({ params, searchParams }: { params: Promise<{ game: string }
 
     return (
         <>
-            <div>{game}</div>
-            <ServerConfigurator game={game} message={message} />
+            <StepManager game={game}/>  
         </>
     )
 }
