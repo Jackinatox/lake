@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { bookServer } from "@/app/booking/[game]/action"
 import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions"
 import { redirect } from "next/navigation"
+import logger from "@/utils/pino"
 
 interface ServerConfiguratorProps {
   game: string;
