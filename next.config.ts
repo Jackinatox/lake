@@ -1,3 +1,4 @@
+import { Output } from "@mui/icons-material";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -7,6 +8,7 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   reactStrictMode: true,
+  output: "standalone"
 }
 
 export default nextConfig;
