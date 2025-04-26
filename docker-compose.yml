@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  lake-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    labels:
+      - "logging=lake-app"  # Optional: could be used to identify container
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
+    depends_on:
+      - lake-app
