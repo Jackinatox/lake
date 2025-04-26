@@ -12,6 +12,7 @@
     "@mui/icons-material": "^6.4.1",
     "@mui/joy": "^5.0.0-beta.51",
     "@mui/material": "^6.4.2",
+    "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.200.0",
     "@opentelemetry/instrumentation": "^0.200.0",
     "@opentelemetry/sdk-logs": "^0.200.0",
