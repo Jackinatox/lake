@@ -1,0 +1,19 @@
+server:
+  log_level: info
+
+logs:
+  configs:
+    - name: docker-logs
+      positions:
+        filename: /tmp/positions.yaml
+      clients:
+        - url: http://10.254.0.8:3100/loki/api/v1/push
+      pipeline_stages:
+        - json: {}
+      scrape_configs:
+        - job_name: lake-app-logs
+          static_configs:
+            - targets: [localhost]
+              labels:
+                job: lake-app
+                __path__: /var/lib/docker/containers/*/*.log
