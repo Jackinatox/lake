@@ -81,7 +81,7 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
                 if (cpuType) setSelectedCpuType(cpuType)
               }}
             >
-              <TabsList className="grid grid-cols-3 w-full">
+                <TabsList className={`grid grid-cols-${Math.min(cpuTypes.length, 4)} w-full`}>
                 {cpuTypes.map((cpu) => (
                   <TabsTrigger key={cpu.id} value={cpu.id.toString()}>
                     {cpu.Name}
@@ -142,7 +142,7 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
           </div>
 
           {/* Disk Options */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className={`grid grid-cols-${Math.min(diskOptions.length, 5)} gap-4`}>
             {diskOptions.map((disk) => (
               <Card
                 key={disk.id}
