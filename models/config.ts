@@ -1,7 +1,21 @@
+export interface PerformanceGroup {
+  id: number;
+  Name: string;
+  DiskPrice: number;
+  PortsLimit: number;
+  BackupLimit: number;
+  Enabled: boolean;
+  ptLocationId: number;
+  CPU: CpuType;
+}
+
 export interface CpuType {
   id: number
   Name: string
-  description: string | null
+  Cores: number
+  Threads: number
+  SingleScore: number
+  MultiScore: number
   price_per_core: number
   min_threads: number
   max_threads: number
@@ -41,7 +55,7 @@ export interface GameVersion {
 }
 
 export interface HardwareConfig {
-  cpuTypeId: number
+  pfGroupId: number
   cpuCores: number
   ramGb: number
   diskGb: number

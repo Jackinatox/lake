@@ -6,17 +6,19 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Info } from "lucide-react"
-import type { CpuType, RamOption, DiskOption, HardwareConfig } from "@/models/config"
+import type { CpuType, RamOption, DiskOption, HardwareConfig, PerformanceGroup } from "@/models/config"
+import { TabList } from "@mui/joy"
 
 interface HardwareConfigProps {
-  cpuTypes: CpuType[]
   ramOptions: RamOption[]
   diskOptions: DiskOption[]
+  performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
 }
 
-export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onNext }: HardwareConfigProps) {
-  const [selectedCpuType, setSelectedCpuType] = useState<CpuType | null>(null)
+export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOptions, onNext }: HardwareConfigProps) {
+  // const [selectedCpuType, setSelectedCpuType] = useState<CpuType | null>(null)
+  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
   const [selectedDiskOption, setSelectedDiskOption] = useState<DiskOption | null>(null)
@@ -24,31 +26,32 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
 
   // Set initial values
   useEffect(() => {
-    if (cpuTypes.length > 0 && !selectedCpuType) {
-      setSelectedCpuType(cpuTypes[0])
+    if (performanceOptions.length > 0 && !selectedPFGroup) {
+      console.log('setting defaul')
+      setSelectedPFGroup(performanceOptions[0])
     }
 
     if (diskOptions.length > 0 && !selectedDiskOption) {
       setSelectedDiskOption(diskOptions[0])
     }
-  }, [cpuTypes, diskOptions, selectedCpuType, selectedDiskOption])
+  }, [performanceOptions, diskOptions,])
 
   // Calculate total price whenever configuration changes
   useEffect(() => {
-    if (selectedCpuType && ramOptions.length > 0 && selectedDiskOption) {
-      const cpuPrice = selectedCpuType.price_per_core * cpuCores
+    if (selectedPFGroup?.CPU && ramOptions.length > 0 && selectedDiskOption) {
+      const cpuPrice = selectedPFGroup.CPU.price_per_core * cpuCores
       const ramPrice = ramOptions[0].price_per_gb * ramGb
       const diskPrice = selectedDiskOption.price_per_gb * selectedDiskOption.size_gb
 
       setTotalPrice(Number.parseFloat((cpuPrice + ramPrice + diskPrice).toFixed(2)))
     }
-  }, [selectedCpuType, cpuCores, ramGb, selectedDiskOption, ramOptions])
+  }, [selectedPFGroup, cpuCores, ramGb, selectedDiskOption, ramOptions])
 
   const handleNext = () => {
-    if (!selectedCpuType || !selectedDiskOption) return
+    if (!selectedPFGroup.CPU || !selectedDiskOption) return
 
     const config: HardwareConfig = {
-      cpuTypeId: selectedCpuType.id,
+      pfGroupId: selectedPFGroup.id,
       cpuCores,
       ramGb,
       diskGb: selectedDiskOption.size_gb,
@@ -58,7 +61,7 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
     onNext(config)
   }
 
-  if (!selectedCpuType || ramOptions.length === 0 || !selectedDiskOption) {
+  if (!selectedPFGroup || ramOptions.length === 0 || !selectedDiskOption) {
     return <div>Loading configuration options...</div>
   }
 
@@ -73,7 +76,7 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
         </CardHeader>
         <CardContent className="space-y-6">
           {/* CPU Selection */}
-          <div>
+          {/* <div>
             <Tabs
               defaultValue={selectedCpuType.id.toString()}
               onValueChange={(value) => {
@@ -81,12 +84,26 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
                 if (cpuType) setSelectedCpuType(cpuType)
               }}
             >
-                <TabsList className={`grid grid-cols-${Math.min(cpuTypes.length, 4)} w-full`}>
+              <TabsList className={`grid grid-cols-${Math.min(cpuTypes.length, 4)} w-full`}>
                 {cpuTypes.map((cpu) => (
                   <TabsTrigger key={cpu.id} value={cpu.id.toString()}>
                     {cpu.Name}
                   </TabsTrigger>
                 ))}
+              </TabsList>
+            </Tabs>
+          </div> */}
+          <div>
+            <Tabs
+              defaultValue={selectedPFGroup.id.toString()}
+              onValueChange={(value) => {
+                const pfGroup = performanceOptions.find((pf) => pf.id.toString() === value);
+                if (pfGroup) {setSelectedPFGroup(pfGroup); setCpuCores(Math.min(cpuCores, pfGroup.CPU.max_threads))}
+              }} >
+              <TabsList className={`grid grid-cols-${performanceOptions.length} w-full`}>
+                {performanceOptions.map((pf) => (
+                    <TabsTrigger key={pf.id} value={pf.id.toString()}>{pf.Name}</TabsTrigger>
+                  ))}
               </TabsList>
             </Tabs>
           </div>
@@ -96,22 +113,22 @@ export function HardwareConfigComponent({ cpuTypes, ramOptions, diskOptions, onN
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold">CPU</h3>
-                <span className="text-muted-foreground">{selectedCpuType.Name}</span>
+                <span className="text-muted-foreground">{selectedPFGroup.CPU.Name}</span>
                 <Info className="h-4 w-4 text-muted-foreground" />
               </div>
-              <div className="text-right text-muted-foreground">{selectedCpuType.price_per_core.toFixed(2)}€/Core</div>
+              <div className="text-right text-muted-foreground">{selectedPFGroup.CPU.price_per_core.toFixed(2)}€/Core</div>
             </div>
             <Slider
               value={[cpuCores]}
-              min={selectedCpuType.min_threads}
-              max={selectedCpuType.max_threads}
+              min={selectedPFGroup.CPU.min_threads}
+              max={selectedPFGroup.CPU.max_threads}
               step={1}
               onValueChange={(value) => setCpuCores(value[0])}
             />
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{selectedCpuType.min_threads}</span>
-              <span>{Math.floor((selectedCpuType.min_threads + selectedCpuType.max_threads) / 2)}</span>
-              <span>{selectedCpuType.max_threads}</span>
+              <span>{selectedPFGroup.CPU.min_threads}</span>
+              <span>{Math.floor((selectedPFGroup.CPU.min_threads + selectedPFGroup.CPU.max_threads) / 2)}</span>
+              <span>{selectedPFGroup.CPU.max_threads}</span>
             </div>
             <div className="text-right font-semibold">{cpuCores}</div>
           </div>
