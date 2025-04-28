@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 // import { Builder, Server } from "pterodactyl.js";
 
-export async function bookServer(config: any) {
+export async function bookServer(prev, formData: FormData) {
   const gameName = formData.get('game').toString();
   const cpuCores = Number(formData.get("cpuCores"));
   const ramSize = Number(formData.get("ramSize"));

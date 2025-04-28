@@ -58,7 +58,8 @@ const Submit = () => {
     config.env.gameVersion = selectedVersion;
     config.env.gameFlavour = selectedFlavor;
 
-    bookServer(config);
+    //TODO: order server
+    // bookServer(config);
 }
 
   // Fetch flavor/version data on mount
