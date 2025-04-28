@@ -1,101 +1,147 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Check, ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { createClient } from "@/utils/supabase/client"
+import { bookServer } from "@/app/booking/[game]/action"
 
-// Minecraft flavor data with associated versions
-const minecraftData = {
-  vanilla: {
-    name: "Vanilla",
-    versions: [
-      "1.20.4",
-      "1.20.2",
-      "1.19.4",
-      "1.19.2",
-      "1.18.2",
-      "1.17.1",
-      "1.16.5",
-      "1.15.2",
-      "1.14.4",
-      "1.12.2",
-      "1.8.9",
-      "1.7.10",
-    ],
-  },
-  forge: {
-    name: "Forge",
-    versions: [
-      "1.20.4",
-      "1.20.2",
-      "1.19.4",
-      "1.19.2",
-      "1.18.2",
-      "1.17.1",
-      "1.16.5",
-      "1.15.2",
-      "1.14.4",
-      "1.12.2",
-      "1.8.9",
-      "1.7.10",
-    ],
-  },
-  fabric: {
-    name: "Fabric",
-    versions: ["1.20.4", "1.20.2", "1.19.4", "1.19.2", "1.18.2", "1.17.1", "1.16.5", "1.15.2", "1.14.4"],
-  },
-  quilt: {
-    name: "Quilt",
-    versions: ["1.20.4", "1.20.2", "1.19.4", "1.19.2", "1.18.2", "1.17.1"],
-  },
+interface Flavor {
+  value: string
+  label: string
+  versions: string[]
 }
-
-// Convert the data to arrays for easier mapping
-const flavors = Object.entries(minecraftData).map(([id, data]) => ({
-  value: id,
-  label: data.name,
-}))
 
 interface MCCProps {
-    config: any;
+  config?: any
 }
 
+
 export default function MinecraftConfig({ config }: MCCProps) {
-  const [open, setOpen] = useState(false)
+  const supabase = createClient()
+
+  // Loading indicator
+  const [loading, setLoading] = useState(true)
+
+  // Data states
+  const [flavors, setFlavors] = useState<Flavor[]>([])
+  const [versions, setVersions] = useState<string[]>([])
+
+  // Selection states
+  const [selectedFlavor, setSelectedFlavor] = useState<string>("Vanilla")
+  const [selectedVersion, setSelectedVersion] = useState<string>("")
+
+  // UI state for popovers
+  const [flavorOpen, setFlavorOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
-  const [selectedFlavor, setSelectedFlavor] = useState("vanilla")
-  const [selectedVersion, setSelectedVersion] = useState(minecraftData.vanilla.versions[0])
 
-  // Get available versions based on selected flavor
-  const availableVersions = minecraftData[selectedFlavor as keyof typeof minecraftData].versions
+  
+const Submit = () => {
+    config.env.gameVersion = selectedVersion;
+    config.env.gameFlavour = selectedFlavor;
 
-  // Handle flavor change
-  const handleFlavorChange = (value: string) => {
-    setSelectedFlavor(value)
-    // Reset version to first available for the new flavor
-    setSelectedVersion(minecraftData[value as keyof typeof minecraftData].versions[0])
-  }
+    bookServer(config);
+}
+
+  // Fetch flavor/version data on mount
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase
+          .from("GameData")
+          .select("data")
+          .eq("name", "minecraft")
+          .single()
+
+        if (error) throw error
+        //TODO: Simulate network delay (remove in production)
+        await new Promise((res) => setTimeout(res, 3000))
+
+        const raw = data.data as Record<string, { name: string; versions: string[] }>
+
+        // Map raw object into array for easier rendering
+        const mapped = Object.entries(raw).map(([key, val]) => ({
+          value: key,
+          label: val.name,
+          versions: val.versions,
+        }))
+
+        setFlavors(mapped)
+        setLoading(false)
+      } catch (e) {
+        console.error("Failed to fetch Minecraft data:", e)
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [supabase])
+
+  // Initialize default selections once flavors are loaded
+  useEffect(() => {
+    if (!loading && flavors.length) {
+      const first = flavors[0]
+      setSelectedFlavor(first.value)
+      setVersions(first.versions)
+      setSelectedVersion(first.versions[0] || "")
+    }
+  }, [loading, flavors])
+
+  // Update versions list when flavor changes
+  useEffect(() => {
+    if (!loading && selectedFlavor) {
+      const flavor = flavors.find((f) => f.value === selectedFlavor)
+      if (flavor) {
+        setVersions(flavor.versions)
+        setSelectedVersion(flavor.versions[0] || "")
+      }
+    }
+  }, [selectedFlavor, flavors, loading])
+
+  const isValid = Boolean(selectedFlavor && selectedVersion)
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Minecraft Launcher</CardTitle>
-        <CardDescription>Select your preferred Minecraft flavor and version</CardDescription>
+        <CardDescription>
+          Select your preferred Minecraft flavor and version
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Flavor selector */}
         <div className="space-y-2">
           <label htmlFor="flavor" className="text-sm font-medium">
             Minecraft Flavor
           </label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
-                {selectedFlavor ? minecraftData[selectedFlavor as keyof typeof minecraftData].name : "Select flavor..."}
+          <Popover open={flavorOpen} onOpenChange={setFlavorOpen}>
+            <PopoverTrigger asChild disabled={loading}>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={flavorOpen}
+                className="w-full justify-between"
+              >
+                {selectedFlavor
+                  ? flavors.find((f) => f.value === selectedFlavor)?.label
+                  : "Select flavor..."}
                 <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -109,13 +155,18 @@ export default function MinecraftConfig({ config }: MCCProps) {
                       <CommandItem
                         key={flavor.value}
                         value={flavor.value}
-                        onSelect={(currentValue) => {
-                          handleFlavorChange(currentValue)
-                          setOpen(false)
+                        onSelect={(val) => {
+                          setSelectedFlavor(val)
+                          setFlavorOpen(false)
                         }}
                       >
                         <Check
-                          className={cn("mr-2 h-4 w-4", selectedFlavor === flavor.value ? "opacity-100" : "opacity-0")}
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedFlavor === flavor.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
                         />
                         {flavor.label}
                       </CommandItem>
@@ -127,13 +178,19 @@ export default function MinecraftConfig({ config }: MCCProps) {
           </Popover>
         </div>
 
+        {/* Version selector */}
         <div className="space-y-2">
           <label htmlFor="version" className="text-sm font-medium">
             Game Version
           </label>
           <Popover open={versionOpen} onOpenChange={setVersionOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" role="combobox" aria-expanded={versionOpen} className="w-full justify-between">
+            <PopoverTrigger asChild disabled={loading}>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={versionOpen}
+                className="w-full justify-between"
+              >
                 {selectedVersion || "Select version..."}
                 <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -144,17 +201,22 @@ export default function MinecraftConfig({ config }: MCCProps) {
                 <CommandList>
                   <CommandEmpty>No version found.</CommandEmpty>
                   <CommandGroup>
-                    {availableVersions.map((version) => (
+                    {versions.map((version) => (
                       <CommandItem
                         key={version}
                         value={version}
-                        onSelect={(currentValue) => {
-                          setSelectedVersion(currentValue)
+                        onSelect={(val) => {
+                          setSelectedVersion(val)
                           setVersionOpen(false)
                         }}
                       >
                         <Check
-                          className={cn("mr-2 h-4 w-4", selectedVersion === version ? "opacity-100" : "opacity-0")}
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedVersion === version
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
                         />
                         {version}
                       </CommandItem>
@@ -166,9 +228,11 @@ export default function MinecraftConfig({ config }: MCCProps) {
           </Popover>
         </div>
 
+        {/* Launch button */}
         <div className="pt-4">
-          <Button className="w-full">
-            Launch Minecraft {minecraftData[selectedFlavor as keyof typeof minecraftData].name} {selectedVersion}
+          <Button className="w-full" disabled={!isValid || loading} onClick={Submit}>
+            Launch Minecraft {selectedFlavor}{" "}
+            {selectedVersion}
           </Button>
         </div>
       </CardContent>
