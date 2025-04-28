@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { fetchCpuTypes, fetchRamOptions, fetchDiskOptions, fetchGames, submitServerConfig } from "@/lib/actions"
-import type { CpuType, RamOption, DiskOption, Game, HardwareConfig, GameConfig, ServerConfig } from "@/models/config"
+import { fetchCPUOptions as fetchCPUOptions, fetchRamOptions, fetchDiskOptions, fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
+import { type CpuType, type RamOption, type DiskOption, type Game, type HardwareConfig, type GameConfig, type ServerConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
   const [cpuTypes, setCpuTypes] = useState<CpuType[]>([])
+  const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([]);
   const [ramOptions, setRamOptions] = useState<RamOption[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
   const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null)
@@ -22,15 +23,17 @@ export default function GameServerConfig() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cpuTypesData, ramOptionsData, diskOptionsData] = await Promise.all([
-          fetchCpuTypes(),
+        const [cpuTypesData, ramOptionsData, diskOptionsData, performanceGroupData] = await Promise.all([
+          fetchCPUOptions(),
           fetchRamOptions(),
           fetchDiskOptions(),
+          fetchPerformanceGroups()
         ])
 
-        setCpuTypes(cpuTypesData)
-        setRamOptions(ramOptionsData)
-        setDiskOptions(diskOptionsData)
+        setCpuTypes(cpuTypesData);
+        setRamOptions(ramOptionsData);
+        setDiskOptions(diskOptionsData);
+        setPerformanceGroup(performanceGroupData);
       } catch (error) {
         console.error("Error fetching data:", error)
         toast({
@@ -99,7 +102,7 @@ export default function GameServerConfig() {
     }
   }
 
-  if (loading && cpuTypes.length === 0) {
+  if (loading && performanceGroup.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -114,9 +117,9 @@ export default function GameServerConfig() {
     <div className="min-h-screen bg-background">
       {step === 1 && (
         <HardwareConfigComponent
-          cpuTypes={cpuTypes}
           ramOptions={ramOptions}
           diskOptions={diskOptions}
+          performanceOptions={performanceGroup}
           onNext={handleHardwareConfigNext}
         />
       )}

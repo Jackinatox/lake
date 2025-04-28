@@ -1,10 +1,24 @@
 "use server"
 
 // import { getServerClient } from "@/lib/supabase"
-import type { ServerConfig } from "@/models/config"
+import type { CpuType, PerformanceGroup, ServerConfig } from "@/models/config"
 import { createClient } from "@/utils/supabase/client"
 
-export async function fetchCpuTypes() {
+export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.from("Locations").select("*, CPU:CPU_Id (*)").eq('Enabled', true);
+
+  console.log('PFGroups: ', data)
+
+  if (error) {
+    console.error("Error fetching PFGroups:", error)
+    throw new Error("Failed to fetch PFGroups")
+  }
+
+  return data as PerformanceGroup[]
+}
+
+export async function fetchCPUOptions(): Promise<CpuType[]> {
   const supabase = createClient();
   const { data, error } = await supabase.from("CPUs").select("*");
 
@@ -85,29 +99,29 @@ export async function submitServerConfig(config: ServerConfig) {
   // const { data: { user } } = await supabase.auth.getUser();
   // if (!user) throw new Error('Unauthorized');
 
-  const { hardwareConfig, gameConfig } = config
+  // const { hardwareConfig, gameConfig } = config
 
-  const { data, error } = await supabase
-    .from("server_configurations")
-    .insert({
-      // user_id: user.id,
-      cpu_type_id: hardwareConfig.cpuTypeId,
-      cpu_cores: hardwareConfig.cpuCores,
-      ram_gb: hardwareConfig.ramGb,
-      disk_gb: hardwareConfig.diskGb,
-      game_id: gameConfig.gameId,
-      game_flavor_id: gameConfig.gameFlavorId,
-      game_version_id: gameConfig.gameVersionId,
-      additional_config: gameConfig.additionalConfig || {},
-      total_price: hardwareConfig.totalPrice,
-    })
-    .select()
-    .single()
+  // const { data, error } = await supabase
+  //   .from("server_configurations")
+  //   .insert({
+  //     // user_id: user.id,
+  //     cpu_type_id: hardwareConfig.cpuTypeId,
+  //     cpu_cores: hardwareConfig.cpuCores,
+  //     ram_gb: hardwareConfig.ramGb,
+  //     disk_gb: hardwareConfig.diskGb,
+  //     game_id: gameConfig.gameId,
+  //     game_flavor_id: gameConfig.gameFlavorId,
+  //     game_version_id: gameConfig.gameVersionId,
+  //     additional_config: gameConfig.additionalConfig || {},
+  //     total_price: hardwareConfig.totalPrice,
+  //   })
+  //   .select()
+  // //   .single()
 
-  if (error) {
-    console.error("Error submitting server configuration:", error)
-    throw new Error("Failed to submit server configuration")
-  }
+  // if (error) {
+  //   console.error("Error submitting server configuration:", error)
+  //   throw new Error("Failed to submit server configuration")
+  // }
 
-  return data
+  // return data
 }
