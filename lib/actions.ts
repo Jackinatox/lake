@@ -6,9 +6,7 @@ import { createClient } from "@/utils/supabase/client"
 
 export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
   const supabase = createClient();
-  const { data, error } = await supabase.from("Locations").select("*, CPU:CPU_Id (*)").eq('Enabled', true).order('id');
-
-  console.log('PFGroups: ', data)
+  const { data, error } = await supabase.from("Locations").select("*, CPU:CPU_Id (*), RAM:RAM_Id (*)").eq('Enabled', true).order('id');
 
   if (error) {
     console.error("Error fetching PFGroups:", error)
@@ -18,31 +16,31 @@ export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
   return data as PerformanceGroup[]
 }
 
-export async function fetchCPUOptions(): Promise<CpuType[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase.from("CPUs").select("*");
+// export async function fetchCPUOptions(): Promise<CpuType[]> {
+//   const supabase = createClient();
+//   const { data, error } = await supabase.from("CPUs").select("*");
 
-  console.log('cpu types: ', data)
+//   console.log('cpu types: ', data)
 
-  if (error) {
-    console.error("Error fetching CPU types:", error)
-    throw new Error("Failed to fetch CPU types")
-  }
+//   if (error) {
+//     console.error("Error fetching CPU types:", error)
+//     throw new Error("Failed to fetch CPU types")
+//   }
 
-  return data
-}
+//   return data
+// }
 
-export async function fetchRamOptions() {
-  const supabase = createClient();
-  const { data, error } = await supabase.from("RAMs").select("*")
+// export async function fetchRamOptions() {
+//   const supabase = createClient();
+//   const { data, error } = await supabase.from("RAMs").select("*")
 
-  if (error) {
-    console.error("Error fetching RAM options:", error)
-    throw new Error("Failed to fetch RAM options")
-  }
+//   if (error) {
+//     console.error("Error fetching RAM options:", error)
+//     throw new Error("Failed to fetch RAM options")
+//   }
 
-  return data
-}
+//   return data
+// }
 
 export async function fetchDiskOptions() {
   const supabase = createClient();
@@ -58,8 +56,8 @@ export async function fetchDiskOptions() {
 
 export async function fetchGames() {
   const supabase = createClient();
-  const { data, error } = await supabase.from("games").select("*")
-
+  const { data, error } = await supabase.from("Games").select("*")
+  console.log(data)
   if (error) {
     console.error("Error fetching games:", error)
     throw new Error("Failed to fetch games")

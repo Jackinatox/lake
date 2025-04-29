@@ -4,6 +4,16 @@ const maxBackups = 100;
 const minDisk = 10240; // 10GiB in MiB
 const maxDisk = 102400; // 100GiB in MiB
 
+// Input CPU % - 1 Thread = 100 | RamSize in MiB | return MiB
+/**
+ * Calculates the disk size based on the provided CPU and RAM size.
+ * The calculation is performed using the formula: `(cpu / 50 + ramSize / 512) * 1024`,
+ * with the result being constrained between `minDisk` and `maxDisk` values.
+ *
+ * @param cpu - The number of CPU in %.
+ * @param ramSize - The size of RAM in MiB (mebibytes).
+ * @returns The calculated disk size in MiB, constrained by the minimum and maximum disk size limits.
+ */
 export function calcDiskSize(cpu: number, ramSize: number): number {
   // Calculates Disk like this: threads*2 + ramGiB*2 min and Max Values set
   return Math.max(
@@ -14,6 +24,16 @@ export function calcDiskSize(cpu: number, ramSize: number): number {
   );
 }
 
+/**
+ * Calculates the number of backups based on CPU cores and RAM size.
+ *
+ * The formula used is: `cores + (RAM in GB * 0.8)`, with the result
+ * constrained between `minBackups` and `maxBackups`.
+ *
+ * @param cpu - The number of CPU in %.
+ * @param ramSize - The size of RAM in megabytes.
+ * @returns The calculated number of backups, constrained by minimum and maximum values.
+ */
 export function calcBackups(cpu: number, ramSize: number): number {
   // Calculates Backups like this: cores + RamGB * 0.8 min and max Values set
   return Math.max(

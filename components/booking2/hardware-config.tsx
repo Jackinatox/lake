@@ -6,21 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Info } from "lucide-react"
-import type { CpuType, RamOption, DiskOption, HardwareConfig, PerformanceGroup } from "@/models/config"
-import { TabList } from "@mui/joy"
+import type { DiskOption, HardwareConfig, PerformanceGroup } from "@/models/config"
+import { calcDiskSize } from "@/lib/globalFunctions"
 
 interface HardwareConfigProps {
-  ramOptions: RamOption[]
   diskOptions: DiskOption[]
   performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
 }
 
-export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOptions, onNext }: HardwareConfigProps) {
+export function HardwareConfigComponent({ diskOptions, performanceOptions, onNext }: HardwareConfigProps) {
   const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
+
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
-  const [selectedDiskOption, setSelectedDiskOption] = useState<DiskOption | null>(null)
   const [totalPrice, setTotalPrice] = useState(0)
 
   // Set initial values
@@ -32,34 +31,31 @@ export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOp
 
   // Calculate total price whenever configuration changes
   useEffect(() => {
-    if (selectedPFGroup?.CPU && ramOptions.length > 0 && selectedDiskOption) {
+    if (selectedPFGroup?.CPU && selectedPFGroup?.RAM) {
       const cpuPrice = selectedPFGroup.CPU.price_per_core * cpuCores
-      const ramPrice = ramOptions[0].price_per_gb * ramGb
-      const diskPrice = selectedDiskOption.price_per_gb * selectedDiskOption.size_gb
+      const ramPrice = selectedPFGroup.RAM.price_per_gb * ramGb
 
-      setTotalPrice(Number.parseFloat((cpuPrice + ramPrice + diskPrice).toFixed(2)))
+      setTotalPrice(Number.parseFloat((cpuPrice + ramPrice).toFixed(2)))
     }
-  }, [selectedPFGroup, cpuCores, ramGb, selectedDiskOption, ramOptions])
+  }, [selectedPFGroup, cpuCores, ramGb])
 
   const handleNext = () => {
-    if (!selectedPFGroup.CPU || !selectedDiskOption) return
+    if (!selectedPFGroup.CPU) return
 
     const config: HardwareConfig = {
       pfGroupId: selectedPFGroup.id,
       cpuCores,
       ramGb,
-      diskGb: selectedDiskOption.size_gb,
-      totalPrice,
     }
 
     onNext(config)
   }
 
-  if (!selectedPFGroup || ramOptions.length === 0 || !selectedDiskOption) {
+  if (!selectedPFGroup) {
     return <div>Loading configuration options...</div>
   }
 
-  const ramOption = ramOptions[0] // Using the first RAM option
+  const ramOption = selectedPFGroup.RAM; // Using the first RAM option
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -70,23 +66,6 @@ export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOp
         </CardHeader>
         <CardContent className="space-y-6">
           {/* CPU Selection */}
-          {/* <div>
-            <Tabs
-              defaultValue={selectedCpuType.id.toString()}
-              onValueChange={(value) => {
-                const cpuType = cpuTypes.find((cpu) => cpu.id.toString() === value)
-                if (cpuType) setSelectedCpuType(cpuType)
-              }}
-            >
-              <TabsList className={`grid grid-cols-${Math.min(cpuTypes.length, 4)} w-full`}>
-                {cpuTypes.map((cpu) => (
-                  <TabsTrigger key={cpu.id} value={cpu.id.toString()}>
-                    {cpu.Name}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-          </div> */}
           <div>
             <Tabs
               defaultValue={selectedPFGroup.id.toString()}
@@ -171,7 +150,7 @@ export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOp
             <Card>
               <CardContent className="p-4 text-center flex justify-between">
                 <span className="font-semibold">Disk: </span>
-                <span className="font-semibold">X GB</span>
+                <span className="font-semibold">{calcDiskSize(cpuCores * 100, ramGb*1024) / 1024} GB</span>
               </CardContent>
             </Card>
             <Card className="bg-muted/40">
