@@ -3,35 +3,39 @@
 import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { fetchCPUOptions as fetchCPUOptions, fetchRamOptions, fetchDiskOptions, fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
+import { fetchDiskOptions, fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
 import { type CpuType, type RamOption, type DiskOption, type Game, type HardwareConfig, type GameConfig, type ServerConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
+import { useParams, usePathname } from "next/navigation"
+
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
-  const [cpuTypes, setCpuTypes] = useState<CpuType[]>([])
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([]);
-  const [ramOptions, setRamOptions] = useState<RamOption[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
+  const [games, setGames] = useState<Game[]>([])
   const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null)
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null)
   const [additionalConfig, setAdditionalConfig] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
+
+  const params = useParams();
+  console.log(params.game);
+
+
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cpuTypesData, ramOptionsData, diskOptionsData, performanceGroupData] = await Promise.all([
-          fetchCPUOptions(),
-          fetchRamOptions(),
+        const [diskOptionsData, performanceGroupData, games] = await Promise.all([
           fetchDiskOptions(),
-          fetchPerformanceGroups()
+          fetchPerformanceGroups(),
+          fetchGames()
         ])
 
-        setCpuTypes(cpuTypesData);
-        setRamOptions(ramOptionsData);
+        setGames(games);
         setDiskOptions(diskOptionsData);
         setPerformanceGroup(performanceGroupData);
       } catch (error) {
@@ -115,9 +119,9 @@ export default function GameServerConfig() {
 
   return (
     <div className="min-h-screen bg-background">
+
       {step === 1 && (
         <HardwareConfigComponent
-          ramOptions={ramOptions}
           diskOptions={diskOptions}
           performanceOptions={performanceGroup}
           onNext={handleHardwareConfigNext}
@@ -127,6 +131,7 @@ export default function GameServerConfig() {
       {step === 2 && (
         <div>
           <GameConfigComponent
+          games={games}
             onBack={handleGameConfigBack}
             onSubmit={handleGameConfigSubmit}
             additionalConfig={additionalConfig}

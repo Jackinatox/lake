@@ -7,6 +7,7 @@ export interface PerformanceGroup {
   Enabled: boolean;
   ptLocationId: number;
   CPU: CpuType;
+  RAM: RamOption;
 }
 
 export interface CpuType {
@@ -23,6 +24,8 @@ export interface CpuType {
 
 export interface RamOption {
   id: number
+  Name: string
+  Speed: number
   price_per_gb: number
   min_gb: number
   max_gb: number
@@ -58,8 +61,6 @@ export interface HardwareConfig {
   pfGroupId: number
   cpuCores: number
   ramGb: number
-  diskGb: number
-  totalPrice: number
 }
 
 export interface GameConfig {

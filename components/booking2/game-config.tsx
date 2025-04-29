@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, ChevronUp } from "lucide-react"
 
 interface GameConfigProps {
+  games: Game[]
   initialGameId?: number
   additionalConfig?: Record<string, any>
   onAdditionalConfigChange?: (config: Record<string, any>) => void
@@ -19,6 +20,7 @@ interface GameConfigProps {
 }
 
 export function GameConfigComponent({
+  games,
   initialGameId,
   additionalConfig = {},
   onAdditionalConfigChange = () => {},
