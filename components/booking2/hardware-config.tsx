@@ -26,14 +26,9 @@ export function HardwareConfigComponent({ ramOptions, diskOptions, performanceOp
   // Set initial values
   useEffect(() => {
     if (performanceOptions.length > 0 && !selectedPFGroup) {
-      console.log('setting defaul')
       setSelectedPFGroup(performanceOptions[0])
     }
-
-    if (diskOptions.length > 0 && !selectedDiskOption) {
-      setSelectedDiskOption(diskOptions[0])
-    }
-  }, [performanceOptions, diskOptions,])
+  }, [performanceOptions])
 
   // Calculate total price whenever configuration changes
   useEffect(() => {
