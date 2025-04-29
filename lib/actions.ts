@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/client"
 
 export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
   const supabase = createClient();
-  const { data, error } = await supabase.from("Locations").select("*, CPU:CPU_Id (*)").eq('Enabled', true);
+  const { data, error } = await supabase.from("Locations").select("*, CPU:CPU_Id (*)").eq('Enabled', true).order('id');
 
   console.log('PFGroups: ', data)
 
