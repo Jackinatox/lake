@@ -40,8 +40,7 @@ export interface DiskOption {
 export interface Game {
   id: number
   name: string
-  description: string | null
-  icon_url: string | null
+  data : any
 }
 
 export interface GameFlavor {
@@ -49,12 +48,6 @@ export interface GameFlavor {
   game_id: number
   name: string
   description: string | null
-}
-
-export interface GameVersion {
-  id: number
-  game_flavor_id: number
-  version: string
 }
 
 export interface HardwareConfig {
