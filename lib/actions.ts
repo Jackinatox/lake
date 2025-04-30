@@ -1,7 +1,7 @@
 "use server"
 
 // import { getServerClient } from "@/lib/supabase"
-import type { CpuType, PerformanceGroup, ServerConfig } from "@/models/config"
+import type { CpuType, Game, PerformanceGroup, ServerConfig } from "@/models/config"
 import { createClient } from "@/utils/supabase/client"
 
 export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
@@ -54,10 +54,11 @@ export async function fetchDiskOptions() {
   return data
 }
 
-export async function fetchGames() {
+export async function fetchGames(gameId: number): Promise<Game> {
   const supabase = createClient();
-  const { data, error } = await supabase.from("Games").select("*")
+  const { data, error } = await supabase.from("GameData").select("*").eq('id', gameId).single();
   console.log(data)
+
   if (error) {
     console.error("Error fetching games:", error)
     throw new Error("Failed to fetch games")

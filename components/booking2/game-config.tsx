@@ -9,9 +9,11 @@ import type { Game, GameFlavor, GameVersion, GameConfig } from "@/models/config"
 import { fetchGameFlavors, fetchGameVersions } from "@/lib/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { MinecraftConfigComponent } from "./minecraft-config"
+import { TerrariaConfigComponent } from "./terraria-config"
 
 interface GameConfigProps {
-  games: Game[]
+  game: Game
   initialGameId?: number
   additionalConfig?: Record<string, any>
   onAdditionalConfigChange?: (config: Record<string, any>) => void
@@ -20,41 +22,20 @@ interface GameConfigProps {
 }
 
 export function GameConfigComponent({
-  games,
+  game,
   initialGameId,
   additionalConfig = {},
-  onAdditionalConfigChange = () => {},
+  onAdditionalConfigChange = () => { },
   onBack,
   onSubmit,
 }: GameConfigProps) {
+  const [gameConfig, setGameConfig] = useState<Record<string, any>>({})
   const [selectedGameId, setSelectedGameId] = useState<number | null>(initialGameId || null)
-  const [gameFlavors, setGameFlavors] = useState<GameFlavor[]>([])
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
   const [gameVersions, setGameVersions] = useState<GameVersion[]>([])
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
 
-  // Set initial game if provided
-  useEffect(() => {
-    if (games.length > 0 && !selectedGameId) {
-      setSelectedGameId(initialGameId || games[0].id)
-    }
-  }, [games, initialGameId, selectedGameId])
-
-  // Fetch game flavors when game changes
-  useEffect(() => {
-    if (selectedGameId) {
-      setLoading(true)
-      fetchGameFlavors(selectedGameId)
-        .then((data) => {
-          setGameFlavors(data)
-          setSelectedFlavorId(data.length > 0 ? data[0].id : null)
-        })
-        .catch((error) => console.error("Error fetching game flavors:", error))
-        .finally(() => setLoading(false))
-    }
-  }, [selectedGameId])
 
   // Fetch game versions when flavor changes
   useEffect(() => {
@@ -88,171 +69,32 @@ export function GameConfigComponent({
     onSubmit(config)
   }
 
-  const selectedGame = games.find((game) => game.id === selectedGameId)
+  const handleConfigChange = (config: Record<string, any>) => {
+    setGameConfig(config)
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <CardTitle>{selectedGame?.name || "Game"} Configuration</CardTitle>
-              <CardDescription>Select your preferred game settings</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Game Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Game</label>
-            <Select
-              value={selectedGameId?.toString() || ""}
-              onValueChange={(value) => setSelectedGameId(Number.parseInt(value))}
-              disabled={loading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a game" />
-              </SelectTrigger>
-              <SelectContent>
-                {games.map((game) => (
-                  <SelectItem key={game.id} value={game.id.toString()}>
-                    {game.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Game Flavor Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Game Flavor</label>
-            <Select
-              value={selectedFlavorId?.toString() || ""}
-              onValueChange={(value) => setSelectedFlavorId(Number.parseInt(value))}
-              disabled={loading || gameFlavors.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a flavor" />
-              </SelectTrigger>
-              <SelectContent>
-                {gameFlavors.map((flavor) => (
-                  <SelectItem key={flavor.id} value={flavor.id.toString()}>
-                    {flavor.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Game Version Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Game Version</label>
-            <Select
-              value={selectedVersionId?.toString() || ""}
-              onValueChange={(value) => setSelectedVersionId(Number.parseInt(value))}
-              disabled={loading || gameVersions.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a version" />
-              </SelectTrigger>
-              <SelectContent>
-                {gameVersions.map((version) => (
-                  <SelectItem key={version.id} value={version.id.toString()}>
-                    {version.version}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-        {selectedGameId === 1 && ( // Minecraft-specific settings
-          <div className="px-6 pb-4">
-            <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-              <div className="flex items-center justify-between space-x-4 px-1">
-                <h4 className="text-sm font-semibold">Advanced Minecraft Configuration</h4>
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="w-9 p-0">
-                    {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    <span className="sr-only">Toggle</span>
-                  </Button>
-                </CollapsibleTrigger>
-              </div>
-              <CollapsibleContent className="mt-2">
-                <div className="space-y-4 border p-4 rounded-md">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Server Name (MOTD)</label>
-                    <input
-                      type="text"
-                      className="w-full p-2 border rounded-md"
-                      placeholder="A Minecraft Server"
-                      value={additionalConfig.serverName || "A Minecraft Server"}
-                      onChange={(e) => handleMinecraftConfigChange("serverName", e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Max Players</label>
-                    <input
-                      type="number"
-                      className="w-full p-2 border rounded-md"
-                      placeholder="20"
-                      min="1"
-                      max="100"
-                      value={additionalConfig.maxPlayers || 20}
-                      onChange={(e) => handleMinecraftConfigChange("maxPlayers", Number.parseInt(e.target.value))}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Difficulty</label>
-                    <select
-                      className="w-full p-2 border rounded-md"
-                      value={additionalConfig.difficulty || "normal"}
-                      onChange={(e) => handleMinecraftConfigChange("difficulty", e.target.value)}
-                    >
-                      <option value="peaceful">Peaceful</option>
-                      <option value="easy">Easy</option>
-                      <option value="normal">Normal</option>
-                      <option value="hard">Hard</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="pvp"
-                      checked={additionalConfig.enablePvp || false}
-                      onChange={(e) => handleMinecraftConfigChange("enablePvp", e.target.checked)}
-                    />
-                    <label htmlFor="pvp" className="text-sm font-medium">
-                      Enable PvP
-                    </label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="commandBlocks"
-                      checked={additionalConfig.enableCommandBlocks || false}
-                      onChange={(e) => handleMinecraftConfigChange("enableCommandBlocks", e.target.checked)}
-                    />
-                    <label htmlFor="commandBlocks" className="text-sm font-medium">
-                      Enable Command Blocks
-                    </label>
-                  </div>
+      <Card className="p-4">
+        {(() => {
+          switch (game.id) {
+            case 1: // Minecraft
+              return <MinecraftConfigComponent onChange={handleConfigChange} />
+            case 2: // Terraria
+              return <TerrariaConfigComponent onChange={handleConfigChange} />
+            default:
+              return (
+                <div className="p-4 border rounded-md">
+                  <p className="text-muted-foreground">No specific configuration optionggs available for this game.</p>
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        )}
-        <CardFooter className="flex justify-end">
+              )
+          }
+        })()}
+        <div className="w-full mx-auto mt-4 flex justify-end">
           <Button onClick={handleSubmit} disabled={!selectedVersionId}>
             Launch Server
           </Button>
-        </CardFooter>
+        </div>
       </Card>
     </div>
   )

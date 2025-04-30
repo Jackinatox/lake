@@ -13,7 +13,7 @@ export default function GameServerConfig() {
   const [step, setStep] = useState(1)
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([]);
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
-  const [games, setGames] = useState<Game[]>([])
+  const [selectedGame, setSelectedGame] = useState<Game>()
   const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null)
   const [gameConfig, setGameConfig] = useState<GameConfig | null>(null)
   const [additionalConfig, setAdditionalConfig] = useState<Record<string, any>>({})
@@ -22,20 +22,21 @@ export default function GameServerConfig() {
 
 
   const params = useParams();
-  console.log(params.game);
+  const gameId = parseInt(params.gameId.toString(), 10);
 
 
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('before fetching id: ', gameId)
         const [diskOptionsData, performanceGroupData, games] = await Promise.all([
           fetchDiskOptions(),
           fetchPerformanceGroups(),
-          fetchGames()
+          fetchGames(gameId)
         ])
 
-        setGames(games);
+        setSelectedGame(games);
         setDiskOptions(diskOptionsData);
         setPerformanceGroup(performanceGroupData);
       } catch (error) {
@@ -129,22 +130,15 @@ export default function GameServerConfig() {
       )}
 
       {step === 2 && (
-        <div>
+        <div className="">
           <GameConfigComponent
-          games={games}
+            game={selectedGame}
             onBack={handleGameConfigBack}
             onSubmit={handleGameConfigSubmit}
             additionalConfig={additionalConfig}
             onAdditionalConfigChange={handleAdditionalConfigChange}
           />
 
-          {/* Remove this section
-          {gameConfig ? (
-            <GameConfigFactory gameId={gameConfig.gameId} onChange={handleAdditionalConfigChange} />
-          ) : (
-            games.length > 0 && <GameConfigFactory gameId={games[0].id} onChange={handleAdditionalConfigChange} />
-          )}
-          */}
         </div>
       )}
     </div>
