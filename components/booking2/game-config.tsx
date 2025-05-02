@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft } from "lucide-react"
-import type { Game, GameFlavor, GameVersion, GameConfig } from "@/models/config"
+import type { Game, GameFlavor, GameConfig } from "@/models/config"
 import { fetchGameFlavors, fetchGameVersions } from "@/lib/actions"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ChevronDown, ChevronUp } from "lucide-react"
@@ -32,24 +32,8 @@ export function GameConfigComponent({
   const [gameConfig, setGameConfig] = useState<Record<string, any>>({})
   const [selectedGameId, setSelectedGameId] = useState<number | null>(initialGameId || null)
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
-  const [gameVersions, setGameVersions] = useState<GameVersion[]>([])
   const [selectedVersionId, setSelectedVersionId] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
-
-
-  // Fetch game versions when flavor changes
-  useEffect(() => {
-    if (selectedFlavorId) {
-      setLoading(true)
-      fetchGameVersions(selectedFlavorId)
-        .then((data) => {
-          setGameVersions(data)
-          setSelectedVersionId(data.length > 0 ? data[0].id : null)
-        })
-        .catch((error) => console.error("Error fetching game versions:", error))
-        .finally(() => setLoading(false))
-    }
-  }, [selectedFlavorId])
 
   const handleMinecraftConfigChange = (key: string, value: any) => {
     const newConfig = { ...additionalConfig, [key]: value }
@@ -79,7 +63,7 @@ export function GameConfigComponent({
         {(() => {
           switch (game.id) {
             case 1: // Minecraft
-              return <MinecraftConfigComponent onChange={handleConfigChange} />
+              return <MinecraftConfigComponent onSubmit={handleSubmit} onChange={null} game={game} onBack={onBack} />
             case 2: // Terraria
               return <TerrariaConfigComponent onChange={handleConfigChange} />
             default:

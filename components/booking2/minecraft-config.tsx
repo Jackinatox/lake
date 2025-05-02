@@ -1,31 +1,47 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Game, GameConfig } from "@/models/config"
+import { ArrowLeft, ChevronDown, ChevronUp, Check, ChevronsUpDown } from "lucide-react"
+import type { Game, GameConfig } from "@/models/config"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface MinecraftConfigProps {
   onChange: (config: Record<string, any>) => void
-    game: Game
-    additionalConfig?: Record<string, any>
-    onAdditionalConfigChange?: (config: Record<string, any>) => void
-    onBack: () => void
-    onSubmit: (config: GameConfig) => void
+  game: Game
+  additionalConfig?: Record<string, any>
+  onAdditionalConfigChange?: (config: Record<string, any>) => void
+  onBack: () => void
+  onSubmit: (config: GameConfig) => void
 }
 
 export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftConfigProps) {
-    const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
-    const [gameVersions, setGameVersions] = useState<[]>([])
-    const [loading, setLoading] = useState(false)
-    
+  const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
+  const [selectedVersion, setSelectedVersion] = useState<string | null>(null)
+  const [gameVersions, setGameVersions] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+  const [flavorOpen, setFlavorOpen] = useState(false)
+  const [versionOpen, setVersionOpen] = useState(false)
+
+  useEffect(() => {
+    setSelectedFlavorId(3)
+    setSelectedVersion("1.20.4");
+  }, [game])
+
+  useEffect(() => {
+    if (selectedFlavorId && game.data.flavors[selectedFlavorId]) {
+      setGameVersions(game.data.flavors[selectedFlavorId].versions)
+    }
+  }, [selectedFlavorId])
+
   const [config, setConfig] = useState({
     serverName: "My Minecraft Server",
     maxPlayers: 20,
@@ -49,67 +65,112 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
   return (
     <>
       <div>
-        <Card>
-          <CardHeader>
+        <Card className="p-4">
+          <div className="pb-4">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={onBack}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <CardTitle>{selectedGame?.name || "Game"} Configuration</CardTitle>
+                <CardTitle>{game.name || "Game"} Configuration</CardTitle>
                 <CardDescription>Select your preferred game settings</CardDescription>
               </div>
             </div>
-          </CardHeader>
-
-          {/* Game Flavor Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Game Flavor</label>
-            <Select
-              value={selectedFlavorId?.toString() || ""}
-              onValueChange={(value) => setSelectedFlavorId(Number.parseInt(value))}
-              disabled={loading || gameFlavors.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a flavor" />
-              </SelectTrigger>
-              <SelectContent>
-                {game.data.flavours.map((flavor) => (
-                  <SelectItem key={flavor.id} value={flavor.id.toString()}>
-                    {flavor.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
-          {/* Game Version Selection */}
+          {/* Game Flavor Selection with Combobox */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Game Version</label>
-            <Select
-              value={selectedVersionId?.toString() || ""}
-              onValueChange={(value) => setSelectedVersionId(Number.parseInt(value))}
-              disabled={loading || gameVersions.length === 0}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a version" />
-              </SelectTrigger>
-              <SelectContent>
-                {gameVersions.map((version) => (
-                  <SelectItem key={version.id} value={version.id.toString()}>
-                    {version.version}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label className="text-sm font-medium">Game Flavor</Label>
+            <Popover open={flavorOpen} onOpenChange={setFlavorOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={flavorOpen}
+                  className="w-full justify-between"
+                  disabled={loading || game.data.flavors.length === 0}
+                >
+                  {selectedFlavorId !== null
+                    ? game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.name || "Select a flavor"
+                    : "Select a flavor"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search flavor..." />
+                  <CommandList>
+                    <CommandEmpty>No flavor found.</CommandEmpty>
+                    <CommandGroup>
+                      {game.data.flavors.map((flavor) => (
+                        <CommandItem
+                          key={flavor.id}
+                          value={flavor.name}
+                          onSelect={() => {
+                            setSelectedFlavorId(flavor.id)
+                            setFlavorOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn("mr-2 h-4 w-4", selectedFlavorId === flavor.id ? "opacity-100" : "opacity-0")}
+                          />
+                          {flavor.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Game Version Selection with Combobox */}
+          <div className="space-y-2 mt-4">
+            <Label className="text-sm font-medium">Game Version</Label>
+            <Popover open={versionOpen} onOpenChange={setVersionOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={versionOpen}
+                  className="w-full justify-between"
+                  disabled={loading || gameVersions.length === 0}
+                >
+                  {selectedVersion || "Select a version"}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput placeholder="Search version..." />
+                  <CommandList>
+                    <CommandEmpty>No version found.</CommandEmpty>
+                    <CommandGroup>
+                      {gameVersions.map((version) => (
+                        <CommandItem
+                          key={version}
+                          value={version}
+                          onSelect={() => {
+                            setSelectedVersion(version)
+                            setVersionOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn("mr-2 h-4 w-4", selectedVersion === version ? "opacity-100" : "opacity-0")}
+                          />
+                          {version}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </Card>
 
-
-
         {/* Advanced Config below */}
-
-        <div Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4" >
+        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
           <Card>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="flex w-full justify-between p-4">
@@ -152,19 +213,42 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
                   />
                 </div>
 
+                {/* Difficulty Selection with Combobox */}
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">Difficulty</Label>
-                  <select
-                    id="difficulty"
-                    className="w-full p-2 border rounded-md"
-                    value={config.difficulty}
-                    onChange={(e) => handleChange("difficulty", e.target.value)}
-                  >
-                    <option value="peaceful">Peaceful</option>
-                    <option value="easy">Easy</option>
-                    <option value="normal">Normal</option>
-                    <option value="hard">Hard</option>
-                  </select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button id="difficulty" variant="outline" role="combobox" className="w-full justify-between">
+                        {config.difficulty.charAt(0).toUpperCase() + config.difficulty.slice(1)}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0">
+                      <Command>
+                        <CommandInput placeholder="Search difficulty..." />
+                        <CommandList>
+                          <CommandEmpty>No difficulty found.</CommandEmpty>
+                          <CommandGroup>
+                            {["peaceful", "easy", "normal", "hard"].map((difficulty) => (
+                              <CommandItem
+                                key={difficulty}
+                                value={difficulty}
+                                onSelect={() => handleChange("difficulty", difficulty)}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    config.difficulty === difficulty ? "opacity-100" : "opacity-0",
+                                  )}
+                                />
+                                {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -205,7 +289,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
               </CardContent>
             </CollapsibleContent>
           </Card>
-        </div>
+        </Collapsible>
       </div>
     </>
   )
