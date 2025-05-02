@@ -23,7 +23,7 @@ interface MinecraftConfigProps {
   onSubmit: (config: GameConfig) => void
 }
 
-export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftConfigProps) {
+export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: MinecraftConfigProps) {
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null)
   const [gameVersions, setGameVersions] = useState<string[]>([])
@@ -32,15 +32,32 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
   const [versionOpen, setVersionOpen] = useState(false)
 
   useEffect(() => {
-    setSelectedFlavorId(3)
-    setSelectedVersion("1.20.4");
+    // Set default flavor to Vanilla (id: 3) if available
+    const defaultFlavorId = game.data.flavors.find((f) => f.id === 3)?.id || game.data.flavors[0]?.id || null
+    setSelectedFlavorId(defaultFlavorId)
+
+    // Set default version to the first version of the selected flavor
+    if (defaultFlavorId !== null) {
+      const flavor = game.data.flavors.find((f) => f.id === defaultFlavorId)
+      if (flavor && flavor.versions.length > 0) {
+        setSelectedVersion(flavor.versions[0])
+        setGameVersions(flavor.versions)
+      }
+    }
   }, [game])
 
   useEffect(() => {
-    if (selectedFlavorId && game.data.flavors[selectedFlavorId]) {
-      setGameVersions(game.data.flavors[selectedFlavorId].versions)
+    if (selectedFlavorId !== null) {
+      const flavor = game.data.flavors.find((f) => f.id === selectedFlavorId)
+      if (flavor) {
+        setGameVersions(flavor.versions)
+        // Set default version to the first one in the list if current selection is not available
+        if (!flavor.versions.includes(selectedVersion) && flavor.versions.length > 0) {
+          setSelectedVersion(flavor.versions[0])
+        }
+      }
     }
-  }, [selectedFlavorId])
+  }, [selectedFlavorId, game.data.flavors, selectedVersion])
 
   const [config, setConfig] = useState({
     serverName: "My Minecraft Server",
@@ -57,10 +74,31 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
   const handleChange = (key: string, value: any) => {
     const newConfig = { ...config, [key]: value }
     setConfig(newConfig)
-    onChange(newConfig)
+    if (onChange) onChange(newConfig)
   }
 
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleSubmit = () => {
+    if (selectedFlavorId === null || !selectedVersion) {
+      console.error("Missing required selection")
+      return
+    }
+
+    // Create a complete game configuration object
+    const completeConfig: GameConfig = {
+      gameId: game.id,
+      gameType: game.name,
+      flavorId: selectedFlavorId,
+      version: selectedVersion,
+      gameSpecificConfig: {
+        ...config,
+      },
+    }
+
+    // Pass the complete configuration to the parent component
+    onSubmit(completeConfig)
+  }
 
   return (
     <>
@@ -290,6 +328,11 @@ export function MinecraftConfigComponent({ onChange, onBack, game }: MinecraftCo
             </CollapsibleContent>
           </Card>
         </Collapsible>
+        <div className="mt-4 flex justify-end">
+          <Button onClick={handleSubmit} disabled={!selectedFlavorId || !selectedVersion}>
+            Continue
+          </Button>
+        </div>
       </div>
     </>
   )

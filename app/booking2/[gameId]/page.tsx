@@ -4,41 +4,36 @@ import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
 import { fetchDiskOptions, fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
-import { type CpuType, type RamOption, type DiskOption, type Game, type HardwareConfig, type GameConfig, type ServerConfig, PerformanceGroup } from "@/models/config"
+import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
-import { useParams, usePathname } from "next/navigation"
-
+import { useParams } from "next/navigation"
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
-  const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([]);
+  const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
   const [selectedGame, setSelectedGame] = useState<Game>()
   const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null)
-  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null)
-  const [additionalConfig, setAdditionalConfig] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
 
-
-  const params = useParams();
-  const gameId = parseInt(params.gameId.toString(), 10);
-
+  const params = useParams()
+  const gameId = Number.parseInt(params.gameId.toString(), 10)
 
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('before fetching id: ', gameId)
+        console.log("before fetching id: ", gameId)
         const [diskOptionsData, performanceGroupData, games] = await Promise.all([
           fetchDiskOptions(),
           fetchPerformanceGroups(),
-          fetchGames(gameId)
+          fetchGames(gameId),
         ])
 
-        setSelectedGame(games);
-        setDiskOptions(diskOptionsData);
-        setPerformanceGroup(performanceGroupData);
+        setSelectedGame(games)
+        setDiskOptions(diskOptionsData)
+        setPerformanceGroup(performanceGroupData)
       } catch (error) {
         console.error("Error fetching data:", error)
         toast({
@@ -52,7 +47,7 @@ export default function GameServerConfig() {
     }
 
     fetchData()
-  }, [toast])
+  }, [toast, gameId])
 
   const handleHardwareConfigNext = (config: HardwareConfig) => {
     setHardwareConfig(config)
@@ -63,25 +58,16 @@ export default function GameServerConfig() {
     setStep(1)
   }
 
-  const handleAdditionalConfigChange = (config: Record<string, any>) => {
-    setAdditionalConfig(config)
-  }
-
-  const handleGameConfigSubmit = async (config: GameConfig) => {
+  const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
     if (!hardwareConfig) return
 
-    // Merge the additional config with the game config
-    const finalGameConfig: GameConfig = {
-      ...config,
-      additionalConfig,
-    }
-
-    setGameConfig(finalGameConfig)
+    console.log('config: ', gameConfig)
+    return
 
     // Create the final server configuration
-    const serverConfig: ServerConfig = {
+    const serverConfig = {
       hardwareConfig,
-      gameConfig: finalGameConfig,
+      gameConfig,
     }
 
     try {
@@ -120,7 +106,6 @@ export default function GameServerConfig() {
 
   return (
     <div className="min-h-screen bg-background">
-
       {step === 1 && (
         <HardwareConfigComponent
           diskOptions={diskOptions}
@@ -129,16 +114,9 @@ export default function GameServerConfig() {
         />
       )}
 
-      {step === 2 && (
+      {step === 2 && selectedGame && (
         <div className="">
-          <GameConfigComponent
-            game={selectedGame}
-            onBack={handleGameConfigBack}
-            onSubmit={handleGameConfigSubmit}
-            additionalConfig={additionalConfig}
-            onAdditionalConfigChange={handleAdditionalConfigChange}
-          />
-
+          <GameConfigComponent game={selectedGame} onBack={handleGameConfigBack} onSubmit={handleGameConfigSubmit} />
         </div>
       )}
     </div>

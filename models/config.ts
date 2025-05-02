@@ -56,11 +56,36 @@ export interface HardwareConfig {
   ramGb: number
 }
 
+export interface ServerConfig {
+  hardwareConfig: HardwareConfig
+  gameConfig: GameConfig
+}
+
+export interface MinecraftConfig {
+  serverName: string
+  maxPlayers: number
+  viewDistance: number
+  difficulty: string
+  enablePvp: boolean
+  enableNether: boolean
+  enableCommandBlocks: boolean
+  spawnProtection: number
+  allowFlight: boolean
+}
+
+export interface SatisfactoryConfig {
+  isEarlyAccess: boolean
+  maxPlayers?: number
+  serverName?: string
+}
+
+// Updated GameConfig to match your structure
 export interface GameConfig {
   gameId: number
-  gameFlavorId: number
-  gameVersionId: number
-  additionalConfig?: Record<string, any>
+  gameType: string
+  flavorId: number
+  version: string
+  gameSpecificConfig: Record<string, any> // Game-specific configuration
 }
 
 export interface ServerConfig {
