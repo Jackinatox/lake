@@ -13,9 +13,11 @@ interface HardwareConfigProps {
   diskOptions: DiskOption[]
   performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
+  initialConfig: HardwareConfig | null
 }
 
-export function HardwareConfigComponent({ diskOptions, performanceOptions, onNext }: HardwareConfigProps) {
+
+export function HardwareConfigComponent({ diskOptions, initialConfig,  performanceOptions, onNext }: HardwareConfigProps) {
   const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
   const [cpuCores, setCpuCores] = useState(1)
@@ -28,6 +30,18 @@ export function HardwareConfigComponent({ diskOptions, performanceOptions, onNex
       setSelectedPFGroup(performanceOptions[0])
     }
   }, [performanceOptions])
+
+  useEffect(() => {
+    if (initialConfig && performanceOptions.length > 0) {
+      const group = performanceOptions.find(pf => pf.id === initialConfig.pfGroupId)
+      if (group) {
+        setSelectedPFGroup(group)
+        setCpuCores(initialConfig.cpuCores)
+        setRamGb(initialConfig.ramGb)
+      }
+    }
+  }, [initialConfig, performanceOptions])
+
 
   // Calculate total price whenever configuration changes
   useEffect(() => {
@@ -68,7 +82,7 @@ export function HardwareConfigComponent({ diskOptions, performanceOptions, onNex
           {/* CPU Selection */}
           <div>
             <Tabs
-              defaultValue={selectedPFGroup.id.toString()}
+              value={selectedPFGroup.id.toString()}
               onValueChange={(value) => {
                 const pfGroup = performanceOptions.find((pf) => pf.id.toString() === value);
                 if (pfGroup) { setSelectedPFGroup(pfGroup); setCpuCores(Math.min(cpuCores, pfGroup.CPU.max_threads)) }
@@ -150,7 +164,7 @@ export function HardwareConfigComponent({ diskOptions, performanceOptions, onNex
             <Card>
               <CardContent className="p-4 text-center flex justify-between">
                 <span className="font-semibold">Disk: </span>
-                <span className="font-semibold">{calcDiskSize(cpuCores * 100, ramGb*1024) / 1024} GB</span>
+                <span className="font-semibold">{calcDiskSize(cpuCores * 100, ramGb * 1024) / 1024} GB</span>
               </CardContent>
             </Card>
             <Card className="bg-muted/40">

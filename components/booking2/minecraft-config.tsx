@@ -54,6 +54,8 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
         // Set default version to the first one in the list if current selection is not available
         if (!flavor.versions.includes(selectedVersion) && flavor.versions.length > 0) {
           setSelectedVersion(flavor.versions[0])
+        } else {
+          // set
         }
       }
     }
