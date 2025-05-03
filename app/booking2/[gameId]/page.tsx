@@ -62,7 +62,7 @@ export default function GameServerConfig() {
     if (!hardwareConfig) return
 
     console.log('config: ', gameConfig)
-    return
+    // return
 
     // Create the final server configuration
     const serverConfig = {
@@ -106,19 +106,26 @@ export default function GameServerConfig() {
 
   return (
     <div className="min-h-screen bg-background">
-      {step === 1 && (
+      <div className={step === 1 ? "block" : "hidden"}>
         <HardwareConfigComponent
           diskOptions={diskOptions}
           performanceOptions={performanceGroup}
           onNext={handleHardwareConfigNext}
+          initialConfig={hardwareConfig}
         />
-      )}
+      </div>
 
-      {step === 2 && selectedGame && (
-        <div className="">
-          <GameConfigComponent game={selectedGame} onBack={handleGameConfigBack} onSubmit={handleGameConfigSubmit} />
-        </div>
-      )}
+
+      <div className={step === 2 ? "block" : "hidden"}>
+        {selectedGame && (
+          <GameConfigComponent
+            game={selectedGame}
+            onBack={handleGameConfigBack}
+            onSubmit={handleGameConfigSubmit}
+          />
+        )}
+      </div>
+
     </div>
   )
 }
