@@ -92,7 +92,8 @@ export async function fetchGameVersions(gameFlavorId: number) {
 }
 
 export async function submitServerConfig(config: ServerConfig) {
-  const supabase = createClient();
+  // const supabase = createClient();
+  console.log(config);
 
   // In a real application, you would also validate the user's session here
   // const { data: { user } } = await supabase.auth.getUser();

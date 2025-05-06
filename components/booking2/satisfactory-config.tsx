@@ -42,7 +42,6 @@ export function SatisfactoryConfigComponent({ onChange, onBack, game, onSubmit }
       gameType: game.name,
       flavorId: 1, // Assuming there's only one flavor for Satisfactory
       version: "latest", // Assuming we always use the latest version
-      envVars: envVars,
       gameSpecificConfig: {
         ...config,
       },
