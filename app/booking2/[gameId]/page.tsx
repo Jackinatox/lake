@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { fetchDiskOptions, fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
+import { fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
 import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
@@ -24,15 +25,14 @@ export default function GameServerConfig() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("before fetching id: ", gameId)
-        const [diskOptionsData, performanceGroupData, games] = await Promise.all([
-          fetchDiskOptions(),
+        // Simulate an error for testing the toast
+        throw new Error("Simulated fetch error");
+        const [performanceGroupData, games] = await Promise.all([
           fetchPerformanceGroups(),
           fetchGames(gameId),
         ])
 
         setSelectedGame(games)
-        setDiskOptions(diskOptionsData)
         setPerformanceGroup(performanceGroupData)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -48,6 +48,7 @@ export default function GameServerConfig() {
 
     fetchData()
   }, [toast, gameId])
+
 
   const handleHardwareConfigNext = (config: HardwareConfig) => {
     setHardwareConfig(config)
@@ -93,7 +94,7 @@ export default function GameServerConfig() {
     }
   }
 
-  if (loading && performanceGroup.length === 0) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -103,7 +104,7 @@ export default function GameServerConfig() {
       </div>
     )
   }
-
+  
   return (
     <div className="min-h-screen bg-background">
       <div className={step === 1 ? "block" : "hidden"}>
