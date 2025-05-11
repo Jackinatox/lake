@@ -42,27 +42,25 @@ export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
 //   return data
 // }
 
-export async function fetchDiskOptions() {
-  const supabase = createClient();
-  const { data, error } = await supabase.from("disk_options").select("*")
+// export async function fetchDiskOptions() {
+//   const supabase = createClient();
+//   const { data, error } = await supabase.from("disk_options").select("*")
 
-  if (error) {
-    console.error("Error fetching disk options:", error)
-    throw new Error("Failed to fetch disk options")
-  }
+//   if (error) {
+//     console.error("Error fetching disk options:", error)
+//     throw new Error("Failed to fetch disk options")
+//   }
 
-  return data
-}
+//   return data
+// }
 
 export async function fetchGames(gameId: number): Promise<Game> {
   const supabase = createClient();
   const { data, error } = await supabase.from("GameData").select("*").eq('id', gameId).single();
   console.log(data)
 
-  if (error) {
-    console.error("Error fetching games:", error)
-    throw new Error("Failed to fetch games")
-  }
+  // No cath here cause i need to knwo on the clkient if the game exists
+  console.error("Error fetching games:", error)
 
   return data
 }
