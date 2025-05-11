@@ -8,6 +8,7 @@ import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } f
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
@@ -19,18 +20,19 @@ export default function GameServerConfig() {
   const { toast } = useToast()
 
   const params = useParams()
+  const router = useRouter();
   const gameId = Number.parseInt(params.gameId.toString(), 10)
 
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulate an error for testing the toast
-        throw new Error("Simulated fetch error");
         const [performanceGroupData, games] = await Promise.all([
           fetchPerformanceGroups(),
           fetchGames(gameId),
         ])
+
+        if (!games) router.replace('/products/gameserver')
 
         setSelectedGame(games)
         setPerformanceGroup(performanceGroupData)
@@ -48,7 +50,6 @@ export default function GameServerConfig() {
 
     fetchData()
   }, [toast, gameId])
-
 
   const handleHardwareConfigNext = (config: HardwareConfig) => {
     setHardwareConfig(config)

@@ -331,7 +331,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
           </Card>
         </Collapsible>
         <div className="mt-4 flex justify-end">
-          <Button onClick={handleSubmit} disabled={!selectedFlavorId || !selectedVersion}>
+          <Button onClick={handleSubmit} disabled={selectedFlavorId === null || selectedVersion === null}>
             Continue
           </Button>
         </div>

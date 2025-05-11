@@ -144,21 +144,6 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
             <div className="text-right font-semibold">3 €</div>
           </div>
 
-          {/* Disk Options */}
-          {/* <div className={`grid grid-cols-${Math.min(diskOptions.length, 5)} gap-4`}>
-            {diskOptions.map((disk) => (
-              <Card
-                key={disk.id}
-                className={`cursor-pointer ${selectedDiskOption?.id === disk.id ? "border-primary" : ""}`}
-                onClick={() => setSelectedDiskOption(disk)}
-              >
-                <CardContent className="p-4 text-center">
-                  <p className="font-semibold">Disk: {disk.size_gb} GiB</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
-
           {/* Price Summary */}
           <div className="grid grid-cols-2 w-full gap-3">
             <Card>

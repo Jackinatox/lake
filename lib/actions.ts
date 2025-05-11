@@ -57,11 +57,13 @@ export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
 export async function fetchGames(gameId: number): Promise<Game> {
   const supabase = createClient();
   const { data, error } = await supabase.from("GameData").select("*").eq('id', gameId).single();
-  console.log(data)
+  // console.log(data)
 
   // No cath here cause i need to knwo on the clkient if the game exists
-  console.error("Error fetching games:", error)
-
+  if (error) {
+    console.error("Error fetching games:", error)
+  }
+  
   return data
 }
 
