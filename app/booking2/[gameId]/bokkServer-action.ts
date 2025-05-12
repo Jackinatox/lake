@@ -10,12 +10,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function bookServer(serverData: any) {
-  console.log(serverData);
-  return;
   const cpuCores = serverData.hardwareConfig.cpuCores;
   const ramSize = serverData.hardwareConfig.ramGb;
   const selectedPlan = serverData.hardwareConfig.pfGroupId;
-  // const eggId = serverData.
+  const eggId = serverData.gameConfig.eggId;
+  console.log(serverData)
 
 
   const PTUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -34,9 +33,7 @@ export async function bookServer(serverData: any) {
       error,
     } = await supabase.auth.getUser();
 
-    // const {
-    //   data: { user },
-    //   error,} = supabase.from('GameData').select('*').eq()
+
     const ptUser = user?.user_metadata?.ptUser;
 
     if (user && ptUser) {
@@ -52,7 +49,7 @@ export async function bookServer(serverData: any) {
 
       // const test = await ptAdmin.getNodes();
       // console.log(serverConfig);
-      // return;
+      return;
   
 
       server = await ptAdmin.createServer({
@@ -65,9 +62,9 @@ export async function bookServer(serverData: any) {
           memory: serverConfig.RAM,
           swap: 500,
         },
-        egg: 5,
+        egg: eggId,
         environment: {
-          VANILLA_VERSION: "1.20.4",
+          MC_VERSION: serverData.gameConfig.version,
           SERVER_JARFILE: "server.jar",
         },
         startWhenInstalled: true,
