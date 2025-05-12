@@ -9,11 +9,14 @@ import { Builder, Server } from "@avionrx/pterodactyl-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function bookServer(prev, formData: FormData) {
-  const gameName = formData.get('game').toString();
-  const cpuCores = Number(formData.get("cpuCores"));
-  const ramSize = Number(formData.get("ramSize"));
-  const selectedPlan = formData.get("performanceGroup") as PerformanceGroup;
+export async function bookServer(serverData: any) {
+  console.log(serverData);
+  return;
+  const cpuCores = serverData.hardwareConfig.cpuCores;
+  const ramSize = serverData.hardwareConfig.ramGb;
+  const selectedPlan = serverData.hardwareConfig.pfGroupId;
+  // const eggId = serverData.
+
 
   const PTUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
@@ -31,6 +34,9 @@ export async function bookServer(prev, formData: FormData) {
       error,
     } = await supabase.auth.getUser();
 
+    // const {
+    //   data: { user },
+    //   error,} = supabase.from('GameData').select('*').eq()
     const ptUser = user?.user_metadata?.ptUser;
 
     if (user && ptUser) {
@@ -41,7 +47,7 @@ export async function bookServer(prev, formData: FormData) {
         Disk: calcDiskSize(cpuCores * 100, ramSize * 1024),
         pGroup: selectedPlan,
         Allocations: 2,
-        EggId: getEggId(gameName),
+        EggId: eggId,
       };
 
       // const test = await ptAdmin.getNodes();

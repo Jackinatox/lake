@@ -84,6 +84,7 @@ export interface GameConfig {
   gameId: number
   gameType: string
   flavorId: number
+  eggId: number
   version: string
   gameSpecificConfig: Record<string, any> // Game-specific configuration
 }
