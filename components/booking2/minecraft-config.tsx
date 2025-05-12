@@ -13,6 +13,7 @@ import type { Game, GameConfig } from "@/models/config"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { bookServer } from "@/app/booking2/[gameId]/bokkServer-action"
 
 interface MinecraftConfigProps {
   onChange: (config: Record<string, any>) => void
@@ -81,7 +82,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedFlavorId === null || !selectedVersion) {
       console.error("Missing required selection")
       return
@@ -92,14 +93,17 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
       gameId: game.id,
       gameType: game.name,
       flavorId: selectedFlavorId,
+      eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id,
       version: selectedVersion,
       gameSpecificConfig: {
         ...config,
       },
     }
 
+    await bookServer(completeConfig);
+
     // Pass the complete configuration to the parent component
-    onSubmit(completeConfig)
+    // onSubmit(completeConfig)
   }
 
   return (
