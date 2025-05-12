@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { fetchGames, submitServerConfig, fetchPerformanceGroups } from "@/lib/actions"
+import { fetchGames, fetchPerformanceGroups } from "@/lib/actions"
 import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
+import { bookServer } from "./bokkServer-action"
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
@@ -63,9 +64,6 @@ export default function GameServerConfig() {
   const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
     if (!hardwareConfig) return
 
-    console.log('config: ', gameConfig)
-    // return
-
     // Create the final server configuration
     const serverConfig = {
       hardwareConfig,
@@ -74,7 +72,7 @@ export default function GameServerConfig() {
 
     try {
       setLoading(true)
-      const result = await submitServerConfig(serverConfig)
+      const result = await bookServer(serverConfig)
 
       toast({
         title: "Success",

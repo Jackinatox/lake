@@ -99,11 +99,9 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
         ...config,
       },
     }
-
-    await bookServer(completeConfig);
-
+    
     // Pass the complete configuration to the parent component
-    // onSubmit(completeConfig)
+    onSubmit(completeConfig)
   }
 
   return (
