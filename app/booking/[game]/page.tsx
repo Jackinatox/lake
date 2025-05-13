@@ -4,7 +4,7 @@ import { Message } from '@/components/form-message';
 import MinecraftConfig from '@/components/order/games/minecraft';
 import ServerConfigurator from '@/components/order/serverConfigurator/ServerConfigurator';
 import StepManager from '@/components/order/stepManager';
-import React, { useState } from 'react'
+import React from 'react'
 
 async function page({ params, searchParams }: { params: Promise<{ game: string }>, searchParams: Promise<Message> }) {
     const game = (await params).game;

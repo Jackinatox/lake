@@ -8,7 +8,16 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   reactStrictMode: true,
-  output: "standalone"
+  output: "standalone",
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ttewzzldhvzrmxcmmzdm.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
 }
 
 export default nextConfig;

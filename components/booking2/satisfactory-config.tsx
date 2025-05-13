@@ -40,6 +40,7 @@ export function SatisfactoryConfigComponent({ onChange, onBack, game, onSubmit }
     const completeConfig: GameConfig = {
       gameId: game.id,
       gameType: game.name,
+      eggId: 1,     // ToDo: for satsi release add dynamic ids
       flavorId: 1, // Assuming there's only one flavor for Satisfactory
       version: "latest", // Assuming we always use the latest version
       gameSpecificConfig: {
