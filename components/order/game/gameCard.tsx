@@ -14,13 +14,13 @@ interface GameCardProps {
 
 export default function GameCard({ card, imgPath }: GameCardProps) {
   return (
-    <Link href={`/booking/${card.name}`} className="block w-[280px]">
+    <Link href={`/booking2/${card.id}`} className="block w-[280px]">
       <Card className="overflow-hidden transition-transform duration-300 hover:scale-[1.075] shadow-lg">
         <div>
-          <img src={imgPath || "/placeholder.svg"} alt={card.fullName} className="w-full h-auto rounded-t-lg" />
+          <img src={imgPath || "/placeholder.svg"} alt={card.name} className="w-full h-auto rounded-t-lg" />
         </div>
         <CardContent className="pt-4">
-          <h3 className="text-xl font-semibold">{card.fullName}</h3>
+          <h3 className="text-xl font-semibold">{card.name}</h3>
         </CardContent>
       </Card>
     </Link>
