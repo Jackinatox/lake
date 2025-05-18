@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Shield, Zap, CheckCircle, ChevronRight } from "lucide-react"
 import { createClient } from "@/utils/supabase/server"
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 
 // Spieldaten mit Bildern
 // const supportedGames = [
@@ -48,7 +49,15 @@ export default async function LandingPage() {
 
             alt="Gaming Hintergrund"
             fill
-            className="object-cover opacity-20"
+            className="object-cover opacity-30 block dark:hidden"
+            priority
+          />
+          <Image
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/background-hero-dark.png`}
+
+            alt="Gaming Hintergrund"
+            fill
+            className="object-cover opacity-30 hidden dark:block"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
@@ -86,7 +95,7 @@ export default async function LandingPage() {
                   <Button size="lg" className="px-8"> Jetzt starten </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="px-8">
-                  Vergleichen
+                  Pakete Vergleichen
                 </Button>
               </div>
             </div>
@@ -121,7 +130,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Funktionen-Bereich */}
-      <section className="py-20 px-4 md:px-6 bg-muted/50">
+      <Card className="mt-5 py-20 px-4 md:px-6">
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Leistungsstarke Verwaltungstools</h2>
 
@@ -227,10 +236,10 @@ export default async function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </Card>
 
       {/* CTA-Bereich */}
-      <section className="py-20 px-4 md:px-6 bg-primary/10">
+      <Card className="mt-5 py-20 px-4 md:px-6 bg-primary/30">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Bereit, Deinen Gameserver zu hosten?</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
@@ -247,7 +256,7 @@ export default async function LandingPage() {
             </Button> */}
           </div>
         </div>
-      </section>
+      </Card>
     </main>
   )
 }
