@@ -47,13 +47,6 @@ export default function RootLayout({
 
                     <Link href="/" className="mr-4">Scyed</Link>
 
-                        {/* <ButtonGroup color="primary" size="md" spacing={0} variant="outlined">
-
-                          <Button component={Link} href="/admin"> Admin </Button>
-                          <Button component={Link} href="/gameserver"> Gameserver </Button>
-                          <Button component={Link} href="/icons"> Icons </Button>
-
-                        </ButtonGroup> */}
                         <MainMenu />
 
                     {/* left topbar end */}
