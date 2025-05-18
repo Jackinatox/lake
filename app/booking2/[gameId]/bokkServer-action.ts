@@ -16,15 +16,12 @@ export async function bookServer(serverData: any) {
   const eggId = serverData.gameConfig.eggId;
   console.log(serverData)
 
-
-  const PTUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-
   let server: Server;
 
   try {
     const supabase = await createClient();
     const ptAdmin = new Builder()
-      .setURL(PTUrl)
+      .setURL(process.env.NEXT_PUBLIC_PTERODACTYL_URL)
       .setAPIKey(process.env.PTERODACTYL_API_KEY)
       .asAdmin();
 
@@ -62,7 +59,7 @@ export async function bookServer(serverData: any) {
           memory: serverConfig.RAM,
           swap: 500,
         },
-        egg: eggId,
+        egg: serverConfig.EggId,
         environment: {
           MC_VERSION: serverData.gameConfig.version,
           SERVER_JARFILE: "server.jar",
