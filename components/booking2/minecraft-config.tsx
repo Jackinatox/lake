@@ -212,7 +212,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
         </Card>
 
         {/* Advanced Config below */}
-        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
+        {/* <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
           <Card>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className="flex w-full justify-between p-4">
@@ -255,7 +255,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
                   />
                 </div>
 
-                {/* Difficulty Selection with Combobox */}
+
                 <div className="space-y-2">
                   <Label htmlFor="difficulty">Difficulty</Label>
                   <Popover>
@@ -331,7 +331,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
               </CardContent>
             </CollapsibleContent>
           </Card>
-        </Collapsible>
+        </Collapsible> */}
         <div className="mt-4 flex justify-end">
           <Button onClick={handleSubmit} disabled={selectedFlavorId === null || selectedVersion === null}>
             Continue
