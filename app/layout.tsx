@@ -8,6 +8,8 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
 import MainMenu from "@/components/Menu/main-menu";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -24,13 +26,16 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-export default function RootLayout({
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en" className={geistSans.className} suppressHydrationWarning>
+    <html lang='de' className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
@@ -47,7 +52,7 @@ export default function RootLayout({
 
                     <Link href="/" className="mr-4">Scyed</Link>
 
-                        <MainMenu />
+                    <MainMenu />
 
                     {/* left topbar end */}
                   </div>
@@ -56,7 +61,7 @@ export default function RootLayout({
                 </div>
               </nav>
               <div className="flex flex-col gap-10 w-5/6 p-5">
-                {children}
+                <NextIntlClientProvider>{children}</NextIntlClientProvider>
               </div>
 
               <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
