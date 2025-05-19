@@ -35,7 +35,7 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang='de' className={geistSans.className} suppressHydrationWarning>
+    <html lang={locale} className={geistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <ThemeProvider
           attribute="class"
