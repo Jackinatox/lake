@@ -1,23 +1,20 @@
-import { Output } from "@mui/icons-material";
-import type { NextConfig } from "next";
+// next.config.ts
+import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin(/* …your localeConfigPath if needed… */);
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  output: "standalone",
-};
-
-module.exports = {
   reactStrictMode: true,
-  output: "standalone",
+  output: 'standalone',
   images: {
+    // URL-based remotePatterns for Next.js 15+
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'ttewzzldhvzrmxcmmzdm.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
+      new URL(
+        'https://ttewzzldhvzrmxcmmzdm.supabase.co/storage/v1/object/public/**'
+      ),
     ],
   },
-}
+};
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
