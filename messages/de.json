@@ -4,7 +4,37 @@
     "description": "Beschreibung",
     "test": "test"
   },
-  "Gameserver": {
-    
+  "landingpage": {
+    "header1": "Gameserver-Hosting",
+    "header2": "leicht gemacht",
+    "boxLabel1": "Einfach",
+    "boxDesc1": "Einrichtung in Minuten",
+    "boxLabel2": "Sicher",
+    "boxDesc2": "Geschützte Infrastruktur",
+    "boxLabel3": "Zuverlässig",
+    "boxDesc3": "99,9% Verfügbarkeitsgarantie",
+    "buttonStartNow": "Jetzt starten",
+    "buttonComparePlans": "Pakete Vergleichen",
+    "supportedGames": "Unterstützte Spiele",
+    "showAllGames": "Alle Spiele anzeigen",
+    "toolsHeader": "Leistungsstarke Verwaltungstools",
+    "panelTitle": "Intuitives Kontrollpanel",
+    "panelDesc": "Unser Control Panel macht Server-Management zum Kinderspiel: Starte, stoppe oder restarte deinen Server mit nur einem Klick. Behalte die Performance immer im Blick und gib deinem Server easy mehr Power, wenn du’s brauchst – alles super intuitiv und ohne Stress.",
+    "panelFeature1": "Ein-Klick-Server-Bereitstellung",
+    "panelFeature2": "Echtzeit-Leistungsüberwachung",
+    "panelFeature3": "Ressourcenzuweisungssteuerung",
+    "fileManagerTitle": "Einfacher Dateimanager",
+    "fileManagerDesc": "Lade einzelne Dateien bequem im Browser herunter oder lade neue Dateien manuell hoch. Für weitergehende Dateioperationen wie Bearbeiten, Verschieben oder Massen-Uploads nutze bitte einen FTP-Client.",
+    "fileManagerFeature1": "Dateien herunterladen",
+    "fileManagerFeature2": "Dateien manuell hochladen",
+    "fileManagerFeature3": "Erweiterte Verwaltung per FTP-Client",
+    "backupTitle": "Zuverlässiger Backup-Manager",
+    "backupDesc": "Deine Spielstände sind bei uns safe! Mit automatischen Backups bist du immer auf der sicheren Seite – egal was passiert. Restore mit nur einem Klick und du bist sofort wieder am Start.",
+    "backupFeature1": "Automatisierte geplante Backups",
+    "backupFeature2": "Ein-Klick-Wiederherstellungsfunktion",
+    "backupFeature3": "Sichere externe Speicherung",
+    "ctaHeader": "Bereit, Deinen Gameserver zu hosten?",
+    "ctaDesc": "Kleine Beschreibung",
+    "ctaButton": "Loslegen"
   }
 }
