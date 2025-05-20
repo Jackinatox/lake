@@ -88,6 +88,7 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold mb-6">{t("supportedGames")}</h2>
               <div className="grid grid-cols-1 gap-4">
                 {supportedGames.map((game) => (
+                  <Link href={`/booking2/${game.id}`}>
                   <div
                     key={game.name}
                     className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors"
@@ -102,12 +103,15 @@ export default async function LandingPage() {
                     </div>
                     <span className="font-medium">{game.name}</span>
                   </div>
+                  </Link>
                 ))}
               </div>
-              <Button variant="link" className="mt-6 flex items-center gap-1">
-                {t("showAllGames")}
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <Link href='/products/gameserver'>
+                <Button variant="link" className="mt-6 flex items-center gap-1">
+                  {t("showAllGames")}
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
