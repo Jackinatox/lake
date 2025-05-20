@@ -2,15 +2,10 @@
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
 import { useEffect, useRef, useState } from "react"
-import Console from "./console";
 import { Gamepad2Icon, Server } from "lucide-react";
-import CopyAddress from "./copyAddress";
 import { Status } from "./status";
 import { PowerBtns } from "./powerBtns";
-import { Info } from "./info";
-import { GameServerSettings } from "@/models/settings";
 import CPUChart from "./graphs/CPUChart";
-import { Button } from "@/components/ui/button";
 import RAMChart from "./graphs/RAMChart";
 import ConsoleV2 from "./ConsoleV2";
 import { Card } from "@/components/ui/card";
