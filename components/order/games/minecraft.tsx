@@ -22,7 +22,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { createClient } from "@/utils/supabase/client"
-import { bookServer } from "@/app/booking/[game]/action"
 
 interface Flavor {
   value: string

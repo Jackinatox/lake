@@ -1,7 +1,16 @@
+import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
+    // const supabase = await createClient();
+    // const {
+    //   data: { user },
+    // } = await supabase.auth.getUser();
+
+    // if (!user) {
+    //   return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    // }
     // 1. Parse body from the request
     const { apiKey, serverId } = await req.json();
 
