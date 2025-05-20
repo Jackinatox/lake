@@ -36,53 +36,55 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={geistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col items-center">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-                  <div className="flex items-center font-semibold">
-                    {/* left topbar */}
+      <NextIntlClientProvider>
+        <body className="bg-background text-foreground">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="min-h-screen flex flex-col items-center">
+              <div className="flex-1 w-full flex flex-col items-center">
+                <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+                  <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
+                    <div className="flex items-center font-semibold">
+                      {/* left topbar */}
 
-                    <Link href="/" className="mr-4">Scyed</Link>
+                      <Link href="/" className="mr-4">Scyed</Link>
 
-                    <MainMenu />
+                      <MainMenu locale={locale} />
 
-                    {/* left topbar end */}
+                      {/* left topbar end */}
+                    </div>
+
+                    {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
                   </div>
-
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                </nav>
+                <div className="flex flex-col gap-10 w-5/6 p-5">
+                  {children}
                 </div>
-              </nav>
-              <div className="flex flex-col gap-10 w-5/6 p-5">
-                <NextIntlClientProvider>{children}</NextIntlClientProvider>
+
+                <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+                  <p>
+                    Powered by{" "}
+                    <a
+                      href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
+                      target="_blank"
+                      className="font-bold hover:underline"
+                      rel="noreferrer"
+                    >
+                      Supabase
+                    </a>
+                  </p>
+                  <ThemeSwitcher />
+                </footer>
+
               </div>
-
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                <p>
-                  Powered by{" "}
-                  <a
-                    href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-                    target="_blank"
-                    className="font-bold hover:underline"
-                    rel="noreferrer"
-                  >
-                    Supabase
-                  </a>
-                </p>
-                <ThemeSwitcher />
-              </footer>
-
-            </div>
-          </main>
-        </ThemeProvider>
-      </body>
+            </main>
+          </ThemeProvider>
+        </body>
+      </NextIntlClientProvider>
     </html>
   );
 }

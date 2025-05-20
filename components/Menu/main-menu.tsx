@@ -39,6 +39,7 @@ import {
   SheetHeader,
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
+import { LanguageSwitcher } from './language-switcher'
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
 type SubItem = { label: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> }
@@ -84,10 +85,10 @@ const MENU: MenuItem[] = [
   },
 ]
 
-export default function MainMenu() {
+export default function MainMenu({ locale }) {
   return (
     <header className="">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between items-center">
 
 
@@ -134,6 +135,9 @@ export default function MainMenu() {
                   </NavigationMenuItem>
                 )
               )}
+              <NavigationMenuItem>
+                <LanguageSwitcher currentLocale={locale} />
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
 
@@ -148,7 +152,7 @@ export default function MainMenu() {
               <SheetContent side="left" className="w-64">
                 <SheetHeader>
                   <Link href="/">
-                  <SheetTitle> Home </SheetTitle>
+                    <SheetTitle> Home </SheetTitle>
                   </Link>
                 </SheetHeader>
 
@@ -190,6 +194,11 @@ export default function MainMenu() {
                       </Link>
                     )
                   )}
+
+                  <div className="absolute bottom-4 left-0 w-full flex justify-center">
+                    <LanguageSwitcher currentLocale={locale} />
+                  </div>
+
                 </nav>
               </SheetContent>
             </Sheet>
