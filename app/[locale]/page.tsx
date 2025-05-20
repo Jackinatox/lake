@@ -1,61 +1,43 @@
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Shield, Zap, CheckCircle, ChevronRight } from "lucide-react"
-import { createClient } from "@/utils/supabase/server"
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-// Spieldaten mit Bildern
-// const supportedGames = [
-//   { name: "Minecraft", image: "/placeholder.svg?height=60&width=60" },
-//   { name: "Counter-Strike 2", image: "/placeholder.svg?height=60&width=60" },
-//   { name: "ARK: Survival Evolved", image: "/placeholder.svg?height=60&width=60" },
-//   { name: "Rust", image: "/placeholder.svg?height=60&width=60" },
-//   { name: "Valheim", image: "/placeholder.svg?height=60&width=60" },
-// ]
-
-
+import { createClient } from "@/utils/supabase/server";
+import { CheckCircle, ChevronRight, Shield, Zap } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function LandingPage() {
+  const t = await getTranslations("landingpage");
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from('GameData').select('*');
-
-  // console.log(data)
+  const { data, error } = await supabase.from("GameData").select("*");
 
   const supportedGames = data.map((game) => {
-    const imgName = game.name.toLowerCase() + '.jpg';
-
-    const { data } = supabase.storage.from('images').getPublicUrl(imgName);
-
+    const imgName = game.name.toLowerCase() + ".jpg";
+    const { data } = supabase.storage.from("images").getPublicUrl(imgName);
 
     return {
       id: game.id,
       name: game.name,
-      image: data.publicUrl || "/placeholder.svg?height=60&width=60"
-    }
-  })
-
-
+      image: data.publicUrl || "/placeholder.svg?height=60&width=60",
+    };
+  });
 
   return (
     <main className="flex flex-col min-h-screen">
-      {/* Hero-Bereich mit Hintergrundbild */}
+      {/* Hero Section */}
       <section className="relative py-20 px-4 md:px-6">
-        {/* Hintergrundbild */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/background-hero.png`}
-
-            alt="Gaming Hintergrund"
+            alt="Gaming background"
             fill
             className="object-cover opacity-30 block dark:hidden"
             priority
           />
           <Image
             src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/background-hero-dark.png`}
-
-            alt="Gaming Hintergrund"
+            alt="Gaming background dark"
             fill
             className="object-cover opacity-30 hidden dark:block"
             priority
@@ -67,41 +49,43 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Gameserver-Hosting <span className="text-primary">leicht gemacht</span>
+                {t("header1")} <span className="text-primary">{t("header2")}</span>
               </h1>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6">
                 <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-background/80 backdrop-blur-sm">
                   <Zap className="h-10 w-10 text-primary mb-2" />
-                  <h3 className="text-xl font-semibold">Einfach</h3>
-                  <p className="text-muted-foreground">Einrichtung in Minuten</p>
+                  <h3 className="text-xl font-semibold">{t("boxLabel1")}</h3>
+                  <p className="text-muted-foreground">{t("boxDesc1")}</p>
                 </div>
 
                 <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-background/80 backdrop-blur-sm">
                   <Shield className="h-10 w-10 text-primary mb-2" />
-                  <h3 className="text-xl font-semibold">Sicher</h3>
-                  <p className="text-muted-foreground">Geschützte Infrastruktur</p>
+                  <h3 className="text-xl font-semibold">{t("boxLabel2")}</h3>
+                  <p className="text-muted-foreground">{t("boxDesc2")}</p>
                 </div>
 
                 <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-background/80 backdrop-blur-sm">
                   <CheckCircle className="h-10 w-10 text-primary mb-2" />
-                  <h3 className="text-xl font-semibold">Zuverlässig</h3>
-                  <p className="text-muted-foreground">99,9% Verfügbarkeitsgarantie</p>
+                  <h3 className="text-xl font-semibold">{t("boxLabel3")}</h3>
+                  <p className="text-muted-foreground">{t("boxDesc3")}</p>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/products/gameserver">
-                  <Button size="lg" className="px-8"> Jetzt starten </Button>
+                  <Button size="lg" className="px-8">
+                    {t("buttonStartNow")}
+                  </Button>
                 </Link>
                 <Button size="lg" variant="outline" className="px-8">
-                  Pakete Vergleichen
+                  {t("buttonComparePlans")}
                 </Button>
               </div>
             </div>
 
             <div className="bg-background/80 backdrop-blur-sm rounded-xl p-6 border">
-              <h2 className="text-2xl font-bold mb-6">Unterstützte Spiele</h2>
+              <h2 className="text-2xl font-bold mb-6">{t("supportedGames")}</h2>
               <div className="grid grid-cols-1 gap-4">
                 {supportedGames.map((game) => (
                   <div
@@ -110,7 +94,7 @@ export default async function LandingPage() {
                   >
                     <div className="relative h-12 w-12 rounded-md overflow-hidden border">
                       <Image
-                        src={game.image || "/placeholder.svg"}
+                        src={game.image}
                         alt={`${game.name} Icon`}
                         fill
                         className="object-cover"
@@ -121,7 +105,7 @@ export default async function LandingPage() {
                 ))}
               </div>
               <Button variant="link" className="mt-6 flex items-center gap-1">
-                Alle Spiele anzeigen
+                {t("showAllGames")}
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -129,108 +113,99 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Funktionen-Bereich */}
+      {/* Tools Section */}
       <Card className="mt-5 py-20 px-4 md:px-6">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">Leistungsstarke Verwaltungstools</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t("toolsHeader")}</h2>
 
-          {/* Kontrollpanel-Funktion */}
+          {/* Control Panel */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
             <div className="order-2 lg:order-1">
-              <h3 className="text-2xl font-bold mb-4">Intuitives Kontrollpanel</h3>
-              <p className="text-muted-foreground mb-6">
-                Unser Control Panel macht Server-Management zum Kinderspiel: Starte, stoppe oder restarte deinen Server mit nur einem Klick. Behalte die Performance immer im Blick und gib deinem Server easy mehr Power, wenn du’s brauchst – alles super intuitiv und ohne Stress.
-              </p>
+              <h3 className="text-2xl font-bold mb-4">{t("panelTitle")}</h3>
+              <p className="text-muted-foreground mb-6">{t("panelDesc")}</p>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Ein-Klick-Server-Bereitstellung</span>
+                  <span>{t("panelFeature1")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Echtzeit-Leistungsüberwachung</span>
+                  <span>{t("panelFeature2")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Ressourcenzuweisungssteuerung</span>
+                  <span>{t("panelFeature3")}</span>
                 </li>
               </ul>
-              {/* <Button>Mehr erfahren</Button> */}
             </div>
             <div className="order-1 lg:order-2">
               <Image
                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/panel.png`}
                 width={600}
                 height={400}
-                alt="Kontrollpanel Screenshot"
+                alt="Control panel screenshot"
                 className="rounded-lg shadow-lg border"
               />
             </div>
           </div>
 
-          {/* Dateimanager-Funktion */}
+          {/* File Manager */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
             <div>
               <Image
                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/filemanager.png`}
                 width={600}
                 height={400}
-                alt="Dateimanager Screenshot"
+                alt="File manager screenshot"
                 className="rounded-lg shadow-lg border"
               />
             </div>
             <div>
-              <h3 className="text-2xl font-bold mb-4">Einfacher Dateimanager</h3>
-              <p className="text-muted-foreground mb-6">
-                Lade einzelne Dateien bequem im Browser herunter oder lade neue Dateien manuell hoch. Für weitergehende Dateioperationen wie Bearbeiten, Verschieben oder Massen-Uploads nutze bitte einen FTP-Client.
-              </p>
+              <h3 className="text-2xl font-bold mb-4">{t("fileManagerTitle")}</h3>
+              <p className="text-muted-foreground mb-6">{t("fileManagerDesc")}</p>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Dateien herunterladen</span>
+                  <span>{t("fileManagerFeature1")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Dateien manuell hochladen</span>
+                  <span>{t("fileManagerFeature2")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Erweiterte Verwaltung per FTP-Client</span>
+                  <span>{t("fileManagerFeature3")}</span>
                 </li>
               </ul>
-              {/* <Button>Mehr erfahren</Button> */}
             </div>
           </div>
 
-          {/* Backup-Manager-Funktion */}
+          {/* Backup Manager */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <h3 className="text-2xl font-bold mb-4">Zuverlässiger Backup-Manager</h3>
-              <p className="text-muted-foreground mb-6">
-                Deine Spielstände sind bei uns safe! Mit automatischen Backups bist du immer auf der sicheren Seite – egal was passiert. Restore mit nur einem Klick und du bist sofort wieder am Start.
-              </p>
+              <h3 className="text-2xl font-bold mb-4">{t("backupTitle")}</h3>
+              <p className="text-muted-foreground mb-6">{t("backupDesc")}</p>
               <ul className="space-y-2 mb-6">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Automatisierte geplante Backups</span>
+                  <span>{t("backupFeature1")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Ein-Klick-Wiederherstellungsfunktion</span>
+                  <span>{t("backupFeature2")}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-primary" />
-                  <span>Sichere externe Speicherung</span>
+                  <span>{t("backupFeature3")}</span>
                 </li>
               </ul>
-              {/* <Button>Mehr erfahren</Button> */}
             </div>
             <div className="order-1 lg:order-2">
               <Image
                 src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/backups.png`}
                 width={600}
                 height={400}
-                alt="Backup-Manager Screenshot"
+                alt="Backup manager screenshot"
                 className="rounded-lg shadow-lg border"
               />
             </div>
@@ -238,25 +213,20 @@ export default async function LandingPage() {
         </div>
       </Card>
 
-      {/* CTA-Bereich */}
+      {/* CTA Section */}
       <Card className="mt-5 py-20 px-4 md:px-6 bg-primary/30">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Bereit, Deinen Gameserver zu hosten?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Kleine Beschreibung
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("ctaHeader")}</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">{t("ctaDesc")}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-
             <Link href="/products/gameserver">
-              <Button size="lg" className="px-8">Loslegen </Button>
+              <Button size="lg" className="px-8">
+                {t("ctaButton")}
+              </Button>
             </Link>
-
-            {/* <Button size="lg" variant="outline" className="px-8">
-              Tarife vergleichen
-            </Button> */}
           </div>
         </div>
       </Card>
     </main>
-  )
+  );
 }
