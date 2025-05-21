@@ -1,18 +1,21 @@
 "use client"
 
 import webSocket from "@/lib/Pterodactyl/webSocket";
+import { Play, RefreshCw, Square, Power, Terminal, Cpu, MemoryStickIcon as Memory } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { useEffect, useRef, useState } from "react"
-import { Gamepad2Icon, Server } from "lucide-react";
 import { Status } from "./status";
 import { PowerBtns } from "./powerBtns";
 import CPUChart from "./graphs/CPUChart";
 import RAMChart from "./graphs/RAMChart";
 import ConsoleV2 from "./ConsoleV2";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Grid } from "@mui/joy";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import Link from "next/dist/client/link";
 import ControllPanel from "./panel";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface serverProps {
   server: string;
@@ -169,39 +172,104 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
   return (
     <>
-      {/* <BreakpointDisplay /> */}
-      <div>
-        <ControllPanel loading={loading} onKill={handleKill} onRestart={handleRestart} onStart={handleStart} onStop={handleStop} state={serverStats ? serverStats.state : 'offline'} />
-      </div>
+      <div className="w-full">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
+          {/* Header with server info and controls - spans full width */}
+          <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 lg:col-span-12">
+            <CardHeader className="pb-2">
+              <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                <CardTitle className="text-xl font-bold">Minecraft Server</CardTitle>
+                <Badge variant={serverStats?.state.toLowerCase() === "online" ? "default" : "outline"} className="px-3 py-1">
+                  <Status state={serverStats?.state} />
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
+                <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="font-medium">Server IP:</div>
+                    <div>mc.example.com</div>
+                    <div className="font-medium">Version:</div>
+                    <div>1.19.2</div>
+                    <div className="font-medium">Players:</div>
+                    <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
+                    <div className="font-medium">Uptime:</div>
+                    <div>{serverStats?.state.toLowerCase() === "online" ? "2h 15m" : "—"}</div>
+                  </div>
+                </div>
 
-      <ConsoleV2 logs={logs} handleCommand={handleCommand} />
+                <div className="rounded-md border bg-card p-3 sm:col-span-1 lg:col-span-8">
+                  <h3 className="mb-2 font-semibold">Server Controls</h3>
+                  <PowerBtns
+                    loading={loading}
+                    onStart={handleStart}
+                    onStop={handleStop}
+                    onRestart={handleRestart}
+                    onKill={handleKill}
+                    state={serverStats?.state}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Left Side: CPU Chart (Takes 50%) */}
+          {/* Console - takes up 8/12 columns on desktop */}
+          <Card className="lg:col-span-8 lg:row-span-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Terminal className="h-5 w-5" /> Console
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-[calc(100%-4rem)]">
+              <div className="flex h-full flex-col gap-4">
+                <ConsoleV2 logs={logs} handleCommand={handleCommand} />
+                <div className="flex gap-2">
+                  <input type="text" placeholder="Type a command..." className="flex-1 rounded-md border px-3 py-2" />
+                  <Button>Send</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      <div className="flex flex-row w-full">
-        <div className="w-1/2 pr-2">
-          <CPUChart newData={serverStats} />
+          {/* Performance metrics - takes up 4/12 columns on desktop */}
+          <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
+            <Card>
+              <CardHeader className="pb-2">
+              </CardHeader>
+              <CardContent>
+                <CPUChart newData={serverStats} />
+                <Separator className="my-3" />
+                <div className="grid grid-cols-2 gap-1 text-sm">
+                  <div className="font-medium">Current:</div>
+                  <div>45%</div>
+                  <div className="font-medium">Average:</div>
+                  <div>52%</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Memory className="h-5 w-5" /> Memory Usage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RAMChart newData={serverStats} />
+                <Separator className="my-3" />
+                <div className="grid grid-cols-2 gap-1 text-sm">
+                  <div className="font-medium">Current:</div>
+                  <div>2.4GB / 4GB</div>
+                  <div className="font-medium">Peak:</div>
+                  <div>2.8GB (70%)</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-        <div className="w-1/2 pl-2">
-          <RAMChart newData={serverStats} />
-        </div>
       </div>
-
-      <div>
-        <div className="font-bold">Debug information</div>
-        <p>Uptime: {days}d {hours}h {minutes}min</p>
-        {/*<p>CPU: {serverStats?.cpu_absolute} %</p>
-        <p>Memory: {serverStats?.memory_bytes} GiB</p>
-        <p>Memory Limit: {serverStats?.memory_limit_bytes} GiB</p>*/}
-        <p>Disk: {serverStats?.disk_bytes} GiB</p>
-        <p>Network RX: {serverStats?.network.rx_bytes} bytes</p>
-        <p>Network TX: {serverStats?.network.tx_bytes} bytes</p>
-        <p>State: {serverStats?.state}</p>
-        <p>Uptime: {serverStats?.uptime} sek</p>
-        <p>{days}d {hours}h {minutes}min</p>
-      </div>
-    </>
-  )
+    </>)
 }
 
 export default GameDashboard
