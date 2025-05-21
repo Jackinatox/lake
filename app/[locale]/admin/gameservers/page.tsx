@@ -1,7 +1,6 @@
 import React from 'react'
 import GameserversTable from './GameserversTable';
 import { Builder } from "@avionrx/pterodactyl-js";
-import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { deleteAllServers } from './deleteAllServers';
@@ -24,17 +23,6 @@ async function Gameservers() {
         <form action={deleteAllServers}>
           <Button variant='destructive' >Delete all "Serverino" Servers</Button>
         </form>
-        <Breadcrumbs separator="›" aria-label="breadcrumbs">
-
-          <Link color="primary" href="/admin">
-            <SettingsIcon /> &nbsp; Admin Panel
-          </Link>
-
-          <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <Gamepad2Icon /> &nbsp; Gameservers
-          </Typography>
-
-        </Breadcrumbs>
         <GameserversTable servers={gameservers}></GameserversTable>
       </>
     );

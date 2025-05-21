@@ -1,9 +1,10 @@
 "use client";
 
+
 import React from 'react';
-import { Box, Card, CardCover, CardContent, Typography } from '@mui/joy';
 import { useRouter } from 'next/navigation';
 import { Gamepad2Icon, SquarePlay, UsersIcon } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const AdminPage = () => {
     const router = useRouter();
@@ -31,31 +32,30 @@ const AdminPage = () => {
     ];
 
     return (
-        <>
-            <Box
-                component="ul"
-                sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', p: 0, m: 0 }}
-            >
-                {subSites.map((site) => (
-                    <Card
-                        key={site.name}
-                        onClick={() => router.push(site.link)}
-                        sx={{
-                            cursor: 'pointer', height: 200, width: 300, '&:hover': { boxShadow: 'md' },
-                        }}
-                    >
-                        <CardCover>
-                            <img src={site.imageUrl} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-                        </CardCover>
-                        <CardContent sx={{ justifyContent: 'flex-end' }}>
-                            <Typography level="body-lg" sx={{ color: '#000', mt: 'auto', display: 'inline-flex' }}>
-                                {site.icon} &nbsp; {site.name}
-                            </Typography>
+        <div className="flex flex-wrap gap-4 p-0 m-0">
+            {subSites.map((site) => (
+                <div
+                    key={site.name}
+                    className="w-[300px] h-[200px] cursor-pointer transition-transform hover:scale-[1.04]"
+                    onClick={() => router.push(site.link)}
+                >
+                    <Card className="overflow-hidden w-full h-full flex flex-col justify-end p-0 shadow-lg">
+                        <div className="relative w-full h-[130px]">
+                            <img
+                                src={site.imageUrl}
+                                alt={site.name}
+                                className="object-cover w-full h-full"
+                                style={{ objectFit: 'cover' }}
+                            />
+                        </div>
+                        <CardContent className="flex items-center gap-2 pt-4 pb-4">
+                            {site.icon}
+                            <span className="font-semibold text-lg">{site.name}</span>
                         </CardContent>
                     </Card>
-                ))}
-            </Box>
-        </>
+                </div>
+            ))}
+        </div>
     );
 };
 

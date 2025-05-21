@@ -1,20 +1,25 @@
+'use client'
+
 import React from 'react'
 import AdminPage from './adminPage'
-import { Breadcrumbs, Link, Typography } from '@mui/joy'
-import { SettingsIcon, UserIcon } from 'lucide-react'
+import { SettingsIcon } from 'lucide-react'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
 
 function Admin() {
   return (
     <>
-      <Breadcrumbs separator="›" aria-label="breadcrumbs">
+      <div className="mb-4">
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="#" className="flex items-center gap-2 text-muted-foreground">
+              <SettingsIcon className="h-4 w-4" />
+              Admin Panel
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
+      </div>
 
-        <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-          <SettingsIcon /> &nbsp; Admin Panel
-        </Typography>
-
-      </Breadcrumbs>
-
-      <AdminPage></AdminPage>
+      <AdminPage />
     </>
   )
 }

@@ -1,8 +1,8 @@
 // app/admin/user/page.tsx
 import { Builder } from "@avionrx/pterodactyl-js";
 import UsersTable from './usersTable';
-import { Breadcrumbs, Link, Typography, Box } from '@mui/joy';
 import { SettingsIcon, UsersIcon } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function AdminPage() {
   const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -19,22 +19,16 @@ export default async function AdminPage() {
 
     return (
       <>
-        <Breadcrumbs separator="›">
-
-          <Link color="primary" href="/admin">
-            <SettingsIcon /> &nbsp; Admin Panel
-          </Link>
-
-          <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <UsersIcon /> &nbsp; Users
-          </Typography>
-
-        </Breadcrumbs>
-
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: 'auto', alignItems: 'flex-start' }}>
-          <UsersTable users={users}></UsersTable>
-        </Box>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>
+              <UsersIcon className="inline-block mr-2" /> Users
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UsersTable users={users} />
+          </CardContent>
+        </Card>
       </>
     );
   } catch (error: any) {

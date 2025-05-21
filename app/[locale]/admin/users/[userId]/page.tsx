@@ -1,7 +1,5 @@
 // app/admin/user/[userId]/page.tsx
-import { Box, Breadcrumbs, Button, Link, Table, Typography } from '@mui/joy';
-import { TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { PencilLine, SettingsIcon, UserIcon } from 'lucide-react';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Builder } from "@avionrx/pterodactyl-js";
 import React from 'react'
 
@@ -20,79 +18,50 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
     try {
         const user = await client.getUser(userId);
 
-
-
-
-
         return (
             <>
-                <Breadcrumbs separator="›" aria-label="breadcrumbs">
-
-                    <Link color="primary" href="/admin">
-                        <SettingsIcon />
-                        Admin Panel
-                    </Link>
-
-                    <Link color="primary" href="/admin/users">
-                        <UserIcon />
-                        User
-                    </Link>
-
-                    <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                        <PencilLine /> &nbsp;
-                        {user.id} - {user.username}
-                    </Typography>
-                    
-                </Breadcrumbs>
-
-
-
-                <Box sx={{ overflow: "auto" }}>
-                    <Box sx={{ width: "100%", display: "table" }}>
-
-                        <Table borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
-                            <TableHead >
+                <div className="overflow-auto mt-6">
+                    <div className="w-full">
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell>id          </TableCell>
-                                    <TableCell>externalId  </TableCell>
-                                    <TableCell>uuid        </TableCell>
-                                    <TableCell>internalId  </TableCell>
-                                    <TableCell>username    </TableCell>
-                                    <TableCell>email       </TableCell>
-                                    <TableCell>firstName   </TableCell>
-                                    <TableCell>lastName    </TableCell>
-                                    <TableCell>fullName    </TableCell>
-                                    <TableCell>language    </TableCell>
-                                    <TableCell>rootAdmin   </TableCell>
-                                    <TableCell>twoFactor   </TableCell>
-                                    <TableCell>updatedAt   </TableCell>
-                                    <TableCell>createdAt   </TableCell>
+                                    <TableHead>id</TableHead>
+                                    <TableHead>externalId</TableHead>
+                                    <TableHead>uuid</TableHead>
+                                    <TableHead>internalId</TableHead>
+                                    <TableHead>username</TableHead>
+                                    <TableHead>email</TableHead>
+                                    <TableHead>firstName</TableHead>
+                                    <TableHead>lastName</TableHead>
+                                    <TableHead>fullName</TableHead>
+                                    <TableHead>language</TableHead>
+                                    <TableHead>rootAdmin</TableHead>
+                                    <TableHead>twoFactor</TableHead>
+                                    <TableHead>updatedAt</TableHead>
+                                    <TableHead>createdAt</TableHead>
                                 </TableRow>
-                            </TableHead>
+                            </TableHeader>
                             <TableBody>
                                 <TableRow>
-                                    <TableCell>{user.id}          </TableCell>
-                                    <TableCell>{user.externalId}  </TableCell>
-                                    <TableCell>{user.uuid}        </TableCell>
-                                    <TableCell>{user.internalId}  </TableCell>
-                                    <TableCell>{user.username}    </TableCell>
-                                    <TableCell>{user.email}       </TableCell>
-                                    <TableCell>{user.firstName}   </TableCell>
-                                    <TableCell>{user.lastName}    </TableCell>
-                                    <TableCell>{user.fullName}    </TableCell>
-                                    <TableCell>{user.language}    </TableCell>
-                                    <TableCell>{user.rootAdmin}   </TableCell>
-                                    <TableCell>{user.twoFactor}   </TableCell>
+                                    <TableCell>{user.id}</TableCell>
+                                    <TableCell>{user.externalId}</TableCell>
+                                    <TableCell>{user.uuid}</TableCell>
+                                    <TableCell>{user.internalId}</TableCell>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.firstName}</TableCell>
+                                    <TableCell>{user.lastName}</TableCell>
+                                    <TableCell>{user.fullName}</TableCell>
+                                    <TableCell>{user.language}</TableCell>
+                                    <TableCell>{user.rootAdmin ? "Yes" : "No"}</TableCell>
+                                    <TableCell>{user.twoFactor ? "Yes" : "No"}</TableCell>
                                     <TableCell>{new Date(user.updatedAt).toLocaleString()}</TableCell>
                                     <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
-
-                    </Box>
-                </Box>
-
-
+                    </div>
+                </div>
             </>
         )
     } catch (e) {

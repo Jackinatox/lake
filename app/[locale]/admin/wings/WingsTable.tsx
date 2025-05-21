@@ -1,6 +1,6 @@
 import React from 'react';
 import { NodeModel as WingModel } from 'pterodactyl.js';
-import Table from '@mui/joy/Table';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -10,32 +10,36 @@ interface WingsTableProps {
 
 const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
   return (
-    <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Location ID</th>
-          <th>Disk (GB)</th>
-          <th>Memory (GB)</th>
-          <th>FQDN</th>
-          <th>Edit</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>ID</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Location ID</TableHead>
+          <TableHead>Disk (GB)</TableHead>
+          <TableHead>Memory (GB)</TableHead>
+          <TableHead>FQDN</TableHead>
+          <TableHead>Edit</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {wings.map((wing) => (
-          <tr key={wing.id}>
-            <td>{wing.id}</td>
-            <td>{wing.name}</td>
-            <td>{wing.locationId}</td>
-            <td>{wing.disk / 1000}</td>
-            <td>{wing.memory / 1000}</td>
-            <td>{wing.fqdn}</td>
-            <td> <Link href={`/admin/wings/${wing.id}`}><Button>Edit CPU</Button></Link> </td>
-          </tr>
+          <TableRow key={wing.id}>
+            <TableCell>{wing.id}</TableCell>
+            <TableCell>{wing.name}</TableCell>
+            <TableCell>{wing.locationId}</TableCell>
+            <TableCell>{wing.disk / 1000}</TableCell>
+            <TableCell>{wing.memory / 1000}</TableCell>
+            <TableCell>{wing.fqdn}</TableCell>
+            <TableCell>
+              <Link href={`/admin/wings/${wing.id}`}>
+                <Button>Edit CPU</Button>
+              </Link>
+            </TableCell>
+          </TableRow>
         ))}
-      </tbody>
-    </Table >
+      </TableBody>
+    </Table>
   );
 };
 

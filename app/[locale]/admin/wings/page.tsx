@@ -1,8 +1,8 @@
 import React from 'react'
 import WingsTable from './WingsTable';
 import { Builder } from "@avionrx/pterodactyl-js";
-import { Breadcrumbs, Typography, Link } from '@mui/joy';
 import { SettingsIcon, SquarePlay } from 'lucide-react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 async function Wings() {
   const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -19,17 +19,6 @@ async function Wings() {
 
     return (
       <>
-        <Breadcrumbs separator="›" aria-label="breadcrumbs">
-
-          <Link color="primary" href="/admin">
-            <SettingsIcon /> &nbsp; Admin Panel
-          </Link>
-
-          <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-            <SquarePlay /> &nbsp; Wings
-          </Typography>
-
-        </Breadcrumbs>
         <WingsTable wings={wings}></WingsTable>
       </>
     );
