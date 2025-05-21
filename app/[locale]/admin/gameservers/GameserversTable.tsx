@@ -1,6 +1,15 @@
 import React from 'react';
 import { ServerModel as GameserverModel } from 'pterodactyl.js';
-import Table from '@mui/joy/Table';
+
+// Import Shadcn Table components
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
 
 interface GameserversTableProps {
   servers: GameserverModel[];
@@ -8,47 +17,44 @@ interface GameserversTableProps {
 
 const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers }) => {
   return (
-    <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Descr</th>
-          <th>User</th>
-          <th>Node</th>
-          <th>Allocation</th>
-          <th>Nest</th>
-          <th>Egg</th>
-          <th>Pack</th>
-
-          <th>externalId</th>
-          <th>internalId</th>
-          <th>uuid</th>
-          <th>identifier</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>ID</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Descr</TableHead>
+          <TableHead>User</TableHead>
+          <TableHead>Node</TableHead>
+          <TableHead>Allocation</TableHead>
+          <TableHead>Nest</TableHead>
+          <TableHead>Egg</TableHead>
+          <TableHead>Pack</TableHead>
+          <TableHead>externalId</TableHead>
+          <TableHead>internalId</TableHead>
+          <TableHead>uuid</TableHead>
+          <TableHead>identifier</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {gameservers.map((gameserver) => (
-          <tr key={gameserver.id}>
-            <td>{gameserver.id}</td>
-            <td>{gameserver.name}</td>
-            <td>{gameserver.description}</td>
-            <td>{gameserver.user}</td>
-            <td>{gameserver.node}</td>
-            <td>{gameserver.allocation}</td>
-            <td>{gameserver.nest}</td>
-            <td>{gameserver.egg}</td>
-            <td>{gameserver.pack}</td>
-            
-            <td>{gameserver.externalId}</td>
-            <td>{gameserver.internalId}</td>
-            <td>{gameserver.uuid}</td>
-            <td>{gameserver.identifier}</td>
-            
-          </tr>
+          <TableRow key={gameserver.id}>
+            <TableCell>{gameserver.id}</TableCell>
+            <TableCell>{gameserver.name}</TableCell>
+            <TableCell>{gameserver.description}</TableCell>
+            <TableCell>{gameserver.user}</TableCell>
+            <TableCell>{gameserver.node}</TableCell>
+            <TableCell>{gameserver.allocation}</TableCell>
+            <TableCell>{gameserver.nest}</TableCell>
+            <TableCell>{gameserver.egg}</TableCell>
+            <TableCell>{gameserver.pack}</TableCell>
+            <TableCell>{gameserver.externalId}</TableCell>
+            <TableCell>{gameserver.internalId}</TableCell>
+            <TableCell>{gameserver.uuid}</TableCell>
+            <TableCell>{gameserver.identifier}</TableCell>
+          </TableRow>
         ))}
-      </tbody>
-    </Table >
+      </TableBody>
+    </Table>
   );
 };
 

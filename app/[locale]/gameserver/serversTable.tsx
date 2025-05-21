@@ -1,53 +1,57 @@
 "use server"
 
-import { Breadcrumbs, Button, Table, Typography } from '@mui/joy';
-import { Gamepad2Icon, SettingsIcon } from 'lucide-react';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { ClientServer } from 'pterodactyl.js';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { Gamepad2Icon } from 'lucide-react'
+import Link from 'next/link'
+import { ClientServer } from 'pterodactyl.js'
 import React from 'react'
 
 interface serverProps {
     servers: ClientServer[]
 }
 
-
 function ServersTable({ servers }: serverProps) {
     return (
         <>
-            <Breadcrumbs separator="›" aria-label="breadcrumbs">
-
-                <Typography sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Gamepad2Icon /> &nbsp; Gameservers
-                </Typography>
-
-            </Breadcrumbs>
+            <Breadcrumb>
+                <BreadcrumbItem>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                        <Gamepad2Icon /> &nbsp; Gameservers
+                    </span>
+                </BreadcrumbItem>
+            </Breadcrumb>
 
             {/* {JSON.stringify(servers[0])} */}
-            <Table aria-label="user table" borderAxis="both" variant="outlined" sx={{ tableLayout: "auto" }}>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>CPU</th>
-                        <th>Memory (MB)</th>
-                        <th>Disk (MB)</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>CPU</TableHead>
+                        <TableHead>Memory (MB)</TableHead>
+                        <TableHead>Disk (MB)</TableHead>
+                        <TableHead>Details</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {servers.map((server) => (
-                        <tr key={server.identifier}>
-                            <td>{server.identifier}</td>
-                            <td>{server.name}</td>
-                            <td>{server.limits.cpu}</td>
-                            <td>{server.limits.memory}</td>
-                            <td>{server.limits.disk}</td>
-                            <td>{<Button component={Link} href={`/gameserver/${server.identifier}`}> Connect </Button>}</td>
-                        </tr>
+                        <TableRow key={server.identifier}>
+                            <TableCell>{server.identifier}</TableCell>
+                            <TableCell>{server.name}</TableCell>
+                            <TableCell>{server.limits.cpu}</TableCell>
+                            <TableCell>{server.limits.memory}</TableCell>
+                            <TableCell>{server.limits.disk}</TableCell>
+                            <TableCell>
+                                <Button asChild>
+                                    <Link href={`/gameserver/${server.identifier}`}>Connect</Link>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                </tbody>
-            </Table >
+                </TableBody>
+            </Table>
         </>
     )
 }
