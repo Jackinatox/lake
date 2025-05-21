@@ -1,34 +1,28 @@
 "use client"
 
-import { Box, Button, useTheme } from "@mui/joy";
-import { useMediaQuery } from "@mui/material";
-
 interface InfoProps { state: string }
 
 
-
 export function Status({ state }: InfoProps) {
-    const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const getStatusColor = () => {
+    switch (state?.toLowerCase()) {
+      case "running":
+        return "bg-green-500"
+      case "offline":
+        return "bg-red-500"
+      case "starting":
+        return "bg-yellow-500"
+      case "stopping":
+        return "bg-orange-500"
+      default:
+        return "bg-gray-500"
+    }
+  }
 
-
-
-    const getColor = (status: string | undefined) => {
-
-        switch (status) {
-            case 'starting': return 'warning'; //verified
-            case 'running': return 'success'; //verified
-            case 'stopping': return 'warning'; //verified
-            case 'offline': return 'danger'; //verified
-            default: return 'neutral';
-        }
-    };
-
-    return (
-        <>
-            <Box sx={{ display: "flex", justifyContent: isSmallScreen ? 'flex-end' : 'center' }}>
-                <Button variant='outlined' color={getColor(state)} size="sm" sx={{ pointerEvents: 'none', width: 90 }}> {state} </Button>
-            </Box>
-        </>
-    )
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`h-3 w-3 rounded-full ${getStatusColor()}`} />
+      <span className="font-medium capitalize">{state}</span>
+    </div>
+  )
 }

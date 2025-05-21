@@ -88,9 +88,8 @@ export default async function LandingPage() {
               <h2 className="text-2xl font-bold mb-6">{t("supportedGames")}</h2>
               <div className="grid grid-cols-1 gap-4">
                 {supportedGames.map((game) => (
-                  <Link href={`/booking2/${game.id}`}>
+                  <Link href={`/booking2/${game.id}`} key={game.id}>
                   <div
-                    key={game.name}
                     className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors"
                   >
                     <div className="relative h-12 w-12 rounded-md overflow-hidden border">

@@ -1,24 +1,23 @@
 "use client"
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import webSocket from "@/lib/Pterodactyl/webSocket";
-import { Play, RefreshCw, Square, Power, Terminal, Cpu, MemoryStickIcon as Memory } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { useEffect, useRef, useState } from "react"
-import { Status } from "./status";
-import { PowerBtns } from "./powerBtns";
+import { Cpu, MemoryStickIcon as Memory, Terminal } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import ConsoleV2 from "./ConsoleV2";
 import CPUChart from "./graphs/CPUChart";
 import RAMChart from "./graphs/RAMChart";
-import ConsoleV2 from "./ConsoleV2";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Grid } from "@mui/joy";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
-import Link from "next/dist/client/link";
-import ControllPanel from "./panel";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { PowerBtns } from "./powerBtns";
+import { Status } from "./status";
+import { ClientServer } from 'pterodactyl.js';
+import hr from '@tsmx/human-readable'
+
 
 interface serverProps {
-  server: string;
+  server: ClientServer;
   ptApiKey: string;
 }
 
@@ -69,7 +68,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       case "token expiring": {
         console.log("Token expiring... fetching new token.");
 
-        const wsCred = await webSocket(server, ptApiKey);
+        const wsCred = await webSocket(server.identifier, ptApiKey);
         wsCreds.current = wsCred;
 
         wsRef.current?.send(JSON.stringify({ event: "auth", args: [wsCred?.data.token], }));
@@ -93,7 +92,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   useEffect(() => {
     const startWebSocket = async () => {
       if (!wsRef.current) {
-        const wsCred = await webSocket(server, ptApiKey);
+        const wsCred = await webSocket(server.identifier, ptApiKey);
         wsCreds.current = wsCred;
 
         const ws: WebSocket = new WebSocket(wsCred?.data.socket);
@@ -214,7 +213,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             </CardContent>
           </Card>
 
-          {/* Console - takes up 8/12 columns on desktop */}
           <Card className="lg:col-span-8 lg:row-span-1">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -224,10 +222,10 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             <CardContent className="h-[calc(100%-4rem)]">
               <div className="flex h-full flex-col gap-4">
                 <ConsoleV2 logs={logs} handleCommand={handleCommand} />
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                   <input type="text" placeholder="Type a command..." className="flex-1 rounded-md border px-3 py-2" />
                   <Button>Send</Button>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
@@ -236,15 +234,18 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
             <Card>
               <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Cpu className="h-5 w-5" /> CPU Usage
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <CPUChart newData={serverStats} />
                 <Separator className="my-3" />
                 <div className="grid grid-cols-2 gap-1 text-sm">
                   <div className="font-medium">Current:</div>
-                  <div>45%</div>
-                  <div className="font-medium">Average:</div>
-                  <div>52%</div>
+                  <div>{serverStats?.cpu_absolute + '%'}</div>
+                  {/* <div className="font-medium">Average:</div>
+                  <div>52%</div> */}
                 </div>
               </CardContent>
             </Card>
@@ -260,9 +261,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Separator className="my-3" />
                 <div className="grid grid-cols-2 gap-1 text-sm">
                   <div className="font-medium">Current:</div>
-                  <div>2.4GB / 4GB</div>
-                  <div className="font-medium">Peak:</div>
-                  <div>2.8GB (70%)</div>
+                  <div> {serverStats?.memory_bytes + ' GiB'}  / {server.limits.memory / 1024 + ' GiB'}</div>
+                  {/* <div className="font-medium">Peak:</div>
+                  <div>2.8GB (70%)</div> */}
                 </div>
               </CardContent>
             </Card>

@@ -13,9 +13,9 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
     const terminalRef = useRef<HTMLDivElement>(null);
     const lastLogRef = useRef<string[]>([]);
     // Create a terminal instance (using custom properties similar to the original)
-    
+
     const [terminal] = useState(
-        () => 
+        () =>
             new Terminal({
                 cursorBlink: false,
                 fontSize: 14,
@@ -25,8 +25,6 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
                 lineHeight: 1.2,
                 letterSpacing: 0,
                 allowTransparency: true,
-                cols: 80,
-                rows: 24,
                 theme: {
                     background: '#1e1e1e',
                     foreground: '#f0f0f0',
@@ -51,7 +49,7 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
                 },
             })
     );
-    
+
     const fitAddon = new FitAddon();
 
     // Command history state for arrow-key navigation
@@ -100,6 +98,15 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
         }
     }, [terminal]);
 
+    // Resize terminal on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            fitAddon.fit();
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [fitAddon]);
+
     useEffect(() => {
         const newLogs = logs.slice(lastLogRef.current.length).filter(log => log.trim() !== ''); // Get only new logs and filter out empty strings
 
@@ -110,25 +117,23 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
         }
     }, [logs]);
 
-    const handleResize = () => {
-        fitAddon.fit();
-    }
-
-    window.addEventListener('resize', handleResize);
-
     return (
-        <div>
+        <div className='h-full flex flex-col'>
             <div
                 ref={terminalRef}
                 style={{
-                    height: '100%',
+                    flex: 1,
+                    minHeight: 0,
+                    height: '400px', // Set a fixed or max height as needed
                     width: '100%',
                     backgroundColor: '#1e1e1e',
                     padding: '10px',
-                    borderTopRightRadius : '5px',
+                    borderTopRightRadius: '5px',
                     borderTopLeftRadius: '5px',
                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                    overflow: 'auto', // Enable scrolling inside the terminal
                 }}
+                onWheel={e => e.stopPropagation()} // Prevent terminal scroll from bubbling to window
             />
             <input
                 type="text"
@@ -144,7 +149,7 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
                     borderTop: '1px solid #3a3a3a',
                     outline: 'none',
                     fontFamily: '"Fira Code", monospace',
-                    borderBottomRightRadius : '5px',
+                    borderBottomRightRadius: '5px',
                     borderBottomLeftRadius: '5px',
                 }}
             />
