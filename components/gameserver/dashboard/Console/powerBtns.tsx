@@ -2,7 +2,6 @@
 
 import { useMediaQuery } from '@mui/material';
 import React from 'react'
-import KillBtn from './killBtn';
 import { Button } from '@/components/ui/button';
 import { Play, Power, RefreshCw, Square } from 'lucide-react';
 

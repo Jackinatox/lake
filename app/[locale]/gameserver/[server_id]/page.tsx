@@ -1,6 +1,6 @@
 "use server"
 
-import GameDashboard from '@/components/gameserver/dashboard/gameDashboard';
+import GameDashboard from '@/components/gameserver/dashboard/Console/gameDashboard';
 import { createClient } from '@/utils/supabase/server';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'
