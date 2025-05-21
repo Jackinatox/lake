@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Grid } from "@mui/joy";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import Link from "next/dist/client/link";
+import ControllPanel from "./panel";
 
 interface serverProps {
   server: string;
@@ -54,13 +55,13 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
       case 'console output': {
         const consoleLine = data.args[0];
         setLogs((prevLogs) => {
-            if (prevLogs[prevLogs.length - 1] === consoleLine) {
-                return prevLogs; // Avoid duplicate log
-            }
-            return [...prevLogs, consoleLine];
+          if (prevLogs[prevLogs.length - 1] === consoleLine) {
+            return prevLogs; // Avoid duplicate log
+          }
+          return [...prevLogs, consoleLine];
         });
         break;
-    }
+      }
 
       case "token expiring": {
         console.log("Token expiring... fetching new token.");
@@ -169,59 +170,25 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   return (
     <>
       {/* <BreakpointDisplay /> */}
+      <div>
+        <ControllPanel loading={loading} onKill={handleKill} onRestart={handleRestart} onStart={handleStart} onStop={handleStop} state={serverStats ? serverStats.state : 'offline'} />
+      </div>
 
-      <Grid container spacing={2}>
-        <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          <Card className="p-2">
-            <Breadcrumb separator="›" aria-label="breadcrumbs">
-              <Link color="primary" href="/gameserver">
-                <Server /> &nbsp; <p className="text-foreground">Gameservers</p>
-              </Link>
+      <ConsoleV2 logs={logs} handleCommand={handleCommand} />
 
+      {/* Left Side: CPU Chart (Takes 50%) */}
 
-              <Gamepad2Icon /> &nbsp; <p className="text-foreground">{server}</p>
-
-            </Breadcrumb>
-          </Card>
-        </Grid>
-
-
-
-        <Grid sx={{ flexGrow: 1 }}>
-          {/* <CopyAddress settings={settings} /> */}
-        </Grid>
-        <Grid sx={{ flexGrow: 1 }}>
-          <Status state={serverStats?.state} />
-        </Grid>
-        <Grid sx={{ flexGrow: 1 }}>
-          <PowerBtns loading={loading} onStop={handleStop} onStart={handleStart} onKill={handleKill} onRestart={handleRestart} state={serverStats?.state} />
-        </Grid>
-        <Grid xs={12} sx={{ flexGrow: 1 }}>
-          {/* <NewConsole ref={terminalRef} /> */}
-          <ConsoleV2 logs={logs} handleCommand={handleCommand} />
-        </Grid>
-
-        <Grid xs={12} sm={12} md={12} lg={12} xl={12}>
-          {/* <Info settings={settings} /> */}
-        </Grid>
-      </Grid >
-
-      <Grid container spacing={2}>
-        {/* Left Side: CPU Chart (Takes 50%) */}
-        <Grid xs={12} md={6}>
+      <div className="flex flex-row w-full">
+        <div className="w-1/2 pr-2">
           <CPUChart newData={serverStats} />
-        </Grid>
-
-        {/* Right Side: RAM Gauge (Takes 50%) */}
-        <Grid xs={12} md={6} >
-          <div className="w-full">
-            <RAMChart newData={serverStats} />
-          </div>
-        </Grid>
-      </Grid>
-
+        </div>
+        <div className="w-1/2 pl-2">
+          <RAMChart newData={serverStats} />
+        </div>
+      </div>
 
       <div>
+        <div className="font-bold">Debug information</div>
         <p>Uptime: {days}d {hours}h {minutes}min</p>
         {/*<p>CPU: {serverStats?.cpu_absolute} %</p>
         <p>Memory: {serverStats?.memory_bytes} GiB</p>
