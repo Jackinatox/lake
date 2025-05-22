@@ -190,7 +190,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                     <div className="font-medium">Server IP:</div>
                     <div>mc.example.com</div>
                     <div className="font-medium">Version:</div>
-                    <div>1.19.2</div>
+                    <div>—</div>
                     <div className="font-medium">Players:</div>
                     <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
                     <div className="font-medium">Uptime:</div>
@@ -233,38 +233,39 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           {/* Performance metrics - takes up 4/12 columns on desktop */}
           <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-0">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Cpu className="h-5 w-5" /> CPU Usage
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <CPUChart newData={serverStats} />
-                <Separator className="my-3" />
-                <div className="grid grid-cols-2 gap-1 text-sm">
+                <Separator className="my-1" />
+                <div className="flex justify-between pb-2 text-sm">
                   <div className="font-medium">Current:</div>
-                  <div>{serverStats?.cpu_absolute + '%'}</div>
+                  <div>{serverStats?.cpu_absolute + '%'} / {server.limits.cpu + ' %'}</div>
                   {/* <div className="font-medium">Average:</div>
                   <div>52%</div> */}
                 </div>
+                <CPUChart newData={serverStats} />
+                <Separator className="my-3" />
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-0">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Memory className="h-5 w-5" /> Memory Usage
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <RAMChart newData={serverStats} />
-                <Separator className="my-3" />
-                <div className="grid grid-cols-2 gap-1 text-sm">
+                <Separator className="my-1" />
+                <div className="flex justify-between gap-1 text-sm pb-2">
                   <div className="font-medium">Current:</div>
                   <div> {serverStats?.memory_bytes + ' GiB'}  / {server.limits.memory / 1024 + ' GiB'}</div>
                   {/* <div className="font-medium">Peak:</div>
                   <div>2.8GB (70%)</div> */}
                 </div>
+                <RAMChart newData={serverStats} />
               </CardContent>
             </Card>
           </div>
