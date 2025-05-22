@@ -9,6 +9,16 @@ interface ConsoleV2Props {
 }
 
 const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
+    // Prevent page scroll when mouse is over terminal
+    useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            if (terminalRef.current && terminalRef.current.contains(e.target as Node)) {
+                e.preventDefault();
+            }
+        };
+        document.addEventListener('wheel', handleWheel, { passive: false });
+        return () => document.removeEventListener('wheel', handleWheel);
+    }, []);
     // Reference to the container for xterm
     const terminalRef = useRef<HTMLDivElement>(null);
     const lastLogRef = useRef<string[]>([]);
@@ -124,16 +134,17 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
                 style={{
                     flex: 1,
                     minHeight: 0,
-                    height: '400px', // Set a fixed or max height as needed
+                    height: '100%', // Fill parent
                     width: '100%',
                     backgroundColor: '#1e1e1e',
                     padding: '10px',
                     borderTopRightRadius: '5px',
                     borderTopLeftRadius: '5px',
                     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    overflow: 'auto', // Enable scrolling inside the terminal
+                    // overflow: 'auto'
+                    // Removed overflow to hide scrollbars
                 }}
-                onWheel={e => e.stopPropagation()} // Prevent terminal scroll from bubbling to window
+                onWheel={e => { e.stopPropagation(); e.preventDefault(); }} // Prevent terminal and page scroll when scrolling in terminal
             />
             <input
                 type="text"
