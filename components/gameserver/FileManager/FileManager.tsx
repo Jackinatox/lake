@@ -40,7 +40,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
-import { FileText } from "lucide-react" // Import FileText here
+import { FileText } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface FileManagerProps {
   server: ClientServer
@@ -64,6 +65,7 @@ interface DirectoryContents {
 }
 
 export function FileManager({ server, ptApiKey }: FileManagerProps) {
+  const router = useRouter()
   const [currentPath, setCurrentPath] = useState("/")
   const [files, setFiles] = useState<FileEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -78,17 +80,24 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
   const [uploadingFile, setUploadingFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
+  const handleApiError = (error: any) => {
+    if (error.redirect) {
+      router.push(error.redirect)
+      return
+    }
+    setError(error.error || "An error occurred")
+  }
 
   const fetchFiles = async (path: string = currentPath) => {
     setLoading(true)
     setError(null)
     try {
+      console.log("Fetching files for path:", path)
+
       const response = await fetch(
-        `${baseUrl}/api/client/servers/${server.identifier}/files/list?directory=${encodeURIComponent(path)}`,
+        `/api/servers/${server.identifier}/files/list?directory=${encodeURIComponent(path)}`,
         {
           headers: {
-            Authorization: `Bearer ${ptApiKey}`,
             Accept: "application/json",
             "Content-Type": "application/json",
           },
@@ -96,14 +105,35 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch files: ${response.statusText}`)
+        const errorData = await response.json()
+        console.error("API Error:", errorData)
+        handleApiError(errorData)
+        return
       }
 
       const data: DirectoryContents = await response.json()
-      setFiles(data.data)
+      console.log("Received file data:", data)
+
+      // Ensure we have valid data
+      if (!data || !Array.isArray(data.data)) {
+        console.error("Invalid data structure received:", data)
+        setError("Invalid response from server")
+        return
+      }
+
+      // Validate each file entry
+      const validFiles = data.data.filter((file) => {
+        if (!file || typeof file.name !== "string") {
+          console.warn("Invalid file entry:", file)
+          return false
+        }
+        return true
+      })
+
+      setFiles(validFiles)
     } catch (err) {
       console.error("Error fetching files:", err)
-      setError(err instanceof Error ? err.message : "Failed to fetch files")
+      setError("Failed to fetch files")
     } finally {
       setLoading(false)
     }
@@ -112,17 +142,18 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
   const fetchFileContent = async (path: string) => {
     try {
       const response = await fetch(
-        `${baseUrl}/api/client/servers/${server.identifier}/files/contents?file=${encodeURIComponent(path)}`,
+        `/api/servers/${server.identifier}/files/contents?file=${encodeURIComponent(path)}`,
         {
           headers: {
-            Authorization: `Bearer ${ptApiKey}`,
-            Accept: "application/json",
+            Accept: "text/plain",
           },
         },
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch file content: ${response.statusText}`)
+        const errorData = await response.json()
+        handleApiError(errorData)
+        throw new Error(errorData.error || "Failed to fetch file content")
       }
 
       const content = await response.text()
@@ -135,20 +166,18 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
 
   const saveFileContent = async (path: string, content: string) => {
     try {
-      const response = await fetch(
-        `${baseUrl}/api/client/servers/${server.identifier}/files/write?file=${encodeURIComponent(path)}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${ptApiKey}`,
-            "Content-Type": "text/plain",
-          },
-          body: content,
+      const response = await fetch(`/api/servers/${server.identifier}/files/write?file=${encodeURIComponent(path)}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
         },
-      )
+        body: content,
+      })
 
       if (!response.ok) {
-        throw new Error(`Failed to save file: ${response.statusText}`)
+        const errorData = await response.json()
+        handleApiError(errorData)
+        throw new Error(errorData.error || "Failed to save file")
       }
 
       return true
@@ -161,32 +190,33 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
   const downloadFile = async (path: string) => {
     try {
       const response = await fetch(
-        `${baseUrl}/api/client/servers/${server.identifier}/files/download?file=${encodeURIComponent(path)}`,
+        `/api/servers/${server.identifier}/files/download?file=${encodeURIComponent(path)}`,
         {
           headers: {
-            Authorization: `Bearer ${ptApiKey}`,
+            Accept: "application/json",
           },
         },
       )
 
       if (!response.ok) {
-        throw new Error(`Failed to download file: ${response.statusText}`)
+        const errorData = await response.json()
+        handleApiError(errorData)
+        return
       }
 
       const downloadUrl = await response.json()
       window.open(downloadUrl.attributes.url, "_blank")
     } catch (err) {
       console.error("Error downloading file:", err)
-      setError(err instanceof Error ? err.message : "Failed to download file")
+      setError("Failed to download file")
     }
   }
 
   const deleteFile = async (path: string) => {
     try {
-      const response = await fetch(`${baseUrl}/api/client/servers/${server.identifier}/files/delete`, {
+      const response = await fetch(`/api/servers/${server.identifier}/files/delete`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${ptApiKey}`,
           Accept: "application/json",
           "Content-Type": "application/json",
         },
@@ -197,13 +227,15 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to delete file: ${response.statusText}`)
+        const errorData = await response.json()
+        handleApiError(errorData)
+        return
       }
 
       fetchFiles()
     } catch (err) {
       console.error("Error deleting file:", err)
-      setError(err instanceof Error ? err.message : "Failed to delete file")
+      setError("Failed to delete file")
     }
   }
 
@@ -224,29 +256,32 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
         }
       })
 
-      xhr.addEventListener("load", () => {
+      xhr.addEventListener("load", async () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           fetchFiles()
           setIsUploadDialogOpen(false)
           setIsUploading(false)
         } else {
-          throw new Error(`Upload failed with status ${xhr.status}`)
+          try {
+            const errorData = JSON.parse(xhr.responseText)
+            handleApiError(errorData)
+          } catch {
+            setError(`Upload failed with status ${xhr.status}`)
+          }
+          setIsUploading(false)
         }
       })
 
       xhr.addEventListener("error", () => {
-        throw new Error("Upload failed")
+        setError("Upload failed")
+        setIsUploading(false)
       })
 
-      xhr.open(
-        "POST",
-        `${baseUrl}/api/client/servers/${server.identifier}/files/upload?directory=${encodeURIComponent(currentPath)}`,
-      )
-      xhr.setRequestHeader("Authorization", `Bearer ${ptApiKey}`)
+      xhr.open("POST", `/api/servers/${server.identifier}/files/upload?directory=${encodeURIComponent(currentPath)}`)
       xhr.send(formData)
     } catch (err) {
       console.error("Error uploading file:", err)
-      setError(err instanceof Error ? err.message : "Failed to upload file")
+      setError("Failed to upload file")
       setIsUploading(false)
     }
   }
@@ -260,8 +295,11 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
           setFileContent(content)
           setIsEditDialogOpen(true)
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Failed to open file")
+          // Error already handled in fetchFileContent
         }
+      } else {
+        // For non-editable files, trigger download
+        downloadFile(`${currentPath}${file.name}`)
       }
     } else {
       // Navigate to directory
@@ -279,7 +317,7 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
       setIsEditDialogOpen(false)
       fetchFiles()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save file")
+      // Error already handled in saveFileContent
     }
   }
 
@@ -303,6 +341,12 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
   }
 
   const sortedFiles = [...files].sort((a, b) => {
+    // Ensure both files have valid names
+    if (!a || !b || !a.name || !b.name) {
+      console.warn("Invalid file objects in sort:", { a, b })
+      return 0
+    }
+
     // Always sort directories first
     if (a.is_file !== b.is_file) {
       return a.is_file ? 1 : -1
@@ -312,17 +356,19 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
     if (sortColumn === "name") {
       return sortDirection === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     } else if (sortColumn === "size") {
-      return sortDirection === "asc" ? a.size - b.size : b.size - a.size
+      const sizeA = a.size || 0
+      const sizeB = b.size || 0
+      return sortDirection === "asc" ? sizeA - sizeB : sizeB - sizeA
     } else if (sortColumn === "modified") {
-      return sortDirection === "asc"
-        ? new Date(a.modified_at).getTime() - new Date(b.modified_at).getTime()
-        : new Date(b.modified_at).getTime() - new Date(a.modified_at).getTime()
+      const dateA = new Date(a.modified_at || 0).getTime()
+      const dateB = new Date(b.modified_at || 0).getTime()
+      return sortDirection === "asc" ? dateA - dateB : dateB - dateA
     }
     return 0
   })
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 B"
+    if (!bytes || bytes === 0) return "0 B"
 
     const sizes = ["B", "KB", "MB", "GB", "TB"]
     const i = Math.floor(Math.log(bytes) / Math.log(1024))
@@ -331,8 +377,14 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
   }
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
-    return date.toLocaleString()
+    if (!dateString) return "Unknown"
+
+    try {
+      const date = new Date(dateString)
+      return date.toLocaleString()
+    } catch {
+      return "Invalid date"
+    }
   }
 
   const getBreadcrumbItems = () => {
@@ -408,87 +460,116 @@ export function FileManager({ server, ptApiKey }: FileManagerProps) {
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[40%]">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("name")} className="flex items-center">
+              <TableRow className="h-10">
+                <TableHead className="w-[40%] py-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSort("name")}
+                    className="flex items-center h-6"
+                  >
                     Name
                     {sortColumn === "name" && (
-                      <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                      <ArrowUpDown className={`ml-2 h-3 w-3 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
                     )}
                   </Button>
                 </TableHead>
-                <TableHead className="w-[20%]">
-                  <Button variant="ghost" size="sm" onClick={() => handleSort("size")} className="flex items-center">
+                <TableHead className="w-[20%] py-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSort("size")}
+                    className="flex items-center h-6"
+                  >
                     Size
                     {sortColumn === "size" && (
-                      <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                      <ArrowUpDown className={`ml-2 h-3 w-3 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
                     )}
                   </Button>
                 </TableHead>
-                <TableHead className="w-[30%]">
+                <TableHead className="w-[30%] py-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleSort("modified")}
-                    className="flex items-center"
+                    className="flex items-center h-6"
                   >
                     Last Modified
                     {sortColumn === "modified" && (
-                      <ArrowUpDown className={`ml-2 h-4 w-4 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
+                      <ArrowUpDown className={`ml-2 h-3 w-3 ${sortDirection === "desc" ? "rotate-180" : ""}`} />
                     )}
                   </Button>
                 </TableHead>
-                <TableHead className="w-[10%] text-right">Actions</TableHead>
+                <TableHead className="w-[10%] text-right py-2">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentPath !== "/" && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <Button variant="ghost" size="sm" onClick={navigateUp} className="flex items-center">
-                      <Folder className="mr-2 h-4 w-4" /> ..
-                    </Button>
+                <TableRow className="h-8 hover:bg-muted/50 cursor-pointer group">
+                  <TableCell colSpan={3} className="py-1 px-3" onClick={navigateUp}>
+                    <div className="flex items-center w-full">
+                      <Folder className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">.. (Parent Directory)</span>
+                    </div>
                   </TableCell>
+                  <TableCell className="py-1 px-3"></TableCell>
                 </TableRow>
               )}
 
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8">
+                <TableRow className="h-8">
+                  <TableCell colSpan={4} className="text-center py-4 text-sm text-muted-foreground">
                     Loading files...
                   </TableCell>
                 </TableRow>
               ) : sortedFiles.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8">
+                <TableRow className="h-8">
+                  <TableCell colSpan={4} className="text-center py-4 text-sm text-muted-foreground">
                     No files found in this directory
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedFiles.map((file) => (
-                  <TableRow key={file.name}>
-                    <TableCell>
-                      <div className="flex items-center">
-                        {file.is_file ? <File className="mr-2 h-4 w-4" /> : <Folder className="mr-2 h-4 w-4" />}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleFileClick(file)}
-                          className="text-left font-normal"
-                        >
-                          {file.name}
-                          {!file.is_file && <ChevronRight className="ml-1 h-4 w-4" />}
-                        </Button>
+                sortedFiles.map((file, index) => (
+                  <TableRow key={`${file.name}-${index}`} className="h-8 hover:bg-muted/50 cursor-pointer group">
+                    <TableCell className="py-1 px-3" onClick={() => handleFileClick(file)}>
+                      <div className="flex items-center w-full">
+                        {file.is_file ? (
+                          <File className="mr-2 h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        ) : (
+                          <Folder className="mr-2 h-4 w-4 text-blue-500 flex-shrink-0" />
+                        )}
+                        <span className="text-sm truncate flex-1 min-w-0">{file.name}</span>
+                        {!file.is_file && (
+                          <ChevronRight className="ml-1 h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                        )}
+                        {file.is_file && file.is_editable && (
+                          <Edit className="ml-1 h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                        )}
                       </div>
                     </TableCell>
-                    <TableCell>{file.is_file ? formatFileSize(file.size) : "--"}</TableCell>
-                    <TableCell>{formatDate(file.modified_at)}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell
+                      className="py-1 px-3 text-sm text-muted-foreground"
+                      onClick={() => handleFileClick(file)}
+                    >
+                      {file.is_file ? formatFileSize(file.size) : "--"}
+                    </TableCell>
+                    <TableCell
+                      className="py-1 px-3 text-sm text-muted-foreground"
+                      onClick={() => handleFileClick(file)}
+                    >
+                      {formatDate(file.modified_at)}
+                    </TableCell>
+                    <TableCell className="py-1 px-3 text-right">
                       <TooltipProvider>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
