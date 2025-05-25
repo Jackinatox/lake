@@ -22,14 +22,14 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     const { data: { user } } = await supabase.auth.getUser();
     const ptApiKey = user?.user_metadata.pt_api_Key;
     
-    const client = new Builder().setURL(url).setAPIKey(ptApiKey).asUser();
-    const server = await client.getClientServer(serverId);
+    const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
+    const server = await client.getServer(serverId);
     console.log(server)
     
 
     return (
         <>
-            <GameDashboard server={server.toJSON()} ptApiKey={ptApiKey}></GameDashboard>
+            {/* <GameDashboard server={server.toJSON()} ptApiKey={ptApiKey}></GameDashboard> */}
         </>
     )
 }
