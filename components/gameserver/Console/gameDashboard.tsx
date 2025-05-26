@@ -210,7 +210,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             <Separator className="my-3" />
             <div className="grid grid-cols-2 gap-1 text-sm">
               <div className="font-medium">Current:</div>
-              <div>{serverStats?.cpu_absolute + "%"}</div>
+              <div>{serverStats?.cpu_absolute + "% / " + server.limits.cpu + ' %'}</div>
             </div>
           </CardContent>
         </Card>
