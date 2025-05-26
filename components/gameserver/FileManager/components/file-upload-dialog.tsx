@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
-import type { FileUploadDialogProps } from "../types/file-manager"
+import type { FileUploadDialogProps } from "../../../../models/file-manager"
 
 export function FileUploadDialog({
   isOpen,

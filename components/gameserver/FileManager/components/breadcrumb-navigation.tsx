@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import type { BreadcrumbNavigationProps } from "../types/file-manager"
+import type { BreadcrumbNavigationProps } from "../../../../models/file-manager"
 
 export function BreadcrumbNavigation({ currentPath, onNavigate }: BreadcrumbNavigationProps) {
   const parts = currentPath.split("/").filter(Boolean)
