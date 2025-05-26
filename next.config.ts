@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin(/* â€¦your localeConfigPath if neededâ
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
-  output: 'standalone',
+  // output: 'standalone',
   images: {
     // URL-based remotePatterns for Next.js 15+
     remotePatterns: [
