@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import type { FileEditDialogProps } from "../types/file-manager"
+import type { FileEditDialogProps } from "../../../../models/file-manager"
 
 export function FileEditDialog({ isOpen, file, content, onContentChange, onSave, onClose }: FileEditDialogProps) {
   return (

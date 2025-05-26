@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Download, Edit, MoreHorizontal, Trash } from "lucide-react"
-import type { FileActionsProps } from "../types/file-manager"
+import type { FileActionsProps } from "../../../../models/file-manager"
 
 export function FileActions({ file, currentPath, onEdit, onDownload, onDelete }: FileActionsProps) {
   return (
