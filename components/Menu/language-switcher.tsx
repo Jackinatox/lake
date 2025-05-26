@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useTransition, useEffect, useState } from "react"
 import { Check, ChevronDown, Globe } from "lucide-react"
 
