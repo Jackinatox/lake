@@ -10,6 +10,8 @@ import "./globals.css";
 import MainMenu from "@/components/Menu/main-menu";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { SessionProvider } from "next-auth/react";
+import SessionInfo from "@/components/session-info";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -25,7 +27,6 @@ const geistSans = Geist({
   display: "swap",
   subsets: ["latin"],
 });
-
 
 export default async function RootLayout({
   children,
@@ -52,7 +53,6 @@ export default async function RootLayout({
                       {/* left topbar */}
 
                       <Link href="/" className="mr-4">Scyed</Link>
-
                       <MainMenu locale={locale} />
 
                       {/* left topbar end */}
@@ -62,7 +62,10 @@ export default async function RootLayout({
                   </div>
                 </nav>
                 <div className="flex flex-col gap-10 w-5/6 p-5">
-                  {children}
+                  <SessionProvider>
+
+                    {children}
+                  </SessionProvider>
                 </div>
 
                 <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
@@ -78,6 +81,9 @@ export default async function RootLayout({
                     </a>
                   </p>
                   <ThemeSwitcher />
+                  <SessionProvider>
+                    <SessionInfo />
+                  </SessionProvider>
                 </footer>
 
               </div>
