@@ -7,10 +7,10 @@ async function GameSelect() {
     const supabase = await createClient();
 
     const { data, error } = await supabase.from('GameData').select("*");
-    
+
     const games = data.map(game => {
         const imgName = `${game.name.toLowerCase()}.jpg`;
-        const {data: imgUrl} = supabase.storage.from('images').getPublicUrl(imgName);
+        const { data: imgUrl } = supabase.storage.from('images').getPublicUrl(imgName);
 
         return {
             ...game,
