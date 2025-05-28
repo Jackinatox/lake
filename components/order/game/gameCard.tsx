@@ -8,7 +8,6 @@ interface GameCardProps {
   card: {
     id: string | number
     name: string
-    fullName: string
   }
   imgPath: string
 }
