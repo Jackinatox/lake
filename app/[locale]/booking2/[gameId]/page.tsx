@@ -7,7 +7,6 @@ import { fetchGames, fetchPerformanceGroups } from "@/lib/actions"
 import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
-import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
 import { bookServer } from "./bokkServer-action"
 

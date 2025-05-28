@@ -19,6 +19,7 @@ model User {
   Authenticator Authenticator[]
 
   ptKey         String?
+  ptUser        Int?
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
