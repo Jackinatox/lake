@@ -1,8 +1,5 @@
 // app/layout.tsx
-import { EnvVarWarning } from "@/components/env-var-warning";
-import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
@@ -12,6 +9,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SessionProvider } from "next-auth/react";
 import SessionInfo from "@/components/session-info";
+import Profile from "@/components/auth/profile";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -57,8 +55,10 @@ export default async function RootLayout({
 
                       {/* left topbar end */}
                     </div>
+                    <SessionProvider>
 
-                    {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                      <Profile />
+                    </SessionProvider>
                   </div>
                 </nav>
                 <div className="flex flex-col gap-10 w-5/6 p-5">

@@ -10,8 +10,6 @@ import {
   LayoutDashboard,
   Image,
   Users,
-  FileText,
-  RefreshCw,
   HardDrive,
   Server,
   Gamepad2,
@@ -22,8 +20,6 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
 } from '@/components/ui/navigation-menu'
 import {
   DropdownMenu,
