@@ -1,8 +1,8 @@
 "use server"
 
 // import { getServerClient } from "@/lib/supabase"
-import type { Game, PerformanceGroup, ServerConfig } from "@/models/config"
-import { createClient } from "@/utils/supabase/client"
+import type { Game, PerformanceGroup } from "@/models/config";
+import { createClient } from "@/utils/supabase/client";
 
 export async function fetchPerformanceGroups(): Promise<PerformanceGroup[]> {
   const supabase = createClient();

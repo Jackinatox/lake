@@ -1,12 +1,11 @@
 "use server";
 
-import { calcBackups, calcDiskSize, getEggId } from "@/lib/globalFunctions";
-import { waitForServerInstallation, sleep } from "@/lib/Pterodactyl/checkServerReady";
-import { PerformanceGroup, ServerConf } from "@/models/cookies";
-import { createClient } from "@/utils/supabase/server";
-import { encodedRedirect } from "@/utils/utils";
+import { auth } from "@/auth";
+import { calcBackups, calcDiskSize } from "@/lib/globalFunctions";
+import { waitForServerInstallation } from "@/lib/Pterodactyl/checkServerReady";
+import { ServerConf } from "@/models/cookies";
+import { prisma } from "@/prisma";
 import { Builder, Server } from "@avionrx/pterodactyl-js";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function bookServer(serverData: any) {
@@ -19,19 +18,18 @@ export async function bookServer(serverData: any) {
   let server: Server;
 
   try {
-    const supabase = await createClient();
     const ptAdmin = new Builder()
       .setURL(process.env.NEXT_PUBLIC_PTERODACTYL_URL)
       .setAPIKey(process.env.PTERODACTYL_API_KEY)
       .asAdmin();
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    const user = await auth();
 
+    
 
-    const ptUser = user?.user_metadata?.ptUser;
+    const ptUser = await prisma.user.findUnique({
+      where: {id: user.user.id}
+    })
 
     if (user && ptUser) {
       const serverConfig: ServerConf = {
@@ -46,12 +44,12 @@ export async function bookServer(serverData: any) {
 
       // const test = await ptAdmin.getNodes();
       // console.log(serverConfig);
-      return;
+      // return;
   
 
       server = await ptAdmin.createServer({
         name: "serverino",
-        user: ptUser,
+        user: ptUser.ptUser,
         limits: {
           cpu: serverConfig.CPU,
           disk: serverConfig.Disk,

@@ -1,6 +1,9 @@
+"use server"
+
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { createClient } from "@/utils/supabase/server";
+import { prisma } from "@/prisma";
 import { CheckCircle, ChevronRight, Shield, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -8,19 +11,19 @@ import Link from "next/link";
 
 export default async function LandingPage() {
   const t = await getTranslations("landingpage");
-  const supabase = await createClient();
+  const data = await prisma.gameData.findMany();
+  const aut = await auth();
+  console.log('authentication: ', aut)
 
-  const { data, error } = await supabase.from("GameData").select("*");
 
   const supportedGames = data.map((game) => {
     const imgName = game.name.toLowerCase() + ".jpg";
-    const { data } = supabase.storage.from("images").getPublicUrl(imgName);
 
     return {
       id: game.id,
       name: game.name,
-      image: data.publicUrl || "/placeholder.svg?height=60&width=60",
-    };
+      image: `/images/games/${imgName}`,
+    };  // TODO: Add images
   });
 
   return (
