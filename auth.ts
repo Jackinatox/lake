@@ -1,7 +1,9 @@
+import { JWT } from "next-auth/jwt"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Discord from "next-auth/providers/discord"
 import { prisma } from "./prisma"
 import NextAuth, { type DefaultSession } from "next-auth"
+import { use } from "react"
  
 declare module "next-auth" {
   /**
@@ -19,6 +21,17 @@ declare module "next-auth" {
        * you need to add them back into the newly declared interface.
        */
     } & DefaultSession["user"]
+  }
+}
+
+ 
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
+  interface JWT {
+    /** OpenID ID Token */
+    id?: string
+    ptUser: number
+    ptKey: string
   }
 }
 
@@ -41,16 +54,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
-        // token.ptKey = dbUser.ptKey;
-        // token.id = dbUser.id;
+        const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+        token.ptKey = dbUser.ptKey;
+        token.ptUser = dbUser.ptUser;
+        token.id = dbUser.id;
       }
       return token;
     },
     async session({ session, token }) {
       // const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-      session.user.ptKey = 'bbbbbbbb'
-      session.user.ptUser = 1
+      session.user.ptKey = token.ptKey;
+      session.user.ptUser = token.ptUser;
       return session
     },
   }
