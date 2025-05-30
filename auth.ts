@@ -4,6 +4,8 @@ import Discord from "next-auth/providers/discord"
 import { prisma } from "./prisma"
 import NextAuth, { type DefaultSession } from "next-auth"
 import { use } from "react"
+import createUserApiKey from "./lib/Pterodactyl/userApiKey"
+import { Builder } from "@avionrx/pterodactyl-js"
  
 declare module "next-auth" {
   /**
@@ -44,6 +46,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   events: {
     async createUser({ user }) {
+      const pt = new Builder().setURL(process.env.NEXT_PUBLIC_PTERODACTYL_URL).setAPIKey(process.env.PTERODACTYL_API_KEY).asAdmin();
+
+      const newPTUser = await pt.createUser({
+        firstName: "Jakob",
+        lastName: "Schulze",
+        username: user.name,
+        email: user.email,
+        password: Array.from({ length: 32 }, () => Math.floor(Math.random() * 36).toString(36)).join(''),
+      })
+
+      const newKey = await createUserApiKey(newPTUser.id);
       const randomKey = Math.random().toString(36).slice(2, 12);
       await prisma.user.update({  // TODO: PT Key logic
         where: { id: user.id },
