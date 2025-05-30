@@ -1,7 +1,7 @@
 "use server"
 
+import { auth } from '@/auth';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
-import { createClient } from '@/utils/supabase/server';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'
 
@@ -17,15 +17,19 @@ if (!url || !apiKey) {
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
     const serverId = (await params).server_id;
-    const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const ptApiKey = user?.user_metadata.pt_api_Key;
-    
+    const session = await auth();
+
+    if (!session?.user) {
+        return <>Not logged in</>;
+    }
+
+    const ptApiKey = session?.user.ptKey;
+
     const client = new Builder().setURL(url).setAPIKey(ptApiKey).asUser();
     const server = await client.getClientServer(serverId);
     console.log(server)
-    
+
 
     return (
         <>

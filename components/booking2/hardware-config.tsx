@@ -9,16 +9,17 @@ import { Info } from "lucide-react"
 import type { HardwareConfig } from "@/models/config"
 import { calcDiskSize } from "@/lib/globalFunctions"
 import { Prisma } from "@prisma/client"
+import { PerformanceGroup } from "@/models/prisma"
 
 interface HardwareConfigProps {
   diskOptions: { id: number; size_gb: number; price_per_gb: number }[]
-  performanceOptions: Prisma.LocationGetPayload<{ include: { cpu: true, ram: true }}>[]
+  performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
   initialConfig: HardwareConfig | null
 }
 
 export function HardwareConfigComponent({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps) {
-  const [selectedPFGroup, setSelectedPFGroup] = useState<Prisma.LocationGetPayload<{ include: { cpu: true, ram: true }}>>(null);
+  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup>(null);
 
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
