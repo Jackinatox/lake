@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server"
+import { auth } from "@/auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
@@ -13,16 +13,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "File parameter is required" }, { status: 400 })
     }
 
-    const supabase = await createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const session = await auth();
 
-    if (!user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+    
+    const ptApiKey = session?.user.ptKey;
 
-    const ptApiKey = user.user_metadata.pt_api_Key
     if (!ptApiKey) {
       return NextResponse.json({ error: "No Pterodactyl API key found" }, { status: 401 })
     }
