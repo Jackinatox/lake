@@ -3,7 +3,7 @@ async function createUserApiKey(userId: number): Promise<any> {
     const apiKey = process.env.PTERODACTYL_API_KEY;
     const url = `${pturl}/api/application/users/${userId}/api-keys`;
     const data = {
-        description: 'API key for new user',
+        description: 'API key for new user by lake',
         allowed_ips: []
     };
 
@@ -27,7 +27,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         const { secret_token } = responseData.meta;
 
         const key = identifier + secret_token;
-        console.log('Key: ', key);
+        
         return key;
     } catch (e) {
         console.error('PTUser API-Key Creation: ', e);
