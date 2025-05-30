@@ -12,9 +12,6 @@ import Link from "next/link";
 export default async function LandingPage() {
   const t = await getTranslations("landingpage");
   const data = await prisma.gameData.findMany();
-  const aut = await auth();
-  console.log('authentication: ', aut)
-
 
   const supportedGames = data.map((game) => {
     const imgName = game.name.toLowerCase() + ".jpg";
@@ -32,14 +29,14 @@ export default async function LandingPage() {
       <section className="relative py-20 px-4 md:px-6">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
-            src="/images/background-hero.png"
+            src="/images/BGs/background-hero.png"
             alt="Gaming background"
             fill
             className="object-cover opacity-30 block dark:hidden"
             priority
           />
           <Image
-            src="/images/background-hero-dark.png"
+            src="/images/BGs/background-hero-dark.png"
             alt="Gaming background dark"
             fill
             className="object-cover opacity-30 hidden dark:block"
@@ -146,7 +143,7 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src="/images/panel.png"
+                src="/images/home/panel.png"
                 width={600}
                 height={400}
                 alt="Control panel screenshot"
@@ -159,7 +156,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
             <div>
               <Image
-                src="/images/filemanager.png"
+                src="/images/home/filemanager.png"
                 width={600}
                 height={400}
                 alt="File manager screenshot"
@@ -208,7 +205,7 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src="/images/backups.png"
+                src="/images/home/backups.png"
                 width={600}
                 height={400}
                 alt="Backup manager screenshot"
