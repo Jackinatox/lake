@@ -1,7 +1,5 @@
 "use server"
 
-// import { getServerClient } from "@/lib/supabase"
-// import { createClient } from "@/utils/supabase/client";
 import { prisma } from "@/prisma";
 
 export async function fetchPerformanceGroups() {

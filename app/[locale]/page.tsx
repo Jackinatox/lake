@@ -32,14 +32,14 @@ export default async function LandingPage() {
       <section className="relative py-20 px-4 md:px-6">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
-            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/background-hero.png`}
+            src="/images/background-hero.png"
             alt="Gaming background"
             fill
             className="object-cover opacity-30 block dark:hidden"
             priority
           />
           <Image
-            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/background-hero-dark.png`}
+            src="/images/background-hero-dark.png"
             alt="Gaming background dark"
             fill
             className="object-cover opacity-30 hidden dark:block"
@@ -146,7 +146,7 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/panel.png`}
+                src="/images/panel.png"
                 width={600}
                 height={400}
                 alt="Control panel screenshot"
@@ -159,7 +159,7 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
             <div>
               <Image
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/filemanager.png`}
+                src="/images/filemanager.png"
                 width={600}
                 height={400}
                 alt="File manager screenshot"
@@ -208,7 +208,7 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/backups.png`}
+                src="/images/backups.png"
                 width={600}
                 height={400}
                 alt="Backup manager screenshot"

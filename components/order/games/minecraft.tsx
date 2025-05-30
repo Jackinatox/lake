@@ -21,7 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { createClient } from "@/utils/supabase/client"
 
 interface Flavor {
   value: string
@@ -35,8 +34,6 @@ interface MCCProps {
 
 
 export default function MinecraftConfig({ config }: MCCProps) {
-  const supabase = createClient()
-
   // Loading indicator
   const [loading, setLoading] = useState(true)
 
@@ -52,47 +49,47 @@ export default function MinecraftConfig({ config }: MCCProps) {
   const [flavorOpen, setFlavorOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
 
-  
-const Submit = () => {
+
+  const Submit = () => {
     config.env.gameVersion = selectedVersion;
     config.env.gameFlavour = selectedFlavor;
 
     //TODO: order server
     // bookServer(config);
-}
+  }
 
   // Fetch flavor/version data on mount
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data, error } = await supabase
-          .from("GameData")
-          .select("data")
-          .eq("name", "minecraft")
-          .single()
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       // const { data, error } = await supabase
+  //       //   .from("GameData")
+  //       //   .select("data")
+  //       //   .eq("name", "minecraft")
+  //       //   .single()
 
-        if (error) throw error
-        //TODO: Simulate network delay (remove in production)
-        await new Promise((res) => setTimeout(res, 3000))
+  //       if (error) throw error
+  //       //TODO: Simulate network delay (remove in production)
+  //       await new Promise((res) => setTimeout(res, 3000))
 
-        const raw = data.data as Record<string, { name: string; versions: string[] }>
+  //       const raw = data.data as Record<string, { name: string; versions: string[] }>
 
-        // Map raw object into array for easier rendering
-        const mapped = Object.entries(raw).map(([key, val]) => ({
-          value: key,
-          label: val.name,
-          versions: val.versions,
-        }))
+  //       // Map raw object into array for easier rendering
+  //       const mapped = Object.entries(raw).map(([key, val]) => ({
+  //         value: key,
+  //         label: val.name,
+  //         versions: val.versions,
+  //       }))
 
-        setFlavors(mapped)
-        setLoading(false)
-      } catch (e) {
-        console.error("Failed to fetch Minecraft data:", e)
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [supabase])
+  //       setFlavors(mapped)
+  //       setLoading(false)
+  //     } catch (e) {
+  //       console.error("Failed to fetch Minecraft data:", e)
+  //       setLoading(false)
+  //     }
+  //   }
+  //   fetchData()
+  // }, [supabase])
 
   // Initialize default selections once flavors are loaded
   useEffect(() => {
