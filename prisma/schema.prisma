@@ -2,73 +2,71 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
- 
+
 generator client {
   provider = "prisma-client-js"
 }
- 
-model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String?         @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
 
-  ptKey         String?
-  ptUser        Int?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id              String          @id @default(cuid())
+  name            String?
+  email           String?         @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  authenticators  Authenticator[]
+
+  ptKey           String?
+  ptUser          Int?
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
- 
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
+  refreshToken      String?
+  accessToken       String?
+  expiresAt         Int?
+  tokenType         String?
   scope             String?
-  id_token          String?
-  session_state     String?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+  idToken           String?
+  sessionState      String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
- 
+
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  sessionToken  String   @unique
+  userId        String
+  expires       DateTime
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@unique([identifier, token])
 }
- 
-// Optional for WebAuthn support
+
 model Authenticator {
-  credentialID         String  @unique
+  credentialId         String  @unique
   userId               String
   providerAccountId    String
   credentialPublicKey  String
@@ -76,54 +74,53 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@id([userId, credentialID])
+
+  @@id([userId, credentialId])
 }
 
 model GameData {
-  id      BigInt   @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String?
   data    Json?
   enabled Boolean  @default(false)
 }
 
-model Locations {
-  id           BigInt   @id @default(autoincrement())
-  Name         String?
-  DiskPrice    Float?
-  PortsLimit   BigInt?
-  BackupsLimit BigInt?
-  Enabled      Boolean? @default(true)
-  ptLocationId BigInt   @default(1)
-  CPU_Id       BigInt   @default(1)
-  RAM_Id       BigInt
+model Location {
+  id           Int     @id @default(autoincrement())
+  name         String?
+  diskPrice    Float?
+  portsLimit   Int?
+  backupsLimit Int?
+  enabled      Boolean? @default(true)
+  ptLocationId Int     @default(1)
+  cpuId        Int     @default(1)
+  ramId        Int
 
-  CPUs CPUs   @relation(fields: [CPU_Id], references: [id], onDelete: Restrict)
-  RAMs RAMs   @relation(fields: [RAM_Id], references: [id], onDelete: Restrict)
+  cpu          CPU     @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram          RAM     @relation(fields: [ramId], references: [id], onDelete: Restrict)
 }
 
-// You will also need to define the CPUs and RAMs models if not already present:
-model CPUs {
-  id            BigInt   @id @default(autoincrement())
-  Name          String?
-  Cores         Int?
-  Threads       Int?
-  SingleScore   Int?
-  MultiScore    Int?
-  max_threads   Int?
-  min_threads   Int?
-  price_per_core Float   @default(0.2)
-  Locations     Locations[]
+model CPU {
+  id             Int        @id @default(autoincrement())
+  name           String?
+  cores          Int?
+  threads        Int?
+  singleScore    Int?
+  multiScore     Int?
+  maxThreads     Int?
+  minThreads     Int?
+  pricePerCore   Float      @default(0.2)
+  locations      Location[]
 }
 
-model RAMs {
-  id           BigInt     @id @default(autoincrement())
-  Name         String?
-  Speed        BigInt?
-  price_per_gb Float?
-  min_gb       Float?     @default(0.5)
-  max_gb       Float?     @default(12)
-  Locations    Locations[]
+model RAM {
+  id            Int        @id @default(autoincrement())
+  name          String?
+  speed         Int?
+  pricePerGb    Float?
+  minGb         Float?     @default(0.5)
+  maxGb         Float?     @default(12)
+  locations     Location[]
 }
