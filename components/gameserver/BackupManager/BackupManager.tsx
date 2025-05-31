@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 // import { BackupStats } from "./backup-stats"
-import { RotateCcw, Loader2, Database } from "lucide-react"
+import { RotateCcw, Loader2 } from "lucide-react"
 import { useToast } from "@/components/hooks/use-toast"
 import { BackupList } from "./backup-list"
 import { CreateBackupDialog } from "./backup-dialog"
 import { FileManagerProps } from "@/models/file-manager"
 import { formatBytes } from "@/lib/globalFunctions"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader } from "@/components/ui/card"
 import { BackupStats } from "./backupStats"
 
 export interface Backup {
@@ -46,8 +46,8 @@ export function BackupManager({ server }: FileManagerProps) {
             }
 
             const limitData = await limit.json();
-            setLimits({ ...limits, maximum: limitData.totalBackups })
             const data = await response.json()
+
             setBackups(
                 data.map((item: any) => ({
                     id: item.attributes.uuid,
@@ -58,7 +58,7 @@ export function BackupManager({ server }: FileManagerProps) {
                     checksum: item.attributes.checksum,
                 }))
             )
-            setLimits({ ...limits, current: backups.length })
+            setLimits({ maximum: limitData.totalBackups, current: data.length })
         } catch (error) {
             toast({
                 title: "Error",
@@ -72,6 +72,12 @@ export function BackupManager({ server }: FileManagerProps) {
 
     const handleBackupCreated = () => {
         fetchBackups()
+        setTimeout(() => {
+            fetchBackups()
+        }, 7000)
+        setTimeout(() => {
+            fetchBackups()
+        }, 15000)
     }
 
     const handleBackupDeleted = () => {
@@ -118,6 +124,7 @@ export function BackupManager({ server }: FileManagerProps) {
 
             {/* Backup List */}
             <BackupList
+                serverId={server.identifier}
                 backups={backups}
                 loading={loading}
                 onBackupDeleted={handleBackupDeleted}

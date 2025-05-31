@@ -34,14 +34,14 @@ export function BackupStats({ limits, totalSize = "0 GB" }: BackupStatsProps) {
                             </span>
                         </div>
                     </div>
-                    <div className="w-32">
+                    {/* <div className="w-32">
                         <div className="bg-muted rounded-full h-2">
                             <div
                                 className="bg-primary h-2 rounded-full transition-all"
                                 style={{ width: `${(limits.current / limits.maximum) * 100}%` }}
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </CardContent>
         </div>

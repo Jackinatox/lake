@@ -21,19 +21,20 @@ import { formatBytes } from "@/lib/globalFunctions"
 import { Backup } from "./BackupManager"
 
 interface BackupItemProps {
+  serverId: string,
   backup: Backup
   onBackupDeleted: () => void
   onBackupRestored: () => void
 }
 
-export function BackupItem({ backup, onBackupDeleted, onBackupRestored }: BackupItemProps) {
+export function BackupItem({ backup, onBackupDeleted, onBackupRestored, serverId }: BackupItemProps) {
   const [operating, setOperating] = useState(false)
   const { toast } = useToast()
 
   const deleteBackup = async () => {
     setOperating(true)
     try {
-      const response = await fetch(`/api/backups/${backup.id}`, {
+      const response = await fetch(`/api/servers/${serverId}/backups?backupId=${backup.id}`, {
         method: "DELETE",
       })
 
