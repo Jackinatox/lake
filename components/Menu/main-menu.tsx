@@ -77,7 +77,7 @@ const MENU: MenuItem[] = [
   {
     label: 'Dashboard',
     Icon: LayoutDashboard,
-    href: '/dashboard',
+    href: '/gameserver',
   },
 ]
 
