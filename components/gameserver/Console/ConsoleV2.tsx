@@ -2,9 +2,10 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Terminal } from "@xterm/xterm"
-import { FitAddon } from "@xterm/addon-fit"
-import "@xterm/xterm/css/xterm.css"
+import "@xterm/xterm/css/xterm.css" // Import CSS statically (safe for SSR)
+// Remove top-level xterm JS imports to avoid SSR issues
+// import { Terminal } from "@xterm/xterm"
+// import { FitAddon } from "@xterm/addon-fit"
 
 interface ConsoleV2Props {
   logs: string[]
@@ -15,11 +16,24 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
   // Reference to the container for xterm
   const terminalRef = useRef<HTMLDivElement>(null)
   const lastLogRef = useRef<string[]>([])
-  // Create a terminal instance (using custom properties similar to the original)
 
-  const [terminal] = useState(
-    () =>
-      new Terminal({
+  // State for terminal and fitAddon, initialized after dynamic import
+  const [terminal, setTerminal] = useState<any>(null)
+  const [fitAddon, setFitAddon] = useState<any>(null)
+
+  // Command history state for arrow-key navigation
+  const [commandHistory, setCommandHistory] = useState<string[]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+
+  // Dynamically import xterm and FitAddon only on client
+  useEffect(() => {
+    let term: any
+    let fit: any
+    let isMounted = true
+    const loadTerminal = async () => {
+      const xtermPkg = await import("@xterm/xterm")
+      const fitPkg = await import("@xterm/addon-fit")
+      term = new xtermPkg.Terminal({
         cursorBlink: false,
         fontSize: 14,
         scrollback: 400,
@@ -50,14 +64,19 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
           brightCyan: "#29b8db",
           brightWhite: "#e5e5e5",
         },
-      }),
-  )
-
-  const fitAddon = new FitAddon()
-
-  // Command history state for arrow-key navigation
-  const [commandHistory, setCommandHistory] = useState<string[]>([])
-  const [historyIndex, setHistoryIndex] = useState(-1)
+      })
+      fit = new fitPkg.FitAddon()
+      if (isMounted) {
+        setTerminal(term)
+        setFitAddon(fit)
+      }
+    }
+    loadTerminal()
+    return () => {
+      isMounted = false
+      if (term) term.dispose()
+    }
+  }, [])
 
   const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const input = e.currentTarget
@@ -94,15 +113,16 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
 
   // Initialize and display the terminal once the container is ready
   useEffect(() => {
-    if (terminalRef.current) {
+    if (terminal && fitAddon && terminalRef.current) {
       terminal.loadAddon(fitAddon)
       terminal.open(terminalRef.current)
       fitAddon.fit()
     }
-  }, [terminal])
+  }, [terminal, fitAddon])
 
   // Resize terminal on window resize
   useEffect(() => {
+    if (!fitAddon) return
     const handleResize = () => {
       fitAddon.fit()
     }
@@ -111,15 +131,13 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
   }, [fitAddon])
 
   useEffect(() => {
+    if (!terminal) return
     const newLogs = logs.slice(lastLogRef.current.length).filter((log) => log.trim() !== "") // Get only new logs and filter out empty strings
-
-    console.log("printed")
     if (newLogs.length > 0) {
-      // Check if there are new logs
       newLogs.forEach((log) => terminal.writeln(log)) // Append each log entry
       lastLogRef.current = logs // Update the last known log state
     }
-  }, [logs])
+  }, [logs, terminal])
 
   return (
     <div className="h-full flex flex-col">

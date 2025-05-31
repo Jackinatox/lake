@@ -1,11 +1,11 @@
 meta {
   name: GettingBackups
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{url}}/api/servers/68b58dd8/backups/list
+  url: {{url}}/api/servers/{{ptServer}}/backups
   body: none
   auth: inherit
 }

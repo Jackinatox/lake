@@ -17,15 +17,8 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreVertical, Download, Trash2, RotateCcw, Loader2, HardDrive, Calendar, FileText } from "lucide-react"
 import { useToast } from "@/components/hooks/use-toast"
-
-interface Backup {
-  id: string
-  name: string
-  size: string
-  createdAt: string
-  status: "completed" | "creating" | "failed"
-  checksum?: string
-}
+import { formatBytes } from "@/lib/globalFunctions"
+import { Backup } from "./BackupManager"
 
 interface BackupItemProps {
   backup: Backup
@@ -161,7 +154,7 @@ export function BackupItem({ backup, onBackupDeleted, onBackupRestored }: Backup
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <HardDrive className="h-3 w-3" />
-            {backup.size}
+            {formatBytes(backup.size)}
           </span>
           <span className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />

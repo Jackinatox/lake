@@ -4,15 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { Database, Loader2 } from "lucide-react"
 import { BackupItem } from "./backup-item"
+import { Backup } from "./BackupManager"
 
-interface Backup {
-  id: string
-  name: string
-  size: string
-  createdAt: string
-  status: "completed" | "creating" | "failed"
-  checksum?: string
-}
+
 
 interface BackupListProps {
   backups: Backup[]
