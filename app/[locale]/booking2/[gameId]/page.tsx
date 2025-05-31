@@ -4,12 +4,14 @@ import { useState, useEffect } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
 import { fetchGames, fetchPerformanceGroups } from "@/lib/actions"
-import type { DiskOption, Game, HardwareConfig, GameConfig, PerformanceGroup } from "@/models/config"
+import type { DiskOption, Game, HardwareConfig, GameConfig } from "@/models/config"
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
-import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
-import { bookServer } from "./bokkServer-action"
+// import { bookServer } from "./bokkServer-action"
+import { Prisma } from "@prisma/client"
+import { PerformanceGroup } from "@/models/prisma"
+
 
 export default function GameServerConfig() {
   const [step, setStep] = useState(1)
@@ -72,7 +74,7 @@ export default function GameServerConfig() {
 
     try {
       setLoading(true)
-      const result = await bookServer(serverConfig)
+      // const result = await bookServer(serverConfig)
 
       toast({
         title: "Success",
@@ -80,7 +82,7 @@ export default function GameServerConfig() {
       })
 
       // In a real application, you might redirect to a deployment status page
-      console.log("Server configuration submitted:", result)
+
     } catch (error) {
       console.error("Error submitting server configuration:", error)
       toast({

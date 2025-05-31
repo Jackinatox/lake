@@ -14,7 +14,7 @@ import { FileUploadDialog } from "./components/file-upload-dialog"
 import { FileApiService } from "./file-api"
 import type { FileManagerProps, FileEntry } from "../../../models/file-manager"
 
-export function FileManager({ server, ptApiKey }: FileManagerProps) {
+export function FileManager({ server }: FileManagerProps) {
   const router = useRouter()
   const [currentPath, setCurrentPath] = useState("/")
   const [files, setFiles] = useState<FileEntry[]>([])

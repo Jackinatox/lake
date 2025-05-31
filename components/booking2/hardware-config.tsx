@@ -6,19 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Info } from "lucide-react"
-import type { DiskOption, HardwareConfig, PerformanceGroup } from "@/models/config"
+import type { HardwareConfig } from "@/models/config"
 import { calcDiskSize } from "@/lib/globalFunctions"
+import { Prisma } from "@prisma/client"
+import { PerformanceGroup } from "@/models/prisma"
 
 interface HardwareConfigProps {
-  diskOptions: DiskOption[]
+  diskOptions: { id: number; size_gb: number; price_per_gb: number }[]
   performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
   initialConfig: HardwareConfig | null
 }
 
-
-export function HardwareConfigComponent({ diskOptions, initialConfig,  performanceOptions, onNext }: HardwareConfigProps) {
-  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
+export function HardwareConfigComponent({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps) {
+  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup>(null);
 
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
@@ -45,16 +46,16 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
 
   // Calculate total price whenever configuration changes
   useEffect(() => {
-    if (selectedPFGroup?.CPU && selectedPFGroup?.RAM) {
-      const cpuPrice = selectedPFGroup.CPU.price_per_core * cpuCores
-      const ramPrice = selectedPFGroup.RAM.price_per_gb * ramGb
+    if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
+      const cpuPrice = selectedPFGroup.cpu.pricePerCore * cpuCores
+      const ramPrice = selectedPFGroup.ram.pricePerGb * ramGb
 
       setTotalPrice(Number.parseFloat((cpuPrice + ramPrice).toFixed(2)))
     }
   }, [selectedPFGroup, cpuCores, ramGb])
 
   const handleNext = () => {
-    if (!selectedPFGroup.CPU) return
+    if (!selectedPFGroup?.cpu) return
 
     const config: HardwareConfig = {
       pfGroupId: selectedPFGroup.id,
@@ -69,7 +70,7 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
     return <div>Loading configuration options...</div>
   }
 
-  const ramOption = selectedPFGroup.RAM; // Using the first RAM option
+  const ramOption = selectedPFGroup.ram;
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -85,11 +86,14 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
               value={selectedPFGroup.id.toString()}
               onValueChange={(value) => {
                 const pfGroup = performanceOptions.find((pf) => pf.id.toString() === value);
-                if (pfGroup) { setSelectedPFGroup(pfGroup); setCpuCores(Math.min(cpuCores, pfGroup.CPU.max_threads)) }
-              }} >
+                if (pfGroup) { 
+                  setSelectedPFGroup(pfGroup); 
+                  setCpuCores(Math.min(cpuCores, pfGroup.cpu.maxThreads)) 
+                }
+              }}>
               <TabsList className={`grid grid-cols-${performanceOptions.length} w-full`}>
                 {performanceOptions.map((pf) => (
-                  <TabsTrigger key={pf.id} value={pf.id.toString()}>{pf.Name}</TabsTrigger>
+                  <TabsTrigger key={pf.id} value={pf.id.toString()}>{pf.name}</TabsTrigger>
                 ))}
               </TabsList>
             </Tabs>
@@ -101,22 +105,22 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
               <div className="flex items-center gap-2">
                 <div className="text-right font-semibold">{cpuCores}</div>
                 <h3 className="text-lg font-semibold">vCore(s)</h3>
-                <span className="text-muted-foreground">{selectedPFGroup.CPU.Name}</span>
+                <span className="text-muted-foreground">{selectedPFGroup.cpu.name}</span>
                 <Info className="h-4 w-4 text-muted-foreground" />
               </div>
-              <div className="text-right text-muted-foreground">{selectedPFGroup.CPU.price_per_core.toFixed(2)}€/vCore</div>
+              <div className="text-right text-muted-foreground">{selectedPFGroup.cpu.pricePerCore.toFixed(2)}€/vCore</div>
             </div>
             <Slider
               value={[cpuCores]}
-              min={selectedPFGroup.CPU.min_threads}
-              max={selectedPFGroup.CPU.max_threads}
+              min={selectedPFGroup.cpu.minThreads}
+              max={selectedPFGroup.cpu.maxThreads}
               step={1}
               onValueChange={(value) => setCpuCores(value[0])}
             />
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{selectedPFGroup.CPU.min_threads}</span>
-              <span>{Math.floor((selectedPFGroup.CPU.min_threads + selectedPFGroup.CPU.max_threads) / 2)}</span>
-              <span>{selectedPFGroup.CPU.max_threads}</span>
+              <span>{selectedPFGroup.cpu.minThreads}</span>
+              <span>{Math.floor((selectedPFGroup.cpu.minThreads + selectedPFGroup.cpu.maxThreads) / 2)}</span>
+              <span>{selectedPFGroup.cpu.maxThreads}</span>
             </div>
           </div>
 
@@ -127,19 +131,19 @@ export function HardwareConfigComponent({ diskOptions, initialConfig,  performan
                 <div className="text-right font-semibold">{ramGb} GiB</div>
                 <h3 className="text-lg font-semibold">RAM</h3>
               </div>
-              <div className="text-right text-muted-foreground">{ramOption.price_per_gb.toFixed(2)}€/GiB</div>
+              <div className="text-right text-muted-foreground">{ramOption.pricePerGb.toFixed(2)}€/GiB</div>
             </div>
             <Slider
               value={[ramGb]}
-              min={ramOption.min_gb}
-              max={ramOption.max_gb}
+              min={ramOption.minGb}
+              max={ramOption.maxGb}
               step={1}
               onValueChange={(value) => setRamGb(value[0])}
             />
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{ramOption.min_gb}GB</span>
-              <span>{Math.floor((ramOption.min_gb + ramOption.max_gb) / 2)}GB</span>
-              <span>{ramOption.max_gb}GB</span>
+              <span>{ramOption.minGb}GB</span>
+              <span>{Math.floor((ramOption.minGb + ramOption.maxGb) / 2)}GB</span>
+              <span>{ramOption.maxGb}GB</span>
             </div>
             <div className="text-right font-semibold">3 €</div>
           </div>

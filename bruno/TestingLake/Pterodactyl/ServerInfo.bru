@@ -1,0 +1,11 @@
+meta {
+  name: ServerInfo
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{pturl}}/api/client/servers/{{ptServer}}
+  body: none
+  auth: inherit
+}

@@ -1,4 +1,14 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{ptKey}}
+}
+
 vars:pre-request {
   url: http://localhost:3000
   ptServer: 68b58dd8
+  pturl: https://pt.scyed.com
+  ptKey: ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP
 }

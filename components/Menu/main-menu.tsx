@@ -10,8 +10,6 @@ import {
   LayoutDashboard,
   Image,
   Users,
-  FileText,
-  RefreshCw,
   HardDrive,
   Server,
   Gamepad2,
@@ -22,8 +20,6 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
 } from '@/components/ui/navigation-menu'
 import {
   DropdownMenu,
@@ -81,7 +77,7 @@ const MENU: MenuItem[] = [
   {
     label: 'Dashboard',
     Icon: LayoutDashboard,
-    href: '/dashboard',
+    href: '/gameserver',
   },
 ]
 
@@ -135,6 +131,9 @@ export default function MainMenu({ locale }) {
                   </NavigationMenuItem>
                 )
               )}
+              <NavigationMenuItem>
+                placeholder for DC
+              </NavigationMenuItem>
               <NavigationMenuItem>
                 <LanguageSwitcher currentLocale={locale} />
               </NavigationMenuItem>

@@ -14,6 +14,7 @@ import { Status } from "./status"
 import type { ClientServer } from "pterodactyl.js"
 import { TabsComponent } from "../GameserverTabs"
 import { FileManager } from "../FileManager/FileManager"
+import { BackupManager } from "../BackupManager/BackupManager"
 
 interface serverProps {
   server: ClientServer
@@ -285,7 +286,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         <TabsComponent
           consoleComponent={ConsoleComponent}
-          fileManagerComponent={<FileManager server={server} ptApiKey={ptApiKey} />}
+          fileManagerComponent={<FileManager server={server} />}
+          backupManagerComponent={<BackupManager server={server} />}
         />
       </div>
     </>

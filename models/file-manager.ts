@@ -2,7 +2,6 @@ import type { ClientServer } from "pterodactyl.js"
 
 export interface FileManagerProps {
   server: ClientServer
-  ptApiKey: string
 }
 
 export interface FileEntry {
