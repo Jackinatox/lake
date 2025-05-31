@@ -11,6 +11,7 @@ async function webSocket(serverId: string, apiKey: string) {
   });
 
   if (!response.ok) {
+    console.error(response.body)
     throw new Error(`Error: ${response.status}`);
   }
 

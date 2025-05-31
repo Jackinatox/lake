@@ -1,16 +1,17 @@
 "use server"
 import { createPtUserClient } from '@/lib/Pterodactyl/ptUserClient';
-import { createClient } from '@/utils/supabase/server';
 import React from 'react'
 import ServersTable from './serversTable';
+import { auth } from '@/auth';
 
 async function UserServer() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await auth();
 
-  const apiKey = user?.user_metadata.pt_api_Key;
+  if (!session?.user) {
+    return <>Not logged in</>;
+  }
 
-  console.log('api key: ', apiKey)
+  const apiKey = session?.user.ptKey;
 
   const pt = createPtUserClient(apiKey);
 
