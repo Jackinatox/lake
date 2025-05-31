@@ -1,6 +1,5 @@
 "use client"
 
-import { useMediaQuery } from '@mui/material';
 import React from 'react'
 import { Button } from '@/components/ui/button';
 import { Play, Power, RefreshCw, Square } from 'lucide-react';
