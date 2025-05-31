@@ -63,9 +63,19 @@ export function BackupItem({ backup, onBackupDeleted, onBackupRestored, serverId
   const restoreBackup = async () => {
     setOperating(true)
     try {
-      const response = await fetch(`/api/backups/${backup.id}/restore`, {
-        method: "POST",
-      })
+      const response = await fetch(
+        `/api/servers/${encodeURIComponent(serverId)}/backups/restore`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            backupId: backup.id,
+            truncate: true,
+          }),
+        }
+      )
 
       if (!response.ok) {
         const error = await response.json()

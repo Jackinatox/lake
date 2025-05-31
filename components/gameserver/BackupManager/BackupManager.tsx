@@ -108,7 +108,7 @@ export function BackupManager({ server }: FileManagerProps) {
     return (
         <Card className="space-y-6">
             <CardHeader className="pb-0">
-                <Card className="flex items-center justify-between w-full px-4">
+                <Card className="flex items-center justify-between w-full pr-4">
                     <BackupStats limits={limits} totalSize={calculateTotalSize()} />
                     <div className="flex gap-2">
                         <CreateBackupDialog serverId={server.identifier} onBackupCreated={handleBackupCreated} canCreateBackup={limits.maximum - limits.current > 0} />
