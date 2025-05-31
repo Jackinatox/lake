@@ -49,19 +49,19 @@ export function CreateBackupDialog({ onBackupCreated, canCreateBackup, serverId 
                 body: JSON.stringify({ name: name.trim() }),
             })
 
+            const data = await response.json()
+
             if (!response.ok) {
                 let errorMsg = "Failed to create backup"
-                const error = await response.json();
-                errorMsg = error.error || errorMsg;
+                errorMsg = data.error || errorMsg;
                 setError(errorMsg);
                 throw new Error();
             }
 
-            const data = await response.json()
 
             toast({
                 title: "Success",
-                description: `Backup "${data.backup.name}" creation started.`,
+                description: `Backup "${data.name}" creation started.`,
             })
 
             setName("")

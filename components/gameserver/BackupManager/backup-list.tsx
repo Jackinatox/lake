@@ -10,12 +10,13 @@ import { Backup } from "./BackupManager"
 
 interface BackupListProps {
   backups: Backup[]
+  serverId: string,
   loading: boolean
   onBackupDeleted: () => void
   onBackupRestored: () => void
 }
 
-export function BackupList({ backups, loading, onBackupDeleted, onBackupRestored }: BackupListProps) {
+export function BackupList({ backups, loading, onBackupDeleted, onBackupRestored, serverId }: BackupListProps) {
   return (
     <div>
       <CardContent>
@@ -34,7 +35,7 @@ export function BackupList({ backups, loading, onBackupDeleted, onBackupRestored
           <div className="space-y-4">
             {backups.map((backup, index) => (
               <div key={backup.id}>
-                <BackupItem backup={backup} onBackupDeleted={onBackupDeleted} onBackupRestored={onBackupRestored} />
+                <BackupItem serverId={serverId} backup={backup} onBackupDeleted={onBackupDeleted} onBackupRestored={onBackupRestored} />
                 {index < backups.length - 1 && <Separator className="my-4" />}
               </div>
             ))}

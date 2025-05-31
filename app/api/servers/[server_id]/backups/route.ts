@@ -49,13 +49,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ server_id: string }> }) {
     try {
         const serverId = (await params).server_id;
-        // const session = await auth();
+        const session = await auth();
 
-        // if (!session?.user) {
-        //     return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
-        // }
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
+        }
 
-        // const ptApiKey = session?.user.ptKey;
+        const ptApiKey = session?.user.ptKey;
 
         // Parse the request body to get the backup name
         let body;
@@ -100,6 +100,53 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         const data = await response.json();
         return NextResponse.json(data.attributes)
+    } catch (error) {
+        return NextResponse.json({ error: 'An error occurred', details: String(error) }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ server_id: string }> }) {
+    try {
+        const serverId = (await params).server_id;
+        const backupId = request.nextUrl.searchParams.get('backupId');
+        if (!backupId) {
+            return NextResponse.json({ error: 'Missing backupId in query parameters.' }, { status: 400 });
+        }
+
+        // console.log(serverId, backupId)
+
+        const session = await auth();
+
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
+        }
+
+        const ptApiKey = session?.user.ptKey;
+
+        const anPT = `${baseUrl}/api/client/servers/${serverId}/backups/${backupId}`;
+        console.log(anPT)
+        const response = await fetch(
+            anPT,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${ptApiKey}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            },
+        )
+
+        if (response.status === 403 || response.status === 404) {
+            return NextResponse.json({ error: "Access denied", ptresponse: await response.json()}, { status: 403 })
+        }
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            return NextResponse.json({ error: `Pterodactyl API error: ${errorText}` }, { status: response.status })
+        }
+
+        return NextResponse.json({ status: 200 })
     } catch (error) {
         return NextResponse.json({ error: 'An error occurred', details: String(error) }, { status: 500 });
     }
