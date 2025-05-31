@@ -10,6 +10,7 @@ import { getLocale } from "next-intl/server";
 import { SessionProvider } from "next-auth/react";
 import SessionInfo from "@/components/session-info";
 import Profile from "@/components/auth/profile";
+import { Toaster } from "@/components/ui/toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -63,6 +64,7 @@ export default async function RootLayout({
                   <div className="flex flex-col gap-10 w-5/6 p-5">
 
                     {children}
+                    <Toaster />
                     <SessionInfo />
 
                   </div>
