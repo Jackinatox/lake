@@ -17,12 +17,11 @@ import { FileManager } from "../FileManager/FileManager"
 import { BackupManager } from "../BackupManager/BackupManager"
 
 interface serverProps {
-  server: ClientServer
+  server: any
   ptApiKey: string
 }
 
 function GameDashboard({ server, ptApiKey }: serverProps) {
-  const terminalRef = useRef(null)
   const [logs, setLogs] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const wsRef = useRef<WebSocket | null>(null)
@@ -260,8 +259,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium">Server IP:</div>
                   <div>mc.example.com</div>
-                  <div className="font-medium">Version:</div>
-                  <div>1.19.2</div>
+                  <div className="font-medium">Name:</div>
+                  <div>{server.name}</div>
                   <div className="font-medium">Players:</div>
                   <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
                   <div className="font-medium">Uptime:</div>

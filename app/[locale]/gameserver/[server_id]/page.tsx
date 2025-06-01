@@ -14,6 +14,7 @@ if (!url || !apiKey) {
 }
 
 
+const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
     const serverId = (await params).server_id;
@@ -26,14 +27,40 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     const ptApiKey = session?.user.ptKey;
 
-    const client = new Builder().setURL(url).setAPIKey(ptApiKey).asUser();
-    const server = await client.getClientServer(serverId);
+    const response = await fetch(
+        `${baseUrl}/api/client/servers/${serverId}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${ptApiKey}`,
+                // Authorization: `Bearer ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        },
+    )
+
+    const data = await response.json();
+
+    if (response.status === 403 || response.status === 404) {
+        console.error('auth error to pt API', data);
+        return <>Auth error</>
+    }
+
+    if (!response.ok) {
+        console.error('error from pt API', data);
+        return <>An error occured</>
+    }
+
+
+
+    const server = data.attributes;
     console.log(server)
 
 
     return (
         <>
-            <GameDashboard server={server.toJSON()} ptApiKey={ptApiKey}></GameDashboard>
+            <GameDashboard server={server} ptApiKey={ptApiKey}></GameDashboard>
         </>
     )
 }
