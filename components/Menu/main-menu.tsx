@@ -132,9 +132,6 @@ export default function MainMenu({ locale }) {
                 )
               )}
               <NavigationMenuItem>
-                placeholder for DC
-              </NavigationMenuItem>
-              <NavigationMenuItem>
                 <LanguageSwitcher currentLocale={locale} />
               </NavigationMenuItem>
             </NavigationMenuList>
