@@ -55,7 +55,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
 
     const server = data.attributes;
-    console.log(server)
+    console.log(JSON.stringify(server, null, 2))
 
 
     return (
