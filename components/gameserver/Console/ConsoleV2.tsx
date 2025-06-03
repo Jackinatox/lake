@@ -153,9 +153,12 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
           borderTopRightRadius: "5px",
           borderTopLeftRadius: "5px",
           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          overflow: "auto", // Enable scrolling inside the terminal
+          overflow: "hidden", // Prevent scrolling inside the terminal
         }}
-        onWheel={(e) => e.stopPropagation()} // Prevent terminal scroll from bubbling to window
+        onWheel={(e) => {
+          e.stopPropagation()
+              e.preventDefault()
+        }}
       />
       <input
         type="text"
