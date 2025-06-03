@@ -126,6 +126,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600) // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60) // Restliche Minuten
 
+  console.log(serverStats)
+
   const handleStart = () => {
     if (!loading && wsRef.current) {
       wsRef.current.send(
@@ -285,7 +287,10 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                   <div className="font-medium">Players:</div>
                   <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
                   <div className="font-medium">Uptime:</div>
-                  <div>{serverStats?.state.toLowerCase() === "online" ? "2h 15m" : "—"}</div>
+                  <div>
+                  {serverStats?.uptime !== undefined
+                    ? `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""}${Math.floor(serverStats.uptime % 60)}s`
+                    : "—"}</div>
                 </div>
               </div>
 
