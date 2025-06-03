@@ -181,6 +181,11 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     )
   }
 
+
+  const defAlloc = server.relationships?.allocations?.data?.find(
+    (alloc: any) => alloc.attributes.is_default);
+  const ipPortCombo = defAlloc.attributes.ip + ":" + defAlloc.attributes.port;
+
   // Console component to pass to the tabs
   const ConsoleComponent = (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
@@ -258,7 +263,23 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
               <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium">Server IP:</div>
-                  <div>mc.example.com</div>
+                  <div>
+                    <span className="flex items-center gap-2">
+                      {ipPortCombo ? ipPortCombo : "No Allocation found"}
+                      {ipPortCombo && (
+                        <button
+                          type="button"
+                          className="ml-2 rounded bg-slate-200 px-2 py-1 text-xs hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                          title="Copy IP:Port"
+                          onClick={() => {
+                            navigator.clipboard.writeText(ipPortCombo)
+                          }}
+                        >
+                          Copy
+                        </button>
+                      )}
+                    </span>
+                  </div>
                   <div className="font-medium">Name:</div>
                   <div>{server.name}</div>
                   <div className="font-medium">Players:</div>
