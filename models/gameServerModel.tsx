@@ -5,6 +5,7 @@ export type GameServer = {
   uuid: string;
   name: string;
   node: string;
+  egg_id: number;
   is_node_under_maintenance: boolean;
   sftp_details: {
     ip: string;
