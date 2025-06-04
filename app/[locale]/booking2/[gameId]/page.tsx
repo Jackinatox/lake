@@ -11,6 +11,13 @@ import { useRouter } from "next/navigation"
 // import { bookServer } from "./bokkServer-action"
 import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
+import { bookSerevrPayment } from "./bookServerPayment"
+
+  export type ServerConfig = {
+    hardwareConfig: HardwareConfig
+    gameConfig: GameConfig
+  }
+
 
 
 export default function GameServerConfig() {
@@ -67,14 +74,17 @@ export default function GameServerConfig() {
     if (!hardwareConfig) return
 
     // Create the final server configuration
-    const serverConfig = {
+
+    const serverConfig: ServerConfig = {
       hardwareConfig,
       gameConfig,
     }
 
     try {
       setLoading(true)
-      // const result = await bookServer(serverConfig)
+      // Redirect to payment but i need to save the server config???
+
+
 
       toast({
         title: "Success",
@@ -128,6 +138,20 @@ export default function GameServerConfig() {
         )}
       </div>
 
+      <div className={step === 3 ? "block" : "hidden"}>
+        {selectedGame && (
+          <Payment/>
+        )}
+      </div>
+
     </div>
   )
 }
+
+
+function Payment() {
+  return (
+    <div>page</div>
+  )
+}
+
