@@ -15,13 +15,17 @@ import type { ClientServer } from "pterodactyl.js"
 import { TabsComponent } from "../GameserverTabs"
 import { FileManager } from "../FileManager/FileManager"
 import { BackupManager } from "../BackupManager/BackupManager"
+import Settings from "../settings/setting"
+import { GameServer } from "@/models/gameServerModel"
+
 
 interface serverProps {
-  server: any
+  server: GameServer
   ptApiKey: string
+  gameId: number
 }
 
-function GameDashboard({ server, ptApiKey }: serverProps) {
+function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
   const [logs, setLogs] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const wsRef = useRef<WebSocket | null>(null)
@@ -313,6 +317,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           consoleComponent={ConsoleComponent}
           fileManagerComponent={<FileManager server={server} />}
           backupManagerComponent={<BackupManager server={server} />}
+          settingsComponent={<Settings server={server} gameId={gameId} />}
         />
       </div>
     </>
