@@ -1,7 +1,7 @@
-import type { ClientServer } from "pterodactyl.js"
+import { GameServer } from "./gameServerModel"
 
 export interface FileManagerProps {
-  server: ClientServer
+  server: GameServer
 }
 
 export interface FileEntry {
