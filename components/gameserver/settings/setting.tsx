@@ -30,7 +30,7 @@ function Settings({server, gameId}: SettingsProps) {
     return (
         <>
             <div>
-                <GameSettings gameId={server.egg_id}></GameSettings>
+                <GameSettings egg_Id={server.egg_id}></GameSettings>
             </div>
             <Table>
                 <TableHeader>
