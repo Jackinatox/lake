@@ -4,16 +4,34 @@ import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { GameServer } from '@/models/gameServerModel';
 
-interface SettingsProps {
+export interface SettingsProps {
     server: GameServer;
     gameId: number;
 }
+
+const GameSettings: React.FC<{ egg_Id: number }> = ({ egg_Id }) => {
+    switch (egg_Id) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            return <div>Minecraft Game Settings</div>;
+        case 6:
+            return <div>Settings for Game 2</div>;
+        default:
+            return <div>If you see this, we messed up</div>;
+    }
+};
 
 
 function Settings({server, gameId}: SettingsProps) {
 
     return (
         <>
+            <div>
+                <GameSettings gameId={server.egg_id}></GameSettings>
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>

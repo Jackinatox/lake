@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
+import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { GameServer } from '@/models/gameServerModel';
 import { Builder } from 'pterodactyl.js';
 import React from 'react'
@@ -53,14 +54,23 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         return <>An error occured</>
     }
 
-    try {
-        const server: GameServer = data.attributes;
-        console.log(JSON.stringify(server, null, 2))
 
+    try {
+        let server = { ...data.attributes };
+        const pt = createPtClient();
+        const adminServer = await pt.getServer(server.internal_id.toString());
+
+        const updatedServer = {
+            ...server,
+            egg_id: adminServer.egg,
+            // add more modifications here if needed
+        };
+
+        console.log('my server: ', JSON.stringify(updatedServer, null, 2));
 
         return (
             <>
-                <GameDashboard server={server} ptApiKey={ptApiKey} gameId={1}></GameDashboard>
+                <GameDashboard server={updatedServer} ptApiKey={ptApiKey} gameId={1}></GameDashboard>
             </>)
     } catch (error) {
         return <> Error from pt API {error} </>
