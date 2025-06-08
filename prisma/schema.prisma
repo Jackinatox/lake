@@ -8,21 +8,21 @@ generator client {
 }
 
 model User {
-  id              String          @id @default(cuid())
-  name            String?
-  email           String?         @unique
-  emailVerified   DateTime?
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  authenticators  Authenticator[]
-  serverIntends   ServerIntend[]
+  id             String          @id @default(cuid())
+  name           String?
+  email          String?         @unique
+  emailVerified  DateTime?
+  image          String?
+  accounts       Account[]
+  sessions       Session[]
+  authenticators Authenticator[]
+  serverIntends  ServerIntend[]
 
-  ptKey           String?
-  ptUser          Int?
+  ptKey  String?
+  ptUser Int?
 
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -39,23 +39,23 @@ model Account {
   idToken           String?
   sessionState      String?
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id            String   @id @default(cuid())
-  sessionToken  String   @unique
-  userId        String
-  expires       DateTime
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -85,62 +85,67 @@ model GameData {
   id      Int     @id @default(autoincrement())
   name    String?
   data    Json?
-  enabled Boolean  @default(false)
+  enabled Boolean @default(false)
+
+  ServerIntend ServerIntend[]
 }
 
 model Location {
-  id           Int     @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String?
   diskPrice    Float?
   portsLimit   Int?
   backupsLimit Int?
   enabled      Boolean? @default(true)
-  ptLocationId Int     @default(1)
-  cpuId        Int     @default(1)
+  ptLocationId Int      @default(1)
+  cpuId        Int      @default(1)
   ramId        Int
 
-  cpu          CPU     @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram          RAM     @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  cpu CPU @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram RAM @relation(fields: [ramId], references: [id], onDelete: Restrict)
 }
 
 model CPU {
-  id             Int        @id @default(autoincrement())
-  name           String?
-  cores          Int?
-  threads        Int?
-  singleScore    Int?
-  multiScore     Int?
-  maxThreads     Int?
-  minThreads     Int?
-  pricePerCore   Float      @default(0.2)
+  id           Int     @id @default(autoincrement())
+  name         String?
+  cores        Int?
+  threads      Int?
+  singleScore  Int?
+  multiScore   Int?
+  maxThreads   Int?
+  minThreads   Int?
+  pricePerCore Float   @default(0.2)
 
-
-  locations      Location[]
-  serverIntends  ServerIntend[]
+  locations     Location[]
+  serverIntends ServerIntend[]
 }
 
 model RAM {
-  id            Int        @id @default(autoincrement())
-  name          String?
-  speed         Int?
-  pricePerGb    Float?
-  minGb         Float?     @default(0.5)
-  maxGb         Float?     @default(12)
-
+  id         Int     @id @default(autoincrement())
+  name       String?
+  speed      Int?
+  pricePerGb Float?
+  minGb      Float?  @default(0.5)
+  maxGb      Float?  @default(12)
 
   locations     Location[]
   serverIntends ServerIntend[]
 }
 
 model ServerIntend {
-  id            Int        @id @default(autoincrement())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cpuId         Int
-  ramId         Int
-  ramCount      Int
-  cpuCont       Int
+  id         Int    @id @default(autoincrement())
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cpuId      Int
+  ramId      Int
+  ramMB      Int
+  cpuPercent Int
+  gameConfig Json?
+  gameDataId Int
+  createdAt DateTime @default(now())
 
-  cpu     CPU    @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram     RAM    @relation(fields: [ramId], references: [id], onDelete: Restrict)
+
+  gameData GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+  cpu      CPU      @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram      RAM      @relation(fields: [ramId], references: [id], onDelete: Restrict)
 }
