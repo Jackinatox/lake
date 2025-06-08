@@ -16,6 +16,7 @@ model User {
   accounts        Account[]
   sessions        Session[]
   authenticators  Authenticator[]
+  serverIntends   ServerIntend[]
 
   ptKey           String?
   ptUser          Int?
@@ -112,7 +113,10 @@ model CPU {
   maxThreads     Int?
   minThreads     Int?
   pricePerCore   Float      @default(0.2)
+
+
   locations      Location[]
+  serverIntends  ServerIntend[]
 }
 
 model RAM {
@@ -122,5 +126,21 @@ model RAM {
   pricePerGb    Float?
   minGb         Float?     @default(0.5)
   maxGb         Float?     @default(12)
+
+
   locations     Location[]
+  serverIntends ServerIntend[]
+}
+
+model ServerIntend {
+  id            Int        @id @default(autoincrement())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cpuId         Int
+  ramId         Int
+  ramCount      Int
+  cpuCont       Int
+
+  cpu     CPU    @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram     RAM    @relation(fields: [ramId], references: [id], onDelete: Restrict)
 }
