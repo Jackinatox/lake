@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 // import { bookServer } from "./bokkServer-action"
 import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
+import { createServerIntend } from "./bookServerPayment"
 
   export type ServerConfig = {
     hardwareConfig: HardwareConfig
@@ -83,11 +84,12 @@ export default function GameServerConfig() {
       setLoading(true)
       // Redirect to payment but i need to save the server config???
 
+      const newId = await createServerIntend(serverConfig);
 
 
       toast({
         title: "Success",
-        description: "Server configuration submitted successfully",
+        description: `ServerID: ${newId}`,
       })
 
       // In a real application, you might redirect to a deployment status page
