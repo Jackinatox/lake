@@ -66,7 +66,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             // add more modifications here if needed
         };
 
-        console.log('my server: ', JSON.stringify(updatedServer, null, 2));
+        // console.log('my server: ', JSON.stringify(updatedServer, null, 2));
 
         return (
             <>
