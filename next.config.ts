@@ -9,11 +9,11 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   images: {
     // URL-based remotePatterns for Next.js 15+
-    remotePatterns: [
-      new URL(
-        'https://ttewzzldhvzrmxcmmzdm.supabase.co/storage/v1/object/public/**'
-      ),
-    ],
+    // remotePatterns: [
+    //   new URL(
+    //     
+    //   ),
+    // ],
   },
 };
 
