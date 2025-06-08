@@ -12,15 +12,17 @@ import { useRouter } from "next/navigation"
 import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
 import { createServerIntend } from "./bookServerPayment"
+import CustomServerPaymentElements from "@/components/payments/PaymentElements"
 
-  export type ServerConfig = {
-    hardwareConfig: HardwareConfig
-    gameConfig: GameConfig
-  }
+export type ServerConfig = {
+  hardwareConfig: HardwareConfig
+  gameConfig: GameConfig
+}
 
 
 
 export default function GameServerConfig() {
+  const [intendId, setIntendId] = useState('');
   const [step, setStep] = useState(1)
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
@@ -85,6 +87,9 @@ export default function GameServerConfig() {
       // Redirect to payment but i need to save the server config???
 
       const newId = await createServerIntend(serverConfig);
+      setIntendId(newId)
+
+      setStep(3);
 
 
       toast({
@@ -116,7 +121,7 @@ export default function GameServerConfig() {
       </div>
     )
   }
-  
+
   return (
     <div className="min-h-screen bg-background">
       <div className={step === 1 ? "block" : "hidden"}>
@@ -141,18 +146,14 @@ export default function GameServerConfig() {
 
       <div className={step === 3 ? "block" : "hidden"}>
         {selectedGame && (
-          <Payment/>
+          <>
+            <div> Payment </div>
+
+            <CustomServerPaymentElements intendId={intendId} />
+          </>
         )}
       </div>
 
     </div>
   )
 }
-
-
-function Payment() {
-  return (
-    <div>page</div>
-  )
-}
-

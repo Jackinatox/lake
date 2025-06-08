@@ -140,6 +140,7 @@ model ServerIntend {
   ramId      Int
   ramMB      Int
   cpuPercent Int
+  price      Int @default(1)
   gameConfig Json?
   gameDataId Int
   createdAt DateTime @default(now())
