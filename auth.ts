@@ -57,10 +57,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       })
 
       const newKey = await createUserApiKey(newPTUser.id);
-      const randomKey = Math.random().toString(36).slice(2, 12);
+      // const randomKey = Math.random().toString(36).slice(2, 12);
       await prisma.user.update({  // TODO: PT Key logic
         where: { id: user.id },
-        data: { ptKey: randomKey }
+        data: { ptKey: newKey, ptUser: newPTUser.id }
       });
     }
   },
