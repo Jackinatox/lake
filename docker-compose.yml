@@ -1,39 +1,40 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:15-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: myapp
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  # db:
+  #   image: postgres:15-alpine
+  #   restart: unless-stopped
+  #   container_name: db
+  #   environment:
+  #     POSTGRES_DB: myapp
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
 
-  migrate:
-    build: .
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-    command: npx prisma migrate deploy
-    restart: "no"
+  # migrate:
+  #   build: .
+  #   container_name: migrations
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #   command: npx prisma migrate deploy
+  #   restart: "no"
 
   app:
     build: .
     restart: unless-stopped
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
+    container_name: lake
+    # depends_on:
+    #   migrate:
+    #     condition: service_completed_successfully
     environment:
       - AUTH_SECRET=${AUTH_SECRET}
       - AUTH_DISCORD_ID=${AUTH_DISCORD_ID}
@@ -45,6 +46,8 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
     ports:
       - "3000:3000"
+    volumes:
+      - ./prisma/db.sqlite:/app/prisma/db.sqlite
 
 volumes:
   postgres_data:
