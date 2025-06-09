@@ -10,40 +10,48 @@ export async function bookServerPayment(intendId: string): Promise<string> {
     const origin = (await headers()).get('origin')
     const userSesh = await auth();
 
+    if (!userSesh.user)
+        return '';
+
     const intend = await prisma.serverIntend.findUnique({
         where: {
             id: parseInt(intendId)
         }
     })
 
-    const paymentIntent = await stripe.paymentIntents.create({
-        amount: intend.price,
-        currency: 'eur',
-        automatic_payment_methods: {
-            enabled: true,
+    const session = await stripe.checkout.sessions.create({
+        line_items: [{
+            price_data: {
+                currency: 'eur',
+                product_data: {
+                    name: 'Custom GameServer',
+                },
+                unit_amount: intend.price,
+            },
+            quantity: 1,
+        }],
+        metadata: {
+            serverIntend: intend.id,
+            user: userSesh.user.id
         },
+        customer_email: userSesh.user.email,
+        mode: 'payment',
+        ui_mode: 'embedded',
+        return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
     });
 
-    return paymentIntent.client_secret;
+    return session.client_secret;
 
 
-    // Create Checkout Sessions from body params.
-    // const session = await stripe.checkout.sessions.create({
-    //     ui_mode: 'embedded',
-    //     customer_email: userSesh?.user.email,
-    //     submit_type: 'pay',
-    //     line_items: [{
-    //             price_data:{
-    //                 currency: 'eur',
-    //                 product_data: {
-    //                     name: 'Custom Game-Server'
-    //                 },
-    //             },
-    //             quantity: 1
-    //         }],
-    //     mode: 'payment',
-    //     return_url: `${origin}/return?session_id={CHECKOUT_SESSION_ID}`,
-    // })
+    // const paymentIntent = await stripe.paymentIntents.create({
+    //     amount: intend.price,
+    //     currency: 'eur',
+    //     automatic_payment_methods: {
+    //         enabled: true,
+    //     },
+    // });
+
+    // return paymentIntent.client_secret;
 }
 
 export async function createServerIntend(serverConfig: ServerConfig): Promise<string> {
