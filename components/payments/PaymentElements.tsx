@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Elements, PaymentElement } from '@stripe/react-stripe-js';
+import { Elements, EmbeddedCheckout, EmbeddedCheckoutProvider, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { bookServerPayment } from '@/app/[locale]/booking2/[gameId]/bookServerPayment';
 
@@ -35,8 +35,6 @@ function CustomServerPaymentElements({ intendId }: CustomServerPaymentElementsPr
             }
         };
 
-
-
         fetchSecret();
     }, [intendId]);
 
@@ -49,12 +47,12 @@ function CustomServerPaymentElements({ intendId }: CustomServerPaymentElementsPr
         <>
             {
                 loading ? <div>laoding</div> :
-                    <Elements stripe={stripePromise} options={options}>
-                        <form>
-                            <PaymentElement />
-                            <button>Submit</button>
-                        </form>
-                    </Elements>
+                    <EmbeddedCheckoutProvider
+                        stripe={stripePromise}
+                        options={options}
+                    >
+                        <EmbeddedCheckout />
+                    </EmbeddedCheckoutProvider>
             }
         </>);
 };
