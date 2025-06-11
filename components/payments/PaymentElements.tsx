@@ -23,7 +23,7 @@ function CustomServerPaymentElements({ intendId }: CustomServerPaymentElementsPr
                 try {
                     const secrect = await bookServerPayment(intendId);
                     setClientSecret(secrect);
-                    console.log(secrect)
+                    // console.log(secrect)
 
 
 
