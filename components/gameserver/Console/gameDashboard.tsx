@@ -190,7 +190,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
   const defAlloc = server.relationships?.allocations?.data?.find(
     (alloc: any) => alloc.attributes.is_default);
-  const ipPortCombo = defAlloc.attributes.ip + ":" + defAlloc.attributes.port;
+  const ipPortCombo = defAlloc.attributes.ip_alias + ":" + defAlloc.attributes.port;
 
   // Console component to pass to the tabs
   const ConsoleComponent = (
