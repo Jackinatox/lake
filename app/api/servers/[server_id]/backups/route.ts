@@ -22,7 +22,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${ptApiKey}`,
-                    // Authorization: `Bearer ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP`,
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
@@ -76,8 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             {
                 method: "POST",
                 headers: {
-                    // Authorization: `Bearer ${ptApiKey}`,
-                    Authorization: `Bearer ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP`,
+                    Authorization: `Bearer ${ptApiKey}`,
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
