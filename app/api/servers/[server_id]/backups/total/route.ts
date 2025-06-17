@@ -22,7 +22,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${ptApiKey}`,
-                    // Authorization: `Bearer ptlc_22kW2LUQ7zWBmyz6vtPATmrnK7q2PcbGxxJhUWORyme`,
                     Accept: "application/json",
                     "Content-Type": "application/json"
                 },

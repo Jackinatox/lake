@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -34,7 +34,7 @@ model Account {
   refresh_token     String? @map("refreshToken")
   access_token      String? @map("accessToken")
   expires_at        Int?    @map("expiresAt")
-  token_type         String? @map("tokenType")
+  token_type        String? @map("tokenType")
   scope             String?
   id_token          String? @map("idToken")
   session_state     String? @map("sessionState")
@@ -101,8 +101,9 @@ model Location {
   cpuId        Int      @default(1)
   ramId        Int
 
-  cpu CPU @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram RAM @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  cpu          CPU            @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram          RAM            @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  ServerIntend ServerIntend[]
 }
 
 model CPU {
@@ -117,7 +118,7 @@ model CPU {
   pricePerCore Float   @default(0.2)
 
   locations     Location[]
-  serverIntends ServerIntend[]
+  // serverIntends ServerIntend[]
 }
 
 model RAM {
@@ -129,24 +130,30 @@ model RAM {
   maxGb      Float?  @default(12)
 
   locations     Location[]
-  serverIntends ServerIntend[]
+  // serverIntends ServerIntend[]
 }
 
+//TODO: Rename to Intent
 model ServerIntend {
-  id         Int    @id @default(autoincrement())
-  userId     String
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cpuId      Int
-  ramId      Int
-  ramMB      Int
-  cpuPercent Int
-  price      Int @default(1)
-  gameConfig Json?
-  gameDataId Int
-  createdAt DateTime @default(now())
-
+  id            Int      @id @default(autoincrement())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // cpuId         Int
+  // ramId         Int
+  ramMB         Int
+  cpuPercent    Int
+  price         Int      @default(1)
+  gameConfig    Json?
+  gameDataId    Int
+  createdAt     DateTime @default(now())
+  stripeSession String?
+  serverId      String?
+  locationId    Int
 
   gameData GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
-  cpu      CPU      @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram      RAM      @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  // cpu      CPU      @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  // ram      RAM      @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  @@index([stripeSession])
 }

@@ -42,19 +42,10 @@ export async function bookServerPayment(intendId: string): Promise<string> {
 
     return session.client_secret;
 
-
-    // const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: intend.price,
-    //     currency: 'eur',
-    //     automatic_payment_methods: {
-    //         enabled: true,
-    //     },
-    // });
-
-    // return paymentIntent.client_secret;
 }
 
 export async function createServerIntend(serverConfig: ServerConfig): Promise<string> {
+    serverConfig.hardwareConfig.pfGroupId
 
     const session = await auth();
 
@@ -72,9 +63,8 @@ export async function createServerIntend(serverConfig: ServerConfig): Promise<st
 
     const created = await prisma.serverIntend.create({
         data: {
+            location: { connect: { id: pfGroup.id } },
             user: { connect: { email: session.user.email } },
-            cpu: { connect: { id: pfGroup.cpuId } },
-            ram: { connect: { id: pfGroup.ramId } },
             cpuPercent: serverConfig.hardwareConfig.cpuCores * 100,
             ramMB: serverConfig.hardwareConfig.ramGb * 1024,
             gameConfig: JSON.parse(JSON.stringify(serverConfig.gameConfig)),

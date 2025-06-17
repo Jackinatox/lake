@@ -1,13 +1,16 @@
+import { bookPaper } from "@/lib/Pterodactyl/createServers/minecraft";
+import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { stripe } from "@/lib/stripe";
+import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
 
 const endpointSecret = process.env.webhookSecret;
+const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
 export async function POST(req: NextRequest) {
     const body = await req.text()
     let event;
 
-    console.log(`Webhook event: ${event}`)
 
     if (endpointSecret) {
         const signature = req.headers.get('stripe-signature');
@@ -17,6 +20,7 @@ export async function POST(req: NextRequest) {
                 signature,
                 endpointSecret
             );
+            console.log(`Webhook event: ${event}`)
         }
         catch (error) {
             console.error('Webhook signature failed: ', error);
@@ -25,17 +29,101 @@ export async function POST(req: NextRequest) {
             });
         }
 
+        const stripeIntent = event.data.object;
+
         switch (event.type) {
             case 'payment_intent.succeeded':
-                const intent = event.data.object;
-                console.log(`PaymentIntent for ${intent} successfull`);
+                // console.log(`PaymentIntent for`, intent, `successful`);
 
                 // Provision Server
 
                 break;
+
+            case 'checkout.session.completed':
+                // console.log(`Session complete: `, intent);
+
+                const serverIntentId = parseInt(stripeIntent.metadata.serverIntend);
+                console.log('ServerIntend: ', stripeIntent);
+
+                await prisma.serverIntend.update({
+                    where: {
+                        id: serverIntentId,
+                    },
+                    data: {
+                        stripeSession: stripeIntent.id
+                    }
+                })
+
+                provisionServer(serverIntentId)
+
+                break;
             default:
-                console.log(`Unhandeld Webhoo type: ${event.type}`)
+                console.log(`Unhandeld Webhook type: ${event.type}`)
         }
         return new Response('Success', { status: 200 });
     }
+}
+
+export async function provisionServer(intent: number) {
+    const intentDb = await prisma.serverIntend.findUnique({ where: { id: intent }, include: { user: true, gameData: true, location: true } });
+    const pt = createPtClient();
+
+    const ptUser = await fetch(`${panelUrl}/api/client/account`, {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${intentDb.user.ptKey}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+    })
+        .then((data) => data.json())
+        .then((data) => parseInt(data.attributes.id));
+
+    console.log('user id: ', ptUser)
+    const gameConfig = intentDb.gameConfig as any;
+
+    switch (intentDb.gameData.id) {
+        case 1: //Minecraft
+            switch (parseInt(gameConfig.flavorId)) {
+                case 3: // Paper
+                    pt.createServer({
+                        user: ptUser,
+                        limits: {
+                            cpu: intentDb.cpuPercent,
+                            disk: 0,
+                            memory: intentDb.ramMB,
+                            io: 500,
+                            swap: 0
+                        },
+                        image: 'ghcr.io/pterodactyl/yolks:java_17',
+                        egg: gameConfig.eggId,
+                        name: 'Minecraft-Server',
+                        environment: {
+                            MINECRAFT_VERSION: gameConfig.version,
+                            SERVER_JARFILE: 'server.jar',
+                            BUILD_NUMBER: 'latest',
+                        },
+                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}',
+                        featureLimits: {
+                            allocations: 1,
+                            backups: 0,
+                            databases: 0,
+                            split_limit: 0
+                        },
+                        deploy: {
+                            dedicatedIp: false,
+                            locations: [intentDb.location.id],
+                            portRange: []
+                        }
+
+                    })
+                    break;
+            }
+
+            break;
+        default:
+            throw new Error('No Handler for this GameServer')
+
+    }
+
 }
