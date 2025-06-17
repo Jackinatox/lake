@@ -1,7 +1,9 @@
+import { calcBackups, calcDiskSize } from "@/lib/globalFunctions";
 import { bookPaper } from "@/lib/Pterodactyl/createServers/minecraft";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
+import { NewServerOptions } from "@avionrx/pterodactyl-js";
 import { NextRequest } from "next/server";
 
 const endpointSecret = process.env.webhookSecret;
@@ -81,42 +83,55 @@ export async function provisionServer(intent: number) {
 
     console.log('user id: ', ptUser)
     const gameConfig = intentDb.gameConfig as any;
-
+    console.log(intentDb.gameData.id, ' ', parseInt(gameConfig.flavorId));
     switch (intentDb.gameData.id) {
         case 1: //Minecraft
-            switch (parseInt(gameConfig.flavorId)) {
+            switch (parseInt(gameConfig.eggId)) {
                 case 3: // Paper
-                    pt.createServer({
+                    const options: NewServerOptions = {
+                        name: 'Minecraft-Server',
                         user: ptUser,
                         limits: {
                             cpu: intentDb.cpuPercent,
-                            disk: 0,
+                            disk: calcDiskSize(intentDb.cpuPercent, intentDb.ramMB),
                             memory: intentDb.ramMB,
                             io: 500,
                             swap: 0
                         },
-                        image: 'ghcr.io/pterodactyl/yolks:java_17',
                         egg: gameConfig.eggId,
-                        name: 'Minecraft-Server',
                         environment: {
                             MINECRAFT_VERSION: gameConfig.version,
                             SERVER_JARFILE: 'server.jar',
-                            BUILD_NUMBER: 'latest',
+                            BUILD_NUMBER: 'latest'
                         },
+                        startWhenInstalled: false,
+                        outOfMemoryKiller: false,
+                        image: 'ghcr.io/pterodactyl/yolks:java_17',
                         startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}',
                         featureLimits: {
                             allocations: 1,
-                            backups: 0,
+                            backups: calcBackups(intentDb.cpuPercent, intentDb.ramMB),
                             databases: 0,
                             split_limit: 0
                         },
                         deploy: {
                             dedicatedIp: false,
-                            locations: [intentDb.location.id],
+                            locations: [intentDb.location.ptLocationId],
                             portRange: []
                         }
 
+                    };
+                    console.log(options)
+                    const newServer = await pt.createServer(options);
+                    await prisma.serverIntend.update({
+                        where: {
+                            id: intent,
+                        },
+                        data: {
+                            serverId: newServer.identifier
+                        }
                     })
+
                     break;
             }
 
