@@ -96,9 +96,6 @@ export default function GameServerConfig() {
         title: "Success",
         description: `ServerID: ${newId}`,
       })
-
-      // In a real application, you might redirect to a deployment status page
-
     } catch (error) {
       console.error("Error submitting server configuration:", error)
       toast({
