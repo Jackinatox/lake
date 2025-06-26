@@ -3,25 +3,25 @@
 import React, { useEffect, useState } from 'react'
 import { Elements, EmbeddedCheckout, EmbeddedCheckoutProvider, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { bookServerPayment } from '@/app/[locale]/booking2/[gameId]/bookServerPayment';
+import { createPaymentSession } from '@/app/[locale]/booking2/[gameId]/bookServerPayment';
 
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 interface CustomServerPaymentElementsProps {
-    intendId: string;
+    orderId: string;
 }
 
-function CustomServerPaymentElements({ intendId }: CustomServerPaymentElementsProps) {
+function CustomServerPaymentElements({ orderId }: CustomServerPaymentElementsProps) {
     const [loading, setLoading] = useState(true);
     const [clientSecret, setClientSecret] = useState('');
 
     useEffect(() => {
         const fetchSecret = async () => {
-            if (intendId) {
+            if (orderId) {
 
                 try {
-                    const secrect = await bookServerPayment(intendId);
+                    const secrect = await createPaymentSession(orderId);
                     setClientSecret(secrect);
                     // console.log(secrect)
 
@@ -36,7 +36,7 @@ function CustomServerPaymentElements({ intendId }: CustomServerPaymentElementsPr
         };
 
         fetchSecret();
-    }, [intendId]);
+    }, [orderId]);
 
 
     const options = {

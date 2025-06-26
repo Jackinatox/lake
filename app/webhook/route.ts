@@ -40,19 +40,30 @@ export async function POST(req: NextRequest) {
             case 'checkout.session.completed':
                 // console.log(`Session complete: `, intent);
 
-                const serverIntentId = parseInt(stripeIntent.metadata.serverIntend);
-                console.log('ServerIntend: ', stripeIntent);
+                const serverOrderId = parseInt(stripeIntent.metadata.serverOrderId);
+                console.log('ServerOrder: ', stripeIntent);
 
-                await prisma.serverIntend.update({
+                await prisma.serverOrder.update({
                     where: {
-                        id: serverIntentId,
+                        id: serverOrderId,
                     },
                     data: {
-                        stripeSession: stripeIntent.id
+                        stripeSessionId: stripeIntent.id,
+                        status: 'PAID'
                     }
                 })
 
-                provisionServer(serverIntentId)
+                const serverOrder = await prisma.serverOrder.findUnique({ where: { id: serverOrderId } });
+                await provisionServer(serverOrder)
+
+                await prisma.serverOrder.update({
+                    where: {
+                        id: serverOrderId,
+                    },
+                    data: {
+                        status: 'CREATED'
+                    }
+                })
 
                 break;
             default:

@@ -16,7 +16,8 @@ model User {
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]
-  serverIntends  ServerIntend[]
+  
+  serverOrders   ServerOrder[]
 
   ptKey  String?
   ptUser Int?
@@ -87,7 +88,7 @@ model GameData {
   data    Json?
   enabled Boolean @default(false)
 
-  ServerIntend ServerIntend[]
+  ServerOrder  ServerOrder[]
 }
 
 model Location {
@@ -103,7 +104,7 @@ model Location {
 
   cpu          CPU            @relation(fields: [cpuId], references: [id], onDelete: Restrict)
   ram          RAM            @relation(fields: [ramId], references: [id], onDelete: Restrict)
-  ServerIntend ServerIntend[]
+  ServerOrder  ServerOrder[]
 }
 
 model CPU {
@@ -133,27 +134,40 @@ model RAM {
   // serverIntends ServerIntend[]
 }
 
-//TODO: Rename to Intent
-model ServerIntend {
-  id            Int      @id @default(autoincrement())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // cpuId         Int
-  // ramId         Int
-  ramMB         Int
-  cpuPercent    Int
-  price         Int      @default(1)
-  gameConfig    Json?
-  gameDataId    Int
-  createdAt     DateTime @default(now())
-  stripeSession String?
-  serverId      String?
-  locationId    Int
 
-  gameData GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
-  // cpu      CPU      @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  // ram      RAM      @relation(fields: [ramId], references: [id], onDelete: Restrict)
-  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
 
-  @@index([stripeSession])
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CREATED
+  FAILED
+}
+
+model ServerOrder {
+  id              Int      @id @default(autoincrement())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  ramMB           Int
+  cpuPercent      Int
+  diskMB          Int
+  price           Float
+  
+  gameConfig      Json?
+  gameDataId      Int
+  gameData        GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+  
+  locationId      Int
+  location        Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  
+  status          OrderStatus @default(PENDING)
+  
+  stripeSessionId String? @unique
+  serverId        String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([stripeSessionId])
 }

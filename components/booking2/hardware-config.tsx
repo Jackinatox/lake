@@ -61,6 +61,7 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
       pfGroupId: selectedPFGroup.id,
       cpuCores,
       ramGb,
+      diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024)
     }
 
     onNext(config)

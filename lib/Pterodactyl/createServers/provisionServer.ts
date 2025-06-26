@@ -5,8 +5,10 @@ import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-export async function provisionServer(intent: number) {
-    const intentDb = await prisma.serverIntend.findUnique({ where: { id: intent }, include: { user: true, gameData: true, location: true } });
+import { ServerOrder } from "@prisma/client";
+
+export async function provisionServer(order: ServerOrder) {
+    const intentDb = await prisma.serverOrder.findUnique({ where: { id: order.id }, include: { user: true, gameData: true, location: true } });
     const pt = createPtClient();
 
     const ptUser = await fetch(`${panelUrl}/api/client/account`, {
@@ -104,9 +106,9 @@ export async function provisionServer(intent: number) {
             };
 
             const newServer = await pt.createServer(options);
-            await prisma.serverIntend.update({
+            await prisma.serverOrder.update({
                 where: {
-                    id: intent,
+                    id: order.id,
                 },
                 data: {
                     serverId: newServer.identifier
