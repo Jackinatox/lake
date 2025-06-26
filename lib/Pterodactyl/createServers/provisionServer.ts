@@ -51,36 +51,56 @@ export async function provisionServer(intent: number) {
     };
 
 
-    let envVars;
+    let startAndVars;
     switch (intentDb.gameData.id) {
         case 1: //Minecraft
             switch (parseInt(gameConfig.eggId)) {
                 case 1: // Vanilla
-                    envVars = {
-                        MINECRAFT_VERSION: gameConfig.version,
-                        SERVER_JARFILE: 'server.jar'
+                    startAndVars = {
+                        environment: {
+                            MINECRAFT_VERSION: gameConfig.version,
+                            SERVER_JARFILE: 'server.jar'
+                        },
+                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}'
                     };
                     break;
                 case 2: // Forge
-                    envVars = {
-                        MINECRAFT_VERSION: gameConfig.version,
-                        SERVER_JARFILE: 'server.jar',
-                        BUILD_TYPE: 'recommended'
+                    startAndVars = {
+                        environment: {
+                            MINECRAFT_VERSION: gameConfig.version,
+                            SERVER_JARFILE: 'server.jar',
+                            BUILD_TYPE: 'recommended'
+                        },
+                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )'
                     };
                     break;
                 case 3: // Paper
-                    envVars = {
-                        MINECRAFT_VERSION: gameConfig.version,
-                        SERVER_JARFILE: 'server.jar',
-                        BUILD_NUMBER: 'latest'
+                    startAndVars = {
+                        environment: {
+                            MINECRAFT_VERSION: gameConfig.version,
+                            SERVER_JARFILE: 'server.jar',
+                            BUILD_NUMBER: 'latest'
+                        },
+                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}'
+                    };
+                    break;
+
+                case 15: // Fabric
+                    startAndVars = {
+                        environment: {
+                            MC_VERSION: gameConfig.version,
+                            SERVER_JARFILE: 'server.jar',
+                            FABRIC_VERSION: 'latest',
+                            LOADER_VERSION: 'latest'
+                        },
+                        startup: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'
                     };
                     break;
             }
             options = {
-                ...preOptions,
                 name: 'Minecraft-Server',
-                environment: envVars,
-                startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}',
+                ...preOptions,
+                ...startAndVars
             };
 
             const newServer = await pt.createServer(options);
