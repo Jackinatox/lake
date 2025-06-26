@@ -10,7 +10,7 @@ export default async function checkIfServerReady(stripeSession: string, checkIns
     const session = await auth();
 
     if (session?.user) {
-        const server = await prisma.serverIntend.findFirst({ where: { stripeSession: stripeSession } });
+        const server = await prisma.serverOrder.findFirst({ where: { stripeSessionId: stripeSession } });
         if (checkInstallation) {
 
             const isInstalling = await fetch(`${panelUrl}/api/client/account`, {

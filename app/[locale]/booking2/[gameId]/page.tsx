@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation"
 // import { bookServer } from "./bokkServer-action"
 import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
-import { createServerIntend } from "./bookServerPayment"
+import { createServerOrder } from "./actions"
 import CustomServerPaymentElements from "@/components/payments/PaymentElements"
 
 export type ServerConfig = {
@@ -22,7 +22,7 @@ export type ServerConfig = {
 
 
 export default function GameServerConfig() {
-  const [intendId, setIntendId] = useState('');
+  const [orderId, setOrderId] = useState('');
   const [step, setStep] = useState(1)
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
@@ -86,15 +86,15 @@ export default function GameServerConfig() {
       setLoading(true)
       // Redirect to payment but i need to save the server config???
 
-      const newId = await createServerIntend(serverConfig);
-      setIntendId(newId)
+      const newId = await createServerOrder(serverConfig);
+      setOrderId(newId)
 
       setStep(3);
 
 
       toast({
         title: "Success",
-        description: `ServerID: ${newId}`,
+        description: `OrderID: ${newId}`,
       })
     } catch (error) {
       console.error("Error submitting server configuration:", error)
@@ -146,7 +146,7 @@ export default function GameServerConfig() {
           <>
             <div> Payment </div>
 
-            <CustomServerPaymentElements intendId={intendId} />
+            <CustomServerPaymentElements orderId={orderId} />
           </>
         )}
       </div>

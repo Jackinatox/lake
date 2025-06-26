@@ -15,6 +15,7 @@ export interface HardwareConfig {
   pfGroupId: number
   cpuCores: number
   ramGb: number
+  diskMb: number
 }
 
 export interface SatisfactoryConfig {
