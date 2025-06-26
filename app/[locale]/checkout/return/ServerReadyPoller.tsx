@@ -4,10 +4,12 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Server, ExternalLink, AlertCircle } from "lucide-react"
 import checkIfServerReady from "./checkIfServerReady"
+import { OrderStatus } from "@prisma/client";
 import { redirect } from "next/navigation"
 
 export default function ServerReadyPoller({ sessionId }: { sessionId: string }) {
   const [serverId, setServerId] = useState<string | null>(null)
+  const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dots, setDots] = useState("")
@@ -18,16 +20,17 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
     async function poll() {
       try {
-        const res = await checkIfServerReady(sessionId, true)
-        if (res) {
+        const { status, serverId } = await checkIfServerReady(sessionId, true)
+        setOrderStatus(status)
+        setServerId(serverId)
+
+        if (status === OrderStatus.CREATED || status === OrderStatus.FAILED) {
           const elapsedTime = Date.now() - startTime
           const remainingTime = Math.max(0, 3000 - elapsedTime)
 
           if (remainingTime > 0) {
             await new Promise((resolve) => setTimeout(resolve, remainingTime))
           }
-
-          setServerId(res)
           setLoading(false)
         }
       } catch (e) {
@@ -40,7 +43,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     const interval = setInterval(poll, 1000)
 
     return () => clearInterval(interval)
-  }, [loading, startTime])
+  }, [loading, startTime, sessionId])
 
   // Animate dots for loading state
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md mx-auto p-8">
         <AnimatePresence mode="wait">
-          {error ? (
+          {error || orderStatus === OrderStatus.FAILED || (orderStatus === null && serverId === null) ? (
             <motion.div
               key="error"
               initial={{ opacity: 0, y: 20 }}
@@ -76,10 +79,10 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
                   Server Error
                 </h2>
-                <p className="text-gray-600">{error}</p>
+                <p className="text-gray-600">{error || (orderStatus === null && serverId === null ? "Server not found or invalid session." : "There was an issue creating your server.")}</p>
               </div>
             </motion.div>
-          ) : loading ? (
+          ) : loading || orderStatus === OrderStatus.PENDING || orderStatus === OrderStatus.PAID ? (
             <motion.div
               key="loading"
               initial={{ opacity: 0, y: 20 }}
@@ -104,9 +107,9 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  Preparing Your Server
+                  {orderStatus === OrderStatus.PENDING ? "Waiting for Payment" : "Creating Your Server"}
                 </h2>
-                <p className="text-gray-600">Waiting for server{dots}</p>
+                <p className="text-gray-600">{orderStatus === OrderStatus.PENDING ? "Please complete your payment" : "Creating your server"}{dots}</p>
               </div>
 
               <div className="w-full bg-gray-200 rounded-full h-1">
