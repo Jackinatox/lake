@@ -20,11 +20,11 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
     async function poll() {
       try {
-        const { status, serverId } = await checkIfServerReady(sessionId, true)
+        const { status, serverId } = await checkIfServerReady(sessionId, orderStatus === OrderStatus.PAID)
         setOrderStatus(status)
         setServerId(serverId)
 
-        if (status === OrderStatus.CREATED || status === OrderStatus.FAILED) {
+        if (status === OrderStatus.CREATED || status === OrderStatus.FAILED || status === null) {
           const elapsedTime = Date.now() - startTime
           const remainingTime = Math.max(0, 3000 - elapsedTime)
 
@@ -82,41 +82,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 <p className="text-gray-600">{error || (orderStatus === null && serverId === null ? "Server not found or invalid session." : "There was an issue creating your server.")}</p>
               </div>
             </motion.div>
-          ) : loading || orderStatus === OrderStatus.PENDING || orderStatus === OrderStatus.PAID ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center space-y-6"
-            >
-              <div className="relative">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 2,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  }}
-                  className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center"
-                >
-                  <Server className="w-8 h-8 text-gray-600" />
-                </motion.div>
-                <div className="absolute inset-0 w-16 h-16 mx-auto border-2 border-transparent border-t-gray-300 rounded-full animate-spin" />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {orderStatus === OrderStatus.PENDING ? "Waiting for Payment" : "Creating Your Server"}
-                </h2>
-                <p className="text-gray-600">{orderStatus === OrderStatus.PENDING ? "Please complete your payment" : "Creating your server"}{dots}</p>
-              </div>
-
-              <div className="w-full bg-gray-200 rounded-full h-1">
-                <div className="bg-gray-400 h-1 rounded-full animate-pulse w-1/3" />
-              </div>
-            </motion.div>
-          ) : (
+          ) : orderStatus === OrderStatus.CREATED ? (
             <motion.div
               key="ready"
               initial={{ opacity: 0, y: 20 }}
@@ -176,6 +142,40 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 <span>Connect to Server</span>
                 <ExternalLink className="w-4 h-4" />
               </motion.button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center space-y-6"
+            >
+              <div className="relative">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "linear",
+                  }}
+                  className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center"
+                >
+                  <Server className="w-8 h-8 text-gray-600" />
+                </motion.div>
+                <div className="absolute inset-0 w-16 h-16 mx-auto border-2 border-transparent border-t-gray-300 rounded-full animate-spin" />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  {orderStatus === OrderStatus.PENDING ? "Waiting for Payment" : "Creating Your Server"}
+                </h2>
+                <p className="text-gray-600">{orderStatus === OrderStatus.PENDING ? "Please complete your payment" : "Creating your server"}{dots}</p>
+              </div>
+
+              <div className="w-full bg-gray-200 rounded-full h-1">
+                <div className="bg-gray-400 h-1 rounded-full animate-pulse w-1/3" />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
