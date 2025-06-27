@@ -8,7 +8,7 @@ const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
 import { OrderStatus } from "@prisma/client";
 
-export default async function checkIfServerReady(stripeSession: string, checkInstallation: boolean): Promise<{ status: OrderStatus | null, serverId: string | null }> {
+export default async function checkIfServerReady(stripeSession: string): Promise<{ status: OrderStatus | null, serverId: string | null }> {
     const session = await auth();
 
     if (session?.user) {
@@ -18,7 +18,7 @@ export default async function checkIfServerReady(stripeSession: string, checkIns
             return { status: null, serverId: null };
         }
 
-        if (checkInstallation && serverOrder.status === OrderStatus.PAID) {
+        if (serverOrder.status === OrderStatus.CREATED) {
             const isInstalling = await fetch(`${panelUrl}/api/client/account`, {
                 method: 'GET',
                 headers: {
@@ -30,9 +30,15 @@ export default async function checkIfServerReady(stripeSession: string, checkIns
                 .then((data) => data.json())
                 .then((data) => Boolean(data.attributes.is_installing));
 
-            return { status: isInstalling ? OrderStatus.PAID : OrderStatus.CREATED, serverId: serverOrder.serverId };
+            if (!isInstalling)
+                await prisma.serverOrder.update({ where: { stripeSessionId: stripeSession }, data: { status: "INSTALLED" } })
+
+            // return { status: isInstalling ? OrderStatus.CREATED : OrderStatus.INSTALLED, serverId: serverOrder.serverId };
         }
-        return { status: serverOrder.status, serverId: serverOrder.serverId };
+        
+        
+        const result = await prisma.serverOrder.findFirst({ where: { stripeSessionId: stripeSession } });
+        return { status: result.status, serverId: result.serverId };
     }
 
     return { status: null, serverId: null };

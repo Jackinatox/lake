@@ -20,7 +20,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
     async function poll() {
       try {
-        const { status, serverId } = await checkIfServerReady(sessionId, orderStatus === OrderStatus.PAID)
+        const { status, serverId } = await checkIfServerReady(sessionId)
         setOrderStatus(status)
         setServerId(serverId)
 
