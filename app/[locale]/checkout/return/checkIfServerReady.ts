@@ -18,27 +18,43 @@ export default async function checkIfServerReady(stripeSession: string): Promise
             return { status: null, serverId: null };
         }
 
-        if (serverOrder.status === OrderStatus.CREATED) {
-            const isInstalling = await fetch(`${panelUrl}/api/client/account`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${session.user.ptKey}`,
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((data) => data.json())
-                .then((data) => Boolean(data.attributes.is_installing));
+        if (serverOrder.status === OrderStatus.CREATED && serverOrder.serverId) {
+            try {
+                const res = await fetch(`${panelUrl}/api/client/servers/${serverOrder.serverId}`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${session.user.ptKey}`,
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    next: { revalidate: 0 } // Disable cache for this request
+                });
 
-            if (!isInstalling)
-                await prisma.serverOrder.update({ where: { stripeSessionId: stripeSession }, data: { status: "INSTALLED" } })
+                if (res.ok) {
+                    const data = await res.json();
+                    const isInstalling = data.attributes.is_installing;
 
-            // return { status: isInstalling ? OrderStatus.CREATED : OrderStatus.INSTALLED, serverId: serverOrder.serverId };
+                    if (isInstalling === false) {
+                        // The server is ready, update our DB and return the new status immediately.
+                        await prisma.serverOrder.update({
+                            where: { id: serverOrder.id },
+                            data: { status: "INSTALLED" },
+                        });
+                        // Return the new status directly to avoid a race condition.
+                        return { status: OrderStatus.INSTALLED, serverId: serverOrder.serverId };
+                    }
+                    // If it's still installing, just return the current status.
+                    return { status: OrderStatus.CREATED, serverId: serverOrder.serverId };
+                } else {
+                    console.error(`Pterodactyl API error: ${res.status} ${await res.text()}`);
+                }
+            } catch (error) {
+                console.error("Failed to fetch server status:", error);
+            }
         }
         
-        
-        const result = await prisma.serverOrder.findFirst({ where: { stripeSessionId: stripeSession } });
-        return { status: result.status, serverId: result.serverId };
+        // For any other status (PENDING, PAID, etc.), just return the current state from the DB.
+        return { status: serverOrder.status, serverId: serverOrder.serverId };
     }
 
     return { status: null, serverId: null };
