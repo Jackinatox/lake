@@ -142,6 +142,7 @@ enum OrderStatus {
   PAID
   CREATED
   FAILED
+  INSTALLED
 }
 
 model ServerOrder {

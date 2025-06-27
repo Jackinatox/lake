@@ -111,25 +111,10 @@ export async function provisionServer(order: ServerOrder) {
                     id: order.id,
                 },
                 data: {
-                    serverId: newServer.identifier
+                    serverId: newServer.identifier,
+                    status: "CREATED"
                 }
             })
-
-            // switch (parseInt(gameConfig.eggId)) {
-            //     case 3: // Paper
-
-            //         const newServer = await pt.createServer(options);
-            //         await prisma.serverIntend.update({
-            //             where: {
-            //                 id: intent,
-            //             },
-            //             data: {
-            //                 serverId: newServer.identifier
-            //             }
-            //         })
-
-            //         break;
-            // }
 
             break;
         default:
