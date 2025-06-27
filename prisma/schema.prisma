@@ -163,7 +163,7 @@ model ServerOrder {
   location        Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
   
   status          OrderStatus @default(PENDING)
-  
+  errorText        Json?
   stripeSessionId String? @unique
   serverId        String?
 
