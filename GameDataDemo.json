@@ -1,0 +1,77 @@
+{
+    "flavors": [
+        {
+            "id": 0,
+            "name": "Forge",
+            "egg_id": 2,
+            "versions": [
+                {"version": "1.20.4", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.20.2", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.19.4", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.19.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.18.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.17.1", "docker_image": "pterodactyl/yolks:java_16"},
+                {"version": "1.16.5", "docker_image": "pterodactyl/yolks:java_11"},
+                {"version": "1.15.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.14.4", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.12.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.8.9", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.7.10", "docker_image": "pterodactyl/yolks:java_8"}
+            ]
+        },
+        {
+            "id": 1,
+            "name": "Paper",
+            "egg_id": 3,
+            "versions": [
+                {"version": "1.20.4", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.20.2", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.19.4", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.19.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.18.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.17.1", "docker_image": "pterodactyl/yolks:java_16"},
+                {"version": "1.16.5", "docker_image": "pterodactyl/yolks:java_11"},
+                {"version": "1.15.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.14.4", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.12.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.8.9", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.7.10", "docker_image": "pterodactyl/yolks:java_8"}
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Fabric",
+            "egg_id": 15,
+            "versions": [
+                {"version": "1.20.4", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.20.2", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.19.4", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.19.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.18.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.17.1", "docker_image": "pterodactyl/yolks:java_16"},
+                {"version": "1.16.5", "docker_image": "pterodactyl/yolks:java_11"},
+                {"version": "1.15.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.14.4", "docker_image": "pterodactyl/yolks:java_8"}
+            ]
+        },
+        {
+            "id": 3,
+            "name": "Vanilla",
+            "egg_id": 1,
+            "versions": [
+                {"version": "1.20.4", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.20.2", "docker_image": "pterodactyl/yolks:java_21"},
+                {"version": "1.19.4", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.19.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.18.2", "docker_image": "pterodactyl/yolks:java_17"},
+                {"version": "1.17.1", "docker_image": "pterodactyl/yolks:java_16"},
+                {"version": "1.16.5", "docker_image": "pterodactyl/yolks:java_11"},
+                {"version": "1.15.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.14.4", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.12.2", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.8.9", "docker_image": "pterodactyl/yolks:java_8"},
+                {"version": "1.7.10", "docker_image": "pterodactyl/yolks:java_8"}
+            ]
+        }
+    ]
+}
