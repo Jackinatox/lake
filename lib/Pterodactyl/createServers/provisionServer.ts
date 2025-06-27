@@ -105,16 +105,30 @@ export async function provisionServer(order: ServerOrder) {
                 ...startAndVars
             };
 
-            const newServer = await pt.createServer(options);
-            await prisma.serverOrder.update({
-                where: {
-                    id: order.id,
-                },
-                data: {
-                    serverId: newServer.identifier,
-                    status: "CREATED"
-                }
-            })
+            try {
+                const newServer = await pt.createServer(options);
+                await prisma.serverOrder.update({
+                    where: {
+                        id: order.id,
+                    },
+                    data: {
+                        serverId: newServer.identifier,
+                        status: "CREATED"
+                    }
+                })
+            } catch (error) {
+                await prisma.serverOrder.update({
+                    where: {
+                        id: order.id,
+                    },
+                    data: {
+                        status: "FAILED",
+                        errorText: error instanceof Error ? error.stack || error.message : JSON.stringify(error)
+                    }
+                });
+
+                throw error;
+            }
 
             break;
         default:
