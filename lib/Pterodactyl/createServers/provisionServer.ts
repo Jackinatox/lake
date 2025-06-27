@@ -74,6 +74,7 @@ export async function provisionServer(order: ServerOrder) {
                             BUILD_TYPE: 'recommended'
                         },
                         startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )'
+                        
                     };
                     break;
                 case 3: // Paper
@@ -107,6 +108,8 @@ export async function provisionServer(order: ServerOrder) {
 
             try {
                 const newServer = await pt.createServer(options);
+
+
                 await prisma.serverOrder.update({
                     where: {
                         id: order.id,
