@@ -24,9 +24,9 @@ export async function createPaymentSession(orderId: string): Promise<string> {
             price_data: {
                 currency: 'eur',
                 product_data: {
-                    name: 'Custom GameServer',
+                    name: `Custom GameServer ${(order.cpuPercent / 100).toFixed(1) } Threads ${(order.ramMB / 1024).toFixed(1) } GB`,
                 },
-                unit_amount: order.price * 100,
+                unit_amount: Math.round(order.price * 100),
             },
             quantity: 1,
         }],

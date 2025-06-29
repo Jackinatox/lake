@@ -25,8 +25,8 @@ interface MinecraftConfigProps {
 
 export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: MinecraftConfigProps) {
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
-  const [selectedVersion, setSelectedVersion] = useState<string | null>(null)
-  const [gameVersions, setGameVersions] = useState<string[]>([])
+  const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
+  const [gameVersions, setGameVersions] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [flavorOpen, setFlavorOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
@@ -93,7 +93,8 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
       gameType: game.name,
       flavorId: selectedFlavorId,
       eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id,
-      version: selectedVersion,
+      version: selectedVersion.version,
+      dockerImage: selectedVersion.docker_image,
       gameSpecificConfig: {
         ...config,
       },
@@ -177,7 +178,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
                   className="w-full justify-between"
                   disabled={loading || gameVersions.length === 0}
                 >
-                  {selectedVersion || "Select a version"}
+                  {selectedVersion?.version || "Select a version"}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -189,17 +190,17 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
                     <CommandGroup>
                       {gameVersions.map((version) => (
                         <CommandItem
-                          key={version}
-                          value={version}
+                          key={version.version}
+                          value={version.version}
                           onSelect={() => {
                             setSelectedVersion(version)
                             setVersionOpen(false)
                           }}
                         >
                           <Check
-                            className={cn("mr-2 h-4 w-4", selectedVersion === version ? "opacity-100" : "opacity-0")}
+                            className={cn("mr-2 h-4 w-4", selectedVersion?.version === version.version ? "opacity-100" : "opacity-0")}
                           />
-                          {version}
+                          {version.version}
                         </CommandItem>
                       ))}
                     </CommandGroup>
