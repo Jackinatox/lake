@@ -49,7 +49,8 @@ export async function provisionServer(order: ServerOrder) {
             dedicatedIp: false,
             locations: [intentDb.location.ptLocationId],
             portRange: []
-        }
+        },
+        image: gameConfig.dockerImage,
     };
 
 
@@ -63,7 +64,7 @@ export async function provisionServer(order: ServerOrder) {
                             MINECRAFT_VERSION: gameConfig.version,
                             SERVER_JARFILE: 'server.jar'
                         },
-                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}'
+                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}',
                     };
                     break;
                 case 2: // Forge

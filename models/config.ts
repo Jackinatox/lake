@@ -30,6 +30,7 @@ export interface GameConfig {
   gameType: string
   flavorId: number
   eggId: number
-  version: string
+  version: string,
+  dockerImage: string,
   gameSpecificConfig: Record<string, any> // Game-specific configuration
 }

@@ -19,7 +19,7 @@ export function GameConfigComponent({
   game,
   initialGameId,
   additionalConfig = {},
-  onAdditionalConfigChange = () => {},
+  onAdditionalConfigChange = () => { },
   onBack,
   onSubmit,
 }: GameConfigProps) {
