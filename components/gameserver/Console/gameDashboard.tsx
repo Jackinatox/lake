@@ -17,6 +17,9 @@ import { FileManager } from "../FileManager/FileManager"
 import { BackupManager } from "../BackupManager/BackupManager"
 import Settings from "../settings/setting"
 import { GameServer } from "@/models/gameServerModel"
+import { Button } from "@/components/ui/button"
+import EulaDialog from "../EulaDialog"
+import { FileApiService } from "../FileManager/file-api"
 
 
 interface serverProps {
@@ -28,6 +31,7 @@ interface serverProps {
 function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
   const [logs, setLogs] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const [eulaOpen, setEulaOpen] = useState(false);
   const wsRef = useRef<WebSocket | null>(null)
   const wsCreds = useRef<any>(null)
 
@@ -59,6 +63,9 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
       case "console output": {
         const consoleLine = data.args[0]
+        if (consoleLine.includes('You need to agree to the EULA in order to run the server.')) {
+          setEulaOpen(true)
+        }
         setLogs((prevLogs) => {
           if (prevLogs[prevLogs.length - 1] === consoleLine) {
             return prevLogs // Avoid duplicate log
@@ -131,6 +138,14 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60) // Restliche Minuten
 
   console.log(serverStats)
+
+  const handleAcceptEula = async () => {
+    if (!loading && wsRef.current) {
+      const apiService = new FileApiService(server.identifier);
+      await apiService.saveFileContent('eula.txt', 'eula=true');
+      handleRestart();
+    }
+  }
 
   const handleStart = () => {
     if (!loading && wsRef.current) {
@@ -250,6 +265,8 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
   return (
     <>
+      <Button onClick={() => { setEulaOpen(true) }}>test eula</Button>
+      <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
       <div className="w-full">
         {/* Header with server info and controls - spans full width */}
         <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
@@ -292,9 +309,9 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
                   <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
                   <div className="font-medium">Uptime:</div>
                   <div>
-                  {serverStats?.uptime !== undefined
-                    ? `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""}${Math.floor(serverStats.uptime % 60)}s`
-                    : "—"}</div>
+                    {serverStats?.uptime !== undefined
+                      ? `${days > 0 ? `${days}d ` : ""}${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""}${Math.floor(serverStats.uptime % 60)}s`
+                      : "—"}</div>
                 </div>
               </div>
 
