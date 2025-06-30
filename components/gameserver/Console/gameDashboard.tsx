@@ -11,15 +11,13 @@ import CPUChart from "./graphs/CPUChart"
 import RAMChart from "./graphs/RAMChart"
 import { PowerBtns } from "./powerBtns"
 import { Status } from "./status"
-import type { ClientServer } from "pterodactyl.js"
 import { TabsComponent } from "../GameserverTabs"
 import { FileManager } from "../FileManager/FileManager"
 import { BackupManager } from "../BackupManager/BackupManager"
-import Settings from "../settings/setting"
 import { GameServer } from "@/models/gameServerModel"
-import { Button } from "@/components/ui/button"
 import EulaDialog from "../EulaDialog"
 import { FileApiService } from "../FileManager/file-api"
+import GameServerSettings from "../settings/GameServerSettings"
 
 
 interface serverProps {
@@ -265,7 +263,6 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
   return (
     <>
-      <Button onClick={() => { setEulaOpen(true) }}>test eula</Button>
       <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
       <div className="w-full">
         {/* Header with server info and controls - spans full width */}
@@ -334,7 +331,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
           consoleComponent={ConsoleComponent}
           fileManagerComponent={<FileManager server={server} />}
           backupManagerComponent={<BackupManager server={server} />}
-          settingsComponent={<Settings server={server} gameId={gameId} />}
+          settingsComponent={<GameServerSettings server={server} />}
         />
       </div>
     </>
