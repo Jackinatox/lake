@@ -11,8 +11,9 @@ import { Separator } from "@/components/ui/separator"
 import { RefreshCw, Save, Server } from "lucide-react"
 import { GameServer } from "@/models/gameServerModel"
 import { Builder } from "@avionrx/pterodactyl-js"
-import renameClientServer from "./renameServerAction"
 import { useToast } from "@/components/hooks/use-toast"
+import { renameClientServer } from "./renameServerAction"
+import ReinstallDialog from "./ReinstallDialog"
 
 // Placeholder component - replace with your actual MinecraftFlavourVersion component
 function MinecraftFlavourVersion({ onVersionChange }: { onVersionChange: (flavour: string, version: string) => void }) {
@@ -38,14 +39,11 @@ const JAVA_VERSIONS = [
   { value: "java21", label: "Java 21" },
 ]
 
-const handleReinstall = () => {
-
-}
-
 export default function GameServerSettings({ server }: GameServerSettingsProps) {
   const [serverName, setServerName] = useState(server.name)
   const [javaVersion, setJavaVersion] = useState("java17")
   const [isReinstalling, setIsReinstalling] = useState(false)
+  const [reinstallDialogOpen, setReinstallDialogOpen] = useState(false)
   const { toast } = useToast()
 
   const isMinecraftServer = server.egg_id >= 0 && server.egg_id <= 5
@@ -69,21 +67,14 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
     }
   }
 
-  const handleReinstall = async () => {
-    setIsReinstalling(true)
-    try {   // TODO: Put in dialog with explainer
-      await handleReinstall()
-    } finally {
-      setIsReinstalling(false)
-    }
-  }
-
   const handleMinecraftVersionChange = (flavour: string, version: string) => {
     // Handle minecraft version change
     console.log("Minecraft version changed:", { flavour, version })
   }
 
   return (
+    <>
+    <ReinstallDialog open={reinstallDialogOpen} onOpenChange={setReinstallDialogOpen}/>
     <div className="space-y-6">
       {/* Basic Server Settings */}
       <Card>
@@ -130,7 +121,7 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
           <Separator />
           <div className="space-y-2">
             <Label>Server Management</Label>
-            <Button onClick={handleReinstall} disabled={isReinstalling} variant="destructive" className="w-full">
+            <Button onClick={() => {setReinstallDialogOpen(true)}} disabled={isReinstalling} variant="destructive" className="w-full">
               {isReinstalling ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -181,5 +172,6 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
         </Card>
       )}
     </div>
+    </>
   )
 }
