@@ -12,17 +12,23 @@ import { RefreshCw, Save, Server } from "lucide-react"
 import { GameServer } from "@/models/gameServerModel"
 import { Builder } from "@avionrx/pterodactyl-js"
 import { useToast } from "@/components/hooks/use-toast"
-import { renameClientServer } from "./renameServerAction"
+import { renameClientServer } from "./serverSettingsActions"
 import ReinstallDialog from "./ReinstallDialog"
+import { MinecraftConfigComponent } from "@/components/booking2/minecraft-config"
+import { fetchGames } from "@/lib/actions"
 
 // Placeholder component - replace with your actual MinecraftFlavourVersion component
 function MinecraftFlavourVersion({ onVersionChange }: { onVersionChange: (flavour: string, version: string) => void }) {
+  // await fetchGames();
   return (
+      // TODO: fetch await fetchGames(id); to then send new docker image to changeServerStartup in useEffect
+
     <div className="space-y-2">
       <Label>Minecraft Flavour & Version</Label>
       <div className="p-4 border rounded-md bg-muted/50">
         <p className="text-sm text-muted-foreground">Replace this with your MinecraftFlavourVersion component</p>
       </div>
+      {/* <MinecraftConfigComponent /> */}
     </div>
   )
 }
