@@ -1,0 +1,25 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+
+# ... your processors and exporters
+processors:
+  batch:
+
+exporters:
+  # This exporter sends all data to your second collector
+  otlp:
+    endpoint: 10.1.17.4:4319 # Or use the http port 4318 if you prefer
+    tls:
+      insecure: true # Use this for testing, configure TLS properly for production
+
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
