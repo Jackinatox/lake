@@ -7,6 +7,7 @@ const intlMiddleware = createMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
+  console.error("ahhhhh");
   return intlMiddleware(request);
 }
 
