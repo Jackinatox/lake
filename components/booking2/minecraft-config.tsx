@@ -40,7 +40,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
     if (defaultFlavorId !== null) {
       const flavor = game.data.flavors.find((f) => f.id === defaultFlavorId)
       if (flavor && flavor.versions.length > 0) {
-        setSelectedVersion(flavor.versions[0])
+        setSelectedVersion(flavor.versions[flavor.versions.length - 1])
         setGameVersions(flavor.versions)
       }
     }
@@ -51,11 +51,12 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
       const flavor = game.data.flavors.find((f) => f.id === selectedFlavorId)
       if (flavor) {
         setGameVersions(flavor.versions)
-        // Set default version to the first one in the list if current selection is not available
-        if (!flavor.versions.includes(selectedVersion) && flavor.versions.length > 0) {
-          setSelectedVersion(flavor.versions[0])
-        } else {
-          // set
+        const versionStillExists = flavor.versions.some(
+          (v) => v.version === selectedVersion?.version
+        );
+
+        if (!versionStillExists) {
+          setSelectedVersion(flavor.versions.length > 0 ? flavor.versions[flavor.versions.length - 1] : null);
         }
       }
     }
@@ -99,7 +100,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
         ...config,
       },
     }
-    
+
     // Pass the complete configuration to the parent component
     onSubmit(completeConfig)
   }
@@ -188,7 +189,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
                   <CommandList>
                     <CommandEmpty>No version found.</CommandEmpty>
                     <CommandGroup>
-                      {gameVersions.map((version) => (
+                      {gameVersions.slice().reverse().map((version) => (
                         <CommandItem
                           key={version.version}
                           value={version.version}
