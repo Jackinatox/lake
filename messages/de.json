@@ -36,5 +36,19 @@
     "ctaHeader": "Bereit, Deinen Gameserver zu hosten?",
     "ctaDesc": "Kleine Beschreibung",
     "ctaButton": "Loslegen"
+  },
+  "hardware-config": {
+    "duration": "Laufzeit",
+    "select-duration": "Laufzeit auswählen",
+    "durations": {
+      "week": "1 Woche",
+      "month": "1 Monat",
+      "three-months": "3 Monate",
+      "five-months": "5 Monate"
+    }
+  },
+  "info-buttons": {
+    "cpu": "Erklärung der CPU",
+    "ram": "Erklärung des RAM"
   }
 }

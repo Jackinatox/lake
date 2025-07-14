@@ -10,6 +10,9 @@ export async function fetchPerformanceGroups() {
     },
     where: {
       enabled: true
+    },
+    orderBy: {
+      id: 'asc'
     }
 
   })
