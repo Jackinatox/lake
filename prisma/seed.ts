@@ -16,13 +16,18 @@ async function main() {
 
     await prisma.rAM.create({
         data: {
-            name: 'DDR4 seeded', speed: 3200, pricePerGb: 0.4, minGb: 0.5, maxGb: 12
+            name: 'DDR4 seeded', speed: 3200, pricePerGb: 0.4, minGb: 1, maxGb: 12
         }
     })
 
     await prisma.location.create({
         data: {
-            name: 'Stone', diskPrice: 0.5, portsLimit: 2, backupsLimit: 2, enabled: true, ptLocationId: 1, cpu: { connect: { id: 1 } }, ram: { connect: { id: 1 } }
+            name: 'Gut - Ryzen 9 5900X', diskPrice: 0.5, portsLimit: 3, backupsLimit: 4, enabled: true, ptLocationId: 2, cpu: { connect: { id: 1 } }, ram: { connect: { id: 1 } }
+        }
+    })
+    await prisma.location.create({
+        data: {
+            name: 'Besser - Ryzen 5 7600', diskPrice: 0.5, portsLimit: 3, backupsLimit: 4, enabled: true, ptLocationId: 2, cpu: { connect: { id: 1 } }, ram: { connect: { id: 1 } }
         }
     })
 

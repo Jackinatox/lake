@@ -167,6 +167,8 @@ model ServerOrder {
   stripeSessionId String? @unique
   serverId        String?
 
+  // availableTill   DateTime
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

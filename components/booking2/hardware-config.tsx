@@ -1,15 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Info } from "lucide-react"
-import type { HardwareConfig } from "@/models/config"
 import { calcDiskSize } from "@/lib/globalFunctions"
-import { Prisma } from "@prisma/client"
+import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
+import { useEffect, useState } from "react"
+import InfoButton from "../InfoButton"
 
 interface HardwareConfigProps {
   diskOptions: { id: number; size_gb: number; price_per_gb: number }[]
@@ -23,6 +21,7 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
 
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
+  const [days, setDays] = useState(30);
   const [totalPrice, setTotalPrice] = useState(0)
 
   // Set initial values
@@ -47,12 +46,12 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
   // Calculate total price whenever configuration changes
   useEffect(() => {
     if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-      const cpuPrice = selectedPFGroup.cpu.pricePerCore * cpuCores
-      const ramPrice = selectedPFGroup.ram.pricePerGb * ramGb
+      const cpuPrice = selectedPFGroup.cpu.pricePerCore / 30 * cpuCores * days;
+      const ramPrice = selectedPFGroup.ram.pricePerGb / 30 * ramGb * days;
 
       setTotalPrice(Number.parseFloat((cpuPrice + ramPrice).toFixed(2)))
     }
-  }, [selectedPFGroup, cpuCores, ramGb])
+  }, [selectedPFGroup, cpuCores, ramGb, days])
 
   const handleNext = () => {
     if (!selectedPFGroup?.cpu) return
@@ -74,102 +73,135 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
   const ramOption = selectedPFGroup.ram;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Performance</CardTitle>
-          <CardDescription>Configure your server hardware</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* CPU Selection */}
-          <div>
+    <div className="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Configuration Section */}
+      <div className="lg:col-span-2 flex flex-col">
+        <Card className="h-full shadow-lg">
+          <CardHeader>
+            <CardTitle>Performance Configuration</CardTitle>
+            <CardDescription>Customize your server hardware.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Performance Group Tabs */}
             <Tabs
               value={selectedPFGroup.id.toString()}
               onValueChange={(value) => {
                 const pfGroup = performanceOptions.find((pf) => pf.id.toString() === value);
-                if (pfGroup) { 
-                  setSelectedPFGroup(pfGroup); 
-                  setCpuCores(Math.min(cpuCores, pfGroup.cpu.maxThreads)) 
+                if (pfGroup) {
+                  setSelectedPFGroup(pfGroup);
+                  setCpuCores(Math.min(cpuCores, pfGroup.cpu.maxThreads));
                 }
-              }}>
-              <TabsList className={`grid grid-cols-${performanceOptions.length} w-full`}>
+              }}
+            >
+              <TabsList className="grid grid-cols-2 md:grid-cols-2 gap-2">
                 {performanceOptions.map((pf) => (
-                  <TabsTrigger key={pf.id} value={pf.id.toString()}>{pf.name}</TabsTrigger>
+                  <TabsTrigger key={pf.id} value={pf.id.toString()}>{pf.name} <InfoButton className="pl-1" text="kleine info" /></TabsTrigger>
                 ))}
               </TabsList>
             </Tabs>
-          </div>
 
-          {/* CPU Cores */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="text-right font-semibold">{cpuCores}</div>
-                <h3 className="text-lg font-semibold">vCore(s)</h3>
-                <span className="text-muted-foreground">{selectedPFGroup.cpu.name}</span>
-                <Info className="h-4 w-4 text-muted-foreground" />
+            {/* Duration Selection */}
+            <Tabs
+              value={days.toString()}
+              onValueChange={(value) => setDays(parseInt(value))}
+            >
+              <TabsList className="grid grid-cols-4 gap-2">
+                <TabsTrigger value="7">1 Week</TabsTrigger>
+                <TabsTrigger value="30">1 Month</TabsTrigger>
+                <TabsTrigger value="90">3 Months (-10%)</TabsTrigger>
+                <TabsTrigger value="180">6 Months (-15%)</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {/* CPU Configuration */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="text-lg font-semibold">{cpuCores} vCore(s)</div>
+                  <span className="text-muted-foreground">{selectedPFGroup.cpu.name}</span>
+                </div>
+                <div className="text-muted-foreground">{selectedPFGroup.cpu.pricePerCore.toFixed(2)} € / vCore</div>
               </div>
-              <div className="text-right text-muted-foreground">{selectedPFGroup.cpu.pricePerCore.toFixed(2)}€/vCore</div>
+              <Slider
+                value={[cpuCores]}
+                min={selectedPFGroup.cpu.minThreads}
+                max={selectedPFGroup.cpu.maxThreads}
+                step={1}
+                onValueChange={(value) => setCpuCores(value[0])}
+              />
             </div>
-            <Slider
-              value={[cpuCores]}
-              min={selectedPFGroup.cpu.minThreads}
-              max={selectedPFGroup.cpu.maxThreads}
-              step={1}
-              onValueChange={(value) => setCpuCores(value[0])}
-            />
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{selectedPFGroup.cpu.minThreads}</span>
-              <span>{Math.floor((selectedPFGroup.cpu.minThreads + selectedPFGroup.cpu.maxThreads) / 2)}</span>
-              <span>{selectedPFGroup.cpu.maxThreads}</span>
-            </div>
-          </div>
 
-          {/* RAM */}
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <div className="text-right font-semibold">{ramGb} GiB</div>
-                <h3 className="text-lg font-semibold">RAM</h3>
+            {/* RAM Configuration */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div className="text-lg font-semibold">{ramGb} GiB RAM</div>
+                <div className="text-muted-foreground">{selectedPFGroup.ram.pricePerGb.toFixed(2)} € / GiB</div>
               </div>
-              <div className="text-right text-muted-foreground">{ramOption.pricePerGb.toFixed(2)}€/GiB</div>
+              <Slider
+                value={[ramGb]}
+                min={ramOption.minGb}
+                max={ramOption.maxGb}
+                step={1}
+                onValueChange={(value) => setRamGb(value[0])}
+              />
             </div>
-            <Slider
-              value={[ramGb]}
-              min={ramOption.minGb}
-              max={ramOption.maxGb}
-              step={1}
-              onValueChange={(value) => setRamGb(value[0])}
-            />
-            <div className="flex justify-between text-sm text-muted-foreground">
-              <span>{ramOption.minGb}GB</span>
-              <span>{Math.floor((ramOption.minGb + ramOption.maxGb) / 2)}GB</span>
-              <span>{ramOption.maxGb}GB</span>
-            </div>
-            <div className="text-right font-semibold">3 €</div>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Price Summary */}
-          <div className="grid grid-cols-2 w-full gap-3">
-            <Card>
-              <CardContent className="p-4 text-center flex justify-between">
-                <span className="font-semibold">Disk: </span>
-                <span className="font-semibold">{calcDiskSize(cpuCores * 100, ramGb * 1024) / 1024} GB</span>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/40">
-              <CardContent className="p-4 flex justify-between items-center">
-                <span className="font-semibold">Price:</span>
-                <span className="text-xl font-bold">{totalPrice.toFixed(2)} €</span>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button variant="outline">Advanced</Button>
-          <Button onClick={handleNext}>Continue</Button>
-        </CardFooter>
-      </Card>
+      {/* Price Overview Section */}
+      <div className="flex flex-col">
+        <Card className="h-full shadow-lg flex flex-col">
+          <CardHeader>
+            <CardTitle>Price Overview</CardTitle>
+            <CardDescription>
+              A summary of your selected configuration.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-grow space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center w-full">
+                <span className="flex-1">CPU ({cpuCores} vCore{cpuCores > 1 ? "s" : ""})</span>
+                <span className="text-right flex-none">{(selectedPFGroup.cpu.pricePerCore / 30 * cpuCores * days).toFixed(2)} €</span>
+              </div>
+              <div className="flex justify-between items-center w-full">
+                <span className="flex-1">RAM ({ramGb} GiB)</span>
+                <span className="text-right flex-none">{(selectedPFGroup.ram.pricePerGb / 30 * ramGb * days).toFixed(2)} €</span>
+              </div>
+              {(calculateDiscount(days, totalPrice).amount !== 0.0) &&
+                <div className="flex justify-between items-center w-full text-green-600 font-semibold">
+                  <span className="flex-1">Discount (-{calculateDiscount(days, totalPrice).percent}%)</span>
+                  <span className="text-right flex-none">- {calculateDiscount(days, totalPrice).amount.toFixed(2)} €</span>
+                </div>
+              }
+            </div>
+          </CardContent>
+          <CardFooter className="border-t pt-2 flex flex-col space-y-2 font-semibold">
+            <div className="flex justify-between items-center w-full">
+              <span className="flex-1">Price per Month</span>
+              <span className="text-right flex-none">{((totalPrice - calculateDiscount(days, totalPrice).amount) / (days / 30)).toFixed(2)} €</span>
+            </div>
+            <div className="flex justify-between items-center w-full">
+              <span className="flex-1">Pay Now (No Subscription)</span>
+              <span className="text-right flex-none">{(totalPrice - calculateDiscount(days, totalPrice).amount).toFixed(2)} €</span>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
-  )
+  );
+
+  // Helper function to calculate discount
+  function calculateDiscount(days, totalPrice) {
+    let percent = 0;
+    if (days >= 180) {
+      percent = 15; // 15% discount for 6 months
+    } else if (days >= 90) {
+      percent = 10; // 10% discount for 3 months
+    } else if (days >= 30) {
+      percent = 0; // 0% discount for 1 month
+    }
+    const amount = totalPrice * (percent / 100);
+    return { amount, percent };
+  }
 }
