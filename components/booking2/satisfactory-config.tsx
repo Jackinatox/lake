@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { forwardRef, useImperativeHandle, useState } from "react"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,11 +13,10 @@ import type { Game, GameConfig, SatisfactoryConfig } from "@/models/config"
 interface SatisfactoryConfigProps {
   onChange: (config: Record<string, any>) => void
   game: Game
-  onBack: () => void
   onSubmit: (config: GameConfig) => void
 }
 
-export function SatisfactoryConfigComponent({ onChange, onBack, game, onSubmit }: SatisfactoryConfigProps) {
+export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
   const [config, setConfig] = useState<SatisfactoryConfig>({
     isEarlyAccess: false,
     maxPlayers: 8,
@@ -30,37 +29,36 @@ export function SatisfactoryConfigComponent({ onChange, onBack, game, onSubmit }
     if (onChange) onChange(newConfig)
   }
 
-  const handleSubmit = () => {
-    // For Satisfactory, we just need an environment variable to switch between early access and production
-    const envVars = {
-      SATISFACTORY_EXPERIMENTAL: config.isEarlyAccess ? "true" : "false",
-    }
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      // For Satisfactory, we just need an environment variable to switch between early access and production
+      const envVars = {
+        SATISFACTORY_EXPERIMENTAL: config.isEarlyAccess ? "true" : "false",
+      }
 
-    // Create a complete game configuration object
-    const completeConfig: GameConfig = {
-      gameId: game.id,
-      gameType: game.name,
-      eggId: 1,     // ToDo: for satsi release add dynamic ids
-      flavorId: 1, // Assuming there's only one flavor for Satisfactory
-      version: "latest", // Assuming we always use the latest version
-      dockerImage: 'placeHolderImage', // TODO: Satisfactory set correct docker image
-      gameSpecificConfig: {
-        ...config,
-      },
-    }
+      // Create a complete game configuration object
+      const completeConfig: GameConfig = {
+        gameId: game.id,
+        gameType: game.name,
+        eggId: 1,     // ToDo: for satsi release add dynamic ids
+        flavorId: 1, // Assuming there's only one flavor for Satisfactory
+        version: "latest", // Assuming we always use the latest version
+        dockerImage: 'placeHolderImage', // TODO: Satisfactory set correct docker image
+        gameSpecificConfig: {
+          ...config,
+        },
+      }
 
-    // Pass the complete configuration to the parent component
-    onSubmit(completeConfig)
-  }
+      // Pass the complete configuration to the parent component
+      onSubmit(completeConfig)
+    }
+  }));
 
   return (
     <div>
       <Card className="p-4">
         <div className="pb-4">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
             <div>
               <CardTitle>{game.name || "Game"} Configuration</CardTitle>
               <CardDescription>Configure your Satisfactory server</CardDescription>
@@ -100,10 +98,6 @@ export function SatisfactoryConfigComponent({ onChange, onBack, game, onSubmit }
           </div>
         </CardContent>
       </Card>
-
-      <div className="mt-4 flex justify-end">
-        <Button onClick={handleSubmit}>Continue</Button>
-      </div>
     </div>
   )
-}
+});

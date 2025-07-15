@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { calcDiskSize } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
-import { useEffect, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import InfoButton from "../InfoButton"
 
 interface HardwareConfigProps {
@@ -16,8 +16,8 @@ interface HardwareConfigProps {
   initialConfig: HardwareConfig | null
 }
 
-export function HardwareConfigComponent({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps) {
-  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup>(null);
+export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
+  const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
@@ -29,7 +29,7 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
     if (performanceOptions.length > 0 && !selectedPFGroup) {
       setSelectedPFGroup(performanceOptions[0])
     }
-  }, [performanceOptions])
+  }, [performanceOptions, selectedPFGroup])
 
   useEffect(() => {
     if (initialConfig && performanceOptions.length > 0) {
@@ -53,18 +53,20 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
     }
   }, [selectedPFGroup, cpuCores, ramGb, days])
 
-  const handleNext = () => {
-    if (!selectedPFGroup?.cpu) return
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      if (!selectedPFGroup?.cpu) return
 
-    const config: HardwareConfig = {
-      pfGroupId: selectedPFGroup.id,
-      cpuCores,
-      ramGb,
-      diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024)
+      const config: HardwareConfig = {
+        pfGroupId: selectedPFGroup.id,
+        cpuCores,
+        ramGb,
+        diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024)
+      }
+
+      onNext(config)
     }
-
-    onNext(config)
-  }
+  }));
 
   if (!selectedPFGroup) {
     return <div>Loading configuration options...</div>
@@ -190,18 +192,16 @@ export function HardwareConfigComponent({ diskOptions, initialConfig, performanc
       </div>
     </div>
   );
+});
 
-  // Helper function to calculate discount
-  function calculateDiscount(days, totalPrice) {
-    let percent = 0;
-    if (days >= 180) {
-      percent = 15; // 15% discount for 6 months
-    } else if (days >= 90) {
-      percent = 10; // 10% discount for 3 months
-    } else if (days >= 30) {
-      percent = 0; // 0% discount for 1 month
-    }
-    const amount = totalPrice * (percent / 100);
-    return { amount, percent };
+// Helper function to calculate discount
+function calculateDiscount(days: number, totalPrice: number) {
+  let percent = 0;
+  if (days >= 180) {
+    percent = 15; // 15% discount for 6 months
+  } else if (days >= 90) {
+    percent = 10; // 10% discount for 3 months
   }
+  const amount = totalPrice * (percent / 100);
+  return { amount, percent };
 }
