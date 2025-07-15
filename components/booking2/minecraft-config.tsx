@@ -1,6 +1,4 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,11 +17,10 @@ interface MinecraftConfigProps {
   game: Game
   additionalConfig?: Record<string, any>
   onAdditionalConfigChange?: (config: Record<string, any>) => void
-  onBack: () => void
   onSubmit: (config: GameConfig) => void
 }
 
-export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: MinecraftConfigProps) {
+export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }: MinecraftConfigProps, ref) => {
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
   const [gameVersions, setGameVersions] = useState<any[]>([])
@@ -82,28 +79,30 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const handleSubmit = async () => {
-    if (selectedFlavorId === null || !selectedVersion) {
-      console.error("Missing required selection")
-      return
-    }
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      if (selectedFlavorId === null || !selectedVersion) {
+        console.error("Missing required selection")
+        return
+      }
 
-    // Create a complete game configuration object
-    const completeConfig: GameConfig = {
-      gameId: game.id,
-      gameType: game.name,
-      flavorId: selectedFlavorId,
-      eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id,
-      version: selectedVersion.version,
-      dockerImage: selectedVersion.docker_image,
-      gameSpecificConfig: {
-        ...config,
-      },
-    }
+      // Create a complete game configuration object
+      const completeConfig: GameConfig = {
+        gameId: game.id,
+        gameType: game.name,
+        flavorId: selectedFlavorId,
+        eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id,
+        version: selectedVersion.version,
+        dockerImage: selectedVersion.docker_image,
+        gameSpecificConfig: {
+          ...config,
+        },
+      }
 
-    // Pass the complete configuration to the parent component
-    onSubmit(completeConfig)
-  }
+      // Pass the complete configuration to the parent component
+      onSubmit(completeConfig)
+    }
+  }));
 
   return (
     <>
@@ -111,9 +110,6 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
         <Card className="p-4">
           <div className="pb-4">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={onBack}>
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
               <div>
                 <CardTitle>{game.name || "Game"} Configuration</CardTitle>
                 <CardDescription>Select your preferred game settings</CardDescription>
@@ -211,134 +207,7 @@ export function MinecraftConfigComponent({ onChange, onBack, game, onSubmit }: M
             </Popover>
           </div>
         </Card>
-
-        {/* Advanced Config below */}
-        {/* <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
-          <Card>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="flex w-full justify-between p-4">
-                <span>Advanced Minecraft Configuration</span>
-                {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-6 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="serverName">Server Name (MOTD)</Label>
-                  <Input
-                    id="serverName"
-                    value={config.serverName}
-                    onChange={(e) => handleChange("serverName", e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="maxPlayers">Max Players: {config.maxPlayers}</Label>
-                  <Slider
-                    id="maxPlayers"
-                    value={[config.maxPlayers]}
-                    min={1}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => handleChange("maxPlayers", value[0])}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="viewDistance">View Distance: {config.viewDistance}</Label>
-                  <Slider
-                    id="viewDistance"
-                    value={[config.viewDistance]}
-                    min={3}
-                    max={32}
-                    step={1}
-                    onValueChange={(value) => handleChange("viewDistance", value[0])}
-                  />
-                </div>
-
-
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button id="difficulty" variant="outline" role="combobox" className="w-full justify-between">
-                        {config.difficulty.charAt(0).toUpperCase() + config.difficulty.slice(1)}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandInput placeholder="Search difficulty..." />
-                        <CommandList>
-                          <CommandEmpty>No difficulty found.</CommandEmpty>
-                          <CommandGroup>
-                            {["peaceful", "easy", "normal", "hard"].map((difficulty) => (
-                              <CommandItem
-                                key={difficulty}
-                                value={difficulty}
-                                onSelect={() => handleChange("difficulty", difficulty)}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    config.difficulty === difficulty ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
-                                {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="enablePvp">Enable PvP</Label>
-                  <Switch
-                    id="enablePvp"
-                    checked={config.enablePvp}
-                    onCheckedChange={(checked) => handleChange("enablePvp", checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="enableNether">Enable Nether</Label>
-                  <Switch
-                    id="enableNether"
-                    checked={config.enableNether}
-                    onCheckedChange={(checked) => handleChange("enableNether", checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="enableCommandBlocks">Enable Command Blocks</Label>
-                  <Switch
-                    id="enableCommandBlocks"
-                    checked={config.enableCommandBlocks}
-                    onCheckedChange={(checked) => handleChange("enableCommandBlocks", checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="allowFlight">Allow Flight</Label>
-                  <Switch
-                    id="allowFlight"
-                    checked={config.allowFlight}
-                    onCheckedChange={(checked) => handleChange("allowFlight", checked)}
-                  />
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible> */}
-        <div className="mt-4 flex justify-end">
-          <Button onClick={handleSubmit} disabled={selectedFlavorId === null || selectedVersion === null}>
-            Continue
-          </Button>
-        </div>
       </div>
     </>
   )
-}
+});

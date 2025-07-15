@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
 import { fetchGames, fetchPerformanceGroups } from "@/lib/actions"
@@ -13,13 +13,12 @@ import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
 import { createServerOrder } from "./actions"
 import CustomServerPaymentElements from "@/components/payments/PaymentElements"
+import { Button } from "@/components/ui/button"
 
 export type ServerConfig = {
   hardwareConfig: HardwareConfig
   gameConfig: GameConfig
 }
-
-
 
 export default function GameServerConfig() {
   const [orderId, setOrderId] = useState('');
@@ -34,6 +33,9 @@ export default function GameServerConfig() {
   const params = useParams()
   const router = useRouter();
   const gameId = Number.parseInt(params.gameId.toString(), 10)
+
+  const hardwareConfigRef = useRef<any>(null);
+  const gameConfigRef = useRef<any>(null);
 
   // Fetch initial data
   useEffect(() => {
@@ -68,9 +70,7 @@ export default function GameServerConfig() {
     setStep(2)
   }
 
-  const handleGameConfigBack = () => {
-    setStep(1)
-  }
+  
 
   const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
     if (!hardwareConfig) return
@@ -108,6 +108,14 @@ export default function GameServerConfig() {
     }
   }
 
+  const handleNextStep = () => {
+    if (step === 1 && hardwareConfigRef.current) {
+      hardwareConfigRef.current.submit();
+    } else if (step === 2 && gameConfigRef.current) {
+      gameConfigRef.current.submit();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -120,37 +128,44 @@ export default function GameServerConfig() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className={step === 1 ? "block" : "hidden"}>
+    <div className="container mx-auto p-6">
+      {step === 1 && (
         <HardwareConfigComponent
+          ref={hardwareConfigRef}
           diskOptions={diskOptions}
           performanceOptions={performanceGroup}
           onNext={handleHardwareConfigNext}
           initialConfig={hardwareConfig}
         />
-      </div>
+      )}
 
+      {step === 2 && selectedGame && (
+        <GameConfigComponent
+          ref={gameConfigRef}
+          game={selectedGame}
+          onSubmit={handleGameConfigSubmit}
+        />
+      )}
 
-      <div className={step === 2 ? "block" : "hidden"}>
-        {selectedGame && (
-          <GameConfigComponent
-            game={selectedGame}
-            onBack={handleGameConfigBack}
-            onSubmit={handleGameConfigSubmit}
-          />
+      {step === 3 && (
+        <>
+          <div>Payment</div>
+          <CustomServerPaymentElements orderId={orderId} />
+        </>
+      )}
+
+      <div className="mt-8 flex justify-end gap-4">
+        {step > 1 && (
+          <Button variant="outline" onClick={() => setStep(step - 1)}>
+            Back
+          </Button>
+        )}
+        {step < 3 && (
+          <Button onClick={handleNextStep}>
+            Continue
+          </Button>
         )}
       </div>
-
-      <div className={step === 3 ? "block" : "hidden"}>
-        {selectedGame && (
-          <>
-            <div> Payment </div>
-
-            <CustomServerPaymentElements orderId={orderId} />
-          </>
-        )}
-      </div>
-
     </div>
   )
 }
