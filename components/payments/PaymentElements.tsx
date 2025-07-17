@@ -44,17 +44,28 @@ function CustomServerPaymentElements({ orderId }: CustomServerPaymentElementsPro
     }
 
     return (
-        <>
-            {
-                loading ? <div>laoding</div> :
+        <div className="w-full max-w-4xl mx-auto">
+            {loading ? (
+                <div className="flex items-center justify-center min-h-[200px]">
+                    <div className="text-center space-y-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                        <p className="text-sm text-muted-foreground">Loading payment form...</p>
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-card rounded-lg border shadow-sm">
                     <EmbeddedCheckoutProvider
                         stripe={stripePromise}
                         options={options}
                     >
-                        <EmbeddedCheckout />
+                        <div className="p-4 sm:p-6">
+                            <EmbeddedCheckout />
+                        </div>
                     </EmbeddedCheckoutProvider>
-            }
-        </>);
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default CustomServerPaymentElements

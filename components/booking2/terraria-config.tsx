@@ -37,41 +37,55 @@ export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-4">
-      <Card>
+      <Card className="shadow-sm">
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="flex w-full justify-between p-4">
-            <span>Advanced Terraria Configuration</span>
-            {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          <Button variant="ghost" className="flex w-full justify-between p-4 text-left">
+            <span className="text-sm sm:text-base font-medium">Advanced Terraria Configuration</span>
+            {isOpen ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <CardContent className="pt-6 space-y-4">
+          <CardContent className="pt-2 pb-6 space-y-4 sm:space-y-6">
+            {/* Server Name */}
             <div className="space-y-2">
-              <Label htmlFor="serverName">Server Name</Label>
+              <Label htmlFor="serverName" className="text-sm font-medium">Server Name</Label>
               <Input
                 id="serverName"
                 value={config.serverName}
                 onChange={(e) => handleChange("serverName", e.target.value)}
+                className="w-full"
+                placeholder="Enter your server name"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="maxPlayers">Max Players: {config.maxPlayers}</Label>
-              <Slider
-                id="maxPlayers"
-                value={[config.maxPlayers]}
-                min={1}
-                max={16}
-                step={1}
-                onValueChange={(value) => handleChange("maxPlayers", value[0])}
-              />
+            {/* Max Players */}
+            <div className="space-y-3">
+              <Label htmlFor="maxPlayers" className="text-sm font-medium">
+                Max Players: <span className="font-semibold">{config.maxPlayers}</span>
+              </Label>
+              <div className="px-2">
+                <Slider
+                  id="maxPlayers"
+                  value={[config.maxPlayers]}
+                  min={1}
+                  max={16}
+                  step={1}
+                  onValueChange={(value) => handleChange("maxPlayers", value[0])}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>1 player</span>
+                  <span>16 players</span>
+                </div>
+              </div>
             </div>
 
+            {/* World Size */}
             <div className="space-y-2">
-              <Label htmlFor="worldSize">World Size</Label>
+              <Label htmlFor="worldSize" className="text-sm font-medium">World Size</Label>
               <select
                 id="worldSize"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 value={config.worldSize}
                 onChange={(e) => handleChange("worldSize", e.target.value)}
               >
@@ -81,11 +95,12 @@ export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
               </select>
             </div>
 
+            {/* Difficulty */}
             <div className="space-y-2">
-              <Label htmlFor="difficulty">Difficulty</Label>
+              <Label htmlFor="difficulty" className="text-sm font-medium">Difficulty</Label>
               <select
                 id="difficulty"
-                className="w-full p-2 border rounded-md"
+                className="w-full p-3 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 value={config.difficulty}
                 onChange={(e) => handleChange("difficulty", e.target.value)}
               >
@@ -96,52 +111,83 @@ export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
               </select>
             </div>
 
+            {/* World Seed */}
             <div className="space-y-2">
-              <Label htmlFor="seed">World Seed (optional)</Label>
+              <Label htmlFor="seed" className="text-sm font-medium">World Seed (optional)</Label>
               <Input
                 id="seed"
                 value={config.seed}
                 onChange={(e) => handleChange("seed", e.target.value)}
                 placeholder="Leave blank for random"
+                className="w-full"
               />
             </div>
 
+            {/* Server Password */}
             <div className="space-y-2">
-              <Label htmlFor="password">Server Password (optional)</Label>
+              <Label htmlFor="password" className="text-sm font-medium">Server Password (optional)</Label>
               <Input
                 id="password"
                 type="password"
                 value={config.password}
                 onChange={(e) => handleChange("password", e.target.value)}
                 placeholder="Leave blank for no password"
+                className="w-full"
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label htmlFor="enablePvp">Enable PvP</Label>
-              <Switch
-                id="enablePvp"
-                checked={config.enablePvp}
-                onCheckedChange={(checked) => handleChange("enablePvp", checked)}
-              />
-            </div>
+            {/* Switch Controls */}
+            <div className="space-y-4">
+              {/* PvP Toggle */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border rounded-lg">
+                <div className="space-y-1">
+                  <Label htmlFor="enablePvp" className="text-sm font-medium cursor-pointer">
+                    Enable PvP
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow players to fight each other
+                  </p>
+                </div>
+                <Switch
+                  id="enablePvp"
+                  checked={config.enablePvp}
+                  onCheckedChange={(checked) => handleChange("enablePvp", checked)}
+                />
+              </div>
 
-            <div className="flex items-center justify-between">
-              <Label htmlFor="autoSave">Auto Save</Label>
-              <Switch
-                id="autoSave"
-                checked={config.autoSave}
-                onCheckedChange={(checked) => handleChange("autoSave", checked)}
-              />
-            </div>
+              {/* Auto Save Toggle */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border rounded-lg">
+                <div className="space-y-1">
+                  <Label htmlFor="autoSave" className="text-sm font-medium cursor-pointer">
+                    Auto Save
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Automatically save world progress
+                  </p>
+                </div>
+                <Switch
+                  id="autoSave"
+                  checked={config.autoSave}
+                  onCheckedChange={(checked) => handleChange("autoSave", checked)}
+                />
+              </div>
 
-            <div className="flex items-center justify-between">
-              <Label htmlFor="banlistEnabled">Enable Banlist</Label>
-              <Switch
-                id="banlistEnabled"
-                checked={config.banlistEnabled}
-                onCheckedChange={(checked) => handleChange("banlistEnabled", checked)}
-              />
+              {/* Banlist Toggle */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 border rounded-lg">
+                <div className="space-y-1">
+                  <Label htmlFor="banlistEnabled" className="text-sm font-medium cursor-pointer">
+                    Enable Banlist
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow banning of problematic players
+                  </p>
+                </div>
+                <Switch
+                  id="banlistEnabled"
+                  checked={config.banlistEnabled}
+                  onCheckedChange={(checked) => handleChange("banlistEnabled", checked)}
+                />
+              </div>
             </div>
           </CardContent>
         </CollapsibleContent>

@@ -41,36 +41,38 @@ export const GameConfigComponent = forwardRef((
   }));
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <Card className="p-4">
-        {(() => {
-          switch (game.id) {
-            case 1: // Minecraft
-              return (
-                <MinecraftConfigComponent
-                  ref={configRef}
-                  onChange={handleConfigChange}
-                  onSubmit={onSubmit}
-                  game={game}
-                />
-              )
-            case 2: // Satisfactory
-              return (
-                <SatisfactoryConfigComponent
-                  ref={configRef}
-                  onChange={handleConfigChange}
-                  onSubmit={onSubmit}
-                  game={game}
-                />
-              )
-            default:
-              return (
-                <div className="p-4 border rounded-md">
-                  <p className="text-muted-foreground">No specific configuration options available for this game.</p>
-                </div>
-              )
-          }
-        })()}
+    <div className="w-full max-w-4xl mx-auto">
+      <Card className="shadow-lg">
+        <div className="p-4 sm:p-6">
+          {(() => {
+            switch (game.id) {
+              case 1: // Minecraft
+                return (
+                  <MinecraftConfigComponent
+                    ref={configRef}
+                    onChange={handleConfigChange}
+                    onSubmit={onSubmit}
+                    game={game}
+                  />
+                )
+              case 2: // Satisfactory
+                return (
+                  <SatisfactoryConfigComponent
+                    ref={configRef}
+                    onChange={handleConfigChange}
+                    onSubmit={onSubmit}
+                    game={game}
+                  />
+                )
+              default:
+                return (
+                  <div className="p-4 border rounded-md">
+                    <p className="text-muted-foreground text-center">No specific configuration options available for this game.</p>
+                  </div>
+                )
+            }
+          })()}
+        </div>
       </Card>
     </div>
   )

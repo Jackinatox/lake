@@ -128,43 +128,86 @@ export default function GameServerConfig() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      {step === 1 && (
-        <HardwareConfigComponent
-          ref={hardwareConfigRef}
-          diskOptions={diskOptions}
-          performanceOptions={performanceGroup}
-          onNext={handleHardwareConfigNext}
-          initialConfig={hardwareConfig}
-        />
-      )}
+    <div className="min-h-screen bg-background -mx-5 -mt-5">
+      {/* Header with step indicator */}
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
+        <div className="w-full px-4 py-4 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl sm:text-2xl font-bold">Configure Your Server</h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              Step {step} of 3
+            </div>
+          </div>
+          
+          {/* Progress indicator */}
+          <div className="mt-4 flex gap-2">
+            {[1, 2, 3].map((stepNumber) => (
+              <div
+                key={stepNumber}
+                className={`h-2 flex-1 rounded ${
+                  stepNumber === step
+                    ? 'bg-primary'
+                    : stepNumber < step
+                    ? 'bg-primary/60'
+                    : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {step === 2 && selectedGame && (
-        <GameConfigComponent
-          ref={gameConfigRef}
-          game={selectedGame}
-          onSubmit={handleGameConfigSubmit}
-        />
-      )}
-
-      {step === 3 && (
-        <>
-          <div>Payment</div>
-          <CustomServerPaymentElements orderId={orderId} />
-        </>
-      )}
-
-      <div className="mt-8 flex justify-end gap-4">
-        {step > 1 && (
-          <Button variant="outline" onClick={() => setStep(step - 1)}>
-            Back
-          </Button>
+      {/* Main content */}
+      <div className="w-full px-4 py-6 max-w-7xl mx-auto">
+        {step === 1 && (
+          <HardwareConfigComponent
+            ref={hardwareConfigRef}
+            diskOptions={diskOptions}
+            performanceOptions={performanceGroup}
+            onNext={handleHardwareConfigNext}
+            initialConfig={hardwareConfig}
+          />
         )}
-        {step < 3 && (
-          <Button onClick={handleNextStep}>
-            Continue
-          </Button>
+
+        {step === 2 && selectedGame && (
+          <GameConfigComponent
+            ref={gameConfigRef}
+            game={selectedGame}
+            onSubmit={handleGameConfigSubmit}
+          />
         )}
+
+        {step === 3 && (
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl font-bold mb-6">Complete Your Payment</h2>
+            <CustomServerPaymentElements orderId={orderId} />
+          </div>
+        )}
+      </div>
+
+      {/* Fixed bottom navigation for mobile, regular for desktop */}
+      <div className="sticky bottom-0 md:relative bg-background border-t md:border-t-0 p-4 md:p-6">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
+            {step > 1 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setStep(step - 1)}
+                className="w-full sm:w-auto"
+              >
+                Back
+              </Button>
+            )}
+            {step < 3 && (
+              <Button 
+                onClick={handleNextStep}
+                className="w-full sm:w-auto sm:ml-auto"
+              >
+                Continue
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
