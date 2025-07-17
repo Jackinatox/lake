@@ -55,29 +55,35 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
   }));
 
   return (
-    <div>
-      <Card className="p-4">
-        <div className="pb-4">
-          <div className="flex items-center gap-2">
-            <div>
-              <CardTitle>{game.name || "Game"} Configuration</CardTitle>
-              <CardDescription>Configure your Satisfactory server</CardDescription>
-            </div>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div className="flex-1">
+            <CardTitle className="text-lg sm:text-xl">{game.name || "Game"} Configuration</CardTitle>
+            <CardDescription className="text-sm">Configure your Satisfactory server</CardDescription>
           </div>
         </div>
+      </div>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="serverName">Server Name</Label>
-            <Input
-              id="serverName"
-              value={config.serverName}
-              onChange={(e) => handleChange("serverName", e.target.value)}
-            />
-          </div>
+      <div className="space-y-4 sm:space-y-6">
+        {/* Server Name */}
+        <div className="space-y-2">
+          <Label htmlFor="serverName" className="text-sm font-medium">Server Name</Label>
+          <Input
+            id="serverName"
+            value={config.serverName}
+            onChange={(e) => handleChange("serverName", e.target.value)}
+            className="w-full"
+            placeholder="Enter your server name"
+          />
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="maxPlayers">Max Players: {config.maxPlayers}</Label>
+        {/* Max Players */}
+        <div className="space-y-3">
+          <Label htmlFor="maxPlayers" className="text-sm font-medium">
+            Max Players: <span className="font-semibold">{config.maxPlayers}</span>
+          </Label>
+          <div className="px-2">
             <Slider
               id="maxPlayers"
               value={[config.maxPlayers]}
@@ -85,19 +91,32 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
               max={16}
               step={1}
               onValueChange={(value) => handleChange("maxPlayers", value[0])}
+              className="w-full"
             />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>1 player</span>
+              <span>16 players</span>
+            </div>
           </div>
+        </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="isEarlyAccess">Use Early Access (Experimental)</Label>
-            <Switch
-              id="isEarlyAccess"
-              checked={config.isEarlyAccess}
-              onCheckedChange={(checked) => handleChange("isEarlyAccess", checked)}
-            />
+        {/* Early Access Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+          <div className="space-y-1">
+            <Label htmlFor="isEarlyAccess" className="text-sm font-medium cursor-pointer">
+              Use Early Access (Experimental)
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Enable experimental features and latest updates
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Switch
+            id="isEarlyAccess"
+            checked={config.isEarlyAccess}
+            onCheckedChange={(checked) => handleChange("isEarlyAccess", checked)}
+          />
+        </div>
+      </div>
     </div>
   )
 });

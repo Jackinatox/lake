@@ -1,9 +1,9 @@
 "use client"
 
-import { Info } from "lucide-react"
+import { Info, InfoIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface InfoButtonProps {
   text: string
@@ -26,23 +26,18 @@ export default function InfoButton({ text, className = "", size = "sm" }: InfoBu
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`${buttonSizeClasses[size]} rounded-full hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors ${className}`}
-            aria-label="More information"
-            onClick={(e) => e.stopPropagation()} // Prevent event bubbling when used in other buttons
-          >
-            <Info className={sizeClasses[size]} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-xs text-sm" side="top" align="center" sideOffset={5}>
-          <p className="leading-relaxed">{text}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <div className="pl-2">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <InfoIcon />
+
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs text-sm" side="top" align="center" sideOffset={5}>
+            <p className="leading-relaxed">{text}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
   )
 }
