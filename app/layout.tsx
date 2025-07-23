@@ -22,6 +22,13 @@ export const metadata = {
   description: "with Next.js and now with nextauth !!!!",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 const geistSans = Geist({
   display: "swap",
   subsets: ["latin"],
@@ -61,7 +68,7 @@ export default async function RootLayout({
                       <Profile />
                     </div>
                   </nav>
-                  <div className="flex flex-col gap-10 w-5/6 p-5">
+                  <div className="flex flex-col gap-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
 
                     {children}
                     <Toaster />
