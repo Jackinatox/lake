@@ -13,6 +13,7 @@ import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
 import { createServerOrder } from "./actions"
 import CustomServerPaymentElements from "@/components/payments/PaymentElements"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type ServerConfig = {
@@ -118,10 +119,18 @@ export default function GameServerConfig() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading configuration options...</p>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted mx-auto"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-primary mx-auto absolute top-0 left-1/2 transform -translate-x-1/2"></div>
+          </div>
+          <p className="mt-6 text-lg font-medium text-foreground">
+            Loading configuration options...
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Setting up your server configuration
+          </p>
         </div>
       </div>
     )
@@ -129,7 +138,7 @@ export default function GameServerConfig() {
 
   return (
     <div className="min-h-screen bg-background -mx-5 -mt-5">
-      {/* Header with step indicator */}
+      {/* Header with step indicator - STICKY TO TOP */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
         <div className="w-full px-4 py-4 max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
@@ -157,44 +166,53 @@ export default function GameServerConfig() {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="w-full px-4 py-6 max-w-7xl mx-auto">
+      {/* Main content with padding for sticky footer */}
+      <div className="w-full px-4 py-6 pb-28 max-w-7xl mx-auto">
         {step === 1 && (
-          <HardwareConfigComponent
-            ref={hardwareConfigRef}
-            diskOptions={diskOptions}
-            performanceOptions={performanceGroup}
-            onNext={handleHardwareConfigNext}
-            initialConfig={hardwareConfig}
-          />
+          <div className="bg-card border rounded-lg p-6">
+            <HardwareConfigComponent
+              ref={hardwareConfigRef}
+              diskOptions={diskOptions}
+              performanceOptions={performanceGroup}
+              onNext={handleHardwareConfigNext}
+              initialConfig={hardwareConfig}
+            />
+          </div>
         )}
 
         {step === 2 && selectedGame && (
-          <GameConfigComponent
-            ref={gameConfigRef}
-            game={selectedGame}
-            onSubmit={handleGameConfigSubmit}
-          />
+          <div className="bg-card border rounded-lg p-6">
+            <GameConfigComponent
+              ref={gameConfigRef}
+              game={selectedGame}
+              onSubmit={handleGameConfigSubmit}
+            />
+          </div>
         )}
 
         {step === 3 && (
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Complete Your Payment</h2>
-            <CustomServerPaymentElements orderId={orderId} />
+            <div className="bg-card border rounded-lg p-6">
+              <h2 className="text-2xl font-bold mb-6">
+                Complete Your Payment
+              </h2>
+              <CustomServerPaymentElements orderId={orderId} />
+            </div>
           </div>
         )}
       </div>
 
-      {/* Fixed bottom navigation for mobile, regular for desktop */}
-      <div className="sticky bottom-0 md:relative bg-background border-t md:border-t-0 p-4 md:p-6">
+      {/* Sticky bottom navigation */}
+      <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-4">
         <div className="w-full max-w-7xl mx-auto">
-          <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
             {step > 1 && (
               <Button 
                 variant="outline" 
                 onClick={() => setStep(step - 1)}
                 className="w-full sm:w-auto"
               >
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Button>
             )}
@@ -204,7 +222,13 @@ export default function GameServerConfig() {
                 className="w-full sm:w-auto sm:ml-auto"
               >
                 Continue
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+            )}
+            {step === 3 && (
+              <div className="text-sm text-muted-foreground sm:ml-auto">
+                Complete payment above to create your server
+              </div>
             )}
           </div>
         </div>
