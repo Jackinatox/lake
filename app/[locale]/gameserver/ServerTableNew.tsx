@@ -1,10 +1,18 @@
-"use client"
-
+import { auth } from "@/auth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Cpu, HardDrive, Calendar, Settings, MemoryStick } from "lucide-react"
 import { ClientServer } from 'pterodactyl.js'
+
+
+
+const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
+const apiKey = process.env.PTERODACTYL_API_KEY;
+
+if (!baseUrl || !apiKey) {
+    throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
+}
 
 
 function getStatusColor(status: string) {
@@ -55,8 +63,38 @@ interface serverProps {
     servers: any
 }
 
-export default function GameServersPage({ servers }: serverProps) {
-    console.log(servers)
+export default async function GameServersPage() {
+    const session = await auth();
+
+    const ptApiKey = session?.user.ptKey;
+
+    const data = await fetch(
+        `${baseUrl}/api/client`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${ptApiKey}`,
+                // Authorization: `Bearer ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        },
+    )
+
+
+    const response = await data.json().then(data => data.data);
+
+
+    if (data.status === 403 || data.status === 404) {
+        console.error('auth error to pt API', data);
+        return <>Auth error</>
+    }
+
+    if (!data.ok) {
+        console.error('error from pt API', data);
+        return <>An error occured</>
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
             <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -66,7 +104,7 @@ export default function GameServersPage({ servers }: serverProps) {
                 </div>
 
                 <div className="space-y-4">
-                    {servers.map((server) => {
+                    {response.map((server) => {
                         const expiration = formatExpirationDate(Date.toString())
 
                         return (
@@ -107,7 +145,7 @@ export default function GameServersPage({ servers }: serverProps) {
                                                     </div>
                                                     <div className="flex items-center space-x-2">
                                                         <MemoryStick className="w-4 h-4 text-purple-500" />
-                                                        <span className="text-slate-600 dark:text-slate-300">{server.attributes.limits.memory / 1024 } GB</span>
+                                                        <span className="text-slate-600 dark:text-slate-300">{server.attributes.limits.memory / 1024} GB</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
                                                         <HardDrive className="w-4 h-4 text-green-500" />
@@ -143,7 +181,7 @@ export default function GameServersPage({ servers }: serverProps) {
                     })}
                 </div>
 
-                {servers.length === 0 && (
+                {response.length === 0 && (
                     <div className="text-center py-12">
                         <div className="w-24 h-24 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
                             <Settings className="w-12 h-12 text-slate-400" />
