@@ -3,9 +3,6 @@
 import { auth } from '@/auth';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { GameServer } from '@/models/gameServerModel';
-import { Builder } from 'pterodactyl.js';
-import React from 'react'
 
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
