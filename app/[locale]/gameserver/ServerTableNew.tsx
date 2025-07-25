@@ -1,8 +1,10 @@
+import { getUserServer } from "@/app/data-access-layer/clientServers/getUsersServer"
 import { auth } from "@/auth"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Cpu, HardDrive, Calendar, Settings, MemoryStick } from "lucide-react"
+import Link from "next/link"
 import { ClientServer } from 'pterodactyl.js'
 
 
@@ -42,8 +44,7 @@ function getStatusBadgeVariant(status: string) {
 }
 
 
-function formatExpirationDate(dateString: string) {
-    const date = new Date(dateString)
+function formatExpirationDate(date: Date) {
     const now = new Date()
     const diffTime = date.getTime() - now.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -68,32 +69,8 @@ export default async function GameServersPage() {
 
     const ptApiKey = session?.user.ptKey;
 
-    const data = await fetch(
-        `${baseUrl}/api/client`,
-        {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${ptApiKey}`,
-                // Authorization: `Bearer ptlc_dUhOyxSMfmFeeAbOyOzIZiuyOXs0qX0pLEOt5F76VpP`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        },
-    )
+    const clientServers = await getUserServer();
 
-
-    const response = await data.json().then(data => data.data);
-
-
-    if (data.status === 403 || data.status === 404) {
-        console.error('auth error to pt API', data);
-        return <>Auth error</>
-    }
-
-    if (!data.ok) {
-        console.error('error from pt API', data);
-        return <>An error occured</>
-    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -104,52 +81,51 @@ export default async function GameServersPage() {
                 </div>
 
                 <div className="space-y-4">
-                    {response.map((server) => {
-                        const expiration = formatExpirationDate(Date.toString())
+                    {clientServers.map((server) => {
+                        const expiration = formatExpirationDate(server.expires)
 
                         return (
-                            <Card key={server.attributes.identifier} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
+                            <Card key={server.id} className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         {/* Left side - Server info */}
                                         <div className="flex items-center space-x-4">
                                             <div className="relative flex-shrink-0">
                                                 <img
-                                                    src={false || "/placeholder.svg"} // TODO: Add ServerIcon
-                                                    alt={`${server.attributes.identifier} icon`}   // TODO: Add ServerIcon
+                                                    src={"/images/games/icons/" + server.gameData.name.toLocaleLowerCase() + ".webp" || "/placeholder.svg"} // TODO: Add ServerIcon
+                                                    alt={`${server.gameData.name} icon`}   // TODO: Add ServerIcon
                                                     className="w-16 h-16 rounded-xl object-cover"
                                                 />
-                                                <div
-                                                    className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white ${getStatusColor(server.attributes.status)}`}
-                                                />
+
                                             </div>
 
                                             <div className="min-w-0 flex-1">
                                                 <div className="flex items-center space-x-3 mb-2">
                                                     <h3 className="font-semibold text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                        {server.attributes.name}
+                                                        {server.gameData.name}
                                                     </h3>
-                                                    <Badge variant={getStatusBadgeVariant("online")} className="capitalize">
+                                                    {/* <Badge variant={getStatusBadgeVariant("online")} className="capitalize">
                                                         {"Online"}  {//TODO: Status. but not in the pt api
                                                         }
-                                                    </Badge>
+                                                    </Badge> */}
                                                 </div>
-                                                <p className="text-slate-500 dark:text-slate-400 mb-3">{server.attributes.identifier}</p>
+                                                {/* <p className="text-slate-500 dark:text-slate-400 mb-3">{server.id}</p> */}
+                                                <p> </p>
 
                                                 {/* Specs row */}
-                                                <div className="flex items-center space-x-6 text-sm">
+                                                <div className="flex items-center space-x-6 text-sm pt-4">
 
                                                     <div className="flex items-center space-x-2">
                                                         <Cpu className="w-4 h-4 text-blue-500" />
-                                                        <span className="text-slate-600 dark:text-slate-300">{server.attributes.limits.cpu / 100} VCores</span>
+                                                        <span className="text-slate-600 dark:text-slate-300">{server.cpuPercent / 100} VCores</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
                                                         <MemoryStick className="w-4 h-4 text-purple-500" />
-                                                        <span className="text-slate-600 dark:text-slate-300">{server.attributes.limits.memory / 1024} GB</span>
+                                                        <span className="text-slate-600 dark:text-slate-300">{server.ramMB / 1024} GB</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
                                                         <HardDrive className="w-4 h-4 text-green-500" />
-                                                        <span className="text-slate-600 dark:text-slate-300">{server.attributes.limits.disk / 1024} GB</span>
+                                                        <span className="text-slate-600 dark:text-slate-300">{server.diskMB / 1024} GB</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -165,41 +141,43 @@ export default async function GameServersPage() {
                                                 <p className={`text-sm font-medium ${expiration.color}`}>{expiration.text}</p>
                                             </div>
 
-                                            <Button
+                                            <Button asChild
                                                 className="group-hover:bg-blue-600 group-hover:text-white transition-colors bg-transparent"
                                                 variant="outline"
-                                                disabled={server.attributes.is_transferring || server.attributes.is_suspended}
+                                            // disabled={server.attributes.is_transferring || server.attributes.is_suspended}
                                             >
+                                                <Link href={`gameserver/${server.serverId}`}>
                                                 <Settings className="w-4 h-4 mr-2" />
                                                 Control Panel
-                                            </Button>
-                                        </div>
+                                            </Link>
+                                        </Button>
                                     </div>
-                                </CardContent>
+                                </div>
+                            </CardContent>
                             </Card>
-                        )
+                )
                     })}
-                </div>
+            </div>
 
-                {response.length === 0 && (
-                    <div className="text-center py-12">
-                        <div className="w-24 h-24 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-                            <Settings className="w-12 h-12 text-slate-400" />
-                        </div>
-                        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">No servers found</h3>
-                        <p className="text-slate-600 dark:text-slate-400 mb-6">Get started by creating your first game server</p>
+            {clientServers.length === 0 && (
+                <div className="text-center py-12">
+                    <div className="w-24 h-24 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
+                        <Settings className="w-12 h-12 text-slate-400" />
                     </div>
-                )}
-
-                <div className="mt-8 text-center">
-                    <Button
-                        size="lg"
-                        variant="outline"
-                    >
-                        Add New Server
-                    </Button>
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">No servers found</h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6">Get started by creating your first game server</p>
                 </div>
+            )}
+
+            <div className="mt-8 text-center">
+                <Button
+                    size="lg"
+                    variant="outline"
+                >
+                    Add New Server
+                </Button>
             </div>
         </div>
+        </div >
     )
 }
