@@ -16,13 +16,37 @@ interface HardwareConfigProps {
   initialConfig: HardwareConfig | null
 }
 
+type priceDef = { price: number, discount: number, percent: number };
+
+export function calculateTotal(pf: PerformanceGroup, cpuCores: number, ramGB: number, Days: number): priceDef {
+  const cpuPrice = pf.cpu.pricePerCore * cpuCores;
+  const ramPrice = pf.ram.pricePerGb * ramGB;
+
+  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
+
+  const { amount, percent } = calculateDiscount(Days, toPay)
+
+  return { price: toPay - amount, discount: amount, percent: percent };
+}
+
+function calculateDiscount(days: number, totalPrice: number) {
+  let percent = 0;
+  if (days >= 180) {
+    percent = 15; // 15% discount for 6 months
+  } else if (days >= 90) {
+    percent = 10; // 10% discount for 3 months
+  }
+  const amount = totalPrice * (percent / 100);
+  return { amount, percent };
+}
+
 export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
   const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
   const [days, setDays] = useState(30);
-  const [totalPrice, setTotalPrice] = useState(0)
+  const [totalPrice, setTotalPrice] = useState<priceDef>({ discount: 0, price: 0, percent: 0 })
 
   // Set initial values
   useEffect(() => {
@@ -46,10 +70,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
   // Calculate total price whenever configuration changes
   useEffect(() => {
     if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-      const cpuPrice = selectedPFGroup.cpu.pricePerCore / 30 * cpuCores * days;
-      const ramPrice = selectedPFGroup.ram.pricePerGb / 30 * ramGb * days;
-
-      setTotalPrice(Number.parseFloat((cpuPrice + ramPrice).toFixed(2)))
+      setTotalPrice(calculateTotal(selectedPFGroup, cpuCores, ramGb, days));
     }
   }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -61,7 +82,8 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
         pfGroupId: selectedPFGroup.id,
         cpuCores,
         ramGb,
-        diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024)
+        diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024),
+        durationsDays: days
       }
 
       onNext(config)
@@ -101,8 +123,8 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                 >
                   <TabsList className="grid grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-1 bg-muted/50">
                     {performanceOptions.map((pf) => (
-                      <TabsTrigger 
-                        key={pf.id} 
+                      <TabsTrigger
+                        key={pf.id}
                         value={pf.id.toString()}
                         className="flex items-center justify-center gap-2 p-4 text-sm font-medium rounded-md transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-muted/80"
                       >
@@ -117,16 +139,6 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                     ))}
                   </TabsList>
                 </Tabs>
-                
-                {/* Selected Performance Details */}
-                <div className="p-3 bg-muted/30 rounded-lg border">
-                  <div className="text-sm">
-                    <div className="font-medium text-foreground">Selected: {selectedPFGroup.name}</div>
-                    <div className="text-muted-foreground mt-1">
-                      CPU: {selectedPFGroup.cpu.name} • RAM: {selectedPFGroup.ram.pricePerGb.toFixed(2)}€/GB
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Duration Selection */}
@@ -238,22 +250,22 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                     <span className="text-sm font-medium">{ramGb} GiB RAM</span>
                     <span className="text-sm font-semibold">{(selectedPFGroup.ram.pricePerGb / 30 * ramGb * days).toFixed(2)} €</span>
                   </div>
-                  {(calculateDiscount(days, totalPrice).amount !== 0.0) && (
+                  {(totalPrice.discount !== 0.0) && (
                     <div className="flex justify-between items-center p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{calculateDiscount(days, totalPrice).percent}%)</span>
-                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {calculateDiscount(days, totalPrice).amount.toFixed(2)} €</span>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.percent}%)</span>
+                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {totalPrice.discount.toFixed(2)} €</span>
                     </div>
                   )}
                 </div>
               </CardContent>
               <CardFooter className="border-t pt-4 bg-muted/20 flex flex-col space-y-3 font-semibold">
-                <div className="flex justify-between items-center w-full text-muted-foreground">
+                {/* <div className="flex justify-between items-center w-full text-muted-foreground">
                   <span className="text-sm">Price per Month</span>
-                  <span className="text-sm">{((totalPrice - calculateDiscount(days, totalPrice).amount) / (days / 30)).toFixed(2)} €</span>
-                </div>
+                  <span className="text-sm"> {calculateTotal(selectedPFGroup, cpuCores, ramGb, 30).price} €</span>
+                </div> */}
                 <div className="flex justify-between items-center w-full text-lg">
                   <span className="text-primary">Total</span>
-                  <span className="text-2xl font-bold text-primary">{(totalPrice - calculateDiscount(days, totalPrice).amount).toFixed(2)} €</span>
+                  <span className="text-2xl font-bold text-primary">{totalPrice.price.toFixed(2)} €</span>
                 </div>
               </CardFooter>
             </Card>
@@ -264,14 +276,3 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
   );
 });
 
-// Helper function to calculate discount
-function calculateDiscount(days: number, totalPrice: number) {
-  let percent = 0;
-  if (days >= 180) {
-    percent = 15; // 15% discount for 6 months
-  } else if (days >= 90) {
-    percent = 10; // 10% discount for 3 months
-  }
-  const amount = totalPrice * (percent / 100);
-  return { amount, percent };
-}
