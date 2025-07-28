@@ -16,6 +16,7 @@ export interface HardwareConfig {
   cpuCores: number
   ramGb: number
   diskMb: number
+  durationsDays: number
 }
 
 export interface SatisfactoryConfig {
