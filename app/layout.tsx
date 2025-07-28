@@ -11,6 +11,7 @@ import { SessionProvider } from "next-auth/react";
 import SessionInfo from "@/components/session-info";
 import Profile from "@/components/auth/profile";
 import { Toaster } from "@/components/ui/toaster";
+import { LanguageSwitcher } from "@/components/Menu/language-switcher";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -64,8 +65,10 @@ export default async function RootLayout({
 
                         {/* left topbar end */}
                       </div>
-
-                      <Profile />
+                      <div className="flex justify-between">
+                        <LanguageSwitcher currentLocale={locale} />
+                        <Profile />
+                      </div>
                     </div>
                   </nav>
                   <div className="flex flex-col gap-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
