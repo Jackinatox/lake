@@ -49,26 +49,18 @@ type MenuItem = {
 
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
-  {
-    label: 'Admin',
-    Icon: Settings,
-    subItems: [
-      { label: 'Users', href: '/admin/users', Icon: Users },
-      { label: 'GameServer', href: '/admin/gameservers', Icon: Settings },
-      { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
-    ],
-  },
+  // {
+  //   label: 'Admin',
+  //   Icon: Settings,
+  //   subItems: [
+  //     { label: 'Users', href: '/admin/users', Icon: Users },
+  //     { label: 'GameServer', href: '/admin/gameservers', Icon: Settings },
+  //     { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
+  //   ],
+  // },
   {
     label: 'Packages',
     Icon: Package,
-    subItems: [
-      { label: 'Games', href: '/products/gameserver', Icon: Gamepad2 },
-      { label: 'Server config', href: '/products/server', Icon: Server },
-    ],
-  },
-  {
-    label: 'Icons',
-    Icon: Image,
     subItems: [
       { label: 'Games', href: '/products/gameserver', Icon: Gamepad2 },
       { label: 'Server config', href: '/products/server', Icon: Server },
@@ -131,9 +123,11 @@ export default function MainMenu({ locale }) {
                   </NavigationMenuItem>
                 )
               )}
-              <NavigationMenuItem>
-                <LanguageSwitcher currentLocale={locale} />
-              </NavigationMenuItem>
+              {/* <NavigationMenuItem>
+                <div className="flex flex-end">
+                  <LanguageSwitcher currentLocale={locale} />
+                </div>
+              </NavigationMenuItem> */}
             </NavigationMenuList>
           </NavigationMenu>
 
