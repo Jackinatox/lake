@@ -71,11 +71,11 @@ export default async function RootLayout({
                       </div>
                     </div>
                   </nav>
-                  <div className="flex flex-col gap-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                  <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
 
                     {children}
                     <Toaster />
-                    <SessionInfo />
+                    {/* <SessionInfo /> */}
 
                   </div>
                 </SessionProvider>

@@ -3,20 +3,16 @@
 import { auth } from '@/auth';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { GameServer } from '@/models/gameServerModel';
-import { Builder } from 'pterodactyl.js';
-import React from 'react'
 
 
-const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 const apiKey = process.env.PTERODACTYL_API_KEY;
 
-if (!url || !apiKey) {
+if (!baseUrl || !apiKey) {
     throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
 }
 
 
-const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
     const serverId = (await params).server_id;
