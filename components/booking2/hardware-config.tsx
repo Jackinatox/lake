@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calcDiskSize } from "@/lib/globalFunctions"
+import { calcDiskSize, calculateTotal, priceDef } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
@@ -14,30 +14,6 @@ interface HardwareConfigProps {
   performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
   initialConfig: HardwareConfig | null
-}
-
-type priceDef = { price: number, discount: number, percent: number };
-
-export function calculateTotal(pf: PerformanceGroup, cpuCores: number, ramGB: number, Days: number): priceDef {
-  const cpuPrice = pf.cpu.pricePerCore * cpuCores;
-  const ramPrice = pf.ram.pricePerGb * ramGB;
-
-  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
-
-  const { amount, percent } = calculateDiscount(Days, toPay)
-
-  return { price: toPay - amount, discount: amount, percent: percent };
-}
-
-function calculateDiscount(days: number, totalPrice: number) {
-  let percent = 0;
-  if (days >= 180) {
-    percent = 15; // 15% discount for 6 months
-  } else if (days >= 90) {
-    percent = 10; // 10% discount for 3 months
-  }
-  const amount = totalPrice * (percent / 100);
-  return { amount, percent };
 }
 
 export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
