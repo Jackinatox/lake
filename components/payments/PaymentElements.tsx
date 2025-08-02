@@ -22,6 +22,7 @@ function CustomServerPaymentElements({ orderId }: CustomServerPaymentElementsPro
 
                 try {
                     const secrect = await createPaymentSession(orderId);
+                    // TODO: show an error if failed
                     setClientSecret(secrect);
                     // console.log(secrect)
 

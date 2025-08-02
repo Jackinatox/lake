@@ -1,3 +1,5 @@
+import { PerformanceGroup } from "@/models/prisma";
+
 // Config
 const minBackups = 2;
 const maxBackups = 100;
@@ -71,4 +73,30 @@ export function formatBytes(bytes: number): string {
   const formatted = parseFloat(value.toFixed(1));
 
   return `${formatted} ${units[clampedIndex]}`;
+}
+
+
+export type priceDef = { price: number, discount: number, percent: number };
+
+
+export function calculateTotal(pf: PerformanceGroup, cpuCores: number, ramGB: number, Days: number): priceDef {
+  const cpuPrice = pf.cpu.pricePerCore * cpuCores;
+  const ramPrice = pf.ram.pricePerGb * ramGB;
+
+  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
+
+  const { amount, percent } = calculateDiscount(Days, toPay)
+
+  return { price: toPay - amount, discount: amount, percent: percent };
+}
+
+function calculateDiscount(days: number, totalPrice: number) {
+  let percent = 0;
+  if (days >= 180) {
+    percent = 15; // 15% discount for 6 months
+  } else if (days >= 90) {
+    percent = 10; // 10% discount for 3 months
+  }
+  const amount = totalPrice * (percent / 100);
+  return { amount, percent };
 }

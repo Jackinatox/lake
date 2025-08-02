@@ -2,6 +2,7 @@ import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
+import Stripe from "stripe";
 
 const endpointSecret = process.env.webhookSecret;
 
@@ -29,6 +30,8 @@ export async function POST(req: NextRequest) {
 
         const stripeIntent = event.data.object;
 
+
+
         switch (event.type) {
             case 'payment_intent.succeeded':
                 // console.log(`PaymentIntent for`, intent, `successful`);
@@ -42,6 +45,23 @@ export async function POST(req: NextRequest) {
 
                 const serverOrderId = parseInt(stripeIntent.metadata.serverOrderId);
                 console.log('ServerOrder: ', stripeIntent);
+
+
+                const session = await stripe.checkout.sessions.retrieve(
+                    event.data.object.id,
+                    {
+                        expand: ['payment_intent.latest_charge'],
+                    }
+                );
+
+                // Check if payment_intent is expanded and has a charge
+                if (typeof session.payment_intent !== 'string' &&
+                    session.payment_intent?.latest_charge) {
+                    const receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                    console.log('Receipt URL:', receiptUrl);
+                }
+
+
 
                 await prisma.serverOrder.update({
                     where: {

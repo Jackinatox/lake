@@ -2,7 +2,7 @@
 
 import { ServerConfig } from "./page";
 import { auth } from "@/auth";
-import { calculateTotal } from "@/components/booking2/hardware-config";
+import { calculateTotal } from "@/lib/globalFunctions";
 import { prisma } from "@/prisma";
 
 export async function createServerOrder(serverConfig: ServerConfig): Promise<string> {

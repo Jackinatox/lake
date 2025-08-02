@@ -8,19 +8,19 @@ generator client {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  image          String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  ptKey         String?
+  ptUser        Int?
+
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]
-  
   serverOrders   ServerOrder[]
-
-  ptKey  String?
-  ptUser Int?
+  Payment        Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,7 +88,7 @@ model GameData {
   data    Json?
   enabled Boolean @default(false)
 
-  ServerOrder  ServerOrder[]
+  ServerOrder ServerOrder[]
 }
 
 model Location {
@@ -102,9 +102,9 @@ model Location {
   cpuId        Int      @default(1)
   ramId        Int
 
-  cpu          CPU            @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram          RAM            @relation(fields: [ramId], references: [id], onDelete: Restrict)
-  ServerOrder  ServerOrder[]
+  cpu         CPU           @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram         RAM           @relation(fields: [ramId], references: [id], onDelete: Restrict)
+  ServerOrder ServerOrder[]
 }
 
 model CPU {
@@ -118,7 +118,7 @@ model CPU {
   minThreads   Int?
   pricePerCore Float   @default(0.2)
 
-  locations     Location[]
+  locations Location[]
   // serverIntends ServerIntend[]
 }
 
@@ -130,12 +130,9 @@ model RAM {
   minGb      Float?  @default(0.5)
   maxGb      Float?  @default(12)
 
-  locations     Location[]
+  locations Location[]
   // serverIntends ServerIntend[]
 }
-
-
-
 
 enum OrderStatus {
   PENDING
@@ -146,31 +143,49 @@ enum OrderStatus {
 }
 
 model ServerOrder {
-  id              Int      @id @default(autoincrement())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  ramMB           Int
-  cpuPercent      Int
-  diskMB          Int
-  price           Float
-  
-  gameConfig      Json?
-  gameDataId      Int
-  gameData        GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
-  
-  locationId      Int
-  location        Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
-  
+  id     Int    @id @default(autoincrement())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ramMB      Int
+  cpuPercent Int
+  diskMB     Int
+  price      Float
+
+  gameConfig Json?
+  gameDataId Int
+  gameData   GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
   status          OrderStatus @default(PENDING)
-  errorText        Json?
-  stripeSessionId String? @unique
+  errorText       Json?
+  stripeSessionId String?     @unique
   serverId        String?
 
-  expires         DateTime
+  expires DateTime
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([stripeSessionId])
+}
+
+model Payment {
+  id                    String   @id @default(cuid())
+  orderId               String // Foreign key to your Order model
+  userId                String // Foreign key to your User model
+  stripePaymentIntentId String
+  stripeChargeId        String
+  receiptUrl            String
+  amount                Int // In cents (e.g., 990 for €9.90)
+  currency              String
+  status                String
+  paymentMethodType     String?
+  customerEmail         String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
