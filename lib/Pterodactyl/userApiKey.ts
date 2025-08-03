@@ -18,7 +18,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}, url: ${url}`);
         }
 
         const responseData = await response.json();

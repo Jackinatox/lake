@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LogOut, User } from "lucide-react"
+import Link from "next/link"
 
 export default function Profile() {
   const { data: session, status } = useSession()
@@ -28,9 +29,11 @@ export default function Profile() {
   if (!session?.user) {
     return (
       <div className="flex items-center space-x-2">
-        <Button variant="ghost" onClick={() => signIn()}>
-          Login
-        </Button>
+        <Link href="/login" className="text-sm">
+          <Button variant="ghost">
+            Login
+          </Button>
+        </Link>
         <Button onClick={() => signIn()}>Register</Button>
       </div>
     )
@@ -39,10 +42,10 @@ export default function Profile() {
   const { user } = session
   const initials = user.name
     ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
     : user.email?.[0]?.toUpperCase() || "U"
 
   return (
