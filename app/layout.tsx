@@ -8,7 +8,6 @@ import MainMenu from "@/components/Menu/main-menu";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SessionProvider } from "next-auth/react";
-import SessionInfo from "@/components/session-info";
 import Profile from "@/components/auth/profile";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageSwitcher } from "@/components/Menu/language-switcher";
