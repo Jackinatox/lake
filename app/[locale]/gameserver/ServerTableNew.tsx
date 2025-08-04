@@ -68,7 +68,7 @@ const ServerCard = ({ server }: { server: any }) => {
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center space-x-3 mb-2">
                                 <h3 className="font-semibold text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    {server.gameData.name}
+                                    {server.name}
                                 </h3>
                             </div>
                             <div className="flex items-center space-x-6 text-sm pt-4">
