@@ -8,19 +8,23 @@ import { CheckCircle, ChevronRight, Shield, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
+import { Game, SupportedGamesList } from "./SupportedGamesList";
 
 export default async function LandingPage() {
   const t = await getTranslations("landingpage");
   const data = await prisma.gameData.findMany();
 
-  const supportedGames = data.map((game) => {
-    const imgName = game.name.toLowerCase() + ".jpg";
+  const supportedGames: Array<Game> = data.map((game) => {
+    const imgName = game.name.toLowerCase() + ".webp";
 
     return {
-      id: game.id,
+      id: String(game.id),
       name: game.name,
-      image: `/images/games/${imgName}`,
-    };  // TODO: Add images
+      images: {
+        light: `/images/light/games/icons/${imgName}`,
+        dark: `/images/dark/games/icons/${imgName}`
+      },
+    };
   });
 
   return (
@@ -29,14 +33,14 @@ export default async function LandingPage() {
       <section className="relative py-20 px-4 md:px-6">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
-            src="/images/BGs/background-hero.png"
+            src="/images/light/bgs/background-hero.png"
             alt="Gaming background"
             fill
             className="object-cover opacity-30 block dark:hidden"
             priority
           />
           <Image
-            src="/images/BGs/background-hero-dark.png"
+            src="/images/dark/bgs/background-hero.png"
             alt="Gaming background dark"
             fill
             className="object-cover opacity-30 hidden dark:block"
@@ -84,34 +88,7 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-background/80 backdrop-blur-sm rounded-xl p-6 border">
-              <h2 className="text-2xl font-bold mb-6">{t("supportedGames")}</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {supportedGames.map((game) => (
-                  <Link href={`/booking2/${game.id}`} key={game.id}>
-                  <div
-                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors"
-                  >
-                    <div className="relative h-12 w-12 rounded-md overflow-hidden border">
-                      <Image
-                        src={game.image}
-                        alt={`${game.name} Icon`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <span className="font-medium">{game.name}</span>
-                  </div>
-                  </Link>
-                ))}
-              </div>
-              <Link href='/products/gameserver'>
-                <Button variant="link" className="mt-6 flex items-center gap-1">
-                  {t("showAllGames")}
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+            <SupportedGamesList supportedGames={supportedGames} t={t} />
           </div>
         </div>
       </section>
@@ -143,11 +120,18 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src="/images/home/panel.png"
-                width={600}
-                height={400}
+                src="/images/dark/home/panel.webp"
+                width={2074}
+                height={1412}
                 alt="Control panel screenshot"
-                className="rounded-lg shadow-lg border"
+                className="rounded-lg shadow-lg border hidden dark:block"
+              />
+              <Image
+                src="/images/light/home/panel.webp"
+                width={2074}
+                height={1412}
+                alt="Control panel screenshot"
+                className="rounded-lg shadow-lg border block dark:hidden"
               />
             </div>
           </div>
@@ -156,11 +140,18 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
             <div>
               <Image
-                src="/images/home/filemanager.png"
-                width={600}
-                height={400}
-                alt="File manager screenshot"
-                className="rounded-lg shadow-lg border"
+                src="/images/dark/home/filemanager.webp"
+                width={1812}
+                height={906}
+                alt="Filemanager screenshot"
+                className="rounded-lg shadow-lg border hidden dark:block"
+              />
+              <Image
+                src="/images/light/home/filemanager.webp"
+                width={1812}
+                height={906}
+                alt="Filemanager screenshot"
+                className="rounded-lg shadow-lg border block dark:hidden"
               />
             </div>
             <div>
@@ -205,11 +196,18 @@ export default async function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <Image
-                src="/images/home/backups.png"
-                width={600}
-                height={400}
-                alt="Backup manager screenshot"
-                className="rounded-lg shadow-lg border"
+                src="/images/dark/home/backups.webp"
+                width={1608}
+                height={818}
+                alt="Backups screenshot"
+                className="rounded-lg shadow-lg border hidden dark:block"
+              />
+              <Image
+                src="/images/light/home/backups.webp"
+                width={1608}
+                height={818}
+                alt="Backups screenshot"
+                className="rounded-lg shadow-lg border block dark:hidden"
               />
             </div>
           </div>

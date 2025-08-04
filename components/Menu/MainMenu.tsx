@@ -135,31 +135,30 @@ export default function MainMenu({ locale }) {
                 <SheetHeader>
                   <SheetTitle>
                     <Link href="/">
-                    {/* Light mode logo */}
-                    <Image
-                      src="/images/logo/ScyedLogo.png"
-                      alt="Scyed"
-                      fill={false}
-                      width={1920}
-                      height={1080}
-                      sizes="64px"
-                      style={{ width: "auto", maxHeight: "100%" }}
-                      className="block dark:hidden"
-                      priority
-                    />
-                    {/* Dark mode logo */}
-                    <Image
-                      src="/images/logo/ScyedLogo-dark.png"
-                      alt="Scyed"
-                      fill={false}
-                      width={1084}
-                      height={482}
-                      sizes="64px"
-                      style={{ width: "auto", maxHeight: "100%" }}
-                      className="hidden dark:block"
-                      priority
-                    />
-                    </Link> 
+                      {/* Light mode logo */}
+                      <Image
+                        src="/images/light/logo/ScyedLogo.webp"
+                        alt="Scyed"
+                        fill={false}
+                        width={1084}
+                        height={482}
+                        sizes="64px"
+                        style={{ width: "auto", maxHeight: "100%" }}
+                        className="block dark:hidden"
+                        priority
+                      />
+                      <Image
+                        src="/images/dark/logo/ScyedLogo.webp"
+                        alt="Scyed"
+                        fill={false}
+                        width={1084}
+                        height={482}
+                        sizes="64px"
+                        style={{ width: "auto", maxHeight: "100%" }}
+                        className="hidden dark:block"
+                        priority
+                      />
+                    </Link>
                   </SheetTitle>
                 </SheetHeader>
 
