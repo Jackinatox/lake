@@ -5,16 +5,10 @@ import Link from 'next/link'
 import {
   ChevronDown,
   Menu as MenuIcon,
-  Package,
-  Settings,
   LayoutDashboard,
-  Image,
-  Users,
-  HardDrive,
-  Server,
   Gamepad2,
 } from 'lucide-react'
-
+import Image from "next/image";
 import { cn } from '@/lib/utils'
 import {
   NavigationMenu,
@@ -58,13 +52,11 @@ const MENU: MenuItem[] = [
   //     { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
   //   ],
   // },
+
   {
-    label: 'Packages',
-    Icon: Package,
-    subItems: [
-      { label: 'Games', href: '/products/gameserver', Icon: Gamepad2 },
-      { label: 'Server config', href: '/products/server', Icon: Server },
-    ],
+    label: 'Games',
+    Icon: Gamepad2,
+    href: '/products/gameserver',
   },
   {
     label: 'Dashboard',
@@ -141,9 +133,34 @@ export default function MainMenu({ locale }) {
               </SheetTrigger>
               <SheetContent side="left" className="w-64">
                 <SheetHeader>
-                  <Link href="/">
-                    <SheetTitle> Home </SheetTitle>
-                  </Link>
+                  <SheetTitle>
+                    <Link href="/">
+                    {/* Light mode logo */}
+                    <Image
+                      src="/images/logo/ScyedLogo.png"
+                      alt="Scyed"
+                      fill={false}
+                      width={1920}
+                      height={1080}
+                      sizes="64px"
+                      style={{ width: "auto", maxHeight: "100%" }}
+                      className="block dark:hidden"
+                      priority
+                    />
+                    {/* Dark mode logo */}
+                    <Image
+                      src="/images/logo/ScyedLogo-dark.png"
+                      alt="Scyed"
+                      fill={false}
+                      width={1084}
+                      height={482}
+                      sizes="64px"
+                      style={{ width: "auto", maxHeight: "100%" }}
+                      className="hidden dark:block"
+                      priority
+                    />
+                    </Link> 
+                  </SheetTitle>
                 </SheetHeader>
 
                 <nav className="flex flex-col space-y-2 mt-4">

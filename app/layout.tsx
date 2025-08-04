@@ -1,16 +1,17 @@
 // app/layout.tsx
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemeSwitcher } from "@/components/Menu/theme-switcher";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
-import MainMenu from "@/components/Menu/main-menu";
+import MainMenu from "@/components/Menu/MainMenu";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SessionProvider } from "next-auth/react";
 import Profile from "@/components/auth/profile";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageSwitcher } from "@/components/Menu/language-switcher";
+import Image from "next/image";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -59,13 +60,40 @@ export default async function RootLayout({
                       <div className="flex items-center font-semibold">
                         {/* left topbar */}
 
-                        <Link href="/" className="mr-4">Scyed</Link>
+                        <Link href="/" className="mr-4 flex items-center" style={{ height: "100%" }}>
+                          {/* Light mode logo */}
+                          <Image
+                            src="/images/logo/ScyedLogo.png"
+                            alt="Scyed"
+                            fill={false}
+                            width={1920}
+                            height={1080}
+                            sizes="64px"
+                            style={{ width: "auto", maxHeight: "100%" }}
+                            className="block dark:hidden"
+                            priority
+                          />
+                          {/* Dark mode logo */}
+                          <Image
+                            src="/images/logo/ScyedLogo-dark.png"
+                            alt="Scyed"
+                            fill={false}
+                            width={1084}
+                            height={482}
+                            sizes="64px"
+                            style={{ width: "auto", maxHeight: "100%" }}
+                            className="hidden dark:block"
+                            priority
+                          />
+                        </Link>
                         <MainMenu locale={locale} />
 
                         {/* left topbar end */}
                       </div>
                       <div className="flex justify-between">
-                        <LanguageSwitcher currentLocale={locale} />
+                        <div className="hidden md:block">
+                          <LanguageSwitcher currentLocale={locale} />
+                        </div>
                         <Profile />
                       </div>
                     </div>

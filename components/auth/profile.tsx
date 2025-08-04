@@ -34,7 +34,11 @@ export default function Profile() {
             Login
           </Button>
         </Link>
-        <Button onClick={() => signIn()}>Register</Button>
+        <Link href="/register">
+          <Button>
+            Register
+          </Button>
+        </Link>
       </div>
     )
   }
