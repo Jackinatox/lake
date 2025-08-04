@@ -3,6 +3,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  CREATED
+  FAILED
+  INSTALLED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,6 +28,7 @@ model User {
   image         String?
   ptKey         String?
   ptUser        Int?
+  role          Role      @default(USER)
 
   accounts       Account[]
   sessions       Session[]
@@ -132,14 +146,6 @@ model RAM {
 
   locations Location[]
   // serverIntends ServerIntend[]
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  CREATED
-  FAILED
-  INSTALLED
 }
 
 model ServerOrder {

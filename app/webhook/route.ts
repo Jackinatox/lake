@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
                 // Check if payment_intent is expanded and has a charge
                 if (typeof session.payment_intent !== 'string' &&
                     session.payment_intent?.latest_charge) {
-                    const receiptUrl = session.payment_intent.latest_charge.receipt_url;
-                    console.log('Receipt URL:', receiptUrl);
+                    // const receiptUrl = session.payment_intent.latest_charge.receipt_url; TODO
+                    // console.log('Receipt URL:', receiptUrl);
                 }
 
 

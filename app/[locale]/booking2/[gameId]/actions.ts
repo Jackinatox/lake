@@ -6,9 +6,12 @@ import { calculateTotal } from "@/lib/globalFunctions";
 import { prisma } from "@/prisma";
 
 export async function createServerOrder(serverConfig: ServerConfig): Promise<string> {
-    serverConfig.hardwareConfig.pfGroupId
-
     const session = await auth();
+
+    if (!session?.user) {
+        throw new Error("User not authenticated");
+    }
+
     const cpuCores = serverConfig.hardwareConfig.cpuCores;
     const ramGB = serverConfig.hardwareConfig.ramGb;
     const diskMb = serverConfig.hardwareConfig.diskMb;

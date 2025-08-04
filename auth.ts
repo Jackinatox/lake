@@ -6,6 +6,7 @@ import NextAuth, { type DefaultSession } from "next-auth"
 import { use } from "react"
 import createUserApiKey from "./lib/Pterodactyl/userApiKey"
 import { Builder } from "@avionrx/pterodactyl-js"
+import { Role } from "@prisma/client"
  
 declare module "next-auth" {
   /**
@@ -16,6 +17,7 @@ declare module "next-auth" {
       /** The user's postal address. */
       ptKey: string
       ptUser: number
+      role: Role
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -71,6 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.ptKey = dbUser.ptKey;
         token.ptUser = dbUser.ptUser;
         token.id = dbUser.id;
+        token.role = dbUser.role;
       }
       return token;
     },
@@ -78,6 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
       session.user.ptKey = token.ptKey;
       session.user.ptUser = token.ptUser;
+      session.user.role = token.role as Role;
       return session
     },
   }
