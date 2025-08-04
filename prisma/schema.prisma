@@ -169,6 +169,7 @@ model ServerOrder {
   errorText       Json?
   stripeSessionId String?     @unique
   serverId        String?
+  name           String? @default("GameServer")
 
   expires DateTime
 

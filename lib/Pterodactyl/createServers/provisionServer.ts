@@ -102,7 +102,7 @@ export async function provisionServer(order: ServerOrder) {
                     break;
             }
             options = {
-                name: 'Minecraft-Server',
+                name: order.name,
                 ...preOptions,
                 ...startAndVars
             };

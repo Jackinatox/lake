@@ -3,6 +3,8 @@
 import { auth } from "@/auth"
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient";
+import { prisma } from "@/prisma";
+import { Prisma } from "@prisma/client";
 import { ClientServer } from "pterodactyl.js";
 
 const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -19,7 +21,7 @@ export async function renameClientServer(server, newName: string): Promise<boole
         return false;
 
     try {
-        fetch(`${ptUrl}/api/client/servers/${server}/settings/rename`, {
+        await fetch(`${ptUrl}/api/client/servers/${server}/settings/rename`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${session?.user.ptKey}`,
@@ -30,6 +32,15 @@ export async function renameClientServer(server, newName: string): Promise<boole
                 name: newName
             })
         })
+
+        await prisma.serverOrder.updateMany({
+            where: {
+                serverId: server
+            },
+            data: {
+                name: newName
+            }
+        });
     } catch (error) {
         return false;
     }
