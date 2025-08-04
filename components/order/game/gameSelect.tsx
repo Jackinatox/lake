@@ -9,11 +9,14 @@ async function GameSelect() {
     const data = await prisma.gameData.findMany();
 
     const games = data.map(game => {
-        const imgName = `${game.name.toLowerCase()}.jpg`;
+        const imgName = `${game.name.toLowerCase()}.webp`;
 
         return {
             ...game,
-            imageUrl: `/images/games/${imgName}`
+            images: {
+                dark: `/images/dark/games/icons/${imgName}`,
+                light: `/images/light/games/icons/${imgName}`
+            },
             // ToDo: Add Images 
         }
     })
@@ -29,7 +32,7 @@ async function GameSelect() {
                         <GameCard key={game.id} card={{
                             id: game.id.toString(),
                             name: game.name ?? ''
-                        }} imgPath={game.imageUrl} />
+                        }} images={game.images} />
                     );
                 })}
             </div>

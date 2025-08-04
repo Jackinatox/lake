@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Cpu, HardDrive, Calendar, Settings, MemoryStick } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 // Helper function to format the expiration date
 function formatExpirationDate(date: Date) {
@@ -41,11 +42,28 @@ const ServerCard = ({ server }: { server: any }) => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <div className="relative flex-shrink-0">
-                            <img
-                                src={`/images/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                                alt={`${server.gameData.name} icon`}
-                                className="w-16 h-16 rounded-xl object-cover"
-                            />
+                            {/* Light mode icon */}
+                            <span className="block dark:hidden">
+                                <Image
+                                    src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                                    alt={`${server.gameData.name} icon`}
+                                    width={64}
+                                    height={64}
+                                    className="w-16 h-16 rounded-xl object-cover"
+                                    priority
+                                />
+                            </span>
+                            {/* Dark mode icon */}
+                            <span className="hidden dark:block">
+                                <Image
+                                    src={`/images/dark/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                                    alt={`${server.gameData.name} icon (dark mode)`}
+                                    width={64}
+                                    height={64}
+                                    className="w-16 h-16 rounded-xl object-cover"
+                                    priority
+                                />
+                            </span>
                         </div>
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center space-x-3 mb-2">

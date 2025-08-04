@@ -11,18 +11,18 @@ export default function Navbar({ locale }: { locale: string }) {
         <div className="flex items-center font-semibold">
           <Link href="/" className="mr-4 flex items-center" style={{ height: "100%" }}>
             <Image
-              src="/images/logo/ScyedLogo.png"
+              src="/images/light/logo/ScyedLogo.webp"
               alt="Scyed"
               fill={false}
-              width={1920}
-              height={1080}
+              width={1084}
+              height={482}
               sizes="64px"
               style={{ width: "auto", maxHeight: "100%" }}
               className="block dark:hidden"
               priority
             />
             <Image
-              src="/images/logo/ScyedLogo-dark.png"
+              src="/images/dark/logo/ScyedLogo.webp"
               alt="Scyed"
               fill={false}
               width={1084}
