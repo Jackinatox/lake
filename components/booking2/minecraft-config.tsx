@@ -77,8 +77,6 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
     if (onChange) onChange(newConfig)
   }
 
-  const [isOpen, setIsOpen] = useState(false)
-
   useImperativeHandle(ref, () => ({
     submit: () => {
       if (selectedFlavorId === null || !selectedVersion) {

@@ -13,8 +13,9 @@ import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
 import { createServerOrder } from "./actions"
 import CustomServerPaymentElements from "@/components/payments/PaymentElements"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useSession } from "next-auth/react"
 
 export type ServerConfig = {
   hardwareConfig: HardwareConfig
@@ -22,6 +23,7 @@ export type ServerConfig = {
 }
 
 export default function GameServerConfig() {
+  const { data: session } = useSession();
   const [orderId, setOrderId] = useState('');
   const [step, setStep] = useState(1)
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([])
@@ -71,13 +73,10 @@ export default function GameServerConfig() {
     setStep(2)
   }
 
-  
-
   const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
     if (!hardwareConfig) return
 
     // Create the final server configuration
-
     const serverConfig: ServerConfig = {
       hardwareConfig,
       gameConfig,
@@ -101,7 +100,7 @@ export default function GameServerConfig() {
       console.error("Error submitting server configuration:", error)
       toast({
         title: "Error",
-        description: "Failed to submit server configuration",
+        description: error.toString(),
         variant: "destructive",
       })
     } finally {
@@ -147,19 +146,18 @@ export default function GameServerConfig() {
               Step {step} of 3
             </div>
           </div>
-          
+
           {/* Progress indicator */}
           <div className="mt-4 flex gap-2">
             {[1, 2, 3].map((stepNumber) => (
               <div
                 key={stepNumber}
-                className={`h-2 flex-1 rounded ${
-                  stepNumber === step
-                    ? 'bg-primary'
-                    : stepNumber < step
+                className={`h-2 flex-1 rounded ${stepNumber === step
+                  ? 'bg-primary'
+                  : stepNumber < step
                     ? 'bg-primary/60'
                     : 'bg-muted'
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -207,8 +205,8 @@ export default function GameServerConfig() {
         <div className="w-full max-w-7xl mx-auto">
           <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
             {step > 1 && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setStep(step - 1)}
                 className="w-full sm:w-auto"
               >
@@ -217,13 +215,24 @@ export default function GameServerConfig() {
               </Button>
             )}
             {step < 3 && (
-              <Button 
-                onClick={handleNextStep}
-                className="w-full sm:w-auto sm:ml-auto"
-              >
-                Continue
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <>
+                <>
+                  {!session?.user && <div className="flex items-center gap-2 w-full sm:w-auto mb-2 sm:mb-0">
+                    <Info className="shrink-0" />
+                    <span className="text-sm">
+                      Du musst eingeloggt sein für Spiel-speziefischen Konfiguration
+                    </span>
+                  </div>}
+                </>
+                <Button
+                  onClick={handleNextStep}
+                  className="w-full sm:w-auto sm:ml-auto"
+                  disabled={!session?.user}
+                >
+                  Continue
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </>
             )}
             {step === 3 && (
               <div className="text-sm text-muted-foreground sm:ml-auto">
