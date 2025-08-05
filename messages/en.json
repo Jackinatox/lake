@@ -50,5 +50,20 @@
   "info-buttons": {
     "cpu": "Explaination of the CPU",
     "ram": "Explaination of the RAM"
+  },
+  "getHelp": {
+    "title1": "We dont have a FAQ yet, but you can ",
+    "title2": "contact us",
+    "title3": "for help",
+    "contactUsTitle": "Contact Us",
+    "writeDirectly": "Write us directly",
+    "answerToEmail": "We will still answer to the email from your account, its easier :)",
+    "yourProblem": "Your Problem",
+    "submit": "Submit",
+    "describeProblemPlaceholder": "Describe your problem here...",
+    "yourProblemTitle": "Your Problem",
+    "writeEmail": "Write us an email",
+    "writeEmailTo": "Write an email to",
+    "weWillAnswer": "and we will answer as fast as possible"
   }
 }
