@@ -4,11 +4,13 @@ datasource db {
 }
 
 enum OrderStatus {
-  PENDING
-  PAID
-  CREATED
-  FAILED
-  INSTALLED
+  PENDING         // Only the intend was created, now money received
+  PAID            // Money received, now the server is being created
+  CREATED         // Server is created
+  FAILED          // Server creation failed
+  INSTALLED       // Server is installed and running
+  EXPIRED         // Server expiered, now further payments received, will be deleted soon
+  DELETED         // Server was deleted from Pterodactyl
 }
 
 enum Role {
@@ -133,7 +135,6 @@ model CPU {
   pricePerCore Float   @default(0.2)
 
   locations Location[]
-  // serverIntends ServerIntend[]
 }
 
 model RAM {
@@ -145,7 +146,6 @@ model RAM {
   maxGb      Float?  @default(12)
 
   locations Location[]
-  // serverIntends ServerIntend[]
 }
 
 model ServerOrder {
@@ -156,43 +156,45 @@ model ServerOrder {
   ramMB      Int
   cpuPercent Int
   diskMB     Int
-  price      Float
+  price      Float  // To let the user extend his server at the original price in case we increase prices
 
   gameConfig Json?
   gameDataId Int
-  gameData   GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
-
-  locationId Int
-  location   Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
 
   status          OrderStatus @default(PENDING)
   errorText       Json?
   stripeSessionId String?     @unique
   serverId        String?
-  name           String? @default("GameServer")
+  name            String?     @default("GameServer")
 
-  expires DateTime
+  expires   DateTime
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  gameData   GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Payment   Payment[]
 
   @@index([stripeSessionId])
 }
 
 model Payment {
-  id                    String   @id @default(cuid())
-  orderId               String // Foreign key to your Order model
-  userId                String // Foreign key to your User model
+  id                    Int         @id @default(autoincrement())
+  userId                String
+  serverOrderId         Int?
+  serverOrder           ServerOrder? @relation(fields: [serverOrderId], references: [id], onDelete: SetNull)
   stripePaymentIntentId String
   stripeChargeId        String
   receiptUrl            String
-  amount                Int // In cents (e.g., 990 for €9.90)
-  currency              String
+  amount                Int
   status                String
   paymentMethodType     String?
   customerEmail         String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 }
