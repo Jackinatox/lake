@@ -18,6 +18,7 @@ import { GameServer } from "@/models/gameServerModel"
 import EulaDialog from "../EulaDialog"
 import { FileApiService } from "../FileManager/file-api"
 import GameServerSettings from "../settings/GameServerSettings"
+import { Button } from "@/components/ui/button"
 
 
 interface serverProps {
@@ -231,7 +232,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
           </CardHeader>
           <CardContent>
             <CPUChart newData={serverStats} />
-            <Separator className="my-3"/>
+            <Separator className="my-3" />
             <div className="grid grid-cols-2 gap-1 text-sm">
               <div className="font-medium">Current:</div>
               <div>{serverStats?.cpu_absolute + "% / " + server.limits.cpu + ' %'}</div>
@@ -269,19 +270,21 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
         <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
           <CardHeader className="pb-2">
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-              <CardTitle className="text-xl font-bold">Minecraft Server</CardTitle>
-              <Badge
-                variant={serverStats?.state.toLowerCase() === "online" ? "default" : "outline"}
-                className="px-3 py-1"
-              >
-                <Status state={serverStats?.state} />
-              </Badge>
+              <CardTitle className="text-xl font-bold">Minecraft Server: {server.name}</CardTitle>
+              <Button variant="outline">Upgrade</Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
               <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
                 <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="font-medium">Status:</div>
+                  <div>              <Badge
+                    variant={serverStats?.state.toLowerCase() === "online" ? "default" : "outline"}
+                    className="px-3 py-1"
+                  >
+                    <Status state={serverStats?.state} />
+                  </Badge></div>
                   <div className="font-medium">Server IP:</div>
                   <div>
                     <span className="flex items-center gap-2">
@@ -300,8 +303,6 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
                       )}
                     </span>
                   </div>
-                  <div className="font-medium">Name:</div>
-                  <div>{server.name}</div>
                   <div className="font-medium">Players:</div>
                   <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
                   <div className="font-medium">Uptime:</div>
