@@ -23,8 +23,9 @@ async function UserServer({ params }: { params: Promise<{ server_id: string }> }
   }
 
   return (
+
     <Suspense fallback={<>loading</>}>
-      <GameServersPage></GameServersPage>
+        <GameServersPage></GameServersPage>
     </Suspense>
   )
 }

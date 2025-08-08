@@ -12,8 +12,8 @@ interface CPUData {
 }
 
 const chartConfig = {
-    desktop: {
-        label: "Desktop",
+    value: {
+        label: "CPU",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig;
@@ -37,13 +37,9 @@ function CPUChart({ newData }: CPUChartProps) {
 
 
     return (
-        <Card className="w-full h-full">
-            <CardHeader>
-            </CardHeader>
-
-            <CardContent>
+        <div>
                 <ChartContainer config={chartConfig}>
-                    <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+                    <AreaChart data={chartData} margin={{ left: 0, right: 0 }}>
 
                         <CartesianGrid vertical={false} />
 
@@ -69,14 +65,14 @@ function CPUChart({ newData }: CPUChartProps) {
                             tickFormatter={(value) => `${value}%`}
                         />
 
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" hideLabel />} />
 
                         <Area
                             dataKey="value"
                             type="monotone"
-                            fill={chartConfig.desktop.color}
+                            fill={chartConfig.value.color}
                             fillOpacity={0.4}
-                            stroke={chartConfig.desktop.color}
+                            stroke={chartConfig.value.color}
                             // animationDuration={500} // Smooth 500ms animation
                             // animationEasing="ease-out" // Makes data slide in naturally
                             isAnimationActive={false}
@@ -84,8 +80,7 @@ function CPUChart({ newData }: CPUChartProps) {
 
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+        </div>
     );
 }
 
