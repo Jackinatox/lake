@@ -11,8 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { LogOut, User } from "lucide-react"
+import { LogOut, User, UserRoundCog } from "lucide-react"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
 export default function Profile() {
   const { data: session, status } = useSession()
@@ -77,13 +78,19 @@ export default function Profile() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-{/* {session?.user.role } */}
 
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        {session?.user.role === "ADMIN" && <>
+          <DropdownMenuItem onClick={() => {redirect("/admin")}}>
+              <UserRoundCog className="mr-2 h-4 w-4" />
+              <span>Admin Panel</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+        </>}
         <DropdownMenuItem onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>

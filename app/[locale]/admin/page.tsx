@@ -1,11 +1,20 @@
-'use client'
+'use server'
 
 import React from 'react'
 import AdminPage from './adminPage'
 import { SettingsIcon } from 'lucide-react'
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from '@/components/ui/breadcrumb'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb'
+import { auth } from '@/auth'
+import NoAdmin from './NoAdmin'
 
-function Admin() {
+async function Admin() {
+
+  const session = await auth();
+
+  if (session?.user.role !== 'ADMIN') {
+    return <NoAdmin />
+  }
+
   return (
     <>
       <div className="mb-4">
@@ -19,7 +28,9 @@ function Admin() {
         </Breadcrumb>
       </div>
 
-      <AdminPage />
+      <div className='flex justify-center'>
+        <AdminPage />
+      </div>
     </>
   )
 }

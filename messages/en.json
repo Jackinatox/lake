@@ -37,6 +37,8 @@
     "ctaDesc": "Short description",
     "ctaButton": "Get started"
   },
+  "notAdmin": "You are not an admin",
+  "notAdminDescription": "You do not have admin rights to view this page.",
   "hardware-config": {
     "duration": "Duration",
     "select-duration": "Select duration",
