@@ -12,8 +12,8 @@ interface RAMData {
 }
 
 const chartConfig = {
-    desktop: {
-        label: "Desktop",
+    value: {
+        label: "RAM",
         color: "hsl(var(--chart-1))",
     },
 } satisfies ChartConfig;
@@ -37,11 +37,11 @@ function RAMChart({ newData }: RAMChartProps) {
 
 
     return (
-        <Card>
+        <div>
 
-            <CardContent>
+
                 <ChartContainer config={chartConfig}>
-                    <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
+                    <AreaChart data={chartData} margin={{ left: 0, right: 0 }}>
 
                         <CartesianGrid vertical={false} />
 
@@ -67,14 +67,14 @@ function RAMChart({ newData }: RAMChartProps) {
                             tickFormatter={(value) => `${value} GiB`}
                         />
 
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" hideLabel/>} />
 
                         <Area
                             dataKey="value"
                             type="monotone"
-                            fill={chartConfig.desktop.color}
+                            fill={chartConfig.value.color}
                             fillOpacity={0.4}
-                            stroke={chartConfig.desktop.color}
+                            stroke={chartConfig.value.color}
                             //animationDuration={500} // Smooth 500ms animation
                             //animationEasing="ease-out" // Makes data slide in naturally
                             isAnimationActive={false}
@@ -82,8 +82,7 @@ function RAMChart({ newData }: RAMChartProps) {
 
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+        </div>
     );
 }
 

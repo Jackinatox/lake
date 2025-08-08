@@ -65,9 +65,14 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         // console.log('my server: ', JSON.stringify(updatedServer, null, 2));
 
         return (
-            <>
-                <GameDashboard server={updatedServer} ptApiKey={ptApiKey} gameId={1}></GameDashboard>
-            </>)
+            <div className='flex justify-center'>
+
+                <div className='max-w-screen-2xl'>
+
+                    <GameDashboard server={updatedServer} ptApiKey={ptApiKey} gameId={1}></GameDashboard>
+                </div>
+            </div>
+        )
     } catch (error) {
         return <> Error from pt API {error} </>
     }

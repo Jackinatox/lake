@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (!ptApiKey) {
       return NextResponse.json({ error: "No Pterodactyl API key found" }, { status: 401 })
     }
-    console.log('now fetching')
+    
     const response = await fetch(
       `${baseUrl}/api/client/servers/${serverId}/files/contents?file=${encodeURIComponent(file)}`,
       {

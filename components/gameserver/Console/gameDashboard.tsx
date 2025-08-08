@@ -224,14 +224,14 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
       {/* Performance metrics - takes up 4/12 columns on desktop */}
       <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-0 space-y-0">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Cpu className="h-5 w-5" /> CPU Usage
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CPUChart newData={serverStats} />
-            <Separator className="my-3" />
+            <Separator className="my-3"/>
             <div className="grid grid-cols-2 gap-1 text-sm">
               <div className="font-medium">Current:</div>
               <div>{serverStats?.cpu_absolute + "% / " + server.limits.cpu + ' %'}</div>
