@@ -8,6 +8,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
+import { auth } from "@/auth";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,6 +38,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const sess = await auth();
 
   return (
     <html lang={locale} className={geistSans.className} suppressHydrationWarning>
@@ -56,7 +58,7 @@ export default async function RootLayout({
 
                     {children}
                     <Toaster />
-                    {/* <SessionInfo /> */}
+                    {/* {JSON.stringify(sess?.user)} */}
 
                   </div>
                 </SessionProvider>

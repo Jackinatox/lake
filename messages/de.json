@@ -65,5 +65,7 @@
     "yourProblem": "Dein Problem",
     "yourProblemTitle": "Dein Problem",
     "weWillAnswer": "und wir werden so schnell wie möglich antworten"
-  }
+  },
+  "notAdmin": "Du bist kein Admin",
+  "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen."
 }

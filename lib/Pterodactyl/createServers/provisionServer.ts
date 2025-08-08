@@ -34,7 +34,7 @@ export async function provisionServer(order: ServerOrder) {
             disk: calcDiskSize(intentDb.cpuPercent, intentDb.ramMB),
             memory: intentDb.ramMB,
             io: 500,
-            swap: 0
+            swap: 512
         },
         egg: gameConfig.eggId,
         startWhenInstalled: false,
