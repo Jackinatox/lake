@@ -2,7 +2,6 @@ import 'server-only'
 
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { ServerOrder } from '@prisma/client';
 import { ClientServer } from '@/models/prisma';
 
 export async function getUserServer(): Promise<ClientServer[] | null> {
@@ -14,11 +13,11 @@ export async function getUserServer(): Promise<ClientServer[] | null> {
     }
     // console.log(session?.user)
     // await new Promise((resolve) => setTimeout(resolve, 5000))
-    return await prisma.serverOrder.findMany({
+    return await prisma.gameServer.findMany({
         where: {
             userId: session.user.id,
             status: {
-                notIn: ['FAILED', 'PENDING']
+                notIn: ['CREATION_FAILED']
             }
         },
         include: {

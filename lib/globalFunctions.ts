@@ -1,4 +1,5 @@
 import { PerformanceGroup } from "@/models/prisma";
+import { OrderType } from "@prisma/client";
 
 // Config
 const minBackups = 2;
@@ -76,18 +77,20 @@ export function formatBytes(bytes: number): string {
 }
 
 
-export type priceDef = { price: number, discount: number, percent: number };
 
 
-export function calculateTotal(pf: PerformanceGroup, cpuCores: number, ramGB: number, Days: number): priceDef {
-  const cpuPrice = pf.cpu.pricePerCore * cpuCores;
-  const ramPrice = pf.ram.pricePerGb * ramGB;
+export type priceDef = { total: number, discount: number, percent: number };
+export function calculateTotal(type: OrderType,  pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
+  // Dickes ToDo: OrderType
+  const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
+  const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
 
-  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
+  // const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
 
-  const { amount, percent } = calculateDiscount(Days, toPay)
+  // const { amount, percent } = calculateDiscount(Days, toPay)
 
-  return { price: toPay - amount, discount: amount, percent: percent };
+  // return { total: toPay - amount, discount: amount, percent: percent };
+  return {discount: 1, percent: 10, total: 4};
 }
 
 function calculateDiscount(days: number, totalPrice: number) {

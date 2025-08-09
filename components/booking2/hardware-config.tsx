@@ -22,7 +22,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
   const [cpuCores, setCpuCores] = useState(1)
   const [ramGb, setRamGb] = useState(1)
   const [days, setDays] = useState(30);
-  const [totalPrice, setTotalPrice] = useState<priceDef>({ discount: 0, price: 0, percent: 0 })
+  const [totalPrice, setTotalPrice] = useState<priceDef>({ discount: 0, total: 0, percent: 0 })
 
   // Set initial values
   useEffect(() => {
@@ -46,7 +46,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
   // Calculate total price whenever configuration changes
   useEffect(() => {
     if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-      setTotalPrice(calculateTotal(selectedPFGroup, cpuCores, ramGb, days));
+      setTotalPrice(calculateTotal("NEW", selectedPFGroup, cpuCores, ramGb, days));
     }
   }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -241,7 +241,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                 </div> */}
                 <div className="flex justify-between items-center w-full text-lg">
                   <span className="text-primary">Total</span>
-                  <span className="text-2xl font-bold text-primary">{totalPrice.price.toFixed(2)} €</span>
+                  <span className="text-2xl font-bold text-primary">{totalPrice.total.toFixed(2)} €</span>
                 </div>
               </CardFooter>
             </Card>

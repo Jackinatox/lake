@@ -25,7 +25,6 @@ export interface SatisfactoryConfig {
   serverName?: string
 }
 
-// Updated GameConfig to match your structure
 export interface GameConfig {
   gameId: number
   gameType: string
@@ -33,5 +32,5 @@ export interface GameConfig {
   eggId: number
   version: string,
   dockerImage: string,
-  gameSpecificConfig: Record<string, any> // Game-specific configuration
+  gameSpecificConfig: Record<string, any> // Game-specific configuration TODO: Try to remove it
 }

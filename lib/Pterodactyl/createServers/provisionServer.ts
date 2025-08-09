@@ -5,16 +5,19 @@ import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-import { ServerOrder } from "@prisma/client";
+import { auth } from "@/auth";
+import { GameServerOrder } from "@prisma/client";
 
-export async function provisionServer(order: ServerOrder) {
-    const intentDb = await prisma.serverOrder.findUnique({ where: { id: order.id }, include: { user: true, gameData: true, location: true } });
+export async function provisionServer(orderr: GameServerOrder) {
+    const session = await auth();
+    
+    const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: orderr.id }, include: { user: true, creationGameData: true, creationLocation: true } });
     const pt = createPtClient();
 
     const ptUser = await fetch(`${panelUrl}/api/client/account`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${intentDb.user.ptKey}`,
+            Authorization: `Bearer ${serverOrder.user.ptKey}`,
             Accept: "application/json",
             "Content-Type": "application/json",
         },
@@ -23,16 +26,16 @@ export async function provisionServer(order: ServerOrder) {
         .then((data) => parseInt(data.attributes.id));
 
     console.log('user id: ', ptUser)
-    const gameConfig = intentDb.gameConfig as any;
-    console.log(intentDb.gameData.id, ' ', parseInt(gameConfig.flavorId));
+    const gameConfig = serverOrder.gameConfig as any;
+    console.log(serverOrder.creationGameData.id, ' ', parseInt(gameConfig.flavorId));
 
     let options: NewServerOptions;
     let preOptions = {
         user: ptUser,
         limits: {
-            cpu: intentDb.cpuPercent,
-            disk: calcDiskSize(intentDb.cpuPercent, intentDb.ramMB),
-            memory: intentDb.ramMB,
+            cpu: serverOrder.cpuPercent,
+            disk: calcDiskSize(serverOrder.cpuPercent, serverOrder.ramMB),
+            memory: serverOrder.ramMB,
             io: 500,
             swap: 512
         },
@@ -41,13 +44,13 @@ export async function provisionServer(order: ServerOrder) {
         outOfMemoryKiller: false,
         featureLimits: {
             allocations: 1,
-            backups: calcBackups(intentDb.cpuPercent, intentDb.ramMB),
+            backups: calcBackups(serverOrder.cpuPercent, serverOrder.ramMB),
             databases: 0,
             split_limit: 0
         },
         deploy: {
             dedicatedIp: false,
-            locations: [intentDb.location.ptLocationId],
+            locations: [serverOrder.creationLocation.ptLocationId],
             portRange: []
         },
         image: gameConfig.dockerImage,
@@ -55,7 +58,7 @@ export async function provisionServer(order: ServerOrder) {
 
 
     let startAndVars;
-    switch (intentDb.gameData.id) {
+    switch (serverOrder.creationGameData.id) {
         case 1: //Minecraft
             switch (parseInt(gameConfig.eggId)) {
                 case 1: // Vanilla
@@ -102,28 +105,44 @@ export async function provisionServer(order: ServerOrder) {
                     break;
             }
             options = {
-                name: order.name,
+                name: serverOrder.creationGameData.name + " Gameserver",
                 ...preOptions,
                 ...startAndVars
             };
 
             try {
                 const newServer = await pt.createServer(options);
+                const dbNewServer = await prisma.gameServer.create({
+                    data: {
+                        ptServerId: newServer.identifier,
+                        status: "INSTALLING",
+                        backupCount: preOptions.featureLimits.backups,
+                        cpuPercent: preOptions.limits.cpu,
+                        diskMB: preOptions.limits.disk,
+                        price: serverOrder.price,
+                        ramMB: preOptions.limits.memory,
+                        expires: serverOrder.expiresAt,
+                        userId: session?.user.id,
+                        gameDataId: serverOrder.creationGameDataId,
+                        locationId: serverOrder.creationLocation.ptLocationId,
+                        gameConfig: serverOrder.gameConfig
+                    }
+                });
 
 
-                await prisma.serverOrder.update({
+                await prisma.gameServerOrder.update({
                     where: {
-                        id: order.id,
+                        id: serverOrder.id,
                     },
                     data: {
-                        serverId: newServer.identifier,
+                        gameServerId: dbNewServer.id,
                         status: "CREATED"
                     }
                 })
             } catch (error) {
-                await prisma.serverOrder.update({
+                await prisma.gameServerOrder.update({
                     where: {
-                        id: order.id,
+                        id: serverOrder.id,
                     },
                     data: {
                         status: "FAILED",

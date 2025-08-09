@@ -4,20 +4,11 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, AlertCircle, Loader2, CheckCircle, XCircle, Wallet, Server } from "lucide-react"
 import checkIfServerReady from "./checkIfServerReady"
-import { OrderStatus } from "@prisma/client"
+import { GameServerStatus } from "@prisma/client"
 import { redirect } from "next/navigation"
 
 const statusConfig = {
-  [OrderStatus.PENDING]: {
-    icon: Wallet,
-    title: "Waiting for Payment",
-    message: "Please complete your payment to proceed.",
-    progress: 25,
-    color: "text-yellow-600",
-    bg: "bg-yellow-100",
-    iconClass: "",
-  },
-  [OrderStatus.PAID]: {
+  [GameServerStatus.CREATED]: {
     icon: Loader2,
     title: "Server is being created",
     message: "Your server is currently being provisioned.",
@@ -26,7 +17,7 @@ const statusConfig = {
     bg: "bg-blue-100",
     iconClass: "animate-spin",
   },
-  [OrderStatus.CREATED]: {
+  [GameServerStatus.INSTALLING]: {
     icon: Loader2,
     title: "Server is installing",
     message: "The game is being installed on your server.",
@@ -35,7 +26,7 @@ const statusConfig = {
     bg: "bg-indigo-100",
     iconClass: "animate-spin",
   },
-  [OrderStatus.INSTALLED]: {
+  [GameServerStatus.ACTIVE]: {
     icon: Server,
     title: "Server Ready",
     message: "Your server is now online and ready to connect.",
@@ -44,7 +35,7 @@ const statusConfig = {
     bg: "bg-green-100",
     iconClass: "",
   },
-  [OrderStatus.FAILED]: {
+  [GameServerStatus.CREATION_FAILED]: {
     icon: XCircle,
     title: "Server Creation Failed",
     message: "There was a problem creating your server. Please contact support.",
@@ -56,14 +47,14 @@ const statusConfig = {
 }
 
 export default function ServerReadyPoller({ sessionId }: { sessionId: string }) {
-  const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null)
+  const [orderStatus, setOrderStatus] = useState<GameServerStatus | null>(null)
   const [serverId, setServerId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (orderStatus === OrderStatus.INSTALLED || orderStatus === OrderStatus.FAILED) {
+      if (!orderStatus || orderStatus === GameServerStatus.CREATION_FAILED) {
         clearInterval(intervalId)
         return
       }
@@ -116,12 +107,12 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
               animate={{ opacity: 1, y: 0 }}
               className="text-center space-y-6"
             >
-              <div className={`w-16 h-16 mx-auto ${statusConfig[OrderStatus.FAILED].bg} rounded-full flex items-center justify-center`}>
-                <AlertCircle className={`w-8 h-8 ${statusConfig[OrderStatus.FAILED].color}`} />
+              <div className={`w-16 h-16 mx-auto ${statusConfig[GameServerStatus.CREATION_FAILED].bg} rounded-full flex items-center justify-center`}>
+                <AlertCircle className={`w-8 h-8 ${statusConfig[GameServerStatus.CREATION_FAILED].color}`} />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {statusConfig[OrderStatus.FAILED].title}
+                  {statusConfig[GameServerStatus.CREATION_FAILED].title}
                 </h2>
                 <p className="text-gray-600">{error}</p>
               </div>
@@ -150,7 +141,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 <p className="text-gray-600 mb-6">{currentStatus.message}</p>
               </div>
 
-              {(orderStatus !== OrderStatus.INSTALLED && orderStatus !== OrderStatus.FAILED) && (
+              {(!orderStatus || orderStatus !== GameServerStatus.CREATION_FAILED) && (
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <motion.div
                   className="bg-blue-600 h-2.5 rounded-full"
@@ -160,7 +151,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 />
               </div>)}
 
-              {orderStatus === OrderStatus.INSTALLED && (
+              {orderStatus === GameServerStatus.ACTIVE && (
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
