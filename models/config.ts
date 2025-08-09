@@ -13,8 +13,8 @@ export interface Game {
 
 export interface HardwareConfig {
   pfGroupId: number
-  cpuCores: number
-  ramGb: number
+  cpuPercent: number
+  ramMb: number
   diskMb: number
   durationsDays: number
 }

@@ -81,15 +81,16 @@ export default function GameServerConfig() {
     // gameConfig,
     const checkouParams: CheckoutParams = {
       type: "NEW",
-      cpuPercent: hardwareConfig.cpuCores * 100,
+      cpuPercent: hardwareConfig.cpuPercent,
       diskMB: hardwareConfig.diskMb,
-      ramMB: hardwareConfig.ramGb * 1024,
+      ramMB: hardwareConfig.ramMb,
       duration: hardwareConfig.durationsDays,
       gameServerId: null,
       creationServerConfig: { gameConfig: gameConfig, hardwareConfig: hardwareConfig }
     }
 
     try {
+      // console.log(checkouParams)
       setLoading(true)
 
       const clientSecret = (await checkoutAction(checkouParams)).client_secret;

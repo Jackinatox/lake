@@ -21,9 +21,9 @@ export function calcDiskSize(cpu: number, ramSize: number): number {
   // Calculates Disk like this: threads*2 + ramGiB*2 min and Max Values set
   return Math.max(
     Math.min(
-        maxDisk,
-        Math.ceil(cpu / 50 + ramSize / 512) * 1024), // threads*2 + ramGiB*2;
-      minDisk
+      maxDisk,
+      Math.ceil(cpu / 50 + ramSize / 512) * 1024), // threads*2 + ramGiB*2;
+    minDisk
   );
 }
 
@@ -79,18 +79,20 @@ export function formatBytes(bytes: number): string {
 
 
 
-export type priceDef = { total: number, discount: number, percent: number };
-export function calculateTotal(type: OrderType,  pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
+export type priceDef = { totalCents: number, discountCent: number, discountPercent: number };
+export function calculateTotal(type: OrderType, pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
   // Dickes ToDo: OrderType
   const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
   const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
 
-  // const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * Days).toFixed(2));
+  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
 
-  // const { amount, percent } = calculateDiscount(Days, toPay)
+  const { amount, percent } = calculateDiscount(duration, toPay)
 
-  // return { total: toPay - amount, discount: amount, percent: percent };
-  return {discount: 1, percent: 10, total: 4};
+  // return { total: toPay, discount: amount, percent: percent };
+
+  // TODO: re add thisreturn 
+  return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
 }
 
 function calculateDiscount(days: number, totalPrice: number) {
