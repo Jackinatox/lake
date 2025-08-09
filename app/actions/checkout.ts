@@ -21,10 +21,19 @@ export type CheckoutParams = {
 export async function checkoutAction(params: CheckoutParams) {
     console.log("Called")
     const { type, gameServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
-    const userId = await auth();
-    if (!userId?.user?.id) throw new Error("Not authenticated");
+    const userSession = await auth();
+    if (!userSession?.user?.id) throw new Error("Not authenticated");
 
-    const price = calculateTotal(type, null, cpuPercent, ramMB, duration).total;
+    const location = await prisma.location.findFirst({
+        where: { id: creationServerConfig.hardwareConfig.pfGroupId },
+        include: { cpu: true, ram: true }
+    });
+
+    console.log(params)
+
+    
+    const price = calculateTotal(type, location, cpuPercent, ramMB, duration);
+    console.log(price)
 
     // 1. Create the ServerOrder
 
@@ -33,11 +42,11 @@ export async function checkoutAction(params: CheckoutParams) {
         data: {
             type,
             gameServerId,
-            userId: userId.user.id,
+            userId: userSession.user.id,
             ramMB,
             cpuPercent,
             diskMB,
-            price: price,
+            price: price.totalCents,
             expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
             status: "PENDING",
             creationGameDataId: creationServerConfig.gameConfig.gameId,
@@ -46,15 +55,18 @@ export async function checkoutAction(params: CheckoutParams) {
         }
     });
 
+    // throw new Error(JSON.stringify({price: order.price}))
+
     // 2. Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const stripeSession = await stripe.checkout.sessions.create({
         mode: "payment",
+        ui_mode: 'embedded',
         line_items: [
             {
                 price_data: {
                     currency: "eur",
                     product_data: { name: `${type} Game Server` },
-                    unit_amount: Math.round(price)
+                    unit_amount: Math.round(price.totalCents)
                 },
                 quantity: 1
             }
@@ -62,6 +74,7 @@ export async function checkoutAction(params: CheckoutParams) {
         metadata: {
             orderId: String(order.id)
         },
+        customer_email: userSession.user.email,
         return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
         // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
         // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
@@ -70,9 +83,8 @@ export async function checkoutAction(params: CheckoutParams) {
     // 3. Save Stripe Session ID
     await prisma.gameServerOrder.update({
         where: { id: order.id },
-        data: { stripeSessionId: session.id }
+        data: { stripeSessionId: stripeSession.id }
     });
 
-    return { client_secret: session.client_secret };
-    return { client_secret: "StinkyBozo" }
+    return { client_secret: stripeSession.client_secret };
 }

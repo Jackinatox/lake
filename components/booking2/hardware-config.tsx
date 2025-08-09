@@ -19,10 +19,10 @@ interface HardwareConfigProps {
 export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
   const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
-  const [cpuCores, setCpuCores] = useState(1)
-  const [ramGb, setRamGb] = useState(1)
+  const [cpuCores, setCpuCores] = useState(4)
+  const [ramGb, setRamGb] = useState(4)
   const [days, setDays] = useState(30);
-  const [totalPrice, setTotalPrice] = useState<priceDef>({ discount: 0, total: 0, percent: 0 })
+  const [totalPrice, setTotalPrice] = useState<priceDef>({ discountCent: 0, totalCents: 0, discountPercent: 0 })
 
   // Set initial values
   useEffect(() => {
@@ -36,8 +36,8 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
       const group = performanceOptions.find(pf => pf.id === initialConfig.pfGroupId)
       if (group) {
         setSelectedPFGroup(group)
-        setCpuCores(initialConfig.cpuCores)
-        setRamGb(initialConfig.ramGb)
+        setCpuCores(initialConfig.cpuPercent / 100)
+        setRamGb(initialConfig.ramMb / 1024)
       }
     }
   }, [initialConfig, performanceOptions])
@@ -46,7 +46,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
   // Calculate total price whenever configuration changes
   useEffect(() => {
     if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-      setTotalPrice(calculateTotal("NEW", selectedPFGroup, cpuCores, ramGb, days));
+      setTotalPrice(calculateTotal("NEW", selectedPFGroup, cpuCores * 100, ramGb * 1024, days));
     }
   }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -56,8 +56,8 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
 
       const config: HardwareConfig = {
         pfGroupId: selectedPFGroup.id,
-        cpuCores,
-        ramGb,
+        cpuPercent: cpuCores * 100,
+        ramMb: ramGb * 1024,
         diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024),
         durationsDays: days
       }
@@ -220,16 +220,16 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-2 rounded bg-muted/30">
                     <span className="text-sm font-medium">{cpuCores} vCore{cpuCores > 1 ? "s" : ""}</span>
-                    <span className="text-sm font-semibold">{(selectedPFGroup.cpu.pricePerCore / 30 * cpuCores * days).toFixed(2)} €</span>
+                    <span className="text-sm font-semibold">{(selectedPFGroup.cpu.pricePerCore / 100 / 30 * cpuCores * days).toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between items-center p-2 rounded bg-muted/30">
                     <span className="text-sm font-medium">{ramGb} GiB RAM</span>
-                    <span className="text-sm font-semibold">{(selectedPFGroup.ram.pricePerGb / 30 * ramGb * days).toFixed(2)} €</span>
+                    <span className="text-sm font-semibold">{(selectedPFGroup.ram.pricePerGb / 100 / 30 * ramGb * days).toFixed(2)} €</span>
                   </div>
-                  {(totalPrice.discount !== 0.0) && (
+                  {(totalPrice.discountCent !== 0.0) && (
                     <div className="flex justify-between items-center p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.percent}%)</span>
-                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {totalPrice.discount.toFixed(2)} €</span>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.discountPercent}%)</span>
+                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {(totalPrice.discountCent / 100).toFixed(2)} €</span>
                     </div>
                   )}
                 </div>
@@ -241,7 +241,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                 </div> */}
                 <div className="flex justify-between items-center w-full text-lg">
                   <span className="text-primary">Total</span>
-                  <span className="text-2xl font-bold text-primary">{totalPrice.total.toFixed(2)} €</span>
+                  <span className="text-2xl font-bold text-primary">{(totalPrice.totalCents / 100).toFixed(2)} €</span>
                 </div>
               </CardFooter>
             </Card>

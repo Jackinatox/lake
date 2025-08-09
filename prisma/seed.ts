@@ -10,13 +10,13 @@ async function main() {
 
     await prisma.cPU.create({
         data: {
-            name: 'seeded', cores: 16, threads: 32, singleScore: 100, multiScore: 1000, maxThreads: 8, minThreads: 1, pricePerCore: 0.3
+            name: 'seeded', cores: 16, threads: 32, singleScore: 100, multiScore: 1000, maxThreads: 16, minThreads: 1, pricePerCore: 0.75
         }
     });
 
     await prisma.rAM.create({
         data: {
-            name: 'DDR4 seeded', speed: 3200, pricePerGb: 0.4, minGb: 1, maxGb: 12
+            name: 'DDR4 seeded', speed: 3200, pricePerGb: 0.75, minGb: 1, maxGb: 24
         }
     })
 
