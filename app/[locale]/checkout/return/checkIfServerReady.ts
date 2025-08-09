@@ -6,21 +6,23 @@ import { prisma } from "@/prisma";
 const endpointSecret = process.env.webhookSecret;
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-import { OrderStatus } from "@prisma/client";
+import { GameServerStatus } from "@prisma/client";
 
-export default async function checkIfServerReady(stripeSession: string): Promise<{ status: OrderStatus | null, serverId: string | null }> {
+export default async function checkIfServerReady(stripeSession: string): Promise<{ status: GameServerStatus | null, serverId: string | null }> {
     const session = await auth();
 
     if (session?.user) {
-        const serverOrder = await prisma.serverOrder.findFirst({ where: { stripeSessionId: stripeSession } });
+        const serverOrder = await prisma.gameServerOrder.findFirst({ where: { stripeSessionId: stripeSession }, include: { gameServer: true} });
+
+        // TODO: To use the new order logic, didnt get it fully yet
 
         if (!serverOrder) {
             return { status: null, serverId: null };
         }
 
-        if (serverOrder.status === OrderStatus.CREATED && serverOrder.serverId) {
+        if (serverOrder.status === GameServerStatus.CREATED && serverOrder.gameServer.ptServerId) {
             try {
-                const res = await fetch(`${panelUrl}/api/client/servers/${serverOrder.serverId}`, {
+                const res = await fetch(`${panelUrl}/api/client/servers/${serverOrder.gameServer.ptServerId}`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${session.user.ptKey}`,
@@ -36,15 +38,15 @@ export default async function checkIfServerReady(stripeSession: string): Promise
 
                     if (isInstalling === false) {
                         // The server is ready, update our DB and return the new status immediately.
-                        await prisma.serverOrder.update({
-                            where: { id: serverOrder.id },
-                            data: { status: "INSTALLED" },
+                        await prisma.gameServer.update({
+                            where: { id: serverOrder.gameServerId },
+                            data: { status: "ACTIVE" },
                         });
                         // Return the new status directly to avoid a race condition.
-                        return { status: OrderStatus.INSTALLED, serverId: serverOrder.serverId };
+                        return { status: GameServerStatus.DELETED, serverId: serverOrder.gameServer.ptServerId };
                     }
                     // If it's still installing, just return the current status.
-                    return { status: OrderStatus.CREATED, serverId: serverOrder.serverId };
+                    return { status: GameServerStatus.CREATED, serverId: serverOrder.gameServer.ptServerId };
                 } else {
                     console.error(`Pterodactyl API error: ${res.status} ${await res.text()}`);
                 }
@@ -54,7 +56,7 @@ export default async function checkIfServerReady(stripeSession: string): Promise
         }
         
         // For any other status (PENDING, PAID, etc.), just return the current state from the DB.
-        return { status: serverOrder.status, serverId: serverOrder.serverId };
+        return { status: serverOrder.gameServer.status, serverId: serverOrder.gameServer.ptServerId  };
     }
 
     return { status: null, serverId: null };

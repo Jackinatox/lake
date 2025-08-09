@@ -11,7 +11,7 @@ const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 const ptAdminKey = process.env.PTERODACTYL_API_KEY;
 
 
-export async function renameClientServer(server, newName: string): Promise<boolean> {
+export async function renameClientServer(ptServerId, newName: string): Promise<boolean> {
     const session = await auth();
 
     if (!session?.user)
@@ -21,7 +21,7 @@ export async function renameClientServer(server, newName: string): Promise<boole
         return false;
 
     try {
-        await fetch(`${ptUrl}/api/client/servers/${server}/settings/rename`, {
+        await fetch(`${ptUrl}/api/client/servers/${ptServerId}/settings/rename`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${session?.user.ptKey}`,
@@ -33,9 +33,9 @@ export async function renameClientServer(server, newName: string): Promise<boole
             })
         })
 
-        await prisma.serverOrder.updateMany({
+        await prisma.gameServer.updateMany({
             where: {
-                serverId: server
+                ptServerId: ptServerId
             },
             data: {
                 name: newName

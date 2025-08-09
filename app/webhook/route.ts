@@ -1,3 +1,5 @@
+"use server"
+
 import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
@@ -34,16 +36,14 @@ export async function POST(req: NextRequest) {
 
         switch (event.type) {
             case 'payment_intent.succeeded':
-                // console.log(`PaymentIntent for`, intent, `successful`);
-
-                // Provision Server
 
                 break;
 
             case 'checkout.session.completed':
+                
                 // console.log(`Session complete: `, intent);
 
-                const serverOrderId = parseInt(stripeIntent.metadata.serverOrderId);
+                const serverOrderId = parseInt(stripeIntent.metadata.orderId);
                 console.log('ServerOrder: ', stripeIntent);
 
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
 
 
-                await prisma.serverOrder.update({
+                await prisma.gameServerOrder.update({
                     where: {
                         id: serverOrderId,
                     },
@@ -73,10 +73,10 @@ export async function POST(req: NextRequest) {
                     }
                 })
 
-                const serverOrder = await prisma.serverOrder.findUnique({ where: { id: serverOrderId } });
+                const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: serverOrderId } });
                 await provisionServer(serverOrder)
 
-                await prisma.serverOrder.update({
+                await prisma.gameServerOrder.update({
                     where: {
                         id: serverOrderId,
                     },
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
                 break;
             default:
-                console.log(`Unhandeld Webhook type: ${event.type}`)
+                console.error(`Unhandeld Webhook type: ${event.type}`)
         }
         return new Response('Success', { status: 200 });
     }

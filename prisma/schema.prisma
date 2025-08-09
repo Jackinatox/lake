@@ -4,13 +4,11 @@ datasource db {
 }
 
 enum OrderStatus {
-  PENDING         // Only the intend was created, now money received
-  PAID            // Money received, now the server is being created
-  CREATED         // Server is created
-  FAILED          // Server creation failed
-  INSTALLED       // Server is installed and running
-  EXPIRED         // Server expiered, now further payments received, will be deleted soon
-  DELETED         // Server was deleted from Pterodactyl
+  PENDING // Only the intend was created, now money received
+  PAID // Money received, now the server is being created
+  CREATED // Server is created
+  FAILED // Server creation failed
+  DELETED // Server was deleted from Pterodactyl
 }
 
 enum Role {
@@ -35,11 +33,12 @@ model User {
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]
-  serverOrders   ServerOrder[]
-  Payment        Payment[]
+  serverOrders   GameServerOrder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  GameServer GameServer[]
 }
 
 model Account {
@@ -104,7 +103,9 @@ model GameData {
   data    Json?
   enabled Boolean @default(false)
 
-  ServerOrder ServerOrder[]
+  GameServer GameServer[]
+
+  ServerOrder GameServerOrder[]
 }
 
 model Location {
@@ -118,9 +119,11 @@ model Location {
   cpuId        Int      @default(1)
   ramId        Int
 
-  cpu         CPU           @relation(fields: [cpuId], references: [id], onDelete: Restrict)
-  ram         RAM           @relation(fields: [ramId], references: [id], onDelete: Restrict)
-  ServerOrder ServerOrder[]
+  cpu CPU @relation(fields: [cpuId], references: [id], onDelete: Restrict)
+  ram RAM @relation(fields: [ramId], references: [id], onDelete: Restrict)
+
+  GameServer  GameServer[]
+  ServerOrder GameServerOrder[]
 }
 
 model CPU {
@@ -148,53 +151,102 @@ model RAM {
   locations Location[]
 }
 
-model ServerOrder {
-  id     Int    @id @default(autoincrement())
+model GameServer {
+  id     String @id @default(cuid())
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  ramMB      Int
-  cpuPercent Int
-  diskMB     Int
-  price      Float  // To let the user extend his server at the original price in case we increase prices
+  ramMB       Int
+  cpuPercent  Int
+  diskMB      Int
+  backupCount Int
+  expires     DateTime
+  price       Float // To let the user extend his server at the original price in case we increase prices
+
+  ptServerId String?
+  name       String? @default("GameServer")
+
+  status GameServerStatus @default(CREATED)
 
   gameConfig Json?
   gameDataId Int
-
-  status          OrderStatus @default(PENDING)
-  errorText       Json?
-  stripeSessionId String?     @unique
-  serverId        String?
-  name            String?     @default("GameServer")
-
-  expires   DateTime
-
   gameData   GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
 
   locationId Int
   location   Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Payment   Payment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@index([stripeSessionId])
+  ServerOrder GameServerOrder[]
+}
+
+enum GameServerStatus {
+  CREATED
+  INSTALLING
+  CREATION_FAILED
+  ACTIVE
+
+  EXPIRED
+  DELETED
+}
+
+model GameServerOrder {
+  id Int @id @default(autoincrement())
+
+  gameServerId String? // Null if Creation event
+  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type       OrderType
+  ramMB      Int
+  cpuPercent Int
+  diskMB     Int
+  price      Float
+
+  stripeSessionId String?     @unique
+  status          OrderStatus @default(PENDING)
+  errorText       Json?
+
+  expiresAt DateTime // New expiry date *if* order succeeds
+
+  gameConfig         Json?  // This is the same as the GameConfig in models
+  creationGameDataId Int
+  creationGameData   GameData @relation(fields: [creationGameDataId], references: [id], onDelete: Restrict)
+
+  creationLocationId Int
+  creationLocation   Location @relation(fields: [creationLocationId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments Payment[]
+}
+
+enum OrderType {
+  NEW
+  UPGRADE
+  DOWNGRADE // For later
+  RENEW
 }
 
 model Payment {
-  id                    Int         @id @default(autoincrement())
-  userId                String
-  serverOrderId         Int?
-  serverOrder           ServerOrder? @relation(fields: [serverOrderId], references: [id], onDelete: SetNull)
-  stripePaymentIntentId String
-  stripeChargeId        String
-  receiptUrl            String
-  amount                Int
-  status                String
-  paymentMethodType     String?
-  customerEmail         String?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
+  id      Int         @id @default(autoincrement())
+  orderId Int
+  order   GameServerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id])
+  stripeId  String        @unique
+  amount    Float
+  currency  String
+  status    PaymentStatus
+  createdAt DateTime      @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
 }

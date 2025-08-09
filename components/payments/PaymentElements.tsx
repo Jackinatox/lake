@@ -3,41 +3,22 @@
 import React, { useEffect, useState } from 'react'
 import { Elements, EmbeddedCheckout, EmbeddedCheckoutProvider, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { createPaymentSession } from '@/app/[locale]/booking2/[gameId]/bookServerPayment';
 
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 interface CustomServerPaymentElementsProps {
-    orderId: string;
+    clientSecret: string;
 }
 
-function CustomServerPaymentElements({ orderId }: CustomServerPaymentElementsProps) {
+function CustomServerPaymentElements({ clientSecret }: CustomServerPaymentElementsProps) {
     const [loading, setLoading] = useState(true);
-    const [clientSecret, setClientSecret] = useState('');
 
     useEffect(() => {
-        const fetchSecret = async () => {
-            if (orderId) {
-
-                try {
-                    const secrect = await createPaymentSession(orderId);
-                    // TODO: show an error if failed
-                    setClientSecret(secrect);
-                    // console.log(secrect)
-
-
-
-                    setLoading(false)
-                } catch (error) {
-
-                } finally {
-                }
-            }
-        };
-
-        fetchSecret();
-    }, [orderId]);
+        if (clientSecret) {
+            setLoading(false)
+        }
+    }, [clientSecret]);
 
 
     const options = {

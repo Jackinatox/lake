@@ -8,14 +8,13 @@ import type { DiskOption, Game, HardwareConfig, GameConfig } from "@/models/conf
 import { useToast } from "@/components/hooks/use-toast"
 import { useParams } from "next/navigation"
 import { useRouter } from "next/navigation"
-// import { bookServer } from "./bokkServer-action"
 import { Prisma } from "@prisma/client"
 import { PerformanceGroup } from "@/models/prisma"
-import { createServerOrder } from "./actions"
 import CustomServerPaymentElements from "@/components/payments/PaymentElements"
 import { ArrowLeft, ArrowRight, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSession } from "next-auth/react"
+import { checkoutAction, CheckoutParams } from "@/app/actions/checkout"
 
 export type ServerConfig = {
   hardwareConfig: HardwareConfig
@@ -24,7 +23,7 @@ export type ServerConfig = {
 
 export default function GameServerConfig() {
   const { data: session } = useSession();
-  const [orderId, setOrderId] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
   const [step, setStep] = useState(1)
   const [performanceGroup, setPerformanceGroup] = useState<PerformanceGroup[]>([])
   const [diskOptions, setDiskOptions] = useState<DiskOption[]>([])
@@ -76,26 +75,33 @@ export default function GameServerConfig() {
   const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
     if (!hardwareConfig) return
 
+
     // Create the final server configuration
-    const serverConfig: ServerConfig = {
-      hardwareConfig,
-      gameConfig,
+    // hardwareConfig,
+    // gameConfig,
+    const checkouParams: CheckoutParams = {
+      type: "NEW",
+      cpuPercent: hardwareConfig.cpuCores * 100,
+      diskMB: hardwareConfig.diskMb,
+      ramMB: hardwareConfig.ramGb * 1024,
+      duration: hardwareConfig.durationsDays,
+      gameServerId: null,
+      creationServerConfig: { gameConfig: gameConfig, hardwareConfig: hardwareConfig }
     }
 
     try {
       setLoading(true)
-      // Redirect to payment but i need to save the server config???
 
-      const newId = await createServerOrder(serverConfig);
-      setOrderId(newId)
+      const clientSecret = (await checkoutAction(checkouParams)).client_secret;
+      setClientSecret(clientSecret)
 
       setStep(3);
 
 
-      toast({
-        title: "Success",
-        description: `OrderID: ${newId}`,
-      })
+      // toast({
+      //   title: "Success",
+      //   description: `OrderID: ${newId}`,
+      // })
     } catch (error) {
       console.error("Error submitting server configuration:", error)
       toast({
@@ -194,7 +200,7 @@ export default function GameServerConfig() {
               <h2 className="text-2xl font-bold mb-6">
                 Complete Your Payment
               </h2>
-              <CustomServerPaymentElements orderId={orderId} />
+              <CustomServerPaymentElements clientSecret={clientSecret} />
             </div>
           </div>
         )}
