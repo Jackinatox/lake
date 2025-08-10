@@ -13,9 +13,7 @@ if (!baseUrl || !apiKey) {
 }
 
 
-async function UserServer({ params }: { params: Promise<{ server_id: string }> }) {
-  const serverId = (await params).server_id;
-
+async function UserServer() {
   const session = await auth();
 
   if (!session?.user) {

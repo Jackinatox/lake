@@ -96,7 +96,7 @@ const ServerCard = ({ server }: { server: any }) => {
                             <p className={`text-sm font-medium ${expiration.color}`}>{expiration.text}</p>
                         </div>
                         <Button asChild className="group-hover:bg-blue-600 group-hover:text-white transition-colors bg-transparent" variant="outline">
-                            <Link href={`gameserver/${server.serverId}`}>
+                            <Link href={`gameserver/${server.ptServerId}`}>
                                 <Settings className="w-4 h-4 mr-2" />
                                 Control Panel
                             </Link>
