@@ -206,13 +206,14 @@ model GameServerOrder {
   diskMB     Int
   price      Float
 
+  receipt_url     String?
   stripeSessionId String?     @unique
   status          OrderStatus @default(PENDING)
   errorText       Json?
 
   expiresAt DateTime // New expiry date *if* order succeeds
 
-  gameConfig         Json?  // This is the same as the GameConfig in models
+  gameConfig         Json? // This is the same as the GameConfig in models
   creationGameDataId Int
   creationGameData   GameData @relation(fields: [creationGameDataId], references: [id], onDelete: Restrict)
 
@@ -221,8 +222,6 @@ model GameServerOrder {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  payments Payment[]
 }
 
 enum OrderType {
@@ -230,23 +229,4 @@ enum OrderType {
   UPGRADE
   DOWNGRADE // For later
   RENEW
-}
-
-model Payment {
-  id      Int         @id @default(autoincrement())
-  orderId Int
-  order   GameServerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  stripeId  String        @unique
-  amount    Float
-  currency  String
-  status    PaymentStatus
-  createdAt DateTime      @default(now())
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCEEDED
-  FAILED
-  REFUNDED
 }
