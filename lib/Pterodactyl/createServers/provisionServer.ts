@@ -26,8 +26,8 @@ export async function provisionServer(orderr: GameServerOrder) {
         .then((data) => parseInt(data.attributes.id));
 
     console.log('user id: ', ptUser)
-    const gameConfig = serverOrder.gameConfig as any;
-    console.log(serverOrder.creationGameData.id, ' ', parseInt(gameConfig.flavorId));
+    const gameConfig = JSON.parse(serverOrder.gameConfig as any);
+    console.log("GameeConfig: ", gameConfig);
 
     let options: NewServerOptions;
     let preOptions = {
@@ -122,7 +122,7 @@ export async function provisionServer(orderr: GameServerOrder) {
                         price: serverOrder.price,
                         ramMB: preOptions.limits.memory,
                         expires: serverOrder.expiresAt,
-                        userId: session?.user.id,
+                        userId: serverOrder.user.id,
                         gameDataId: serverOrder.creationGameDataId,
                         locationId: serverOrder.creationLocation.ptLocationId,
                         gameConfig: serverOrder.gameConfig

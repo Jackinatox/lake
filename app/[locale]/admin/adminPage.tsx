@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Gamepad2Icon, SquarePlay, UsersIcon } from 'lucide-react';
+import { Gamepad2Icon, icons, SquarePlay, UsersIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AdminPage = () => {
@@ -28,6 +28,12 @@ const AdminPage = () => {
             imageUrl: '/images/wings.jpg',
             link: '/admin/wings',
         },
+        {
+            icon: <SquarePlay />,
+            name: "Provision By Id",
+            imageUrl: '/images/wings.jpg',
+            link: "/admin/TestInternalFunctions/provisionById"
+        }
         // Add more sub-sites as needed
     ];
 

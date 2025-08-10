@@ -24,67 +24,70 @@ export async function checkoutAction(params: CheckoutParams) {
     const userSession = await auth();
     if (!userSession?.user?.id) throw new Error("Not authenticated");
 
-    const location = await prisma.location.findFirst({
-        where: { id: creationServerConfig.hardwareConfig.pfGroupId },
-        include: { cpu: true, ram: true }
-    });
 
-    console.log(params)
+    switch (type) {
+        case "NEW": {
+            const location = await prisma.location.findFirst({
+                where: { id: creationServerConfig.hardwareConfig.pfGroupId },
+                include: { cpu: true, ram: true }
+            });
 
-    
-    const price = calculateTotal(type, location, cpuPercent, ramMB, duration);
-    console.log(price)
+            const price = calculateTotal(type, location, cpuPercent, ramMB, duration);
+            console.log(price)
 
-    // 1. Create the ServerOrder
+            // 1. Create the ServerOrder
 
-    //TODO:  check if with the setting of the user id the user will be linked
-    const order = await prisma.gameServerOrder.create({
-        data: {
-            type,
-            gameServerId,
-            userId: userSession.user.id,
-            ramMB,
-            cpuPercent,
-            diskMB,
-            price: price.totalCents,
-            expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
-            status: "PENDING",
-            creationGameDataId: creationServerConfig.gameConfig.gameId,
-            creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
-            gameConfig: JSON.stringify(creationServerConfig.gameConfig)
-        }
-    });
+            //TODO:  check if with the setting of the user id the user will be linked
+            const order = await prisma.gameServerOrder.create({
+                data: {
+                    type,
+                    gameServerId,
+                    userId: userSession.user.id,
+                    ramMB,
+                    cpuPercent,
+                    diskMB,
+                    price: price.totalCents,
+                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    status: "PENDING",
+                    creationGameDataId: creationServerConfig.gameConfig.gameId,
+                    creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
+                    gameConfig: JSON.stringify(creationServerConfig.gameConfig)
+                }
+            });
 
-    // throw new Error(JSON.stringify({price: order.price}))
-
-    // 2. Create Stripe Checkout Session
-    const stripeSession = await stripe.checkout.sessions.create({
-        mode: "payment",
-        ui_mode: 'embedded',
-        line_items: [
-            {
-                price_data: {
-                    currency: "eur",
-                    product_data: { name: `${type} Game Server` },
-                    unit_amount: Math.round(price.totalCents)
+            // 2. Create Stripe Checkout Session
+            const stripeSession = await stripe.checkout.sessions.create({
+                mode: "payment",
+                ui_mode: 'embedded',
+                invoice_creation: {
+                    enabled: true,
                 },
-                quantity: 1
-            }
-        ],
-        metadata: {
-            orderId: String(order.id)
-        },
-        customer_email: userSession.user.email,
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
-        // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-        // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
-    });
+                line_items: [
+                    {
+                        price_data: {
+                            currency: "eur",
+                            product_data: { name: `${type} Game Server` },
+                            unit_amount: Math.round(price.totalCents)
+                        },
+                        quantity: 1
+                    }
+                ],
+                metadata: {
+                    orderId: String(order.id)
+                },
+                customer_email: userSession.user.email,
+                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
+                // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
+                // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
+            });
 
-    // 3. Save Stripe Session ID
-    await prisma.gameServerOrder.update({
-        where: { id: order.id },
-        data: { stripeSessionId: stripeSession.id }
-    });
+            // 3. Save Stripe Session ID
+            await prisma.gameServerOrder.update({
+                where: { id: order.id },
+                data: { stripeSessionId: stripeSession.id }
+            });
 
-    return { client_secret: stripeSession.client_secret };
+            return { client_secret: stripeSession.client_secret };
+        }
+    }
 }
