@@ -1,8 +1,8 @@
 {
-  "HomePage": {
-    "title": "Hallo Welt!",
-    "description": "Beschreibung",
-    "test": "test"
+  "NotLoggedIn": {
+    "title": "Du bist nicht eingeloggt",
+    "description": "Bitte melde dich an, um auf dein Konto zuzugreifen und personalisierte Inhalte zu sehen.",
+    "login": "Anmelden"
   },
   "landingpage": {
     "header1": "Gameserver-Hosting",
