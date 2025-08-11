@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
                 break;
 
             case 'checkout.session.completed':
-                
+
                 // console.log(`Session complete: `, intent);
 
                 const serverOrderId = parseInt(stripeIntent.metadata.orderId);
@@ -61,8 +61,6 @@ export async function POST(req: NextRequest) {
                     // console.log('Receipt URL:', receiptUrl);
                 }
 
-
-
                 await prisma.gameServerOrder.update({
                     where: {
                         id: serverOrderId,
@@ -74,16 +72,7 @@ export async function POST(req: NextRequest) {
                 })
 
                 const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: serverOrderId } });
-                await provisionServer(serverOrder)
-
-                await prisma.gameServerOrder.update({
-                    where: {
-                        id: serverOrderId,
-                    },
-                    data: {
-                        status: 'CREATED'
-                    }
-                })
+                await provisionServer(serverOrder)  // This will update the status in ServerOrder
 
                 break;
             default:

@@ -6,9 +6,7 @@ datasource db {
 enum OrderStatus {
   PENDING // Only the intend was created, now money received
   PAID // Money received, now the server is being created
-  CREATED // Server is created
-  FAILED // Server creation failed
-  DELETED // Server was deleted from Pterodactyl
+  PAYMENT_FAILED // Stripe weebhook said order failed   
 }
 
 enum Role {
@@ -166,7 +164,8 @@ model GameServer {
   ptServerId String?
   name       String? @default("GameServer")
 
-  status GameServerStatus @default(INSTALLING)
+  status GameServerStatus @default(CREATED)
+  errorText  String?
 
   gameConfig Json?
   gameDataId Int
@@ -182,7 +181,7 @@ model GameServer {
 }
 
 enum GameServerStatus {
-  INSTALLING
+  CREATED
   CREATION_FAILED
   ACTIVE
 
@@ -208,7 +207,6 @@ model GameServerOrder {
   receipt_url     String?
   stripeSessionId String?     @unique
   status          OrderStatus @default(PENDING)
-  errorText       Json?
 
   expiresAt DateTime // New expiry date *if* order succeeds
 

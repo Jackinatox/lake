@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'CREATED', 'FAILED', 'DELETED');
+CREATE TYPE "public"."OrderStatus" AS ENUM ('PENDING', 'PAID', 'PAYMENT_FAILED');
 
 -- CreateEnum
 CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "public"."GameServerStatus" AS ENUM ('CREATED', 'INSTALLING', 'CREATION_FAILED', 'ACTIVE', 'EXPIRED', 'DELETED');
+CREATE TYPE "public"."GameServerStatus" AS ENUM ('CREATED', 'CREATION_FAILED', 'ACTIVE', 'EXPIRED', 'DELETED');
 
 -- CreateEnum
 CREATE TYPE "public"."OrderType" AS ENUM ('NEW', 'UPGRADE', 'DOWNGRADE', 'RENEW');
@@ -144,6 +144,7 @@ CREATE TABLE "public"."GameServer" (
     "ptServerId" TEXT,
     "name" TEXT DEFAULT 'GameServer',
     "status" "public"."GameServerStatus" NOT NULL DEFAULT 'CREATED',
+    "errorText" TEXT,
     "gameConfig" JSONB,
     "gameDataId" INTEGER NOT NULL,
     "locationId" INTEGER NOT NULL,
@@ -163,10 +164,9 @@ CREATE TABLE "public"."GameServerOrder" (
     "cpuPercent" INTEGER NOT NULL,
     "diskMB" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "reciept_url" TEXT,
+    "receipt_url" TEXT,
     "stripeSessionId" TEXT,
     "status" "public"."OrderStatus" NOT NULL DEFAULT 'PENDING',
-    "errorText" JSONB,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "gameConfig" JSONB,
     "creationGameDataId" INTEGER NOT NULL,

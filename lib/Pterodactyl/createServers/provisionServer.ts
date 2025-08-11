@@ -40,7 +40,7 @@ export async function provisionServer(orderr: GameServerOrder) {
             swap: 512
         },
         egg: gameConfig.eggId,
-        startWhenInstalled: false,
+        startWhenInstalled: true,
         outOfMemoryKiller: false,
         featureLimits: {
             allocations: 1,
@@ -115,7 +115,7 @@ export async function provisionServer(orderr: GameServerOrder) {
                 const dbNewServer = await prisma.gameServer.create({
                     data: {
                         ptServerId: newServer.identifier,
-                        status: "INSTALLING",
+                        status: "CREATED",
                         backupCount: preOptions.featureLimits.backups,
                         cpuPercent: preOptions.limits.cpu,
                         diskMB: preOptions.limits.disk,
@@ -135,17 +135,16 @@ export async function provisionServer(orderr: GameServerOrder) {
                         id: serverOrder.id,
                     },
                     data: {
-                        gameServerId: dbNewServer.id,
-                        status: "CREATED"
+                        gameServerId: dbNewServer.id
                     }
                 })
             } catch (error) {
-                await prisma.gameServerOrder.update({
+                await prisma.gameServer.update({
                     where: {
-                        id: serverOrder.id,
+                        id: serverOrder.gameServerId,
                     },
                     data: {
-                        status: "FAILED",
+                        status: "CREATION_FAILED",
                         errorText: error instanceof Error ? error.stack || error.message : JSON.stringify(error)
                     }
                 });
