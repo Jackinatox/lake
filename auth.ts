@@ -7,7 +7,7 @@ import { use } from "react"
 import createUserApiKey from "./lib/Pterodactyl/userApiKey"
 import { Builder } from "@avionrx/pterodactyl-js"
 import { Role } from "@prisma/client"
- 
+
 declare module "next-auth" {
   /**
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
@@ -28,22 +28,13 @@ declare module "next-auth" {
   }
 }
 
- 
-declare module "next-auth/jwt" {
-  /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
-  interface JWT {
-    /** OpenID ID Token */
-    id?: string
-    ptUser: number
-    ptKey: string
-  }
-}
+// JWT removed 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [Discord],
-  session:{
-    strategy: 'jwt'
+  session: {
+    strategy: 'database'
   },
   trustHost: true,
   events: {
@@ -59,8 +50,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       })
 
       const newKey = await createUserApiKey(newPTUser.id);
-      // const randomKey = Math.random().toString(36).slice(2, 12);
-      await prisma.user.update({  // TODO: PT Key logic
+      
+      await prisma.user.update({
         where: { id: user.id },
         data: { ptKey: newKey, ptUser: newPTUser.id }
       });
@@ -77,12 +68,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, user }) {
+      const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
       // const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-      session.user.ptKey = token.ptKey;
-      session.user.ptUser = token.ptUser;
-      session.user.role = token.role as Role;
-      session.user.id = token.id;
+      session.user.ptKey = dbUser.ptKey;
+      session.user.ptUser = dbUser.ptUser;
+      session.user.role = dbUser.role;
+
       return session
     },
   }

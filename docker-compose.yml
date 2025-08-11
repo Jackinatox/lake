@@ -3,6 +3,11 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     container_name: db
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2.0'
+    #       memory: 1g
     environment:
       POSTGRES_DB: lake
       POSTGRES_USER: postgres
