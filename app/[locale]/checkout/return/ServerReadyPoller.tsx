@@ -3,68 +3,26 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, AlertCircle, Loader2, CheckCircle, XCircle, Wallet, Server } from "lucide-react"
-import checkIfServerReady from "./checkIfServerReady"
+import ExtendedGameServerStatus from "./checkIfServerReady"
 import { GameServerStatus } from "@prisma/client"
 import { redirect } from "next/navigation"
 
-export enum ServerProvisionStatus { FAILED, READY, PROVISIONING, PAYMENT_PROCESSING, PAYMENT_FAILED, ORDER_NOT_FOUND, INTERNAL_ERROR };
-
-
-const statusConfig = {
-  [ServerProvisionStatus.PAYMENT_PROCESSING]: {
-    icon: Loader2,
-    title: "Payment processing",
-    message: "Your Payment is still processing, this shouldnt take more than a few seconds.",
-    progress: 50,
-    color: "text-blue-600",
-    bg: "bg-blue-100",
-    iconClass: "animate-spin",
-  },
-  [ServerProvisionStatus.PROVISIONING]: {
-    icon: Loader2,
-    title: "Server is installing",
-    message: "The Server is preparing and installing your game.",
-    progress: 75,
-    color: "text-indigo-600",
-    bg: "bg-indigo-100",
-    iconClass: "animate-spin",
-  },
-  [ServerProvisionStatus.READY]: {
-    icon: Server,
-    title: "Server Ready",
-    message: "Your server is now online and ready to connect.",
-    progress: 100,
-    color: "text-green-600",
-    bg: "bg-green-100",
-    iconClass: "",
-  },
-  [ServerProvisionStatus.FAILED]: {
-    icon: XCircle,
-    title: "Server Creation Failed",
-    message: "There was a problem creating your server. Please contact support.",
-    progress: 0,
-    color: "text-red-600",
-    bg: "bg-red-100",
-    iconClass: "",
-  },
-}
-
 export default function ServerReadyPoller({ sessionId }: { sessionId: string }) {
-  const [orderStatus, setOrderStatus] = useState<GameServerStatus | null>(null)
+  const [orderStatus, setOrderStatus] = useState<typeof ExtendedGameServerStatus | null>(null)
   const [serverId, setServerId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (!orderStatus || orderStatus === GameServerStatus.CREATION_FAILED) {
+      if (!orderStatus || orderStatus === "INSTALLING") {
         clearInterval(intervalId)
         return
       }
 
       checkIfServerReady(sessionId)
         .then(({ status, serverId }) => {
-          // setOrderStatus(status)
+          setOrderStatus(status)
           setServerId(serverId)
           if (loading) setLoading(false)
         })
