@@ -164,8 +164,8 @@ model GameServer {
   ptServerId String?
   name       String? @default("GameServer")
 
-  status GameServerStatus @default(CREATED)
-  errorText  String?
+  status    GameServerStatus @default(CREATED)
+  errorText String?
 
   gameConfig Json?
   gameDataId Int
@@ -181,9 +181,9 @@ model GameServer {
 }
 
 enum GameServerStatus {
-  CREATED
-  CREATION_FAILED
-  ACTIVE
+  CREATED // Server created in pt
+  CREATION_FAILED // Only when pt.createServer failes, not the actual installation
+  ACTIVE  // Server is installed
 
   EXPIRED
   DELETED

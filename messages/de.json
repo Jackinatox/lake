@@ -68,4 +68,39 @@
   },
   "notAdmin": "Du bist kein Admin",
   "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen."
+  ,
+  "status": {
+    "PROVISIONING": {
+      "title": "Server wird erstellt",
+      "message": "Dein Server wird gerade bereitgestellt."
+    },
+    "CREATION_FAILED": {
+      "title": "Servererstellung fehlgeschlagen",
+      "message": "Wir konnten deinen Server nicht erstellen. Bitte kontaktiere den Support oder versuche es erneut."
+    },
+    "ACTIVE": {
+      "title": "Server ist bereit",
+      "message": "Dein Server läuft. Du kannst jetzt verbinden."
+    },
+    "DOES_NOT_EXIST": {
+      "title": "Server nicht gefunden",
+      "message": "Wir konnten diesen Server nicht finden. Wenn das weiterhin passiert, kontaktiere bitte den Support."
+    },
+    "PAYMENT_FAILED": {
+      "title": "Zahlung fehlgeschlagen",
+      "message": "Deine Zahlung ist nicht durchgegangen. Bitte versuche es erneut."
+    },
+    "PAYMENT_PROCESSING": {
+      "title": "Zahlung wird verarbeitet",
+      "message": "Wir verarbeiten gerade deine Zahlung. Das dauert nur einen Augenblick."
+    },
+    "EXPIRED": {
+      "title": "Server abgelaufen",
+      "message": "Dieser Server ist abgelaufen. Bitte verlängere, um fortzufahren."
+    },
+    "DELETED": {
+      "title": "Server gelöscht",
+      "message": "Dieser Server wurde gelöscht und ist nicht mehr verfügbar."
+    }
+  }
 }

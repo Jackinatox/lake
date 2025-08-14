@@ -67,5 +67,39 @@
     "writeEmail": "Write us an email",
     "writeEmailTo": "Write an email to",
     "weWillAnswer": "and we will answer as fast as possible"
+  },
+  "status": {
+    "PROVISIONING": {
+      "title": "Server is being created",
+      "message": "Your server is currently being provisioned."
+    },
+    "CREATION_FAILED": {
+      "title": "Server creation failed",
+      "message": "We couldn't create your server. Please contact support or try again."
+    },
+    "ACTIVE": {
+      "title": "Server is ready",
+      "message": "Your server is up and running. You can connect now."
+    },
+    "DOES_NOT_EXIST": {
+      "title": "Server not found",
+      "message": "We couldn't find this server. If this persists, contact support."
+    },
+    "PAYMENT_FAILED": {
+      "title": "Payment failed",
+      "message": "Your payment did not go through. Please try again."
+    },
+    "PAYMENT_PROCESSING": {
+      "title": "Processing payment",
+      "message": "We're processing your payment. This should only take a moment."
+    },
+    "EXPIRED": {
+      "title": "Server expired",
+      "message": "This server has expired. Please renew to continue."
+    },
+    "DELETED": {
+      "title": "Server deleted",
+      "message": "This server was deleted and is no longer available."
+    }
   }
 }

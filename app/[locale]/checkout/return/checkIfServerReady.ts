@@ -2,17 +2,14 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/prisma";
+import { GameServerStatus } from "@/types/gameData";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-import { GameServerStatus } from "@prisma/client";
-
-// Extend GameServerStatus with custom types for API responses only
-export type ExtendedGameServerStatus = GameServerStatus | "SERVER_NOT_FOUND" | "INSTALLING";
 
 export default async function checkIfServerReady(
     stripeSession: string
-): Promise<{ status: ExtendedGameServerStatus | null, serverId: string | null }> {
+): Promise<{ status: GameServerStatus | null, serverId?: string | null }> {
     const session = await auth();
 
     if (!session?.user)
@@ -20,49 +17,81 @@ export default async function checkIfServerReady(
 
     // -------------------------
 
+
     const serverOrder = await prisma.gameServerOrder.findFirst({
         where: { stripeSessionId: stripeSession },
         include: { gameServer: true }
     });
 
     if (!serverOrder) {
-        // Custom status for not found
-        return { status: "SERVER_NOT_FOUND", serverId: null };
+        return { status: GameServerStatus.DOES_NOT_EXIST, serverId: null };
+    }
+
+    // Map order status first
+    if (serverOrder.status === "PENDING") {
+        return { status: GameServerStatus.PAYMENT_PROCESSING }
+    }
+    if (serverOrder.status === "PAYMENT_FAILED") {
+        return { status: GameServerStatus.PAYMENT_FAILED }
     }
 
     if (serverOrder.status === "PAID") {
-        if (serverOrder.gameServer.status === "CREATED") {
+        const gs = serverOrder.gameServer
+        if (!gs) {
+            return { status: GameServerStatus.PROVISIONING }
+        }
+
+        // Handle terminal server statuses early
+        if (gs.status === "CREATION_FAILED") {
+            return { status: GameServerStatus.CREATION_FAILED }
+        }
+        if (gs.status === "EXPIRED") {
+            return { status: GameServerStatus.EXPIRED }
+        }
+        if (gs.status === "DELETED") {
+            return { status: GameServerStatus.DELETED }
+        }
+
+        // If we have a panel server id, check if installation finished
+        if (gs.ptServerId) {
             try {
-                const res = await fetch(`${panelUrl}/api/client/servers/${serverOrder.gameServer.ptServerId}`, {
+                const res = await fetch(`${panelUrl}/api/client/servers/${gs.ptServerId}`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${session.user.ptKey}`,
                         Accept: "application/json",
                         "Content-Type": "application/json",
                     },
-                    next: { revalidate: 0 }
-                });
+                    next: { revalidate: 2 }
+                })
 
                 if (res.ok) {
-                    const data = await res.json();
-                    const isInstalling = data.attributes.is_installing;
-
+                    const data = await res.json()
+                    const isInstalling = data.attributes.is_installing
                     if (isInstalling === false) {
-                        await prisma.gameServer.update({
-                            where: { id: serverOrder.gameServerId },
-                            data: { status: "ACTIVE" },
-                        });
-                        return { status: "ACTIVE", serverId: serverOrder.gameServer.ptServerId };
+                        if (gs.status !== "ACTIVE") {
+                            await prisma.gameServer.update({
+                                where: { id: gs.id },
+                                data: { status: "ACTIVE" },
+                            })
+                        }
+                        return { status: GameServerStatus.ACTIVE, serverId: gs.ptServerId }
                     }
-                    return { status: "INSTALLING", serverId: serverOrder.gameServer.ptServerId };
-                } else {
-                    console.error(`Pterodactyl API error: ${res.status} ${await res.text()}`);
+                    return { status: GameServerStatus.PROVISIONING }
                 }
+
+                console.error(`Pterodactyl API error: ${res.status} ${await res.text()}`)
+                return { status: GameServerStatus.CREATION_FAILED }
             } catch (error) {
-                console.error("Failed to fetch server status:", error);
+                console.error("Failed to fetch server status:", error)
+                return { status: GameServerStatus.CREATION_FAILED }
             }
         }
-        return { status: "ACTIVE", serverId: serverOrder.gameServer.ptServerId };
+
+        // No panel id yet -> still provisioning
+        return { status: GameServerStatus.PROVISIONING }
     }
 
+    // Default fallback: assume provisioning until other states are reported
+    return { status: GameServerStatus.PROVISIONING }
 }
