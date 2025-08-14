@@ -62,7 +62,7 @@ export default async function checkIfServerReady(
                         Accept: "application/json",
                         "Content-Type": "application/json",
                     },
-                    next: { revalidate: 2 }
+                    next: { revalidate: 0 }
                 })
 
                 if (res.ok) {

@@ -94,8 +94,8 @@ export default async function LandingPage() {
       </section>
 
       {/* Tools Section */}
-      <Card className="mt-5 py-20 px-4 md:px-6">
-        <div className="container mx-auto">
+      <Card className="mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
+        <div className="p-2 md:p-6 l:p-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t("toolsHeader")}</h2>
 
           {/* Control Panel */}
