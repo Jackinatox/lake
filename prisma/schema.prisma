@@ -166,7 +166,7 @@ model GameServer {
   ptServerId String?
   name       String? @default("GameServer")
 
-  status GameServerStatus @default(CREATED)
+  status GameServerStatus @default(INSTALLING)
 
   gameConfig Json?
   gameDataId Int
@@ -182,7 +182,6 @@ model GameServer {
 }
 
 enum GameServerStatus {
-  CREATED
   INSTALLING
   CREATION_FAILED
   ACTIVE

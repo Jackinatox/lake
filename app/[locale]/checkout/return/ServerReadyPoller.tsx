@@ -7,26 +7,29 @@ import checkIfServerReady from "./checkIfServerReady"
 import { GameServerStatus } from "@prisma/client"
 import { redirect } from "next/navigation"
 
+export enum ServerProvisionStatus { FAILED, READY, PROVISIONING, PAYMENT_PROCESSING, PAYMENT_FAILED, ORDER_NOT_FOUND, INTERNAL_ERROR };
+
+
 const statusConfig = {
-  [GameServerStatus.CREATED]: {
+  [ServerProvisionStatus.PAYMENT_PROCESSING]: {
     icon: Loader2,
-    title: "Server is being created",
-    message: "Your server is currently being provisioned.",
+    title: "Payment processing",
+    message: "Your Payment is still processing, this shouldnt take more than a few seconds.",
     progress: 50,
     color: "text-blue-600",
     bg: "bg-blue-100",
     iconClass: "animate-spin",
   },
-  [GameServerStatus.INSTALLING]: {
+  [ServerProvisionStatus.PROVISIONING]: {
     icon: Loader2,
     title: "Server is installing",
-    message: "The game is being installed on your server.",
+    message: "The Server is preparing and installing your game.",
     progress: 75,
     color: "text-indigo-600",
     bg: "bg-indigo-100",
     iconClass: "animate-spin",
   },
-  [GameServerStatus.ACTIVE]: {
+  [ServerProvisionStatus.READY]: {
     icon: Server,
     title: "Server Ready",
     message: "Your server is now online and ready to connect.",
@@ -35,7 +38,7 @@ const statusConfig = {
     bg: "bg-green-100",
     iconClass: "",
   },
-  [GameServerStatus.CREATION_FAILED]: {
+  [ServerProvisionStatus.FAILED]: {
     icon: XCircle,
     title: "Server Creation Failed",
     message: "There was a problem creating your server. Please contact support.",
@@ -61,7 +64,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
       checkIfServerReady(sessionId)
         .then(({ status, serverId }) => {
-          setOrderStatus(status)
+          // setOrderStatus(status)
           setServerId(serverId)
           if (loading) setLoading(false)
         })
