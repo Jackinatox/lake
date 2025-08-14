@@ -174,7 +174,7 @@ export default function GameServerConfig() {
       {/* Main content with padding for sticky footer */}
       <div className="w-full px-4 py-6 pb-28 max-w-7xl mx-auto">
         {step === 1 && (
-          <div className="bg-card border rounded-lg p-6">
+          <div className="bg-card border rounded-lg p-2 md:p-6">
             <HardwareConfigComponent
               ref={hardwareConfigRef}
               diskOptions={diskOptions}
@@ -186,7 +186,7 @@ export default function GameServerConfig() {
         )}
 
         {step === 2 && selectedGame && (
-          <div className="bg-card border rounded-lg p-6">
+          <div className="bg-card border rounded-lg p-2 md:p-6">
             <GameConfigComponent
               ref={gameConfigRef}
               game={selectedGame}
@@ -197,7 +197,7 @@ export default function GameServerConfig() {
 
         {step === 3 && (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-card border rounded-lg p-6">
+            <div className="bg-card border rounded-lg p-2 md:p-6">
               <h2 className="text-2xl font-bold mb-6">
                 Complete Your Payment
               </h2>
