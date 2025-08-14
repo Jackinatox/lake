@@ -9,7 +9,7 @@ export async function getUserServer(): Promise<ClientServer[] | null> {
 
     
     if (!session?.user) {
-        return null;    //TODO: or redirect to login
+        return null;
     }
     // console.log(session?.user)
     // await new Promise((resolve) => setTimeout(resolve, 5000))

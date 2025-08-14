@@ -2,25 +2,30 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/prisma";
+import { ServerProvisionStatus } from "./ServerReadyPoller";
 
-const endpointSecret = process.env.webhookSecret;
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
-import { GameServerStatus } from "@prisma/client";
-
-export default async function checkIfServerReady(stripeSession: string): Promise<{ status: GameServerStatus | null, serverId: string | null }> {
+export default async function checkIfServerReady(stripeSession: string): Promise<{ status: ServerProvisionStatus | null, serverId: string | null }> {
     const session = await auth();
 
     if (session?.user) {
-        const serverOrder = await prisma.gameServerOrder.findFirst({ where: { stripeSessionId: stripeSession }, include: { gameServer: true} });
+        const serverOrder = await prisma.gameServerOrder.findFirst({ where: { stripeSessionId: stripeSession }, include: { gameServer: true } });
 
         // TODO: To use the new order logic, didnt get it fully yet
 
         if (!serverOrder) {
-            return { status: null, serverId: null };
+            return { status: ServerProvisionStatus.ORDER_NOT_FOUND, serverId: null };
+        }
+        if (serverOrder.status === "PENDING") {
+            return { status: ServerProvisionStatus.PAYMENT_PROCESSING, serverId: null }
+        }
+        if (serverOrder.status === "FAILED") {
+            return { status: ServerProvisionStatus.PAYMENT_FAILED, serverId: null }
         }
 
-        if (serverOrder.status === GameServerStatus.CREATED && serverOrder.gameServer.ptServerId) {
+
+        if (serverOrder.gameServer) {
             try {
                 const res = await fetch(`${panelUrl}/api/client/servers/${serverOrder.gameServer.ptServerId}`, {
                     method: 'GET',
@@ -43,21 +48,23 @@ export default async function checkIfServerReady(stripeSession: string): Promise
                             data: { status: "ACTIVE" },
                         });
                         // Return the new status directly to avoid a race condition.
-                        return { status: GameServerStatus.DELETED, serverId: serverOrder.gameServer.ptServerId };
+                        return { status: ServerProvisionStatus.READY, serverId: serverOrder.gameServer.ptServerId };
                     }
                     // If it's still installing, just return the current status.
-                    return { status: GameServerStatus.CREATED, serverId: serverOrder.gameServer.ptServerId };
+                    return { status: ServerProvisionStatus.PROVISIONING, serverId: serverOrder.gameServer.ptServerId };
                 } else {
                     console.error(`Pterodactyl API error: ${res.status} ${await res.text()}`);
+                    return { status: ServerProvisionStatus.INTERNAL_ERROR, serverId: null }
                 }
             } catch (error) {
                 console.error("Failed to fetch server status:", error);
+                return { status: ServerProvisionStatus.INTERNAL_ERROR, serverId: null }
             }
         }
-        
+
         // For any other status (PENDING, PAID, etc.), just return the current state from the DB.
-        return { status: serverOrder.gameServer.status, serverId: serverOrder.gameServer.ptServerId  };
+        return { status: ServerProvisionStatus.READY, serverId: serverOrder.gameServer.ptServerId };
     }
 
-    return { status: null, serverId: null };
+    return { status: ServerProvisionStatus.INTERNAL_ERROR, serverId: null }
 }
