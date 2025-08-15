@@ -59,9 +59,9 @@ export default async function RootLayout({
                     {children}
                     <Toaster />
                     {process.env.NODE_ENV !== "production" &&
-                      <pre className="whitespace-pre-wrap bg-muted p-4 rounded text-xs">
+                        <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
                         {JSON.stringify(sess?.user, null, 2)}
-                      </pre>
+                        </pre>
                     }
 
                   </div>
