@@ -279,12 +279,14 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
               <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium">Status:</div>
-                  <div>              <Badge
-                    variant={serverStats?.state.toLowerCase() === "online" ? "default" : "outline"}
-                    className="px-3 py-1"
-                  >
-                    <Status state={serverStats?.state} />
-                  </Badge></div>
+                  <div>
+                    <Badge
+                      variant={serverStats?.state.toLowerCase() === "online" ? "default" : "outline"}
+                      className="px-3 py-1"
+                    >
+                      <Status state={serverStats?.state} />
+                    </Badge>
+                    </div>
                   <div className="font-medium">Server IP:</div>
                   <div>
                     <span className="flex items-center gap-2">

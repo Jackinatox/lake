@@ -1,9 +1,8 @@
 "use server"
 import { createPtUserClient } from '@/lib/Pterodactyl/ptUserClient';
 import React, { Suspense } from 'react'
-import ServersTable from './serversTable';
 import { auth } from '@/auth';
-import GameServersPage from './ServerTableNew';
+import GameServersPage from './ServerTable';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
