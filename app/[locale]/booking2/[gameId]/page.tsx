@@ -127,15 +127,11 @@ export default function GameServerConfig() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-muted mx-auto"></div>
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-primary mx-auto absolute top-0 left-1/2 transform -translate-x-1/2"></div>
+          <div className="flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
           </div>
           <p className="mt-6 text-lg font-medium text-foreground">
-            Loading configuration options...
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Setting up your server configuration
+        Loading configuration options...
           </p>
         </div>
       </div>
