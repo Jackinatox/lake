@@ -5,7 +5,7 @@ import AdminPage from './adminPage'
 import { SettingsIcon } from 'lucide-react'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb'
 import { auth } from '@/auth'
-import NoAdmin from './NoAdmin'
+import NoAdmin from '../../../components/admin/NoAdminMessage'
 
 async function Admin() {
 

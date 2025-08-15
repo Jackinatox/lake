@@ -3,7 +3,7 @@
 import React from 'react'
 import ServerReadyPoller from "./ServerReadyPoller";
 import { auth } from '@/auth';
-import NotLoggedIn from '@/app/[locale]/(auth-pages)/serverPageAuth';
+import NotLoggedIn from '@/components/auth/NoAuthMessage';
 
 
 export default async function ReturnPage({

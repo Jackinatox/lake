@@ -4,7 +4,7 @@ import React, { Suspense } from 'react'
 import ServersTable from './serversTable';
 import { auth } from '@/auth';
 import GameServersPage from './ServerTableNew';
-import NotLoggedIn from '@/app/[locale]/(auth-pages)/serverPageAuth';
+import NotLoggedIn from '@/components/auth/NoAuthMessage';
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 const apiKey = process.env.PTERODACTYL_API_KEY;

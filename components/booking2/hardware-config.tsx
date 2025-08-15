@@ -160,7 +160,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
                     <div className="text-base sm:text-lg font-semibold">{cpuCores} vCore(s)</div>
                     <span className="text-xs sm:text-sm text-muted-foreground">{selectedPFGroup.cpu.name}</span>
                   </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">{selectedPFGroup.cpu.pricePerCore.toFixed(2)} € / vCore</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">{(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)} € / vCore</div>
                 </div>
                 <div className="px-2">
                   <Slider
@@ -182,7 +182,7 @@ export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig,
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
                   <div className="text-base sm:text-lg font-semibold">{ramGb} GiB RAM</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">{selectedPFGroup.ram.pricePerGb.toFixed(2)} € / GiB</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">{(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)} € / GiB</div>
                 </div>
                 <div className="px-2">
                   <Slider
