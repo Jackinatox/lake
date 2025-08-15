@@ -1,7 +1,7 @@
 import React from 'react'
 import ProvisionServerTest from './provision-server-test'
 import { auth } from '@/auth'
-import NoAdmin from '../../NoAdmin';
+import NoAdmin from '../../../../../components/admin/NoAdminMessage';
 
 async function page() {
     const session = await auth();

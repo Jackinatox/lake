@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from '@/auth';
+import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 
@@ -41,8 +42,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     const data = await response.json();
 
     if (response.status === 403 || response.status === 404) {
-        console.error('auth error to pt API', data);
-        return <>Auth error</>
+        return <NotAllowedMessage />
     }
 
     if (!response.ok) {

@@ -4,6 +4,11 @@
     "description": "Bitte melde dich an, um auf dein Konto zuzugreifen und personalisierte Inhalte zu sehen.",
     "login": "Anmelden"
   },
+  "NotAllowed": {
+    "title": "Zugriff verweigert",
+    "description": "Du hast keine Berechtigung, diese Seite zu sehen. Bitte kontaktiere den Support.",
+    "home": "Zur Startseite"
+  },
   "landingpage": {
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",

@@ -4,6 +4,11 @@
     "description": "Please log in to access your account and see personalized content.",
     "login": "Log In"
   },
+    "NotAllowed": {
+    "title": "Access Denied",
+    "description": "You do not have permission to view this page. Please contact support.",
+    "home": "Go to Home"
+  },
   "landingpage": {
     "header1": "Game Server Hosting",
     "header2": "made easy",
