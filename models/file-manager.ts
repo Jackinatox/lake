@@ -1,7 +1,8 @@
 import { GameServer } from "./gameServerModel"
 
 export interface FileManagerProps {
-  server: GameServer
+  server: GameServer,
+  apiKey: string
 }
 
 export interface FileEntry {

@@ -1,7 +1,7 @@
 import type { DirectoryContents } from "../../../models/file-manager"
 
 export class FileApiService {
-  constructor(private serverId: string) {}
+  constructor(private serverId: string, private apiKey: string) { }
 
   async fetchFiles(path: string): Promise<DirectoryContents> {
     const response = await fetch(`/api/servers/${this.serverId}/files/list?directory=${encodeURIComponent(path)}`, {
@@ -52,9 +52,10 @@ export class FileApiService {
   }
 
   async downloadFile(path: string): Promise<void> {
-    const response = await fetch(`/api/servers/${this.serverId}/files/download?file=${encodeURIComponent(path)}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${this.serverId}/files/download?file=${encodeURIComponent(path)}`, {
       headers: {
         Accept: "application/json",
+        Authorization: `Bearer ${this.apiKey}`
       },
     })
 

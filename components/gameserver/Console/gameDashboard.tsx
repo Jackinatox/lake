@@ -140,7 +140,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
   const handleAcceptEula = async () => {
     if (!loading && wsRef.current) {
-      const apiService = new FileApiService(server.identifier);
+      const apiService = new FileApiService(server.identifier, ptApiKey);
       await apiService.saveFileContent('eula.txt', 'eula=true');
       handleRestart();
     }
@@ -247,7 +247,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <RAMChart newData={serverStats} />
+            <RAMChart newData={serverStats} />ptApiKey
             <Separator className="my-3" />
             <div className="grid grid-cols-2 gap-1 text-sm">
               <div className="font-medium">Current:</div>
@@ -270,7 +270,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
         <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
           <CardHeader className="pb-2">
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-              <CardTitle className="text-xl font-bold">Minecraft Server: {server.name}</CardTitle>
+              <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
               <Button variant="outline">Upgrade</Button>
             </div>
           </CardHeader>
@@ -332,8 +332,8 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
         <TabsComponent
           consoleComponent={ConsoleComponent}
-          fileManagerComponent={<FileManager server={server} />}
-          backupManagerComponent={<BackupManager server={server} />}
+          fileManagerComponent={<FileManager server={server} apiKey={ptApiKey}/>}
+          backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
           settingsComponent={<GameServerSettings server={server} />}
         />
       </div>
