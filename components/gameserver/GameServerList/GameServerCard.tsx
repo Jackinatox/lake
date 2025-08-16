@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Cpu, HardDrive, Calendar, MemoryStick } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import GameServerStatus from "./GameServerStatus";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ClientServer } from "@/models/prisma";
+import Link from "next/link";
 
 
 function formatExpirationDate(date: Date) {
@@ -28,6 +28,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
     const expiration = formatExpirationDate(server.expires);
 
     return (
+        <Link href={`/gameserver/${server.ptServerId}`}>
         <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
             <CardContent className="p-4 sm:p-6">
                 {/* Mobile-first layout: stack vertically on small screens, horizontal on larger screens */}
@@ -99,6 +100,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
                 </div>
             </CardContent>
         </Card>
+        </Link>
     );
 };
 

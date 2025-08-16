@@ -14,7 +14,7 @@ import { FileUploadDialog } from "./components/file-upload-dialog"
 import { FileApiService } from "./file-api"
 import type { FileManagerProps, FileEntry } from "../../../models/file-manager"
 
-export function FileManager({ server }: FileManagerProps) {
+export function FileManager({ server, apiKey }: FileManagerProps) {
   const router = useRouter()
   const [currentPath, setCurrentPath] = useState("/")
   const [files, setFiles] = useState<FileEntry[]>([])
@@ -30,7 +30,7 @@ export function FileManager({ server }: FileManagerProps) {
   const [uploadingFile, setUploadingFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  const apiService = new FileApiService(server.identifier)
+  const apiService = new FileApiService(server.identifier, apiKey)
 
   const handleApiError = (error: any) => {
     if (error.redirect) {
