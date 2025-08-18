@@ -5,7 +5,8 @@
         "markdown": false,
         "scminput": false,
         "json": true,
-        "typescriptreact": true
+        "typescriptreact": true,
+        "typescript": true
     },
     "i18n-ally.localesPaths": [
         "./messages",

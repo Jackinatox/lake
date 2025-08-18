@@ -10,13 +10,13 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import InfoButton from "../InfoButton"
 
 interface HardwareConfigProps {
-  diskOptions: { id: number; size_gb: number; price_per_gb: number }[]
+  diskOptions?: { id: number; size_gb: number; price_per_gb: number }[]
   performanceOptions: PerformanceGroup[]
   onNext: (config: HardwareConfig) => void
   initialConfig: HardwareConfig | null
 }
 
-export const HardwareConfigComponent = forwardRef(({ diskOptions, initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
+export const HardwareConfigComponent = forwardRef(({ initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
   const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
   const [cpuCores, setCpuCores] = useState(4)

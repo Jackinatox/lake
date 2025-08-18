@@ -42,3 +42,4 @@ next-env.d.ts
 prisma/db.sqlite
 
 lgtm/
+.vscode/settings.json
