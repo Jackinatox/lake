@@ -64,5 +64,6 @@ export interface FileUploadDialogProps {
   uploadingFile: File | null
   onFileSelect: (file: File) => void
   onUpload: (file: File) => void
+  onCancel: () => void
   onClose: () => void
 }

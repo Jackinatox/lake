@@ -163,6 +163,14 @@ export function FileManager({ server, apiKey }: FileManagerProps) {
     }
   }
 
+  const handleCancelUpload = () => {
+    apiService.cancelUpload()
+    setIsUploading(false)
+    setUploadProgress(0)
+    setUploadingFile(null)
+    setIsUploadDialogOpen(false)
+  }
+
   useEffect(() => {
     fetchFiles()
   }, [])
@@ -226,6 +234,7 @@ export function FileManager({ server, apiKey }: FileManagerProps) {
         uploadingFile={uploadingFile}
         onFileSelect={setUploadingFile}
         onUpload={handleUpload}
+  onCancel={handleCancelUpload}
         onClose={() => setIsUploadDialogOpen(false)}
       />
     </Card>
