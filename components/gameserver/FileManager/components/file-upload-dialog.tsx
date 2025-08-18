@@ -21,6 +21,7 @@ export function FileUploadDialog({
   uploadingFile,
   onFileSelect,
   onUpload,
+  onCancel,
   onClose,
 }: FileUploadDialogProps) {
   return (
@@ -60,9 +61,15 @@ export function FileUploadDialog({
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isUploading} size="lg">
-            Cancel
-          </Button>
+          {!isUploading ? (
+            <Button variant="outline" onClick={onClose} size="lg">
+              Cancel
+            </Button>
+          ) : (
+            <Button variant="outline" onClick={onCancel} size="lg">
+              Cancel Upload
+            </Button>
+          )}
           <Button
             onClick={() => {
               if (uploadingFile) {
