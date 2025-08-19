@@ -12,5 +12,6 @@ interface UpgradeGameServerServerProps {
 export default async function UpgradeGameServerServer({ serverId, apiKey }: UpgradeGameServerServerProps) {
     const performanceOptions = await fetchPerformanceGroups();
     const minOptions = await getGameServerConfig(serverId);
+    
     return <UpgradeGameServer serverId={serverId} apiKey={apiKey} performanceOptions={performanceOptions} minOptions={minOptions} />;
 }

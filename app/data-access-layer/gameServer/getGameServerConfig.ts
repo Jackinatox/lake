@@ -30,11 +30,16 @@ export async function getGameServerConfig(server_id: string): Promise<HardwareCo
     if (!server) return null;
 
 
+    const now = new Date();
+    const expires = server.expires as Date;
+    const diffMs = expires.getTime() - now.getTime();
+    const durationsDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
     return {
         cpuPercent: server.cpuPercent,
         ramMb: server.ramMB,
         diskMb: server.diskMB,
-        durationsDays: 0,
+        durationsDays,
         pfGroupId: server.locationId
         // TODO: Check if this needs ptId or dbId
     } satisfies HardwareConfig;
