@@ -81,18 +81,30 @@ export function formatBytes(bytes: number): string {
 
 export type priceDef = { totalCents: number, discountCent: number, discountPercent: number };
 export function calculateTotal(type: OrderType, pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
-  // Dickes ToDo: OrderType
-  const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
-  const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
+  switch (type) {
+    case "NEW": {
+      const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
+      const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
+      const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
+      const { amount, percent } = calculateDiscount(duration, toPay)
+      return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
+    }
 
-  const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
+    // Currently only used for Upgrade
+    default: {
+      const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
+      const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
 
-  const { amount, percent } = calculateDiscount(duration, toPay)
+      const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
 
-  // return { total: toPay, discount: amount, percent: percent };
+      const { amount, percent } = calculateDiscount(duration, toPay)
 
-  // TODO: re add thisreturn 
-  return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
+      // return { total: toPay, discount: amount, percent: percent };
+
+      // TODO: re add thisreturn 
+      return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
+    }
+  }
 }
 
 function calculateDiscount(days: number, totalPrice: number) {

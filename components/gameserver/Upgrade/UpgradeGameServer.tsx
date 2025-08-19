@@ -16,7 +16,7 @@ interface UpgradeGameServerProps {
 function UpgradeGameServer({ serverId, apiKey, performanceOptions, minOptions }: UpgradeGameServerProps) {
 
     try {
-        
+
 
     } catch (error) {
 
@@ -26,12 +26,10 @@ function UpgradeGameServer({ serverId, apiKey, performanceOptions, minOptions }:
 
     }
 
-    return (<>
-        <div>UpgradeGameServer for {serverId}</div>
-
-
-        <UpgradeHardwareConfig performanceOptions={performanceOptions} initialConfig={minOptions} onNext={handleNext} />
-    </>
+    return (
+        <>
+            <UpgradeHardwareConfig performanceOptions={performanceOptions} initialConfig={minOptions} onNext={handleNext} />
+        </>
     )
 }
 

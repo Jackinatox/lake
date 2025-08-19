@@ -1,5 +1,6 @@
 "use client"
 
+import Loading from "@/app/[locale]/gameserver/[server_id]/upgrade/loading"
 import InfoButton from "@/components/InfoButton"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
@@ -19,9 +20,9 @@ interface HardwareConfigProps {
 export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNext }: HardwareConfigProps) {
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
-    const [cpuCores, setCpuCores] = useState(4)
-    const [ramGb, setRamGb] = useState(4)
-    const [days, setDays] = useState(30);
+    const [cpuCores, setCpuCores] = useState(initialConfig.cpuPercent / 100)
+    const [ramGb, setRamGb] = useState(initialConfig.ramMb / 1024)
+    const [days, setDays] = useState(0);
     const [totalPrice, setTotalPrice] = useState<priceDef>({ discountCent: 0, totalCents: 0, discountPercent: 0 })
 
     // Set initial values
@@ -46,19 +47,33 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
     // Calculate total price whenever configuration changes
     useEffect(() => {
         if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-            setTotalPrice(calculateTotal("NEW", selectedPFGroup, cpuCores * 100, ramGb * 1024, days));
+            const upgradeCPU = cpuCores - initialConfig.cpuPercent / 100;
+            const upgradeRAM = ramGb - initialConfig.ramMb / 1024;
+            setTotalPrice(calculateTotal("UPGRADE", selectedPFGroup, upgradeCPU * 100, upgradeRAM * 1024, initialConfig.durationsDays + days));
         }
     }, [selectedPFGroup, cpuCores, ramGb, days])
 
 
     if (!selectedPFGroup) {
-        return <div>Loading configuration options...</div>
+        return <Loading />
     }
 
     const ramOption = selectedPFGroup.ram;
 
     return (
         <div className="w-full max-w-7xl mx-auto">
+            debug days: {initialConfig.durationsDays}
+            <Card className="mb-6 shadow border border-muted">
+                <CardHeader>
+                    <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                        <span>Upgrade Information</span>
+                        {/* <InfoButton text="Learn more about hardware upgrades" /> */}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                        Hier ist es nur möglich den Server zu verlängern oder upzugraden. Für Downgrades mus du hier schauen TODO: Link
+                    </CardDescription>
+                </CardHeader>
+            </Card>
             {/* Mobile layout: stacked cards */}
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* Configuration Section */}
@@ -111,22 +126,22 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                                     onValueChange={(value) => setDays(parseInt(value))}
                                 >
                                     <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
-                                        <TabsTrigger value="7" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                                        <TabsTrigger value="0" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                                             <div className="text-center">
                                                 <div className="font-medium">None</div>
                                             </div>
                                         </TabsTrigger>
-                                        <TabsTrigger value="30" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                                        <TabsTrigger value="7" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                                             <div className="text-center">
                                                 <div className="font-medium">1 Week</div>
                                             </div>
                                         </TabsTrigger>
-                                        <TabsTrigger value="90" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                                        <TabsTrigger value="30" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                                             <div className="text-center">
-                                                <div className="font-medium">1 Months</div>
+                                                <div className="font-medium">1 Month</div>
                                             </div>
                                         </TabsTrigger>
-                                        <TabsTrigger value="180" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                                        <TabsTrigger value="90" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                                             <div className="text-center">
                                                 <div className="font-medium">3 Months</div>
                                                 <div className="text-xs opacity-80 text-green-600">-10%</div>
@@ -151,7 +166,7 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                                         min={selectedPFGroup.cpu.minThreads}
                                         max={selectedPFGroup.cpu.maxThreads}
                                         step={1}
-                                        onValueChange={(value) => setCpuCores(value[0])}
+                                        onValueChange={(value) => setCpuCores(Math.max(value[0], initialConfig.cpuPercent / 100))}
                                         className="w-full"
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -173,7 +188,7 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                                         min={ramOption.minGb}
                                         max={ramOption.maxGb}
                                         step={1}
-                                        onValueChange={(value) => setRamGb(value[0])}
+                                        onValueChange={(value) => setRamGb(Math.max(value[0], initialConfig.ramMb / 1024))}
                                         className="w-full"
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground mt-1">

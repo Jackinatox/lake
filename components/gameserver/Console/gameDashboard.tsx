@@ -19,6 +19,7 @@ import EulaDialog from "../EulaDialog"
 import { FileApiService } from "../FileManager/file-api"
 import GameServerSettings from "../settings/GameServerSettings"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 
 interface serverProps {
@@ -271,7 +272,9 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
           <CardHeader className="pb-2">
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
-              <Button variant="outline">Upgrade</Button>
+              <Link href={`${window.location.pathname}/upgrade`}>
+                <Button variant="outline">Upgrade</Button>
+              </Link>
             </div>
           </CardHeader>
           <CardContent>
@@ -286,7 +289,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
                     >
                       <Status state={serverStats?.state} />
                     </Badge>
-                    </div>
+                  </div>
                   <div className="font-medium">Server IP:</div>
                   <div>
                     <span className="flex items-center gap-2">
@@ -332,7 +335,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
 
         <TabsComponent
           consoleComponent={ConsoleComponent}
-          fileManagerComponent={<FileManager server={server} apiKey={ptApiKey}/>}
+          fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
           backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
           settingsComponent={<GameServerSettings server={server} />}
         />
