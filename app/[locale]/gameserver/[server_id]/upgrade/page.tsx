@@ -5,7 +5,7 @@ import React from 'react'
 import Loading from './loading';
 
 
-async function UpgradePage({ params }: { params: { locale: string; server_id: string } }) {
+async function UpgradePage({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
   const awaitedParams = await params;
   const { server_id } = awaitedParams;
   const session = await auth();
