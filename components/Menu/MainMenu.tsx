@@ -66,6 +66,7 @@ const MENU: MenuItem[] = [
 ]
 
 export default function MainMenu({ locale }) {
+  const [open, setOpen] = React.useState(false)
   return (
     <header className="">
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
@@ -125,7 +126,7 @@ export default function MainMenu({ locale }) {
 
           {/* — Mobile Menu — */}
           <div className="md:hidden">
-            <Sheet>
+            <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <MenuIcon className="h-6 w-6" />
@@ -134,7 +135,7 @@ export default function MainMenu({ locale }) {
               <SheetContent side="left" className="w-64">
                 <SheetHeader>
                   <SheetTitle>
-                    <Link href="/">
+                    <Link href="/" onClick={() => setOpen(false)}>
                       {/* Light mode logo */}
                       <Image
                         src="/images/light/logo/ScyedLogo.webp"
@@ -181,7 +182,7 @@ export default function MainMenu({ locale }) {
                         <DropdownMenuContent className="w-full">
                           {item.subItems.map((sub) => (
                             <DropdownMenuItem asChild key={sub.label}>
-                              <Link href={sub.href} className="flex items-center">
+                              <Link href={sub.href} className="flex items-center" onClick={() => setOpen(false)}>
                                 <sub.Icon className="h-5 w-5 mr-2" />
                                 {sub.label}
                               </Link>
@@ -193,6 +194,7 @@ export default function MainMenu({ locale }) {
                       <Link
                         key={item.label}
                         href={item.href!}
+                        onClick={() => setOpen(false)}
                         className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
                       >
                         <item.Icon className="h-5 w-5 mr-3" />
