@@ -1,3 +1,4 @@
+import { HardwareConfig } from "@/models/config";
 import { PerformanceGroup } from "@/models/prisma";
 import { OrderType } from "@prisma/client";
 
@@ -99,12 +100,24 @@ export function calculateTotal(type: OrderType, pf: PerformanceGroup, cpuPercent
 
       const { amount, percent } = calculateDiscount(duration, toPay)
 
-      // return { total: toPay, discount: amount, percent: percent };
 
-      // TODO: re add thisreturn 
       return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
     }
   }
+}
+
+export function calculateUpgradeCost(oldConfig: HardwareConfig, upgradeByConfig: HardwareConfig, pf: PerformanceGroup): priceDef {
+  const costToExtend = calculateTotal("NEW", pf, upgradeByConfig.cpuPercent, upgradeByConfig.ramMb, upgradeByConfig.durationsDays);
+  const costToUpgrade = calculateTotal("NEW", pf, upgradeByConfig.cpuPercent - oldConfig.cpuPercent, upgradeByConfig.ramMb - oldConfig.ramMb, oldConfig.durationsDays);
+
+  const res: priceDef = {
+    discountCent: costToExtend.discountCent + costToUpgrade.discountCent,
+    discountPercent: costToExtend.discountPercent + costToUpgrade.discountPercent,
+    totalCents: costToExtend.totalCents + costToUpgrade.totalCents
+  };
+
+
+  return res;
 }
 
 function calculateDiscount(days: number, totalPrice: number) {

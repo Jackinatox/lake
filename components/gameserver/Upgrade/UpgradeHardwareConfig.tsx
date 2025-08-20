@@ -5,7 +5,7 @@ import InfoButton from "@/components/InfoButton"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calculateTotal, priceDef } from "@/lib/globalFunctions"
+import { calculateTotal, calculateUpgradeCost, priceDef } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { useEffect, useState } from "react"
@@ -49,7 +49,10 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
         if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
             const upgradeCPU = cpuCores - initialConfig.cpuPercent / 100;
             const upgradeRAM = ramGb - initialConfig.ramMb / 1024;
-            setTotalPrice(calculateTotal("UPGRADE", selectedPFGroup, upgradeCPU * 100, upgradeRAM * 1024, initialConfig.durationsDays + days));
+            // setTotalPrice(calculateTotal("UPGRADE", selectedPFGroup, upgradeCPU * 100, upgradeRAM * 1024, initialConfig.durationsDays + days));
+
+            setTotalPrice(calculateUpgradeCost(initialConfig, {cpuPercent: cpuCores * 100, ramMb: ramGb * 1024, durationsDays: days, pfGroupId: selectedPFGroup.id, diskMb: null}, selectedPFGroup));
+
         }
     }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -62,7 +65,7 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
 
     return (
         <div className="w-full max-w-7xl mx-auto">
-            debug days: {initialConfig.durationsDays}
+            debug days: {initialConfig.durationsDays} ramGb to upgrade: {ramGb - initialConfig.ramMb / 1024} cpucores to upgrade: {cpuCores - initialConfig.cpuPercent / 100}
             <Card className="mb-6 shadow border border-muted">
                 <CardHeader>
                     <CardTitle className="text-base sm:text-lg flex items-center gap-2">
