@@ -4,10 +4,12 @@ import Loading from "@/app/[locale]/gameserver/[server_id]/upgrade/loading"
 import InfoButton from "@/components/InfoButton"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
+import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calculateTotal, calculateUpgradeCost, priceDef } from "@/lib/globalFunctions"
+import { calculateBase, calculateUpgradeCost, priceDef, UpgradePriceDef } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
+import { Info } from "lucide-react"
 import { useEffect, useState } from "react"
 
 interface HardwareConfigProps {
@@ -23,7 +25,7 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
     const [cpuCores, setCpuCores] = useState(initialConfig.cpuPercent / 100)
     const [ramGb, setRamGb] = useState(initialConfig.ramMb / 1024)
     const [days, setDays] = useState(0);
-    const [totalPrice, setTotalPrice] = useState<priceDef>({ discountCent: 0, totalCents: 0, discountPercent: 0 })
+    const [totalPrice, setTotalPrice] = useState<UpgradePriceDef>({ totalCents: 0, upgradeCents: { cpu: 0, ram: 0 }, extendCents: { cpu: 0, ram: 0 }, discount: { cents: 0, percent: 0 } });
 
     // Set initial values
     useEffect(() => {
@@ -47,12 +49,13 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
     // Calculate total price whenever configuration changes
     useEffect(() => {
         if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-            const upgradeCPU = cpuCores - initialConfig.cpuPercent / 100;
-            const upgradeRAM = ramGb - initialConfig.ramMb / 1024;
+            const upgradeByCPU = (cpuCores * 100) - initialConfig.cpuPercent;
+            const upgradeByRAM = (ramGb * 1024) - initialConfig.ramMb;
             // setTotalPrice(calculateTotal("UPGRADE", selectedPFGroup, upgradeCPU * 100, upgradeRAM * 1024, initialConfig.durationsDays + days));
+            const upgradeBy: HardwareConfig = { cpuPercent: upgradeByCPU, ramMb: upgradeByRAM, durationsDays: days, pfGroupId: selectedPFGroup.id, diskMb: null };
 
-            setTotalPrice(calculateUpgradeCost(initialConfig, {cpuPercent: cpuCores * 100, ramMb: ramGb * 1024, durationsDays: days, pfGroupId: selectedPFGroup.id, diskMb: null}, selectedPFGroup));
-
+            setTotalPrice(calculateUpgradeCost(initialConfig, upgradeBy, selectedPFGroup));
+            console.log(`upgradeBy: ${JSON.stringify(upgradeBy)}`);
         }
     }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -66,9 +69,10 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
     return (
         <div className="w-full max-w-7xl mx-auto">
             debug days: {initialConfig.durationsDays} ramGb to upgrade: {ramGb - initialConfig.ramMb / 1024} cpucores to upgrade: {cpuCores - initialConfig.cpuPercent / 100}
-            <Card className="mb-6 shadow border border-muted">
+            <Card className="mb-6 shadow border border-primary/30">
                 <CardHeader>
                     <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                        <Info className="text-primary" />
                         <span>Upgrade Information</span>
                         {/* <InfoButton text="Learn more about hardware upgrades" /> */}
                     </CardTitle>
@@ -146,8 +150,10 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                                         </TabsTrigger>
                                         <TabsTrigger value="90" className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                                             <div className="text-center">
-                                                <div className="font-medium">3 Months</div>
-                                                <div className="text-xs opacity-80 text-green-600">-10%</div>
+                                                <div className="flex items-center gap-2 font-medium">
+                                                    <span>3 Months</span>
+                                                    <span className="text-sm opacity-80 text-green-500 font-bold">-10%</span>
+                                                </div>
                                             </div>
                                         </TabsTrigger>
                                     </TabsList>
@@ -219,20 +225,30 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                             </CardHeader>
                             <CardContent className="space-y-3 sm:space-y-4">
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-                                        <span className="text-sm font-medium">{cpuCores} vCore{cpuCores > 1 ? "s" : ""}</span>
-                                        <span className="text-sm font-semibold">{(selectedPFGroup.cpu.pricePerCore / 100 / 30 * cpuCores * days).toFixed(2)} €</span>
-                                    </div>
-                                    <div className="flex justify-between items-center p-2 rounded bg-muted/30">
-                                        <span className="text-sm font-medium">{ramGb} GiB RAM</span>
-                                        <span className="text-sm font-semibold">{(selectedPFGroup.ram.pricePerGb / 100 / 30 * ramGb * days).toFixed(2)} €</span>
-                                    </div>
-                                    {(totalPrice.discountCent !== 0.0) && (
-                                        <div className="flex justify-between items-center p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                                            <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.discountPercent}%)</span>
-                                            <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {(totalPrice.discountCent / 100).toFixed(2)} €</span>
-                                        </div>
-                                    )}
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableCell></TableCell>
+                                                <TableCell>vCPU</TableCell>
+                                                <TableCell>RAM</TableCell>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell>Upgrade für {initialConfig.durationsDays} Tage</TableCell>
+                                                <TableCell>{(totalPrice.upgradeCents.cpu / 100).toFixed(2)} €</TableCell>
+                                                <TableCell>{(totalPrice.upgradeCents.ram / 100).toFixed(2)} €</TableCell>
+                                            </TableRow>
+
+                                            <TableRow>
+                                                {totalPrice.discount.cents > 0 ?
+                                                    <TableCell>Verlängerung für {days} Tage<div className="text-primary">(zzgl. {(totalPrice.discount.cents / 100).toFixed(2)} € Rabatt)</div></TableCell> :
+                                                    <TableCell>Verlängerung für {days} Tage</TableCell>}
+                                                <TableCell>{(totalPrice.extendCents.cpu / 100).toFixed(2)} €</TableCell>
+                                                <TableCell>{(totalPrice.extendCents.ram / 100).toFixed(2)} €</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
                                 </div>
                             </CardContent>
                             <CardFooter className="border-t pt-4 bg-muted/20 flex flex-col space-y-3 font-semibold">

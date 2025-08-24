@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calcDiskSize, calculateTotal, priceDef } from "@/lib/globalFunctions"
+import { calcDiskSize, calculateBase, calculateNew, NewPriceDef } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
@@ -22,7 +22,7 @@ export const HardwareConfigComponent = forwardRef(({ initialConfig, performanceO
   const [cpuCores, setCpuCores] = useState(4)
   const [ramGb, setRamGb] = useState(4)
   const [days, setDays] = useState(30);
-  const [totalPrice, setTotalPrice] = useState<priceDef>({ discountCent: 0, totalCents: 0, discountPercent: 0 })
+  const [totalPrice, setTotalPrice] = useState<NewPriceDef>({cents: {cpu: 0, ram: 0}, discount: {cents: 0, percent: 0}, totalCents: 0}); 
 
   // Set initial values
   useEffect(() => {
@@ -46,7 +46,7 @@ export const HardwareConfigComponent = forwardRef(({ initialConfig, performanceO
   // Calculate total price whenever configuration changes
   useEffect(() => {
     if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-      setTotalPrice(calculateTotal("NEW", selectedPFGroup, cpuCores * 100, ramGb * 1024, days));
+      setTotalPrice(calculateNew(selectedPFGroup, cpuCores * 100, ramGb * 1024, days));
     }
   }, [selectedPFGroup, cpuCores, ramGb, days])
 
@@ -220,16 +220,16 @@ export const HardwareConfigComponent = forwardRef(({ initialConfig, performanceO
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-2 rounded bg-muted/30">
                     <span className="text-sm font-medium">{cpuCores} vCore{cpuCores > 1 ? "s" : ""}</span>
-                    <span className="text-sm font-semibold">{(selectedPFGroup.cpu.pricePerCore / 100 / 30 * cpuCores * days).toFixed(2)} €</span>
+                    <span className="text-sm font-semibold">{(totalPrice.cents.cpu / 100).toFixed(2)} €</span>
                   </div>
                   <div className="flex justify-between items-center p-2 rounded bg-muted/30">
                     <span className="text-sm font-medium">{ramGb} GiB RAM</span>
-                    <span className="text-sm font-semibold">{(selectedPFGroup.ram.pricePerGb / 100 / 30 * ramGb * days).toFixed(2)} €</span>
+                    <span className="text-sm font-semibold">{(totalPrice.cents.ram / 100).toFixed(2)} €</span>
                   </div>
-                  {(totalPrice.discountCent !== 0.0) && (
+                  {(totalPrice.discount.cents !== 0.0) && (
                     <div className="flex justify-between items-center p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.discountPercent}%)</span>
-                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {(totalPrice.discountCent / 100).toFixed(2)} €</span>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">Discount (-{totalPrice.discount.percent}%)</span>
+                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">- {(totalPrice.discount.cents / 100).toFixed(2)} €</span>
                     </div>
                   )}
                 </div>

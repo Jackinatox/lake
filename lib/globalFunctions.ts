@@ -20,6 +20,8 @@ const maxDisk = 102400; // 100GiB in MiB
  */
 export function calcDiskSize(cpu: number, ramSize: number): number {
   // Calculates Disk like this: threads*2 + ramGiB*2 min and Max Values set
+  return 81_920;
+
   return Math.max(
     Math.min(
       maxDisk,
@@ -40,6 +42,7 @@ export function calcDiskSize(cpu: number, ramSize: number): number {
  */
 export function calcBackups(cpu: number, ramSize: number): number {
   // Calculates Backups like this: cores + RamGB * 0.8 min and max Values set
+  return 10;
   return Math.max(
     Math.min(maxBackups, Math.ceil(cpu / 100 + (ramSize / 1024) * 0.8)),
     minBackups
@@ -61,6 +64,7 @@ export function getEggId(gameName: string): number {
   }
 }
 
+
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
 
@@ -78,46 +82,69 @@ export function formatBytes(bytes: number): string {
 }
 
 
+export type NewPriceDef = {
+  totalCents: number,
+  cents: { cpu: number, ram: number },
+  discount: { cents: number, percent: number }
+};
 
+export function calculateNew(pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): NewPriceDef {
+  const baseCalc = calculateBase(pf, cpuPercent, ramMB, duration);
+  const toPay = parseFloat(((baseCalc.cents.cpu + baseCalc.cents.ram) / 30 * duration).toFixed(2));
 
-export type priceDef = { totalCents: number, discountCent: number, discountPercent: number };
-export function calculateTotal(type: OrderType, pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
-  switch (type) {
-    case "NEW": {
-      const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
-      const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
-      const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
-      const { amount, percent } = calculateDiscount(duration, toPay)
-      return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
-    }
+  const { amount, percent } = calculateDiscount(duration, toPay)
 
-    // Currently only used for Upgrade
-    default: {
-      const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100;
-      const ramPrice = pf.ram.pricePerGb * ramMB / 1024;
-
-      const toPay = parseFloat(((cpuPrice + ramPrice) / 30 * duration).toFixed(2));
-
-      const { amount, percent } = calculateDiscount(duration, toPay)
-
-
-      return { totalCents: toPay - amount, discountCent: amount, discountPercent: percent };
-    }
-  }
+  return { totalCents: toPay - amount, cents: { cpu: baseCalc.cents.cpu, ram: baseCalc.cents.ram }, discount: { cents: amount, percent: percent } };
 }
 
-export function calculateUpgradeCost(oldConfig: HardwareConfig, upgradeByConfig: HardwareConfig, pf: PerformanceGroup): priceDef {
-  const costToExtend = calculateTotal("NEW", pf, upgradeByConfig.cpuPercent, upgradeByConfig.ramMb, upgradeByConfig.durationsDays);
-  const costToUpgrade = calculateTotal("NEW", pf, upgradeByConfig.cpuPercent - oldConfig.cpuPercent, upgradeByConfig.ramMb - oldConfig.ramMb, oldConfig.durationsDays);
 
-  const res: priceDef = {
-    discountCent: costToExtend.discountCent + costToUpgrade.discountCent,
-    discountPercent: costToExtend.discountPercent + costToUpgrade.discountPercent,
-    totalCents: costToExtend.totalCents + costToUpgrade.totalCents
+export type UpgradePriceDef = {
+  totalCents: number,
+  upgradeCents: { cpu: number, ram: number },
+  extendCents: { cpu: number, ram: number },
+  discount: { cents: number, percent: number }
+};
+
+export function calculateUpgradeCost(oldConfig: HardwareConfig, upgradeByConfig: HardwareConfig, pf: PerformanceGroup): UpgradePriceDef {
+  const costToUpgrade = calculateBase(pf, upgradeByConfig.cpuPercent, upgradeByConfig.ramMb, oldConfig.durationsDays);
+  const costToExtend = calculateBase(pf, upgradeByConfig.cpuPercent + oldConfig.cpuPercent, upgradeByConfig.ramMb + oldConfig.ramMb, upgradeByConfig.durationsDays);
+  
+  const totalCents = costToExtend.totalCents + costToUpgrade.totalCents;
+  
+  const { amount, percent } = calculateDiscount(upgradeByConfig.durationsDays, totalCents);
+  
+  const res: UpgradePriceDef = {
+    extendCents: {
+      cpu: costToExtend.cents.cpu,
+      ram: costToExtend.cents.ram
+    },
+    upgradeCents: {
+      cpu: costToUpgrade.cents.cpu,
+      ram: costToUpgrade.cents.ram
+    },
+    discount: {
+      cents: amount,
+      percent: percent,
+    },
+    totalCents: parseFloat((totalCents - amount).toFixed(2)),
   };
-
-
+  
   return res;
+}
+
+
+export type priceDef = {
+  totalCents: number,
+  cents: { cpu: number, ram: number }
+};
+
+export function calculateBase(pf: PerformanceGroup, cpuPercent: number, ramMB: number, duration: number): priceDef {
+  const cpuPrice = pf.cpu.pricePerCore * cpuPercent / 100 / 30 * duration;
+  const ramPrice = pf.ram.pricePerGb * ramMB / 1024 / 30 * duration;
+
+  const toPay = parseFloat(((cpuPrice + ramPrice)).toFixed(2));
+
+  return { totalCents: toPay, cents: { cpu: cpuPrice, ram: ramPrice } };
 }
 
 function calculateDiscount(days: number, totalPrice: number) {
@@ -128,5 +155,5 @@ function calculateDiscount(days: number, totalPrice: number) {
     percent = 10; // 10% discount for 3 months
   }
   const amount = totalPrice * (percent / 100);
-  return { amount, percent };
+  return { amount: parseFloat(amount.toFixed(2)), percent };
 }
