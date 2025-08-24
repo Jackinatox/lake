@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@/auth";
-import { calculateTotal } from "@/lib/globalFunctions";
+import { calculateBase } from "@/lib/globalFunctions";
 import { prisma } from "@/prisma";
 import { OrderType } from "@prisma/client";
 import { stripe } from "@/lib/stripe";
@@ -32,7 +32,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 include: { cpu: true, ram: true }
             });
 
-            const price = calculateTotal(type, location, cpuPercent, ramMB, duration);
+            const price = calculateBase(type, location, cpuPercent, ramMB, duration);
             console.log(price)
 
             // 1. Create the ServerOrder
