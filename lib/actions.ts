@@ -6,7 +6,7 @@ export async function fetchPerformanceGroups() {
   const data = await prisma.location.findMany({ 
     include: {
       cpu: true,
-      ram: true,
+      ram: true, 
     },
     where: {
       enabled: true

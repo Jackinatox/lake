@@ -3,10 +3,11 @@
 import Loading from "@/app/[locale]/gameserver/[server_id]/upgrade/loading"
 import InfoButton from "@/components/InfoButton"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calculateBase, calculateUpgradeCost, priceDef, UpgradePriceDef } from "@/lib/globalFunctions"
+import { calculateBase, calculateUpgradeCost, priceDef, UpgradePriceDef, calcDiskSize } from "@/lib/globalFunctions"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { Info } from "lucide-react"
@@ -52,7 +53,7 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
             const upgradeByCPU = (cpuCores * 100) - initialConfig.cpuPercent;
             const upgradeByRAM = (ramGb * 1024) - initialConfig.ramMb;
             // setTotalPrice(calculateTotal("UPGRADE", selectedPFGroup, upgradeCPU * 100, upgradeRAM * 1024, initialConfig.durationsDays + days));
-            const upgradeBy: HardwareConfig = { cpuPercent: upgradeByCPU, ramMb: upgradeByRAM, durationsDays: days, pfGroupId: selectedPFGroup.id, diskMb: null };
+            const upgradeBy: HardwareConfig = { cpuPercent: upgradeByCPU, ramMb: upgradeByRAM, durationsDays: days, pfGroupId: selectedPFGroup.id, diskMb: initialConfig.diskMb };
 
             setTotalPrice(calculateUpgradeCost(initialConfig, upgradeBy, selectedPFGroup));
             console.log(`upgradeBy: ${JSON.stringify(upgradeBy)}`);
@@ -260,6 +261,25 @@ export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNex
                                     <span className="text-primary">Total</span>
                                     <span className="text-2xl font-bold text-primary">{(totalPrice.totalCents / 100).toFixed(2)} €</span>
                                 </div>
+                                <Button
+                                    className="w-full font-bold"
+                                    size="lg"
+                                    onClick={() => {
+                                        if (!selectedPFGroup) return;
+                                        const cpuPercent = Math.round(cpuCores * 100);
+                                        const ramMb = Math.round(ramGb * 1024);
+                                        const config: HardwareConfig = {
+                                            pfGroupId: selectedPFGroup.id,
+                                            cpuPercent,
+                                            ramMb,
+                                            diskMb: calcDiskSize(cpuPercent, ramMb),
+                                            durationsDays: days,
+                                        };
+                                        onNext(config);
+                                    }}
+                                >
+                                    Continue to Payment
+                                </Button>
                             </CardFooter>
                         </Card>
                     </div>
