@@ -7,12 +7,13 @@ import { OrderType } from "@prisma/client";
 import { stripe } from "@/lib/stripe";
 import { ServerConfig } from "../[locale]/booking2/[gameId]/page";
 import { HardwareConfig } from "@/models/config";
+import { connect } from "http2";
 
 
 export type CheckoutParams = {
     type: OrderType;
     creationServerConfig?: ServerConfig;    // Needed for Server Creation!!!
-    gameServerId: string;
+    ptServerId: string;
     ramMB: number;
     cpuPercent: number;
     diskMB: number;
@@ -21,7 +22,7 @@ export type CheckoutParams = {
 
 export async function checkoutAction(params: CheckoutParams) {
     console.log("Called")
-    const { type, gameServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
+    const { type, ptServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
     const userSession = await auth();
     if (!userSession?.user?.id) throw new Error("Not authenticated");
 
@@ -41,7 +42,7 @@ export async function checkoutAction(params: CheckoutParams) {
             const order = await prisma.gameServerOrder.create({
                 data: {
                     type,
-                    gameServerId,
+                    gameServerId: ptServerId,
                     userId: userSession.user.id,
                     ramMB,
                     cpuPercent,
@@ -90,9 +91,11 @@ export async function checkoutAction(params: CheckoutParams) {
             return { client_secret: stripeSession.client_secret };
         }
         case "UPGRADE": {
-            const server = await prisma.gameServer.findUnique({
-                where: { id: gameServerId }
+            const server = await prisma.gameServer.findFirst({
+                where: { ptServerId: ptServerId, userId: userSession.user.id }
             });
+
+            console.log(JSON.stringify(server))
 
             const performanceGroup = await prisma.location.findUnique({
                 where: { id: server.locationId },
@@ -120,7 +123,7 @@ export async function checkoutAction(params: CheckoutParams) {
             const order = await prisma.gameServerOrder.create({
                 data: {
                     type,
-                    gameServerId,
+                    gameServerId: server.id,
                     userId: userSession.user.id,
                     ramMB,
                     cpuPercent,
@@ -128,8 +131,6 @@ export async function checkoutAction(params: CheckoutParams) {
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
                     status: "PENDING",
-                    creationGameDataId: creationServerConfig.gameConfig.gameId,
-                    creationLocationId: creationServerConfig.hardwareConfig.pfGroupId
                 }
             });
 
@@ -144,7 +145,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     {
                         price_data: {
                             currency: "eur",
-                            product_data: { name: `${type} Game Server` },
+                            product_data: { name: `Upgrade Game Server to ${newConfig.cpuPercent}% CPU, ${newConfig.ramMb}MB RAM` },
                             unit_amount: Math.round(price.totalCents)
                         },
                         quantity: 1
@@ -158,6 +159,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
                 // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
             });
+            
 
             // 3. Save Stripe Session ID
             await prisma.gameServerOrder.update({

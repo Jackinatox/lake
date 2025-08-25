@@ -1,6 +1,5 @@
 "use client"
 
-import { HardwareConfigComponent } from '@/components/booking2/hardware-config';
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import React from 'react'
@@ -15,11 +14,11 @@ interface UpgradeGameServerProps {
     minOptions: HardwareConfig;
 }
 
-function UpgradeGameServer({ serverId, apiKey, performanceOptions, minOptions }: UpgradeGameServerProps) {
+function UpgradeGameServer({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
     const handleNext = async (newHardwareConfig: HardwareConfig) => {
         const params: CheckoutParams = {
             type: 'UPGRADE',
-            gameServerId: serverId,
+            ptServerId: serverId,
             cpuPercent: newHardwareConfig.cpuPercent,
             diskMB: newHardwareConfig.diskMb,
             duration: newHardwareConfig.durationsDays,
@@ -31,9 +30,11 @@ function UpgradeGameServer({ serverId, apiKey, performanceOptions, minOptions }:
             const clientSecret = await checkoutAction(params);
             toast({
                 title: "Checkout Successful",
-                description: `client secret: ${clientSecret}`,
+                description: `client secret: ${JSON.stringify(clientSecret)}`,
                 variant: "default"
             });
+
+
         } catch (error) {
             console.error("Error during checkout:", error);
             toast({
