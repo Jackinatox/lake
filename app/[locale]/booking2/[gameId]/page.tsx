@@ -85,7 +85,7 @@ export default function GameServerConfig() {
       diskMB: hardwareConfig.diskMb,
       ramMB: hardwareConfig.ramMb,
       duration: hardwareConfig.durationsDays,
-      gameServerId: null,
+      ptServerId: null,
       creationServerConfig: { gameConfig: gameConfig, hardwareConfig: hardwareConfig }
     }
 
