@@ -176,45 +176,49 @@ export function FileManager({ server, apiKey }: FileManagerProps) {
   }, [])
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-full overflow-hidden">
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FileText className="h-6 w-6" />
-            <span className="text-xl">File Manager</span>
+        <CardTitle className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <FileText className="h-6 w-6 shrink-0" />
+            <span className="text-lg sm:text-xl truncate">File Manager</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="default" onClick={() => fetchFiles()}>
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap justify-end">
+            <Button className="w-full sm:w-auto" variant="outline" size="default" onClick={() => fetchFiles()}>
               <RefreshCw className="h-4 w-4 mr-2" /> Refresh
             </Button>
-            <Button variant="outline" size="default" onClick={() => setIsUploadDialogOpen(true)}>
+            <Button className="w-full sm:w-auto" variant="outline" size="default" onClick={() => setIsUploadDialogOpen(true)}>
               <Upload className="h-4 w-4 mr-2" /> Upload
             </Button>
           </div>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 px-2 sm:px-6">
         {error && (
           <Alert variant="destructive">
             <AlertDescription className="text-base">{error}</AlertDescription>
           </Alert>
         )}
 
-        <BreadcrumbNavigation currentPath={currentPath} onNavigate={handleNavigate} />
+        <div className="overflow-x-auto -mx-2 sm:mx-0">
+          <BreadcrumbNavigation currentPath={currentPath} onNavigate={handleNavigate} />
+        </div>
 
-        <FileList
-          files={files}
-          currentPath={currentPath}
-          loading={loading}
-          sortColumn={sortColumn}
-          sortDirection={sortDirection}
-          onFileClick={handleFileClick}
-          onSort={handleSort}
-          onNavigateUp={handleNavigateUp}
-          onDownload={handleDownload}
-          onDelete={handleDelete}
-        />
+        <div className="overflow-x-auto -mx-2 sm:mx-0">
+          <FileList
+            files={files}
+            currentPath={currentPath}
+            loading={loading}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            onFileClick={handleFileClick}
+            onSort={handleSort}
+            onNavigateUp={handleNavigateUp}
+            onDownload={handleDownload}
+            onDelete={handleDelete}
+          />
+        </div>
       </CardContent>
 
       <FileEditDialog
@@ -234,7 +238,7 @@ export function FileManager({ server, apiKey }: FileManagerProps) {
         uploadingFile={uploadingFile}
         onFileSelect={setUploadingFile}
         onUpload={handleUpload}
-  onCancel={handleCancelUpload}
+        onCancel={handleCancelUpload}
         onClose={() => setIsUploadDialogOpen(false)}
       />
     </Card>

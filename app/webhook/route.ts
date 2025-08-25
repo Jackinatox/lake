@@ -54,11 +54,14 @@ export async function POST(req: NextRequest) {
                     }
                 );
 
-                // Check if payment_intent is expanded and has a charge
+                let receiptUrl: string | null = null;
+
                 if (typeof session.payment_intent !== 'string' &&
-                    session.payment_intent?.latest_charge) {
-                    // const receiptUrl = session.payment_intent.latest_charge.receipt_url; TODO
-                    // console.log('Receipt URL:', receiptUrl);
+                    session.payment_intent?.latest_charge &&
+                    typeof session.payment_intent.latest_charge !== 'string') {
+
+                    receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                    console.log('Receipt URL:', receiptUrl);
                 }
 
                 await prisma.gameServerOrder.update({
@@ -67,7 +70,8 @@ export async function POST(req: NextRequest) {
                     },
                     data: {
                         stripeSessionId: stripeIntent.id,
-                        status: 'PAID'
+                        status: 'PAID',
+                        receipt_url: receiptUrl
                     }
                 })
 
