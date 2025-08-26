@@ -20,6 +20,7 @@ import { FileApiService } from "../FileManager/file-api"
 import GameServerSettings from "../settings/GameServerSettings"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 
 interface serverProps {
@@ -34,6 +35,8 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
   const [eulaOpen, setEulaOpen] = useState(false);
   const wsRef = useRef<WebSocket | null>(null)
   const wsCreds = useRef<any>(null)
+
+  const pathname = usePathname();
 
   const [serverStats, setServerStats] = useState<any>()
 
@@ -272,7 +275,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
           <CardHeader className="pb-2">
             <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
               <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
-              <Link href={`${window.location.pathname}/upgrade`}>
+              <Link href={`${pathname}/upgrade`}>
                 <Button variant="outline">Upgrade</Button>
               </Link>
             </div>
