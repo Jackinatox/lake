@@ -3,11 +3,12 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calcDiskSize, calculateBase, calculateNew, NewPriceDef } from "@/lib/globalFunctions"
+import { calculateNew, NewPriceDef } from "@/lib/GlobalFunctions/paymentLogic"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import InfoButton from "../InfoButton"
+import { calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic"
 
 interface HardwareConfigProps {
   diskOptions?: { id: number; size_gb: number; price_per_gb: number }[]

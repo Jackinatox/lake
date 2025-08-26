@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@/auth";
-import { calculateBase, calculateNew, calculateUpgradeCost } from "@/lib/globalFunctions";
+import { calculateBase, calculateNew, calculateUpgradeCost } from "@/lib/GlobalFunctions/paymentLogic";
 import { prisma } from "@/prisma";
 import { OrderType } from "@prisma/client";
 import { stripe } from "@/lib/stripe";

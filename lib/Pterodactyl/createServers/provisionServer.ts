@@ -1,4 +1,4 @@
-import { calcBackups, calcDiskSize } from "@/lib/globalFunctions";
+import { calcBackups, calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic";
 import { prisma } from "@/prisma";
 import { NewServerOptions } from "@avionrx/pterodactyl-js";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";

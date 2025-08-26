@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { BackupList } from "./backup-list"
 import { CreateBackupDialog } from "./backup-dialog"
 import { FileManagerProps } from "@/models/file-manager"
-import { formatBytes } from "@/lib/globalFunctions"
+import { formatBytes } from "@/lib/GlobalFunctions/ptResourceLogic"
 import { Card, CardHeader } from "@/components/ui/card"
 import { BackupStats } from "./backupStats"
 
