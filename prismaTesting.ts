@@ -1,4 +1,4 @@
-import { calculateUpgradeCost } from "./lib/globalFunctions";
+import { calculateUpgradeCost } from "./lib/GlobalFunctions/paymentLogic";
 
 const { calculateBase } = require("./lib/globalFunctions");
 

@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calculateBase, calculateUpgradeCost, priceDef, UpgradePriceDef, calcDiskSize } from "@/lib/globalFunctions"
+import { calculateBase, calculateUpgradeCost, UpgradePriceDef } from "@/lib/GlobalFunctions/paymentLogic"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { Info } from "lucide-react"
 import { useEffect, useState } from "react"
+import { calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic"
 
 interface HardwareConfigProps {
     diskOptions?: { id: number; size_gb: number; price_per_gb: number }[]
