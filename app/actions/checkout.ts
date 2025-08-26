@@ -26,6 +26,25 @@ export async function checkoutAction(params: CheckoutParams) {
     const userSession = await auth();
     if (!userSession?.user?.id) throw new Error("Not authenticated");
 
+    let stripeUserId = await prisma.user.findUnique({ where: { id: userSession.user.id } }).then(u => u.stripeUserId);
+
+    if (!stripeUserId) {
+        const newCustomer = await stripe.customers.create({
+            email: userSession.user.email,
+            name: userSession.user.name,
+            metadata: {
+                userId: userSession.user.id
+            }
+        });
+
+        await prisma.user.update({
+            where: { id: userSession.user.id },
+            data: { stripeUserId: newCustomer.id }
+        });
+        
+        stripeUserId = newCustomer.id; 
+    }
+
 
     switch (type) {
         case "NEW": {
@@ -76,7 +95,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 metadata: {
                     orderId: String(order.id)
                 },
-                customer_email: userSession.user.email,
+                customer: stripeUserId,
                 return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
                 // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
                 // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
@@ -154,12 +173,12 @@ export async function checkoutAction(params: CheckoutParams) {
                 metadata: {
                     orderId: String(order.id)
                 },
-                customer_email: userSession.user.email,
+                customer: stripeUserId,
                 return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`   // TODO: new return url
                 // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
                 // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
             });
-            
+
 
             // 3. Save Stripe Session ID
             await prisma.gameServerOrder.update({
