@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - uses: actions/checkout@v4
@@ -25,8 +24,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
-      - name: Enable corepack (for pnpm)
-        run: corepack enable
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # or whatever version you’re using
+          run_install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -36,4 +38,5 @@ jobs:
 
       - name: Build project
         run: pnpm build
+
 
