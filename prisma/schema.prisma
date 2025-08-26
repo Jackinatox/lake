@@ -26,6 +26,7 @@ model User {
   image         String?
   ptKey         String?
   ptUser        Int?
+  stripeUserId  String?
   role          Role      @default(USER)
 
   accounts       Account[]
