@@ -40,9 +40,6 @@ export async function POST(req: NextRequest) {
                 break;
 
             case 'checkout.session.completed':
-
-                // console.log(`Session complete: `, intent);
-
                 const serverOrderId = parseInt(stripeIntent.metadata.orderId);
                 console.log('ServerOrder: ', stripeIntent);
 
@@ -79,6 +76,19 @@ export async function POST(req: NextRequest) {
                 await provisionServer(serverOrder)  // This will update the status in ServerOrder
 
                 break;
+
+            case 'checkout.session.expired':
+                console.log(`Session expired: `, stripeIntent);
+                await prisma.gameServerOrder.update({
+                    where: {
+                        stripeSessionId: stripeIntent.id
+                    },
+                    data: {
+                        status: "EXPIRED"
+                    }
+                });
+                break;
+
             default:
                 console.error(`Unhandeld Webhook type: ${event.type}`)
         }

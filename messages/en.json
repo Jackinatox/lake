@@ -106,5 +106,51 @@
       "title": "Server deleted",
       "message": "This server was deleted and is no longer available."
     }
+  },
+  "upgrade": {
+    "info": {
+      "title": "Upgrade Information",
+      "description": "Here you can only extend or upgrade your server. For downgrades, please see here."
+    },
+    "config": {
+      "title": "Performance Configuration",
+      "description": "Customize your server hardware.",
+      "performance-tier": "Performance Tier",
+      "extend-title": "Extend Server",
+      "duration": {
+        "none": "None",
+        "week": "1 Week",
+        "month": "1 Month",
+        "three-months": "3 Months",
+        "discount-10": "-10%"
+      },
+      "little-info": "Info",
+      "cpu": {
+        "label-suffix": "vCore(s)",
+        "price-suffix": "€ / vCore"
+      },
+      "ram": {
+        "label-suffix": "GiB RAM",
+        "price-suffix": "€ / GiB"
+      }
+    },
+    "pricing": {
+      "title": "Price Overview",
+      "description": "Summary of your configuration.",
+      "headers": {
+        "vcpu": "vCPU",
+        "ram": "RAM"
+      },
+      "rows": {
+        "upgrade-for-days": "Upgrade for {days} days",
+        "extend-for-days": "Extend for {days} days"
+      },
+  "discount-with-amount": "(plus {amount} € discount)"
+    },
+    "footer": {
+      "total": "Total",
+      "min-price-hint": "Minimum price €1",
+      "continue": "Continue to Payment"
+    }
   }
 }
