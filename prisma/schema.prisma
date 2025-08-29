@@ -7,7 +7,7 @@ enum OrderStatus {
   PENDING // Only the intend was created, now money received
   PAID // Money received, now the server is being created
   PAYMENT_FAILED // Stripe weebhook said order failed   
-  EXPIRED  // Just to keep the entry, i dont know why yet
+  EXPIRED // Just to keep the entry, i dont know why yet
 }
 
 enum Role {
@@ -163,7 +163,8 @@ model GameServer {
   expires     DateTime
   price       Float // To let the user extend his server at the original price in case we increase prices
 
-  ptServerId String?
+  ptServerId String
+  ptAdminId  Int
   name       String? @default("GameServer")
 
   status    GameServerStatus @default(CREATED)
@@ -185,7 +186,7 @@ model GameServer {
 enum GameServerStatus {
   CREATED // Server created in pt
   CREATION_FAILED // Only when pt.createServer failes, not the actual installation
-  ACTIVE  // Server is installed
+  ACTIVE // Server is installed
 
   EXPIRED
   DELETED

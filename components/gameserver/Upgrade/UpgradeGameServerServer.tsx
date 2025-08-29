@@ -13,11 +13,14 @@ interface UpgradeGameServerServerProps {
 export default async function UpgradeGameServerServer({ serverId, apiKey }: UpgradeGameServerServerProps) {
     const performanceOptions = await fetchPerformanceGroups();
     const minOptions = await getGameServerConfig(serverId);
-    
-    if (!minOptions){
+
+    if (!minOptions) {
         return <NotAllowedMessage />
     }
 
-    
-    return <UpgradeGameServer serverId={serverId} apiKey={apiKey} performanceOptions={performanceOptions} minOptions={minOptions} />;
+
+    return (
+        <div className='w-full max-w-7xl mx-auto'>
+            <UpgradeGameServer serverId={serverId} apiKey={apiKey} performanceOptions={performanceOptions} minOptions={minOptions} />
+        </div>);
 }

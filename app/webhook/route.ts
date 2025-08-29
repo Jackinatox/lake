@@ -1,6 +1,8 @@
 "use server"
 
+import UpgradeGameServer from "@/components/gameserver/Upgrade/UpgradeGameServer";
 import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer";
+import upgradeGameServer from "@/lib/Pterodactyl/upgradeServer/upgradeServer";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
@@ -73,7 +75,16 @@ export async function POST(req: NextRequest) {
                 })
 
                 const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: serverOrderId } });
-                await provisionServer(serverOrder)  // This will update the status in ServerOrder
+                switch (serverOrder.type) {
+                    case "NEW":
+                        await provisionServer(serverOrder);
+                        break;
+                    case "UPGRADE":
+                        await upgradeGameServer(serverOrder);    
+                    break;
+                    default:
+                        console.error(`Unhandled server order type: ${serverOrder.type}`);
+                }
 
                 break;
 

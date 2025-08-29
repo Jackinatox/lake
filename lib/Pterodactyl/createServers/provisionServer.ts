@@ -125,7 +125,8 @@ export async function provisionServer(orderr: GameServerOrder) {
                         userId: serverOrder.user.id,
                         gameDataId: serverOrder.creationGameDataId,
                         locationId: serverOrder.creationLocation.ptLocationId,
-                        gameConfig: serverOrder.gameConfig
+                        gameConfig: serverOrder.gameConfig,
+                        ptAdminId: newServer.id
                     }
                 });
 
