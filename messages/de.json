@@ -107,5 +107,51 @@
       "title": "Server gelöscht",
       "message": "Dieser Server wurde gelöscht und ist nicht mehr verfügbar."
     }
+  },
+  "upgrade": {
+    "info": {
+      "title": "Upgrade Informationen",
+      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Für Downgrades schau bitte hier."
+    },
+    "config": {
+      "title": "Performance-Konfiguration",
+      "description": "Passe die Hardware deines Servers an.",
+      "performance-tier": "Performance-Stufe",
+      "extend-title": "Server verlängern",
+      "duration": {
+        "none": "Keine",
+        "week": "1 Woche",
+        "month": "1 Monat",
+        "three-months": "3 Monate",
+        "discount-10": "-10%"
+      },
+      "little-info": "Info",
+      "cpu": {
+        "label-suffix": "vCore(s)",
+        "price-suffix": "€ / vCore"
+      },
+      "ram": {
+        "label-suffix": "GiB RAM",
+        "price-suffix": "€ / GiB"
+      }
+    },
+    "pricing": {
+      "title": "Preisübersicht",
+      "description": "Zusammenfassung deiner Konfiguration.",
+      "headers": {
+        "vcpu": "vCPU",
+        "ram": "RAM"
+      },
+      "rows": {
+        "upgrade-for-days": "Upgrade für {days} Tage",
+        "extend-for-days": "Verlängerung für {days} Tage"
+      },
+  "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+    },
+    "footer": {
+      "total": "Gesamt",
+      "min-price-hint": "Mindestpreis 1 €",
+      "continue": "Weiter zur Zahlung"
+    }
   }
 }

@@ -7,6 +7,7 @@ enum OrderStatus {
   PENDING // Only the intend was created, now money received
   PAID // Money received, now the server is being created
   PAYMENT_FAILED // Stripe weebhook said order failed   
+  EXPIRED  // Just to keep the entry, i dont know why yet
 }
 
 enum Role {
