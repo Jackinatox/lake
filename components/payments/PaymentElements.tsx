@@ -1,17 +1,19 @@
-'use client'
+ 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { Elements, EmbeddedCheckout, EmbeddedCheckoutProvider, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { cn } from '@/lib/utils';
 
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 interface CustomServerPaymentElementsProps {
     clientSecret: string;
+    className?: string; // optional container class to control width/layout
 }
 
-function CustomServerPaymentElements({ clientSecret }: CustomServerPaymentElementsProps) {
+function CustomServerPaymentElements({ clientSecret, className }: CustomServerPaymentElementsProps) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -26,7 +28,7 @@ function CustomServerPaymentElements({ clientSecret }: CustomServerPaymentElemen
     }
 
     return (
-        <div className="w-full max-w-4xl mx-auto">
+        <div className={cn("w-full", className)}>
             {loading ? (
                 <div className="flex items-center justify-center min-h-[200px]">
                     <div className="text-center space-y-4">
@@ -35,12 +37,12 @@ function CustomServerPaymentElements({ clientSecret }: CustomServerPaymentElemen
                     </div>
                 </div>
             ) : (
-                <div className="bg-card rounded-lg border shadow-sm">
+                <div className="bg-card rounded-lg border shadow-sm w-full">
                     <EmbeddedCheckoutProvider
                         stripe={stripePromise}
                         options={options}
                     >
-                        <div className="p-4 sm:p-6">
+                        <div className="p-2 sm:p-4 md:p-6">
                             <EmbeddedCheckout />
                         </div>
                     </EmbeddedCheckoutProvider>

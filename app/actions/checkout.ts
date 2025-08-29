@@ -21,7 +21,6 @@ export type CheckoutParams = {
 };
 
 export async function checkoutAction(params: CheckoutParams) {
-    console.log("Called")
     const { type, ptServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
     const userSession = await auth();
     if (!userSession?.user?.id) throw new Error("Not authenticated");
@@ -54,7 +53,6 @@ export async function checkoutAction(params: CheckoutParams) {
             });
 
             const price = calculateNew(location, cpuPercent, ramMB, duration);
-            console.log(price)
 
             // 1. Create the ServerOrder
 
@@ -113,8 +111,6 @@ export async function checkoutAction(params: CheckoutParams) {
             const server = await prisma.gameServer.findFirst({
                 where: { ptServerId: ptServerId, userId: userSession.user.id }
             });
-
-            console.log(JSON.stringify(server))
 
             const performanceGroup = await prisma.location.findUnique({
                 where: { id: server.locationId },

@@ -15,7 +15,7 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
   }
 
   return (
-    <div className='flex justify-center'>
+    <div className='flex justify-center w-full'>
       <React.Suspense fallback={<Loading />}>
         <UpgradeGameServerServer serverId={server_id} apiKey={session.user.ptKey} />
       </React.Suspense>
