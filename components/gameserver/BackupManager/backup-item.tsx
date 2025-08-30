@@ -130,7 +130,15 @@ export function BackupItem({ backup, onBackupDeleted, onBackupRestored, serverId
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString()
+    const d = new Date(dateString)
+    const pad = (n: number) => n.toString().padStart(2, '0')
+    const yyyy = d.getUTCFullYear()
+    const mm = pad(d.getUTCMonth() + 1)
+    const dd = pad(d.getUTCDate())
+    const hh = pad(d.getUTCHours())
+    const mi = pad(d.getUTCMinutes())
+    const ss = pad(d.getUTCSeconds())
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} UTC`
   }
 
   const getStatusBadge = (status: Backup["status"]) => {

@@ -1,20 +1,18 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
-import { GameConfigComponent } from "@/components/booking2/game-config"
-import { fetchGames, fetchPerformanceGroups } from "@/lib/actions"
-import type { DiskOption, Game, HardwareConfig, GameConfig } from "@/models/config"
-import { useToast } from "@/hooks/use-toast"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation"
-import { Prisma } from "@prisma/client"
-import { PerformanceGroup } from "@/models/prisma"
-import CustomServerPaymentElements from "@/components/payments/PaymentElements"
-import { ArrowLeft, ArrowRight, Info } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useSession } from "next-auth/react"
 import { checkoutAction, CheckoutParams } from "@/app/actions/checkout"
+import { GameConfigComponent } from "@/components/booking2/game-config"
+import { HardwareConfigComponent } from "@/components/booking2/hardware-config"
+import CustomServerPaymentElements from "@/components/payments/PaymentElements"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
+import { fetchGames as fetchGame, fetchPerformanceGroups } from "@/lib/actions"
+import type { DiskOption, Game, GameConfig, HardwareConfig } from "@/models/config"
+import { PerformanceGroup } from "@/models/prisma"
+import { ArrowLeft, ArrowRight, Info } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
 
 export type ServerConfig = {
   hardwareConfig: HardwareConfig
@@ -45,7 +43,7 @@ export default function GameServerConfig() {
       try {
         const [performanceGroupData, games] = await Promise.all([
           fetchPerformanceGroups(),
-          fetchGames(gameId),
+          fetchGame(gameId),
         ])
 
         if (!games) router.replace('/products/gameserver')

@@ -20,9 +20,7 @@ export interface HardwareConfig {
 }
 
 export interface SatisfactoryConfig {
-  isEarlyAccess: boolean
-  maxPlayers?: number
-  serverName?: string
+  version: "release" | "experimental"
 }
 
 export interface GameConfig {

@@ -11,6 +11,19 @@ import { DbSession } from '@/models/prisma'
 type Props = { sessions: DbSession[] }
 
 const SessionsTable: React.FC<Props> = ({ sessions }) => {
+  // Deterministic UTC date formatter to avoid SSR/CSR hydration mismatches
+  const formatUtc = (input: Date | string | number) => {
+    const d = new Date(input)
+    const pad = (n: number) => n.toString().padStart(2, '0')
+    const yyyy = d.getUTCFullYear()
+    const mm = pad(d.getUTCMonth() + 1)
+    const dd = pad(d.getUTCDate())
+    const hh = pad(d.getUTCHours())
+    const mi = pad(d.getUTCMinutes())
+    const ss = pad(d.getUTCSeconds())
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} UTC`
+  }
+
   const [selected, setSelected] = React.useState<string[]>([])
   const [sortKey, setSortKey] = React.useState<null | 'status' | 'type'>(null)
   const [sortDir, setSortDir] = React.useState<'asc' | 'desc'>('asc')
@@ -128,8 +141,8 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
               <TableCell>{s.type}</TableCell>
               <TableCell>{s.price.toFixed(2)}</TableCell>
               <TableCell>{s.user.email ?? '-'}</TableCell>
-              <TableCell>{new Date(s.createdAt).toLocaleString()}</TableCell>
-              <TableCell>{new Date(s.expiresAt).toLocaleString()}</TableCell>
+              <TableCell>{formatUtc(s.createdAt)}</TableCell>
+              <TableCell>{formatUtc(s.expiresAt)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
