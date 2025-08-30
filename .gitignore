@@ -43,3 +43,6 @@ prisma/db.sqlite
 
 lgtm/
 .vscode/settings.json
+
+# Sentry Config File
+.env.sentry-build-plugin
