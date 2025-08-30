@@ -4,55 +4,62 @@ import { GameServerOrder } from "@prisma/client";
 import { createPtClient } from "../ptAdminClient";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-
+const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
-    const session = await auth();
+  const session = await auth();
 
-    // if (!session?.user) {
-    //     throw new Error("Unauthorized");
-    // }
+  // if (!session?.user) {
+  //     throw new Error("Unauthorized");
+  // }
 
-    const gameServer = await prisma.gameServer.findUnique({ where: { id: serverOrder.gameServerId }, include: { user: true } });
-    const pt = createPtClient();
+  const gameServer = await prisma.gameServer.findUnique({
+    where: { id: serverOrder.gameServerId },
+    include: { user: true },
+  });
+  const pt = createPtClient();
 
-    const ptServer = await pt.getServer(gameServer.ptAdminId.toString());
+  const ptServer = await pt.getServer(gameServer.ptAdminId.toString());
 
-    console.log("expires: ", gameServer.expires);
-    try {
-        const response = await fetch(`${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`, {
-            method: "PATCH",
-            headers: {
-                Authorization: `Bearer ${gameServer.user.ptKey}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                allocation: ptServer.allocation,
-                memory: serverOrder.ramMB,
-                swap: ptServer.limits.swap,
-                disk: ptServer.limits.disk,
-                io: ptServer.limits.io,
-                cpu: serverOrder.cpuPercent,
-                feature_limits: {
-                    allocations: ptServer.featureLimits.allocations,
-                    databases: ptServer.featureLimits.databases,
-                    backups: ptServer.featureLimits.backups,
-                }
-            }),
-        });
-        console.log("ptServer: ", ptServer);
-        const responseData = await response.json();
-        console.log("response: ", responseData);
-        await prisma.gameServer.update({
-            where: { id: gameServer.id },
-            data: {
-                cpuPercent: serverOrder.cpuPercent,
-                ramMB: serverOrder.ramMB,
-            },
-        });
-    } catch (error) {
-        // TODO: notify admin
-        console.error("Error upgrading game server:", error);
-        throw new Error("Failed to upgrade game server");
-    }
+  console.log("expires: ", gameServer.expires);
+  try {
+    const response = await fetch(
+      `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${ptApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          allocation: ptServer.allocation,
+          memory: serverOrder.ramMB,
+          swap: ptServer.limits.swap,
+          disk: ptServer.limits.disk,
+          io: ptServer.limits.io,
+          cpu: serverOrder.cpuPercent,
+          feature_limits: {
+            allocations: ptServer.featureLimits.allocations,
+            databases: ptServer.featureLimits.databases,
+            backups: ptServer.featureLimits.backups,
+          },
+        }),
+      },
+    );
+    console.log("ptServer: ", ptServer);
+    const responseData = await response.json();
+    console.log("response: ", responseData);
+    await prisma.gameServer.update({
+      where: { id: gameServer.id },
+      data: {
+        cpuPercent: serverOrder.cpuPercent,
+        ramMB: serverOrder.ramMB,
+        expires: serverOrder.expiresAt,
+      },
+    });
+  } catch (error) {
+    // TODO: notify admin
+    console.error("Error upgrading game server:", error);
+    throw new Error("Failed to upgrade game server");
+  }
 }
