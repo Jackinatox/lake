@@ -40,8 +40,8 @@ export async function checkoutAction(params: CheckoutParams) {
             where: { id: userSession.user.id },
             data: { stripeUserId: newCustomer.id }
         });
-        
-        stripeUserId = newCustomer.id; 
+
+        stripeUserId = newCustomer.id;
     }
 
 
@@ -94,7 +94,8 @@ export async function checkoutAction(params: CheckoutParams) {
                     orderId: String(order.id)
                 },
                 customer: stripeUserId,
-                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`
+                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+
                 // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
                 // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
             });
@@ -144,7 +145,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     cpuPercent,
                     diskMB,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(server.expires.getTime() + duration * 24 * 60 * 60 * 1000),
                     status: "PENDING",
                 }
             });
