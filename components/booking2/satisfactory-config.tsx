@@ -18,9 +18,7 @@ interface SatisfactoryConfigProps {
 
 export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
   const [config, setConfig] = useState<SatisfactoryConfig>({
-    isEarlyAccess: false,
-    maxPlayers: 8,
-    serverName: "My Satisfactory Server",
+    version: "experimental",
   })
 
   const handleChange = (key: string, value: any) => {
@@ -33,7 +31,7 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
     submit: () => {
       // For Satisfactory, we just need an environment variable to switch between early access and production
       const envVars = {
-        SATISFACTORY_EXPERIMENTAL: config.isEarlyAccess ? "true" : "false",
+        SATISFACTORY_EXPERIMENTAL: config.version === "experimental" ? "true" : "false",
       }
 
       // Create a complete game configuration object
@@ -66,40 +64,6 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
       </div>
 
       <div className="space-y-4 sm:space-y-6">
-        {/* Server Name */}
-        <div className="space-y-2">
-          <Label htmlFor="serverName" className="text-sm font-medium">Server Name</Label>
-          <Input
-            id="serverName"
-            value={config.serverName}
-            onChange={(e) => handleChange("serverName", e.target.value)}
-            className="w-full"
-            placeholder="Enter your server name"
-          />
-        </div>
-
-        {/* Max Players */}
-        <div className="space-y-3">
-          <Label htmlFor="maxPlayers" className="text-sm font-medium">
-            Max Players: <span className="font-semibold">{config.maxPlayers}</span>
-          </Label>
-          <div className="px-2">
-            <Slider
-              id="maxPlayers"
-              value={[config.maxPlayers]}
-              min={1}
-              max={16}
-              step={1}
-              onValueChange={(value) => handleChange("maxPlayers", value[0])}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>1 player</span>
-              <span>16 players</span>
-            </div>
-          </div>
-        </div>
-
         {/* Early Access Toggle */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
           <div className="space-y-1">
@@ -112,8 +76,8 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
           </div>
           <Switch
             id="isEarlyAccess"
-            checked={config.isEarlyAccess}
-            onCheckedChange={(checked) => handleChange("isEarlyAccess", checked)}
+            checked={config.version === "experimental"}
+            onCheckedChange={(checked) => handleChange("version", checked ? "experimental" : "release")}
           />
         </div>
       </div>

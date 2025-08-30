@@ -3,6 +3,18 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { Builder } from "@avionrx/pterodactyl-js";
 import React from 'react'
 
+const formatUtc = (input: Date | string | number) => {
+    const d = new Date(input)
+    const pad = (n: number) => n.toString().padStart(2, '0')
+    const yyyy = d.getUTCFullYear()
+    const mm = pad(d.getUTCMonth() + 1)
+    const dd = pad(d.getUTCDate())
+    const hh = pad(d.getUTCHours())
+    const mi = pad(d.getUTCMinutes())
+    const ss = pad(d.getUTCSeconds())
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} UTC`
+}
+
 async function User({ params }: { params: Promise<{ userId: string }> }) {
     const userId = (await params).userId;
 
@@ -55,8 +67,8 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
                                     <TableCell>{user.language}</TableCell>
                                     <TableCell>{user.rootAdmin ? "Yes" : "No"}</TableCell>
                                     <TableCell>{user.twoFactor ? "Yes" : "No"}</TableCell>
-                                    <TableCell>{new Date(user.updatedAt).toLocaleString()}</TableCell>
-                                    <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
+                                    <TableCell>{formatUtc(user.updatedAt)}</TableCell>
+                                    <TableCell>{formatUtc(user.createdAt)}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

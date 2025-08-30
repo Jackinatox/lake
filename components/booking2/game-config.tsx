@@ -17,7 +17,6 @@ interface GameConfigProps {
 export const GameConfigComponent = forwardRef((
   {
     game,
-    initialGameId,
     additionalConfig = {},
     onAdditionalConfigChange = () => { },
     onSubmit,

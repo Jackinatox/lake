@@ -9,10 +9,17 @@ export const formatFileSize = (bytes: number): string => {
 
 export const formatDate = (dateString: string): string => {
   if (!dateString) return "Unknown"
-
   try {
-    const date = new Date(dateString)
-    return date.toLocaleString()
+    const d = new Date(dateString)
+    if (isNaN(d.getTime())) return "Invalid date"
+    const pad = (n: number) => n.toString().padStart(2, "0")
+    const yyyy = d.getUTCFullYear()
+    const mm = pad(d.getUTCMonth() + 1)
+    const dd = pad(d.getUTCDate())
+    const hh = pad(d.getUTCHours())
+    const mi = pad(d.getUTCMinutes())
+    const ss = pad(d.getUTCSeconds())
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss} UTC`
   } catch {
     return "Invalid date"
   }

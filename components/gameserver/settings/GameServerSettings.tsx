@@ -113,7 +113,7 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
             <Label htmlFor="startup-command">Startup Command</Label>
             <Textarea
               id="startup-command"
-              value={server.uuid}
+              value={server.invocation}
               readOnly
               className="font-mono text-sm bg-muted/50"
               rows={3}
