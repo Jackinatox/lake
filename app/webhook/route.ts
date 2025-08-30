@@ -1,12 +1,10 @@
 "use server"
 
-import UpgradeGameServer from "@/components/gameserver/Upgrade/UpgradeGameServer";
 import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer";
 import upgradeGameServer from "@/lib/Pterodactyl/upgradeServer/upgradeServer";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
-import Stripe from "stripe";
 
 const endpointSecret = process.env.webhookSecret;
 
@@ -33,7 +31,6 @@ export async function POST(req: NextRequest) {
         }
 
         const stripeIntent = event.data.object;
-
 
 
         switch (event.type) {

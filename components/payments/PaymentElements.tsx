@@ -6,6 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { cn } from '@/lib/utils';
 
 
+
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 interface CustomServerPaymentElementsProps {
@@ -24,7 +25,8 @@ function CustomServerPaymentElements({ clientSecret, className }: CustomServerPa
 
 
     const options = {
-        clientSecret: `${clientSecret}`
+        clientSecret: `${clientSecret}`,
+        
     }
 
     return (
@@ -40,7 +42,9 @@ function CustomServerPaymentElements({ clientSecret, className }: CustomServerPa
                 <div className="bg-card rounded-lg border shadow-sm w-full">
                     <EmbeddedCheckoutProvider
                         stripe={stripePromise}
-                        options={options}
+                        options={{ ...options,
+                            
+                         }}
                     >
                         <div className="p-2 sm:p-4 md:p-6">
                             <EmbeddedCheckout />
