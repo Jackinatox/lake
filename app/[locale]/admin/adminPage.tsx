@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Gamepad2Icon, icons, SquarePlay, UsersIcon } from 'lucide-react';
+import { CalendarClock, Gamepad2Icon, icons, SquarePlay, UsersIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 const AdminPage = () => {
@@ -27,6 +27,12 @@ const AdminPage = () => {
             name: 'Wings',
             imageUrl: '/images/wings.jpg',
             link: '/admin/wings',
+        },
+        {
+            icon: <CalendarClock />,
+            name: 'Stripe Sessions',
+            imageUrl: '/images/wings.jpg',
+            link: '/admin/sessions',
         },
         {
             icon: <SquarePlay />,
