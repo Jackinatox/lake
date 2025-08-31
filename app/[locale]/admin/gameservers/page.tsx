@@ -1,11 +1,16 @@
-import React from 'react'
-import GameserversTable from './GameserversTable';
+import { auth } from '@/auth';
+import NoAdmin from '@/components/admin/NoAdminMessage';
+import { prisma } from '@/prisma';
 import { Builder } from "@avionrx/pterodactyl-js";
-import { SettingsIcon, Gamepad2Icon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { deleteAllServers } from './deleteAllServers';
+import GameserversTable from './GameserversTable';
 
 async function Gameservers() {
+  const session = await auth();
+
+  if (session?.user.role !== 'ADMIN') {
+    return <NoAdmin />;
+  }
+
   const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
   const apiKey = process.env.PTERODACTYL_API_KEY;
 
@@ -16,13 +21,16 @@ async function Gameservers() {
   const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
 
   try {
-    const gameservers = await client.getServers();
+    const gameservers = await prisma.gameServer.findMany({
+      take: 400,
+      include: {
+        user: { select: { email: true } },
+        location: { select: { name: true } }
+      }
+    });
 
     return (
       <>
-        <form action={deleteAllServers}>
-          <Button variant='destructive' >Delete all "Serverino" Servers</Button>
-        </form>
         <GameserversTable servers={gameservers}></GameserversTable>
       </>
     );
