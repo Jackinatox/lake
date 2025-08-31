@@ -3,11 +3,22 @@ import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer
 import { prisma } from "@/prisma";
 
 export async function testProvisionServer(orderId: string) {
-  if (!orderId) throw new Error("Missing orderId");
+  if (!orderId) return { success: false, error: { message: "Missing orderId" } };
 
-  const order = await prisma.gameServerOrder.findUnique({ where: { id: Number(orderId) } });
-  
-  if (!order) throw new Error("Order not found");
-  await provisionServer(order);
-  return { success: true };
+  try {
+    const order = await prisma.gameServerOrder.findUnique({ where: { id: Number(orderId) } });
+
+    if (!order) return { success: false, error: { message: "Order not found" } };
+
+    await provisionServer(order);
+    return { success: true };
+  } catch (err: any) {
+    let payload: any = { message: undefined };
+    if (!err) payload.message = 'Unknown error';
+    else if (typeof err === 'string') payload.message = err;
+    else if (err instanceof Error) payload.message = err.message;
+    else if (typeof err === 'object') payload = { ...err };
+
+    return { success: false, error: payload };
+  }
 }

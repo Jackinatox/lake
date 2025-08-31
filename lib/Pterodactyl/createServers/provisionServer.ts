@@ -1,12 +1,13 @@
 import { calcBackups, calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic";
 import { prisma } from "@/prisma";
-import { NewServerOptions } from "@avionrx/pterodactyl-js";
+import { NewServerOptions, Server } from "@avionrx/pterodactyl-js";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
 import { auth } from "@/auth";
 import { GameServerOrder } from "@prisma/client";
+import { SatisfactoryConfig } from "@/models/config";
 
 export async function provisionServer(order: GameServerOrder) {
     const session = await auth();
@@ -94,60 +95,72 @@ export async function provisionServer(order: GameServerOrder) {
             }
             break;
         case 2: // Satisfactory
-            
+            const satisfactoryConfig = gameConfig.version as SatisfactoryConfig;
+            startAndVars = {
+                environment: {
+                    SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public"
+                }
+            }
             break;
         default:
             throw new Error('No Handler for this GameServer')
     }
+
+    options = {
+        name: serverOrder.creationGameData.name + " Gameserver",
+        ...preOptions,
+        ...startAndVars
+    };
+
+    const dbNewServer = await prisma.gameServer.create({
+        data: {
+            status: "CREATED",
+            backupCount: preOptions.featureLimits.backups,
+            cpuPercent: preOptions.limits.cpu,
+            diskMB: preOptions.limits.disk,
+            price: serverOrder.price,
+            ramMB: preOptions.limits.memory,
+            expires: serverOrder.expiresAt,
+            userId: serverOrder.user.id,
+            gameDataId: serverOrder.creationGameDataId,
+            locationId: serverOrder.creationLocation.ptLocationId,
+            gameConfig: serverOrder.gameConfig,
+        }
+    });
+
+    let newServer: Server;
     try {
-        options = {
-            name: serverOrder.creationGameData.name + " Gameserver",
-            ...preOptions,
-            ...startAndVars
-        };
-        const newServer = await pt.createServer(options);
-        const dbNewServer = await prisma.gameServer.create({
-            data: {
-                ptServerId: newServer.identifier,
-                status: "CREATED",
-                backupCount: preOptions.featureLimits.backups,
-                cpuPercent: preOptions.limits.cpu,
-                diskMB: preOptions.limits.disk,
-                price: serverOrder.price,
-                ramMB: preOptions.limits.memory,
-                expires: serverOrder.expiresAt,
-                userId: serverOrder.user.id,
-                gameDataId: serverOrder.creationGameDataId,
-                locationId: serverOrder.creationLocation.ptLocationId,
-                gameConfig: serverOrder.gameConfig,
-                ptAdminId: newServer.id
-            }
-        });
-
-
-        await prisma.gameServerOrder.update({
-            where: {
-                id: serverOrder.id,
-            },
-            data: {
-                gameServerId: dbNewServer.id
-            }
-        })
-    } catch (error) {
-        await prisma.gameServer.update({
-            where: {
-                id: serverOrder.gameServerId,
-            },
+        newServer = await pt.createServer(options);
+    } catch (err) {
+        const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
+        const updated = await prisma.gameServer.update({
+            where: { id: dbNewServer.id },
             data: {
                 status: "CREATION_FAILED",
-                errorText: error instanceof Error ? error.stack || error.message : JSON.stringify(error)
-            }
+                errorText,
+            },
         });
 
-        throw error;
+        // Throw a plain serializable object containing the persisted text and the
+        // local DB id. Server Actions/edge runtimes serialize Error objects and may
+        // drop the message; throwing a plain object ensures the client receives it.
+        throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
     }
 
+    const dbUpdatedServer = await prisma.gameServer.update({
+        where: { id: dbNewServer.id },
+        data: {
+            ptServerId: newServer.identifier,
+            ptAdminId: newServer.id
+        }
+    });
 
-
-
+    await prisma.gameServerOrder.update({
+        where: {
+            id: serverOrder.id,
+        },
+        data: {
+            gameServerId: dbNewServer.id
+        }
+    })
 }
