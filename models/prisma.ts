@@ -11,3 +11,7 @@ export type ClientServer = Prisma.GameServerGetPayload<{
 export type DbSession = Prisma.GameServerOrderGetPayload<{
   include: { user: { select: { email: true } } };
 }>;
+
+export type GameServerAdmin = Prisma.GameServerGetPayload<{
+  include: { user: { select: { email: true } }, location: { select: { name: true } } };
+}>;
