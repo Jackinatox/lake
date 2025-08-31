@@ -163,8 +163,8 @@ model GameServer {
   expires     DateTime
   price       Float // To let the user extend his server at the original price in case we increase prices
 
-  ptServerId String
-  ptAdminId  Int
+  ptServerId String?
+  ptAdminId  Int?
   name       String? @default("GameServer")
 
   status    GameServerStatus @default(CREATED)
@@ -196,10 +196,10 @@ model GameServerOrder {
   id Int @id @default(autoincrement())
 
   gameServerId String? // Null if Creation event
-  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
+  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)  // TODO: what should happen on user delete 
 
   type       OrderType
   ramMB      Int

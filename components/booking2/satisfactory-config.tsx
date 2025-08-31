@@ -26,6 +26,7 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
     setConfig(newConfig)
     if (onChange) onChange(newConfig)
   }
+game.data
 
   useImperativeHandle(ref, () => ({
     submit: () => {

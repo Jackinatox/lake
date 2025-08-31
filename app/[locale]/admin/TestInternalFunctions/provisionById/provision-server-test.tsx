@@ -15,9 +15,16 @@ export default function ProvisionServerTest() {
     startTransition(async () => {
       try {
         const res = await testProvisionServer(orderId);
-        setResult(JSON.stringify(res, null, 2));
+        if (res?.success) {
+          setResult(JSON.stringify(res, null, 2));
+        } else {
+          // Prefer structured error.message if present, otherwise stringify
+          const msg = res?.error?.message ?? JSON.stringify(res?.error ?? res);
+          setError(typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2));
+        }
       } catch (e: any) {
-        setError(e.message || String(e));
+        // Fallback for unexpected throw shapes
+        setError(JSON.stringify(e));
       }
     });
   }

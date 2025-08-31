@@ -19,7 +19,7 @@ export default function GameCard({ card, images }: GameCardProps) {
   return (
     <Link href={`/booking2/${card.id}`} className="block w-[280px]">
       <Card className="overflow-hidden transition-transform duration-300 hover:scale-[1.075] shadow-lg">
-        <div className="relative w-full h-[200px]">
+        <div className="relative w-full aspect-square">
           <Image
             src={images.light || "/placeholder.svg"}
             alt={card.name}
