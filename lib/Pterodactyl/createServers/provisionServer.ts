@@ -97,6 +97,7 @@ export async function provisionServer(order: GameServerOrder) {
         case 2: // Satisfactory
             const satisfactoryConfig = gameConfig.version as SatisfactoryConfig;
             startAndVars = {
+                startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ServerQueryPort={{QUERY_PORT}} -BeaconPort={{BEACON_PORT}} -multihome=0.0.0.0', 
                 environment: {
                     SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public"
                 }
