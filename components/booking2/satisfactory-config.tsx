@@ -17,6 +17,7 @@ interface SatisfactoryConfigProps {
 }
 
 export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
+  console.log("game:", game)
   const [config, setConfig] = useState<SatisfactoryConfig>({
     version: "experimental",
   })
@@ -35,14 +36,15 @@ game.data
         SATISFACTORY_EXPERIMENTAL: config.version === "experimental" ? "true" : "false",
       }
 
+
       // Create a complete game configuration object
       const completeConfig: GameConfig = {
         gameId: game.id,
         gameType: game.name,
-        eggId: 1,     // ToDo: for satsi release add dynamic ids
+        eggId: game.data.egg_id,
         flavorId: 1, // Assuming there's only one flavor for Satisfactory
         version: "latest", // Assuming we always use the latest version
-        dockerImage: 'placeHolderImage', // TODO: Satisfactory set correct docker image
+        dockerImage: game.data.docker_image,
         gameSpecificConfig: {
           ...config,
         },
