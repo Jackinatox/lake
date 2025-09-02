@@ -159,8 +159,8 @@ importers:
         specifier: ^2.15.1
         version: 2.15.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       stripe:
-        specifier: ^18.2.0
-        version: 18.4.0(@types/node@22.18.0)
+        specifier: ^18.5.0
+        version: 18.5.0(@types/node@22.18.0)
       unique-username-generator:
         specifier: ^1.4.0
         version: 1.5.1
@@ -3988,8 +3988,8 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  stripe@18.4.0:
-    resolution: {integrity: sha512-LKFeDnDYo4U/YzNgx2Lc9PT9XgKN0JNF1iQwZxgkS4lOw5NunWCnzyH5RhTlD3clIZnf54h7nyMWkS8VXPmtTQ==}
+  stripe@18.5.0:
+    resolution: {integrity: sha512-Hp+wFiEQtCB0LlNgcFh5uVyKznpDjzyUZ+CNVEf+I3fhlYvh7rZruIg+jOwzJRCpy0ZTPMjlzm7J2/M2N6d+DA==}
     engines: {node: '>=12.*'}
     peerDependencies:
       '@types/node': '>=12.x.x'
@@ -8508,7 +8508,7 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  stripe@18.4.0(@types/node@22.18.0):
+  stripe@18.5.0(@types/node@22.18.0):
     dependencies:
       qs: 6.14.0
     optionalDependencies:
