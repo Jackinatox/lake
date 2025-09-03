@@ -1,0 +1,73 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { User, Mail, Lock, CreditCard, LogOut, Shield } from "lucide-react";
+import { auth } from "@/auth";
+import NotLoggedIn from "@/components/auth/NoAuthMessage";
+import { signOut } from "next-auth/react";
+import LogoutButton from "./LogoutButton";
+import PaymentList from "./PaymentList";
+import { Suspense } from "react";
+
+export default async function ProfilePage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    return <NotLoggedIn />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-4 md:p-8">
+      <div className="mx-auto max-w-2xl space-y-6">
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-2xl">Profile</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage
+                  src={session.user.image || undefined}
+                  alt="Profile"
+                />
+                <AvatarFallback>PB</AvatarFallback>
+              </Avatar>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="font-medium">{session.user.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span className="text-sm text-muted-foreground">
+                    {session.user.email}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  <span className="text-sm text-muted-foreground">
+                    Logged in via OAUTH
+                    {/* TODO: Display OAUTH provider name */}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" size="sm" disabled>
+                <Lock className="h-4 w-4 mr-2" />
+                Change Password
+              </Button>
+              <LogoutButton />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Suspense fallback={<div>Loading payment history...</div>}>
+          <PaymentList />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
