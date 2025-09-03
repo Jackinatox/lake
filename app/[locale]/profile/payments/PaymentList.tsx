@@ -3,7 +3,7 @@ import NotLoggedIn from "@/components/auth/NoAuthMessage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/prisma";
 import { CreditCard, Badge } from "lucide-react";
-import ClientPayDate from "./ClientPayDate";
+import { PaymentItem } from "./paymentItem";
 
 async function PaymentList() {
   const session = await auth();
@@ -14,7 +14,10 @@ async function PaymentList() {
 
   const payments = await prisma.gameServerOrder.findMany({
     where: { userId: session.user.id, status: "PAID" },
+    include: { gameServer: true },
   });
+
+  const totalSpent = payments.reduce((acc, pay) => acc + pay.price, 0);
 
   return (
     <Card>
@@ -27,19 +30,21 @@ async function PaymentList() {
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
           <span className="font-medium">Total spend: </span>
-          <Badge>TODO</Badge>
+          <span className="font-medium">{(totalSpent / 100).toFixed(2)} €</span>
+          {/* <Badge>TODO</Badge> */}
         </div>
         <div className="space-y-3">
           {payments.length === 0 && <div>No Payments</div>}
           {payments.map((pay) => (
-            <div key={pay.id} className="flex justify-between items-center p-3 border rounded-lg">
-              <div>
-                <p className="font-medium"><ClientPayDate date={pay.createdAt}/></p>
-              </div>
-              <div className="text-right">
-                <p className="font-medium">{(pay.price / 100).toFixed(2)} €</p>
-              </div>
-            </div>
+            <PaymentItem
+              key={pay.id}
+              amount={pay.price}
+              paymentType={pay.type}
+              date={pay.createdAt}
+              receiptUrl={pay.receipt_url}
+              gameServerUrl={`/gameserver/${pay.gameServer?.ptServerId}`}
+              serverExpired={!pay.gameServer}
+            />
           ))}
         </div>
       </CardContent>

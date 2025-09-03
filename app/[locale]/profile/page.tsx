@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import NotLoggedIn from "@/components/auth/NoAuthMessage";
 import { signOut } from "next-auth/react";
 import LogoutButton from "./LogoutButton";
-import PaymentList from "./PaymentList";
+import PaymentList from "./payments/PaymentList";
 import { Suspense } from "react";
 
 export default async function ProfilePage() {
@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen bg-background md:p-6">
       <div className="mx-auto max-w-2xl space-y-6">
         <Card>
           <CardHeader className="pb-4">
