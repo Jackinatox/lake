@@ -69,7 +69,9 @@
     "writeEmailTo": "Schreibe eine Email an",
     "yourProblem": "Dein Problem",
     "yourProblemTitle": "Dein Problem",
-    "weWillAnswer": "und wir werden so schnell wie möglich antworten"
+    "weWillAnswer": "und wir werden so schnell wie möglich antworten",
+    "ticketCreated": "Support-Ticket wurde erstellt",
+    "ticketCreationFailed": "Support-Ticket konnte nicht erstellt werden"
   },
   "notAdmin": "Du bist kein Admin",
   "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen."

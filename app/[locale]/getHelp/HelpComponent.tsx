@@ -16,7 +16,7 @@ export default async function HelpComponent({ t }: { t: any }) {
                 <CardContent className='mt-2'>
                     <div className="flex flex-col md:flex-row gap-4">
                         <EmailAndCopyButton />
-                        <ContactForm t={t} />
+                        <ContactForm />
                     </div>
                 </CardContent>
             </Card>
