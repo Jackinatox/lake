@@ -11,15 +11,6 @@ async function Gameservers() {
     return <NoAdmin />;
   }
 
-  const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-  const apiKey = process.env.PTERODACTYL_API_KEY;
-
-  if (!url || !apiKey) {
-    throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
-  }
-
-  const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
-
   try {
     const gameservers = await prisma.gameServer.findMany({
       take: 400,
