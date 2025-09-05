@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +22,7 @@ interface MinecraftConfigProps {
 }
 
 export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }: MinecraftConfigProps, ref) => {
+  const t = useTranslations("buyGameServer.gameConfig");
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
   const [gameVersions, setGameVersions] = useState<any[]>([])
@@ -107,8 +109,8 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="flex-1">
-            <CardTitle className="text-lg sm:text-xl">{game.name || "Game"} Configuration</CardTitle>
-            <CardDescription className="text-sm">Select your preferred game settings</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">{t("title", { game: game.name || "Game" })}</CardTitle>
+            <CardDescription className="text-sm">{t("description")}</CardDescription>
           </div>
         </div>
       </div>

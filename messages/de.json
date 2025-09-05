@@ -153,5 +153,60 @@
       "min-price-hint": "Mindestpreis 1 €",
       "continue": "Weiter zur Zahlung"
     }
+  },
+  "buyGameServer": {
+    "header": {
+      "title": "Konfiguriere deinen Server",
+      "step": "Schritt {current} von {total}"
+    },
+    "loading": {
+      "configOptions": "Konfigurationsoptionen werden geladen..."
+    },
+    "nav": {
+      "back": "Zurück",
+      "continue": "Weiter"
+    },
+    "auth": {
+      "loginRequiredGameConfig": "Du musst eingeloggt sein, um spiel-spezifische Einstellungen zu konfigurieren"
+    },
+    "payment": {
+      "title": "Schließe deine Zahlung ab",
+      "footerHint": "Schließe die Zahlung oben ab, um deinen Server zu erstellen"
+    },
+    "hardware": {
+      "title": "Performance-Konfiguration",
+      "description": "Passe die Hardware deines Servers an.",
+      "performanceTier": "Performance-Stufe",
+      "billingPeriod": "Abrechnungszeitraum",
+      "durations": {
+        "week": "1 Woche",
+        "month": "1 Monat",
+        "threeMonths": "3 Monate",
+        "sixMonths": "6 Monate",
+        "days": "{days} Tage"
+      },
+      "price": {
+        "overviewTitle": "Preisübersicht",
+        "overviewDescription": "Zusammenfassung deiner Konfiguration.",
+        "resources": "Ressourcen",
+        "discount": "Rabatt (-{percent}%)",
+        "total": "Gesamt",
+        "minOrderHint": "Mindestbestellwert ist 1,00 €"
+      },
+      "labels": {
+        "vcpuUnit": "vCore(s)",
+        "ramUnit": "GiB RAM",
+        "perVcore": "€ / vCore",
+        "perGiB": "€ / GiB"
+      },
+      "button": {
+        "continue": "Weiter"
+      }
+    },
+    "gameConfig": {
+      "title": "{game}-Konfiguration",
+      "description": "Wähle deine bevorzugten Spieleinstellungen",
+      "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
+    }
   }
 }

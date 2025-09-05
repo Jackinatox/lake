@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef, useImperativeHandle, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,6 +18,7 @@ interface SatisfactoryConfigProps {
 }
 
 export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
+  const t = useTranslations("buyGameServer.gameConfig");
   console.log("game:", game)
   const [config, setConfig] = useState<SatisfactoryConfig>({
     version: "experimental",
@@ -60,8 +62,8 @@ game.data
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="flex-1">
-            <CardTitle className="text-lg sm:text-xl">{game.name || "Game"} Configuration</CardTitle>
-            <CardDescription className="text-sm">Configure your Satisfactory server</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">{t("title", { game: game.name || "Game" })}</CardTitle>
+            <CardDescription className="text-sm">{t("description")}</CardDescription>
           </div>
         </div>
       </div>
