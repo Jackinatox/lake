@@ -4,7 +4,7 @@
     "description": "Please log in to access your account and see personalized content.",
     "login": "Log In"
   },
-    "NotAllowed": {
+  "NotAllowed": {
     "title": "Access Denied",
     "description": "You do not have permission to view this page. Please contact support.",
     "home": "Go to Home"
@@ -59,19 +59,21 @@
     "ram": "Explaination of the RAM"
   },
   "getHelp": {
-    "title1": "We dont have a FAQ yet, but you can ",
+    "title1": "We don't have a FAQ yet, but you can ",
     "title2": "contact us",
     "title3": "for help",
     "contactUsTitle": "Contact Us",
-    "writeDirectly": "Write us directly",
-    "answerToEmail": "We will still answer to the email from your account, its easier :)",
+    "writeDirectly": "Write to us directly",
+    "answerToEmail": "We will still reply to the email from your account, it's easier :)",
     "yourProblem": "Your Problem",
     "submit": "Submit",
     "describeProblemPlaceholder": "Describe your problem here...",
     "yourProblemTitle": "Your Problem",
     "writeEmail": "Write us an email",
     "writeEmailTo": "Write an email to",
-    "weWillAnswer": "and we will answer as fast as possible"
+    "weWillAnswer": "and we will answer as quickly as possible",
+    "ticketCreated": "Support ticket has been created",
+    "ticketCreationFailed": "Support ticket could not be created"
   },
   "status": {
     "PROVISIONING": {
@@ -145,7 +147,7 @@
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
       },
-  "discount-with-amount": "(plus {amount} € discount)"
+      "discount-with-amount": "(plus {amount} € discount)"
     },
     "footer": {
       "total": "Total",

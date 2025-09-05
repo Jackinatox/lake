@@ -39,6 +39,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   GameServer GameServer[]
+
+  SupportTicket SupportTicket[]
 }
 
 model Account {
@@ -229,4 +231,24 @@ enum OrderType {
   UPGRADE
   DOWNGRADE // For later
   RENEW
+}
+
+enum TicketStatus {
+  OPEN
+  CLOSED
+  PENDING
+  RESOLVED
+}
+
+model SupportTicket {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  message   String
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
