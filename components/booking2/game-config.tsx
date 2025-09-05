@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef, useImperativeHandle, useRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import { Card } from "@/components/ui/card"
 import type { Game, GameConfig } from "@/models/config"
 import { MinecraftConfigComponent } from "./minecraft-config"
@@ -24,6 +25,7 @@ export const GameConfigComponent = forwardRef((
   ref
 ) => {
   const [gameConfig, setGameConfig] = useState<Record<string, any>>({})
+  const t = useTranslations("buyGameServer.gameConfig");
   const configRef = useRef<any>(null);
 
   const handleConfigChange = (config: Record<string, any>) => {
@@ -66,7 +68,7 @@ export const GameConfigComponent = forwardRef((
               default:
                 return (
                   <div className="p-4 border rounded-md">
-                    <p className="text-muted-foreground text-center">No specific configuration options available for this game.</p>
+                    <p className="text-muted-foreground text-center">{t("noSpecific")}</p>
                   </div>
                 )
             }

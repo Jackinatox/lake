@@ -25,8 +25,8 @@ export function PaymentItem({
   const formatDate = (date: Date) => {
     return date.toLocaleDateString(locale, {
       year: "numeric",
-      month: "numeric",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   };
 
