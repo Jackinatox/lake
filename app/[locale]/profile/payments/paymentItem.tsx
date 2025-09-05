@@ -10,6 +10,7 @@ interface PaymentItemProps {
   receiptUrl: string
   gameServerUrl?: string
   serverExpired?: boolean
+  locale?: string
 };
 
 export function PaymentItem({
@@ -19,11 +20,12 @@ export function PaymentItem({
   receiptUrl,
   gameServerUrl,
   serverExpired = false,
+  locale = "de",
 }: PaymentItemProps) {
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale, {
       year: "numeric",
-      month: "short",
+      month: "numeric",
       day: "numeric",
     });
   };
@@ -41,7 +43,7 @@ export function PaymentItem({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <span className="font-medium">${amount.toFixed(2)}</span>
+        <span className="font-medium">{(amount / 100).toFixed(2)} €</span>
         <Button variant="outline" size="sm" asChild>
           <a href={receiptUrl} target="_blank" rel="noopener noreferrer">
             <Receipt className="h-3 w-3" />
