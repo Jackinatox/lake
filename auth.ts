@@ -1,81 +1,25 @@
-import { JWT } from "next-auth/jwt"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import Discord from "next-auth/providers/discord"
-import { prisma } from "./prisma"
-import NextAuth, { type DefaultSession } from "next-auth"
-import { use } from "react"
-import createUserApiKey from "./lib/Pterodactyl/userApiKey"
-import { Builder } from "@avionrx/pterodactyl-js"
-import { Role } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins"
 
-declare module "next-auth" {
-  /**
-   * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session {
-    user: {
-      /** The user's postal address. */
-      ptKey: string
-      ptUser: number
-      role: Role
-      /**
-       * By default, TypeScript merges new interface properties and overwrites existing ones.
-       * In this case, the default session user properties will be overwritten,
-       * with the new ones defined above. To keep the default session user properties,
-       * you need to add them back into the newly declared interface.
-       */
-    } & DefaultSession["user"]
-  }
-}
 
-// JWT removed 
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  providers: [Discord],
-  session: {
-    strategy: 'database'
-  },
-  trustHost: true,
-  events: {
-    async createUser({ user }) {
-      const pt = new Builder().setURL(process.env.NEXT_PUBLIC_PTERODACTYL_URL).setAPIKey(process.env.PTERODACTYL_API_KEY).asAdmin();
+const prisma = new PrismaClient();
 
-      const newPTUser = await pt.createUser({
-        firstName: "Jakob",
-        lastName: "Schulze",
-        username: user.name,
-        email: user.email,
-        password: Array.from({ length: 32 }, () => Math.floor(Math.random() * 36).toString(36)).join(''),
-      })
 
-      const newKey = await createUserApiKey(newPTUser.id);
-      
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { ptKey: newKey, ptUser: newPTUser.id }
-      });
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  socialProviders: {
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     }
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
-        token.ptKey = dbUser.ptKey;
-        token.ptUser = dbUser.ptUser;
-        token.id = dbUser.id;
-        token.role = dbUser.role;
-      }
-      return token;
-    },
-    async session({ session, user }) {
-      const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
-      // const dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-      session.user.ptKey = dbUser.ptKey;
-      session.user.ptUser = dbUser.ptUser;
-      session.user.role = dbUser.role;
-
-      return session
-    },
-  }
-})
+  emailAndPassword: {
+    enabled: true
+  },
+  plugins: [admin()],
+});
