@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -13,12 +12,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User, UserRoundCog } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function Profile() {
-  const { data: session, status } = useSession();
+    const { 
+        data: session, 
+        isPending,
+        error,
+    } = authClient.useSession() 
 
-  if (status === "loading") {
+
+  if (isPending) {
     return (
       <div className="flex items-center space-x-2">
         <div className="h-8 w-8 animate-pulse rounded-full bg-muted"></div>
@@ -96,7 +100,7 @@ export default function Profile() {
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem className="cursor-pointer" onClick={() => signOut()}>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => authClient.signOut()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

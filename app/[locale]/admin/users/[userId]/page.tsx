@@ -1,6 +1,10 @@
-// app/admin/user/[userId]/page.tsx
+"use server";
+
+import { auth } from "@/auth";
+import NoAdmin from "@/components/admin/NoAdminMessage";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Builder } from "@avionrx/pterodactyl-js";
+import { headers } from "next/headers";
 import React from 'react'
 
 const formatUtc = (input: Date | string | number) => {
@@ -16,6 +20,15 @@ const formatUtc = (input: Date | string | number) => {
 }
 
 async function User({ params }: { params: Promise<{ userId: string }> }) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if (session?.user.role !== 'ADMIN') {
+        return <NoAdmin />;
+    }
+
+    
     const userId = (await params).userId;
 
     const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
