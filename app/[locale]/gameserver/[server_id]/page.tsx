@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from '@/auth';
+import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
@@ -21,7 +22,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     const session = await auth();
 
     if (!session?.user) {
-        return <>Not logged in</>;
+        return <NotLoggedIn />;
     }
 
     const ptApiKey = session?.user.ptKey;
