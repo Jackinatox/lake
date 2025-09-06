@@ -8,13 +8,17 @@ import { auth } from '@/auth'
 import NoAdmin from '@/components/admin/NoAdminMessage'
 import SessionsTable from './sessionsTable'
 import { DbSession } from '@/models/prisma'
+import { headers } from 'next/headers'
 
 // type is in ./types to avoid client/server circular imports
 
 export default async function AdminStripeSessionsPage() {
-    const session = await auth()
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
     if (session?.user.role !== 'ADMIN') {
-        return <NoAdmin />
+        return <NoAdmin />;
     }
 
     // Read sessions from our local DB (GameServerOrder rows with stripeSessionId)
