@@ -140,6 +140,7 @@ model GameServerOrder {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@index([stripeSessionId])
 }
 
 enum OrderType {
@@ -188,6 +189,7 @@ model User {
   image           String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @default(now()) @updatedAt
+
   sessions        Session[]
   accounts        Account[]
   GameServerOrder GameServerOrder[]
@@ -198,6 +200,10 @@ model User {
   banned     Boolean?  @default(false)
   banReason  String?
   banExpires DateTime?
+
+  ptUserId     Int?
+  ptKey        String?
+  stripeUserId String?
 
   @@unique([email])
   @@map("user")

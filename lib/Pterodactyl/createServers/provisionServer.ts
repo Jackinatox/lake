@@ -10,18 +10,16 @@ import { GameServerOrder } from "@prisma/client";
 import { SatisfactoryConfig } from "@/models/config";
 
 export async function provisionServer(order: GameServerOrder) {
-    const session = await auth();
-
     const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: order.id }, include: { user: true, creationGameData: true, creationLocation: true } });
     const pt = createPtClient();
 
-    console.log('user id: ', serverOrder.user.ptUser)
+    console.log('user id: ', serverOrder.user.ptUserId)
     const gameConfig = JSON.parse(serverOrder.gameConfig as any);
     console.log("GameConfig: ", gameConfig);
 
     let options: NewServerOptions;
     let preOptions = {
-        user: serverOrder.user.ptUser,
+        user: serverOrder.user.ptUserId,
         limits: {
             cpu: serverOrder.cpuPercent,
             disk: calcDiskSize(serverOrder.cpuPercent, serverOrder.ramMB),
