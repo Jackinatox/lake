@@ -1,13 +1,13 @@
 "use server"
 
 import { auth } from "@/auth";
-import { calculateBase, calculateNew, calculateUpgradeCost } from "@/lib/GlobalFunctions/paymentLogic";
+import { calculateNew, calculateUpgradeCost } from "@/lib/GlobalFunctions/paymentLogic";
 import { prisma } from "@/prisma";
 import { OrderType } from "@prisma/client";
 import { stripe } from "@/lib/stripe";
 import { ServerConfig } from "../[locale]/booking2/[gameId]/page";
 import { HardwareConfig } from "@/models/config";
-import { connect } from "http2";
+import { headers } from "next/headers";
 
 
 export type CheckoutParams = {
@@ -22,22 +22,27 @@ export type CheckoutParams = {
 
 export async function checkoutAction(params: CheckoutParams) {
     const { type, ptServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
-    const userSession = await auth();
-    if (!userSession?.user?.id) throw new Error("Not authenticated");
 
-    let stripeUserId = await prisma.user.findUnique({ where: { id: userSession.user.id } }).then(u => u.stripeUserId);
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if (!session) throw new Error("Not authenticated");
+    const user = session.user;
+
+    let stripeUserId = await prisma.user.findUnique({ where: { id: user.id } }).then(u => u.stripeUserId);
 
     if (!stripeUserId) {
         const newCustomer = await stripe.customers.create({
-            email: userSession.user.email,
-            name: userSession.user.name,
+            email: user.email,
+            name: user.name,
             metadata: {
-                userId: userSession.user.id
+                userId: user.id
             }
         });
 
         await prisma.user.update({
-            where: { id: userSession.user.id },
+            where: { id: user.id },
             data: { stripeUserId: newCustomer.id }
         });
 
@@ -60,7 +65,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 data: {
                     type,
                     gameServerId: ptServerId,
-                    userId: userSession.user.id,
+                    userId: user.id,
                     ramMB,
                     cpuPercent,
                     diskMB,
@@ -110,7 +115,7 @@ export async function checkoutAction(params: CheckoutParams) {
         }
         case "UPGRADE": {
             const server = await prisma.gameServer.findFirst({
-                where: { ptServerId: ptServerId, userId: userSession.user.id }
+                where: { ptServerId: ptServerId, userId: user.id }
             });
 
             const performanceGroup = await prisma.location.findUnique({
@@ -140,7 +145,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 data: {
                     type,
                     gameServerId: server.id,
-                    userId: userSession.user.id,
+                    userId: user.id,
                     ramMB,
                     cpuPercent,
                     diskMB,

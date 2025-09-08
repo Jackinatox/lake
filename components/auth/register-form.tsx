@@ -27,7 +27,8 @@ export function RegisterForm({
       password, // user password -> min 8 characters by default
       name: username, // user display name
       image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`, // User image URL (optional)
-      callbackURL: "/dashboard" // A URL to redirect to after the user verifies their email (optional)
+      callbackURL: "/dashboard", // A URL to redirect to after the user verifies their email (optional)
+      
     }, {
       onRequest: () => {
         setLoading(true);

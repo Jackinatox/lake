@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
@@ -8,13 +9,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     try {
         const serverId = (await params).server_id;
 
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
 
-        if (!session?.user) {
+        if (!session) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
         }
 
-        const ptApiKey = session?.user.ptKey;
+        const ptApiKey = session.user.ptKey;
 
         const response = await fetch(
             `${baseUrl}/api/client/servers/${serverId}`,
@@ -38,7 +41,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         const data = await response.json();
-        return NextResponse.json({totalBackups: data.attributes.feature_limits.backups})
+        return NextResponse.json({ totalBackups: data.attributes.feature_limits.backups })
 
     } catch (error) {
         return NextResponse.json({ error: 'An error occurred', details: String(error) }, { status: 500 });

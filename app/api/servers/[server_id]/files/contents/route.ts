@@ -1,4 +1,5 @@
 import { auth } from "@/auth"
+import { headers } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
@@ -13,18 +14,20 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "File parameter is required" }, { status: 400 })
     }
 
-    const session = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
 
-    if (!session?.user) {
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    
+
     const ptApiKey = session?.user.ptKey;
 
     if (!ptApiKey) {
       return NextResponse.json({ error: "No Pterodactyl API key found" }, { status: 401 })
     }
-    
+
     const response = await fetch(
       `${baseUrl}/api/client/servers/${serverId}/files/contents?file=${encodeURIComponent(file)}`,
       {
