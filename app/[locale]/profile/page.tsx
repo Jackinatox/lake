@@ -8,15 +8,23 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 import LogoutButton from "./LogoutButton";
 import PaymentList from "./payments/PaymentList";
+import { prisma } from "@/prisma";
 
 export default async function ProfilePage() {
     const session = await auth.api.getSession({
         headers: await headers()
-    })
+    });
 
     if (!session) {
         return <NotLoggedIn />;
     }
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        include: {
+            accounts: true,
+        }
+    });
 
     return (
         <div className="min-h-screen bg-background md:p-6">
@@ -29,7 +37,7 @@ export default async function ProfilePage() {
                         <div className="flex items-center space-x-4">
                             <Avatar className="h-16 w-16">
                                 <AvatarImage
-                                    src={session.user.image || undefined}
+                                    src={user.image || undefined}
                                     alt="Profile"
                                 />
                                 <AvatarFallback>PB</AvatarFallback>
