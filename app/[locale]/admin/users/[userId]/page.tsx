@@ -24,7 +24,7 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
         headers: await headers()
     })
 
-    if (session?.user.role !== 'ADMIN') {
+    if (session?.user.role !== "admin") {
         return <NoAdmin />;
     }
 

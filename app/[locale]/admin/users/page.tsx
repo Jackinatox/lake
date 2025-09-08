@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/auth";
 import { headers } from "next/headers";
 import NoAdmin from "@/components/admin/NoAdminMessage";
+import { prisma } from "@/prisma";
 
 const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 const apiKey = process.env.PTERODACTYL_API_KEY;
@@ -16,18 +17,12 @@ export default async function AdminPage() {
         headers: await headers()
     })
 
-    if (session?.user.role !== 'ADMIN') {
+    if (session?.user.role !== "admin") {
         return <NoAdmin />;
     }
 
-    if (!url || !apiKey) {
-        throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
-    }
-
-    const client = new Builder().setURL(url).setAPIKey(apiKey).asAdmin();
-
     try {
-        const users = await client.getUsers();
+        const users = await prisma.user.findMany();
 
         return (
             <>

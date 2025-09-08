@@ -10,7 +10,7 @@ export async function expireSessions(sessionIds: string[]) {
         headers: await headers(),
     });
 
-    if (session?.user.role !== "ADMIN") {
+    if (session?.user.role !== "admin") {
         throw new Error("Not authorized");
     }
 
@@ -38,7 +38,7 @@ export async function deleteOrders(sessionIds: string[]) {
         headers: await headers(),
     });
 
-    if (session?.user.role !== "ADMIN") {
+    if (session?.user.role !== "admin") {
         throw new Error("Not authorized");
     }
 

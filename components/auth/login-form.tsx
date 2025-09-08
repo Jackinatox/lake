@@ -109,7 +109,7 @@ export function LoginForm({
                       autoComplete="current-password"
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading || true}>
+                  <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </Button>
                   {error && (

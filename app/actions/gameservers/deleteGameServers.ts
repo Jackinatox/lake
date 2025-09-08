@@ -7,7 +7,7 @@ export async function deleteGameServers(ids: number[]) {
     const session = await auth.api.getSession({
         headers: await headers()
     })
-    if (session?.user.role !== "ADMIN") {
+    if (session?.user.role !== "admin") {
         throw new Error("Unauthorized");
     }
 

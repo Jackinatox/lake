@@ -2,10 +2,16 @@ import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins"
+import createUserApiKey from "./lib/Pterodactyl/userApiKey";
+import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 
 
 
 const prisma = new PrismaClient();
+
+function generateRandomPassword(length: number = 32): string {
+  return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');
+}
 
 
 export const auth = betterAuth({
@@ -41,4 +47,36 @@ export const auth = betterAuth({
     enabled: true
   },
   plugins: [admin()],
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user, context) => {
+          try {
+            const ptAdmin = createPtClient();
+
+            const newPTUser = await ptAdmin.createUser({
+              firstName: user.name,
+              lastName: "Schulze",
+              username: user.name,
+              email: user.email,
+              password: generateRandomPassword(),
+            })
+
+            const newKey = await createUserApiKey(newPTUser.id);
+            return {
+              data: {
+                ...user,
+                ptUserId: newPTUser.id,
+                ptKey: newKey,
+              },
+            }
+
+          } catch (error) {
+            console.error("Error creating user:", error);
+            throw new Error("Failed to create user");
+          }
+        },
+      }
+    }
+  }
 });

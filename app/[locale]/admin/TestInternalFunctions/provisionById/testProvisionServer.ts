@@ -9,7 +9,7 @@ export async function testProvisionServer(orderId: string) {
         headers: await headers()
     })
 
-    if (session?.user.role !== 'ADMIN') {
+    if (session?.user.role !== "admin") {
         throw new Error("Not authorized");
     }
 

@@ -13,7 +13,7 @@ async function Gameservers() {
     headers: await headers()
   })
 
-  if (session?.user.role !== 'ADMIN') {
+  if (session?.user.role !== "admin") {
     return <NoAdmin />;
   }
 
