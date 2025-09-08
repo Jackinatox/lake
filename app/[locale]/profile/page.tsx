@@ -1,15 +1,13 @@
+import { auth } from "@/auth";
+import NotLoggedIn from "@/components/auth/NoAuthMessage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { User, Mail, Lock, CreditCard, LogOut, Shield } from "lucide-react";
-import { auth } from "@/auth";
-import NotLoggedIn from "@/components/auth/NoAuthMessage";
-import { signOut } from "next-auth/react";
+import { Lock, Mail, Shield, User } from "lucide-react";
+import { headers } from "next/headers";
+import { Suspense } from "react";
 import LogoutButton from "./LogoutButton";
 import PaymentList from "./payments/PaymentList";
-import { Suspense } from "react";
-import { headers } from "next/headers";
 
 export default async function ProfilePage() {
     const session = await auth.api.getSession({
