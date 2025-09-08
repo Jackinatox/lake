@@ -17,7 +17,7 @@ export default async function AdminStripeSessionsPage() {
         headers: await headers()
     })
 
-    if (session?.user.role !== 'ADMIN') {
+    if (session?.user.role !== "admin") {
         return <NoAdmin />;
     }
 

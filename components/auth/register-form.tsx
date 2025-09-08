@@ -14,11 +14,14 @@ import { cn } from "@/lib/utils"
 
 import { authClient } from "@/lib/auth-client"
 import { useCallback, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const brouter = useRouter();
+
   const registerUser = async ({ username, email, password }: { username: string; email: string; password: string }) => {
     // Simulate API call
     const { data, error } = await authClient.signUp.email({
@@ -27,17 +30,15 @@ export function RegisterForm({
       name: username, // user display name
       image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`, // User image URL (optional)
       callbackURL: "/dashboard", // A URL to redirect to after the user verifies their email (optional)
-      
     }, {
       onRequest: () => {
         setLoading(true);
       },
       onSuccess: (ctx) => {
-        //TODO: Redirect to some page
+        brouter.push("/gameserver");
       },
       onError: (ctx) => {
-        // TODO: display the error message
-        alert(ctx.error.message);
+        setError("Registration failed. Please try again.");
       },
     });
     return { success: !!data, error: error?.message };
@@ -81,7 +82,7 @@ export function RegisterForm({
       if (!res.success) {
         setError(res.error || "Registration failed");
       } else {
-        setSuccess("Registration successful! You can now log in.");
+        setSuccess("Registration successful!");
         setUsername("");
         setEmail("");
         setPassword("");
@@ -189,7 +190,7 @@ export function RegisterForm({
                   {success && (
                     <div className="text-green-600 text-sm text-center mt-2">{success}</div>
                   )}
-                  <Button type="submit" className="w-full" disabled={loading || !passwordsMatch || passwordTooShort || !emailValid || true}>
+                  <Button type="submit" className="w-full" disabled={loading || !passwordsMatch || passwordTooShort || !emailValid }>
                     {loading ? "Registering..." : "Register"}
                   </Button>
                 </div>

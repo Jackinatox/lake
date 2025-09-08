@@ -89,7 +89,7 @@ export default function Profile() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {session?.user.role === "ADMIN" && (
+        {session?.user.role === "admin" && (
           <>
             <DropdownMenuItem>
               <Link href="/admin" className="flex items-center w-full cursor-pointer">
