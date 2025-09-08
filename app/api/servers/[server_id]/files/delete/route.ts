@@ -1,25 +1,24 @@
 import { auth } from "@/auth";
 import { error } from "console";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ server_id: string }> }) {
-    // console.time("Sequential Execution");
-    // const serverId = (await params).server_id;
-    // const body = await request.json();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    // const session = await auth();
-
-    const [paramsId, body, session] = await Promise.all([params, request.json(), auth()]);
+    const [paramsId, body] = await Promise.all([params, request.json()]);
     const serverId = paramsId.server_id;
 
-    if (!session?.user) {
+    if (!session) {
         return NextResponse.json('', { status: 401, statusText: 'invalid auth' });
     }
 
-    const ptApiKey = session?.user.ptKey;
+    const ptApiKey = session.user.ptKey;
     if (!ptApiKey) {
         return NextResponse.json('', { status: 401, statusText: 'No Pterodactyl Key found' });
     }
@@ -40,7 +39,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     if (!response.ok) {
         const text = await response.text();
-        return NextResponse.json({ error: `error from Pterodactyl: ${ text }` }, {status: 501});
+        return NextResponse.json({ error: `error from Pterodactyl: ${text}` }, { status: 501 });
     }
 
     return NextResponse.json({ success: true });

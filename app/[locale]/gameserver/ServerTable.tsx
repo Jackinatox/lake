@@ -2,6 +2,7 @@
 
 import { getUserServer } from "@/app/data-access-layer/clientServers/getUsersServer";
 import { auth } from "@/auth";
+import NotLoggedIn from "@/components/auth/NoAuthMessage";
 import ServerCard from "@/components/gameserver/GameServerList/GameServerCard";
 import { Button } from "@/components/ui/button";
 import { ClientServer } from "@/models/prisma";
@@ -40,10 +41,15 @@ const NoServersMessage = () => (
 
 // Main component
 export default async function GameServersPage() {
-    const clientServers = await getUserServer();
     const session = await auth.api.getSession({
         headers: await headers()
     })
+
+    if (!session) {
+        return <NotLoggedIn />;
+    }
+
+    const clientServers = await getUserServer(session.user.id);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">

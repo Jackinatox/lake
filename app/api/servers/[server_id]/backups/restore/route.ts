@@ -1,10 +1,19 @@
 import { auth } from "@/auth";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ server_id: string }> }) {
     try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+
+        if (!session) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
+        }
+
         const serverId = (await params).server_id;
         const body = await request.json();
         const backupId = body.backupId;
@@ -12,12 +21,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         if (!backupId) {
             return NextResponse.json({ error: 'Missing backupId in request body.' }, { status: 400 });
-        }
-
-        const session = await auth();
-
-        if (!session?.user) {
-            return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
         }
 
         const ptApiKey = session?.user.ptKey;
@@ -33,12 +36,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                     Accept: "application/json",
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({truncate: truncate})
+                body: JSON.stringify({ truncate: truncate })
             },
         )
 
         if (response.status === 403 || response.status === 404) {
-            return NextResponse.json({ error: "Access denied", ptresponse: await response.json()}, { status: 403 })
+            return NextResponse.json({ error: "Access denied", ptresponse: await response.json() }, { status: 403 })
         }
 
         if (!response.ok) {

@@ -1,22 +1,12 @@
 import 'server-only'
 
-import { auth } from '@/auth';
 import { prisma } from '@/prisma';
-import { ClientServer } from '@/models/prisma';
 import { HardwareConfig } from '@/models/config';
 
-export async function getGameServerConfig(server_id: string): Promise<HardwareConfig | null> {
-    const session = await auth();
-
-    
-    if (!session?.user) {
-        return null;
-    }
-    // console.log(session?.user)
-    // await new Promise((resolve) => setTimeout(resolve, 5000))
+export async function getGameServerConfig(server_id, userId: string): Promise<HardwareConfig | null> {
     const server = await prisma.gameServer.findFirst({
         where: {
-            userId: session.user.id,
+            userId: userId,
             ptServerId: server_id,
             status: {
                 notIn: ['CREATION_FAILED', 'DELETED']

@@ -1,23 +1,15 @@
 import 'server-only'
 
-import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { ClientServer } from '@/models/prisma';
 
-export async function getUserServer(): Promise<ClientServer[] | null> {
-    const session = await auth();
-
-    
-    if (!session?.user) {
-        return null;
-    }
-    // console.log(session?.user)
-    // await new Promise((resolve) => setTimeout(resolve, 5000))
+/** This function doesnt auth the request, should only be called from inside a server component */
+export async function getUserServer(userId: string): Promise<ClientServer[] | null> {
     return await prisma.gameServer.findMany({
         where: {
-            userId: session.user.id,
+            userId: userId,
             status: {
-                notIn: ['CREATION_FAILED']
+                notIn: ['CREATION_FAILED', 'DELETED']
             }
         },
         include: {

@@ -4,5 +4,8 @@ import { auth } from "@/auth";
 
 
 export const authClient = createAuthClient({
-    plugins: [inferAdditionalFields<typeof auth>(), adminClient() ],
+    plugins: [
+        inferAdditionalFields<typeof auth>(),
+        adminClient()
+    ],
 });
