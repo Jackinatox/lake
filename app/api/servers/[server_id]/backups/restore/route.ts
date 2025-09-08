@@ -23,7 +23,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             return NextResponse.json({ error: 'Missing backupId in request body.' }, { status: 400 });
         }
 
-        const ptApiKey = session?.user.ptKey;
+        const ptApiKey = session.user.ptKey;
 
         const anPT = `${baseUrl}/api/client/servers/${serverId}/backups/${backupId}/restore`;
         console.log(anPT)
