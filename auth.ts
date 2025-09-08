@@ -22,13 +22,15 @@ export const auth = betterAuth({
       ptKey: {
         type: "string",
         optional: true,
+        required: false,
       },
       stripeUserId: {
         type: "string",
         optional: true,
+        required: false,
       },
     },
-   },
+  },
   socialProviders: {
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID!,
