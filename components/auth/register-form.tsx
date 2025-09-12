@@ -16,6 +16,7 @@ import { authClient } from "@/lib/auth-client"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 
 export function RegisterForm({
   className,
@@ -197,6 +198,12 @@ export function RegisterForm({
                     {loading ? t("button.registering") : t("button.register")}
                   </Button>
                 </div>
+                                <div className="text-center text-sm">
+                                  {t("alreadyAccount.text")} {" "}
+                                  <Link href="/login" className="underline underline-offset-4">
+                                    {t("alreadyAccount.login")}
+                                  </Link>
+                                </div>
               </div>
             </form>
           </CardContent>

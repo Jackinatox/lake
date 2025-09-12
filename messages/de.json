@@ -74,8 +74,7 @@
     "ticketCreationFailed": "Support-Ticket konnte nicht erstellt werden"
   },
   "notAdmin": "Du bist kein Admin",
-  "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen."
-  ,
+  "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen.",
   "status": {
     "PROVISIONING": {
       "title": "Server wird erstellt",
@@ -148,7 +147,7 @@
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
       },
-  "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+      "discount-with-amount": "(zzgl. {amount} € Rabatt)"
     },
     "footer": {
       "total": "Gesamt",
@@ -218,6 +217,10 @@
       "discord": "Mit Discord registrieren",
       "google": "Mit Google registrieren"
     },
+    "alreadyAccount": {
+      "text": "Du hast bereits ein Konto?",
+      "login": "Anmelden"
+    },
     "login": {
       "title": "Willkommen zurück",
       "subtitle": "Melde dich mit deinem Discord- oder Google-Konto an",
@@ -233,10 +236,6 @@
       "button": {
         "loggingIn": "Anmelden...",
         "login": "Anmelden"
-      },
-      "noAccount": {
-        "text": "Noch kein Konto?",
-        "signUp": "Registrieren"
       },
       "errors": {
         "loginFailed": "Anmeldung fehlgeschlagen",

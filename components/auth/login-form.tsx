@@ -14,6 +14,7 @@ import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { useCallback, useState } from "react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 
 export function LoginForm({
   className,
@@ -107,6 +108,7 @@ export function LoginForm({
                       id="password"
                       type="password"
                       required
+                      placeholder={tr("fields.passwordPlaceholder")}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       autoComplete="current-password"
@@ -121,9 +123,9 @@ export function LoginForm({
                 </div>
                 <div className="text-center text-sm">
                   {t("noAccount.text")} {" "}
-                  <a href="#" className="underline underline-offset-4">
+                  <Link href="/register" className="underline underline-offset-4">
                     {t("noAccount.signUp")}
-                  </a>
+                  </Link>
                 </div>
               </div>
             </form>

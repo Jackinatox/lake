@@ -217,6 +217,10 @@
       "discord": "Register with Discord",
       "google": "Register with Google"
     },
+    "alreadyAccount": {
+      "text": "Already have an account?",
+      "login": "Login"
+    },
     "login": {
       "title": "Welcome back",
       "subtitle": "Login with your Discord or Google account",
