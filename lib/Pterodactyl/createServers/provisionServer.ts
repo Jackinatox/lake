@@ -15,7 +15,7 @@ export async function provisionServer(order: GameServerOrder) {
 
     console.log('user id: ', serverOrder.user.ptUserId)
     const gameConfig = JSON.parse(serverOrder.gameConfig as any);
-    console.log("GameConfig: ", gameConfig);
+    // console.log("GameConfig: ", gameConfig);
 
     let options: NewServerOptions;
     let preOptions = {
@@ -49,7 +49,7 @@ export async function provisionServer(order: GameServerOrder) {
     switch (serverOrder.creationGameData.id) {
         case 1: //Minecraft
             switch (parseInt(gameConfig.eggId)) {
-                case 1: // Vanilla
+                case 2: // Vanilla
                     startAndVars = {
                         environment: {
                             MINECRAFT_VERSION: gameConfig.version,
@@ -58,7 +58,7 @@ export async function provisionServer(order: GameServerOrder) {
                         startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}',
                     };
                     break;
-                case 2: // Forge
+                case 3: // Forge
                     startAndVars = {
                         environment: {
                             MINECRAFT_VERSION: gameConfig.version,
@@ -69,7 +69,7 @@ export async function provisionServer(order: GameServerOrder) {
 
                     };
                     break;
-                case 3: // Paper
+                case 1: // Paper
                     startAndVars = {
                         environment: {
                             MINECRAFT_VERSION: gameConfig.version,
@@ -79,7 +79,7 @@ export async function provisionServer(order: GameServerOrder) {
                         startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}'
                     };
                     break;
-                case 15: // Fabric
+                case 16: // Fabric
                     startAndVars = {
                         environment: {
                             MC_VERSION: gameConfig.version,
@@ -92,10 +92,10 @@ export async function provisionServer(order: GameServerOrder) {
                     break;
             }
             break;
-        case 2: // Satisfactory
+        case 15: // Satisfactory
             const satisfactoryConfig = gameConfig.version as SatisfactoryConfig;
             startAndVars = {
-                startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ServerQueryPort={{QUERY_PORT}} -BeaconPort={{BEACON_PORT}} -multihome=0.0.0.0', 
+                startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ServerQueryPort={{QUERY_PORT}} -BeaconPort={{BEACON_PORT}} -multihome=0.0.0.0',
                 environment: {
                     SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public"
                 }
@@ -129,6 +129,7 @@ export async function provisionServer(order: GameServerOrder) {
 
     let newServer: Server;
     try {
+        console.log(options)
         newServer = await pt.createServer(options);
     } catch (err) {
         const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);

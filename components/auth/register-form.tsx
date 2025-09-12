@@ -15,30 +15,31 @@ import { cn } from "@/lib/utils"
 import { authClient } from "@/lib/auth-client"
 import { useCallback, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const brouter = useRouter();
+  const t = useTranslations("RegisterLogin");
 
   const registerUser = async ({ username, email, password }: { username: string; email: string; password: string }) => {
-    // Simulate API call
     const { data, error } = await authClient.signUp.email({
-      email, // user email address
-      password, // user password -> min 8 characters by default
-      name: username, // user display name
-      image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`, // User image URL (optional)
-      callbackURL: "/dashboard", // A URL to redirect to after the user verifies their email (optional)
+      email,
+      password,
+      name: username,
+      image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
+      callbackURL: "/dashboard",
     }, {
       onRequest: () => {
         setLoading(true);
       },
-      onSuccess: (ctx) => {
+      onSuccess: () => {
         brouter.push("/gameserver");
       },
-      onError: (ctx) => {
-        setError("Registration failed. Please try again.");
+      onError: () => {
+        setError(t("errors.registrationFailedTryAgain"));
       },
     });
     return { success: !!data, error: error?.message };
@@ -63,37 +64,37 @@ export function RegisterForm({
     setSuccess(null);
     setLoading(true);
     if (!emailValid) {
-      setError("Email is required");
+      setError(t("validation.emailRequired"));
       setLoading(false);
       return;
     }
     if (password.length < passwordMinLength) {
-      setError(`Password must be at least ${passwordMinLength} characters`);
+      setError(t("validation.passwordMin", { min: passwordMinLength }));
       setLoading(false);
       return;
     }
     if (!passwordsMatch) {
-      setError("Passwords do not match");
+      setError(t("validation.passwordsDontMatch"));
       setLoading(false);
       return;
     }
     try {
       const res = await registerUser({ username, email, password });
       if (!res.success) {
-        setError(res.error || "Registration failed");
+        setError(res.error || t("errors.registrationFailed"));
       } else {
-        setSuccess("Registration successful!");
+        setSuccess(t("success.registration"));
         setUsername("");
         setEmail("");
         setPassword("");
         setConfirmPassword("");
       }
     } catch (err: any) {
-      setError(err.message || "Unexpected error");
+      setError(err.message || t("errors.registrationFailed"));
     } finally {
       setLoading(false);
     }
-  }, [username, email, password, confirmPassword, passwordsMatch, emailValid]);
+  }, [username, email, password, confirmPassword, passwordsMatch, emailValid, t]);
 
 
   return (
@@ -101,20 +102,20 @@ export function RegisterForm({
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Welcome</CardTitle>
+            <CardTitle className="text-xl">{t("title")}</CardTitle>
             <CardDescription>
-              Register with your Discord or Google account
+              {t("subtitle")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4">
-                  <Button variant="outline" className="w-full" type="button" onClick={() => authClient.signIn.social({provider: "discord", callbackURL: "/gameserver"})}>
+                  <Button variant="outline" className="w-full" type="button" onClick={() => authClient.signIn.social({ provider: "discord", callbackURL: "/gameserver" })}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                       <path d="M18.942 5.556a16.299 16.299 0 0 0-4.126-1.297c-.178.321-.385.754-.529 1.097a15.175 15.175 0 0 0-4.573 0 11.583 11.583 0 0 0-.535-1.097 16.274 16.274 0 0 0-4.129 1.3c-2.611 3.946-3.319 7.794-2.965 11.587a16.494 16.494 0 0 0 5.061 2.593 12.65 12.65 0 0 0 1.084-1.785 10.689 10.689 0 0 1-1.707-.831c.143-.106.283-.217.418-.331 3.291 1.539 6.866 1.539 10.118 0 .137.114.277.225.418.331-.541.326-1.114.606-1.71.832a12.52 12.52 0 0 0 1.084 1.785 16.46 16.46 0 0 0 5.064-2.595c.415-4.396-.709-8.209-2.973-11.589zM8.678 14.813c-.988 0-1.798-.922-1.798-2.045s.793-2.047 1.798-2.047 1.815.922 1.798 2.047c.001 1.123-.793 2.045-1.798 2.045zm6.644 0c-.988 0-1.798-.922-1.798-2.045s.793-2.047 1.798-2.047 1.815.922 1.798 2.047c0 1.123-.793 2.045-1.798 2.045z" />
                     </svg>
-                    Register with Discord
+                    {t("oauth.discord")}
                   </Button>
                   <Button variant="outline" className="w-full" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
@@ -123,21 +124,21 @@ export function RegisterForm({
                         fill="currentColor"
                       />
                     </svg>
-                    Register with Google
+                    {t("oauth.google")}
                   </Button>
                 </div>
                 <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
-                    Or continue with
+                    {t("orContinueWith")}
                   </span>
                 </div>
                 <div className="grid gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="username">Username</Label>
+                    <Label htmlFor="username">{t("fields.username")}</Label>
                     <Input
                       id="username"
                       type="text"
-                      placeholder="your username"
+                      placeholder={t("fields.usernamePlaceholder")}
                       required
                       value={username}
                       onChange={e => setUsername(e.target.value)}
@@ -145,11 +146,11 @@ export function RegisterForm({
                     />
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t("fields.email")}</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder={t("fields.emailPlaceholder")}
                       required
                       value={email}
                       onChange={e => setEmail(e.target.value)}
@@ -157,21 +158,23 @@ export function RegisterForm({
                     />
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t("fields.password")}</Label>
                     <Input
                       id="password"
                       type="password"
                       required
+                      placeholder={t("fields.passwordPlaceholder")}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
                       autoComplete="new-password"
                     />
                   </div>
                   <div className="grid gap-3">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword">{t("fields.confirmPassword")}</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
+                      placeholder={t("fields.confirmPasswordPlaceholder")}
                       required
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
@@ -179,10 +182,10 @@ export function RegisterForm({
                     />
                   </div>
                   {passwordTooShort && (
-                    <div className="text-red-500 text-xs text-center">Password must be at least {passwordMinLength} characters</div>
+                    <div className="text-red-500 text-xs text-center">{t("validation.passwordMin", { min: passwordMinLength })}</div>
                   )}
                   {!passwordTooShort && !passwordsMatch && confirmPassword.length > 0 && (
-                    <div className="text-red-500 text-xs text-center">Passwords do not match</div>
+                    <div className="text-red-500 text-xs text-center">{t("validation.passwordsDontMatch")}</div>
                   )}
                   {error && (
                     <div className="text-red-500 text-sm text-center mt-2">{error}</div>
@@ -190,8 +193,8 @@ export function RegisterForm({
                   {success && (
                     <div className="text-green-600 text-sm text-center mt-2">{success}</div>
                   )}
-                  <Button type="submit" className="w-full" disabled={loading || !passwordsMatch || passwordTooShort || !emailValid }>
-                    {loading ? "Registering..." : "Register"}
+                  <Button type="submit" className="w-full" disabled={loading || !passwordsMatch || passwordTooShort || !emailValid}>
+                    {loading ? t("button.registering") : t("button.register")}
                   </Button>
                 </div>
               </div>
@@ -199,8 +202,10 @@ export function RegisterForm({
           </CardContent>
         </Card>
         <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-          and <a href="#">Privacy Policy</a>.
+          {t.rich("disclaimer", {
+            terms: (chunks) => <a href="#">{chunks}</a>,
+            privacy: (chunks) => <a href="#">{chunks}</a>
+          })}
         </div>
       </div>
     </div>

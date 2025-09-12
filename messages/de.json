@@ -13,11 +13,11 @@
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",
     "boxLabel1": "Einfach",
-    "boxDesc1": "Einrichtung in Minuten",
+    "boxDesc1": "Schnelle Einrichtung",
     "boxLabel2": "Sicher",
     "boxDesc2": "Geschützte Infrastruktur",
     "boxLabel3": "Zuverlässig",
-    "boxDesc3": "99,9% Verfügbarkeitsgarantie",
+    "boxDesc3": "99% Verfügbarkeit",
     "buttonStartNow": "Jetzt starten",
     "buttonComparePlans": "Pakete Vergleichen",
     "supportedGames": "Unterstützte Spiele",
@@ -210,5 +210,66 @@
       "description": "Wähle deine bevorzugten Spieleinstellungen",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
     }
+  },
+  "RegisterLogin": {
+    "title": "Willkommen",
+    "subtitle": "Registriere dich mit deinem Discord- oder Google-Konto",
+    "oauth": {
+      "discord": "Mit Discord registrieren",
+      "google": "Mit Google registrieren"
+    },
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melde dich mit deinem Discord- oder Google-Konto an",
+      "oauthDiscord": "Mit Discord anmelden",
+      "oauthGoogle": "Mit Google anmelden",
+      "orContinueWith": "Oder weiter mit",
+      "fields": {
+        "email": "E-Mail",
+        "emailPlaceholder": "mail@beispiel.de",
+        "password": "Passwort",
+        "forgot": "Passwort vergessen?"
+      },
+      "button": {
+        "loggingIn": "Anmelden...",
+        "login": "Anmelden"
+      },
+      "noAccount": {
+        "text": "Noch kein Konto?",
+        "signUp": "Registrieren"
+      },
+      "errors": {
+        "loginFailed": "Anmeldung fehlgeschlagen",
+        "unexpected": "Unerwarteter Fehler"
+      }
+    },
+    "orContinueWith": "Oder fahre fort mit",
+    "fields": {
+      "username": "Benutzername",
+      "usernamePlaceholder": "dein Benutzername",
+      "email": "E-Mail",
+      "emailPlaceholder": "mail@beispiel.de",
+      "password": "Passwort",
+      "passwordPlaceholder": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "confirmPasswordPlaceholder": "Passwort bestätigen"
+    },
+    "validation": {
+      "passwordMin": "Das Passwort muss mindestens {min} Zeichen lang sein",
+      "passwordsDontMatch": "Passwörter stimmen nicht überein",
+      "emailRequired": "E-Mail ist erforderlich"
+    },
+    "errors": {
+      "registrationFailedTryAgain": "Registrierung fehlgeschlagen. Bitte versuche es erneut.",
+      "registrationFailed": "Registrierung fehlgeschlagen"
+    },
+    "success": {
+      "registration": "Registrierung erfolgreich!"
+    },
+    "button": {
+      "registering": "Registriere...",
+      "register": "Registrieren"
+    },
+    "disclaimer": "Durch Klicken auf Weiter stimmst du unseren <terms>Nutzungsbedingungen</terms> und unserer <privacy>Datenschutzerklärung</privacy> zu."
   }
 }

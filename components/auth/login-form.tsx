@@ -13,11 +13,14 @@ import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { useCallback, useState } from "react"
+import { useTranslations } from "next-intl"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const t = useTranslations("RegisterLogin.login");
+  const tr = useTranslations("RegisterLogin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -30,16 +33,16 @@ export function LoginForm({
     try {
       const { data, error } = await authClient.signIn.email({ email, password, callbackURL: "/gameserver" });
       if (error) {
-        setError(error.message || "Login failed");
+        setError(error.message || t("errors.loginFailed"));
       } else {
-        //TODO: Optionally redirect or show success
+        // success path (optional redirect already handled by callbackURL)
       }
     } catch (err: any) {
-      setError(err.message || "Unexpected error");
+      setError(err.message || t("errors.unexpected"));
     } finally {
       setLoading(false);
     }
-  }, [email, password]);
+  }, [email, password, t]);
 
 
   return (
@@ -47,9 +50,9 @@ export function LoginForm({
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Welcome back</CardTitle>
+            <CardTitle className="text-xl">{t("title")}</CardTitle>
             <CardDescription>
-              Login with your Apple or Google account
+              {t("subtitle")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -60,7 +63,7 @@ export function LoginForm({
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                       <path d="M18.942 5.556a16.299 16.299 0 0 0-4.126-1.297c-.178.321-.385.754-.529 1.097a15.175 15.175 0 0 0-4.573 0 11.583 11.583 0 0 0-.535-1.097 16.274 16.274 0 0 0-4.129 1.3c-2.611 3.946-3.319 7.794-2.965 11.587a16.494 16.494 0 0 0 5.061 2.593 12.65 12.65 0 0 0 1.084-1.785 10.689 10.689 0 0 1-1.707-.831c.143-.106.283-.217.418-.331 3.291 1.539 6.866 1.539 10.118 0 .137.114.277.225.418.331-.541.326-1.114.606-1.71.832a12.52 12.52 0 0 0 1.084 1.785 16.46 16.46 0 0 0 5.064-2.595c.415-4.396-.709-8.209-2.973-11.589zM8.678 14.813c-.988 0-1.798-.922-1.798-2.045s.793-2.047 1.798-2.047 1.815.922 1.798 2.047c.001 1.123-.793 2.045-1.798 2.045zm6.644 0c-.988 0-1.798-.922-1.798-2.045s.793-2.047 1.798-2.047 1.815.922 1.798 2.047c0 1.123-.793 2.045-1.798 2.045z" />
                     </svg>
-                    Login with Discord
+                    {t("oauthDiscord")}
                   </Button>
                   <Button variant="outline" className="w-full" type="button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
@@ -69,21 +72,21 @@ export function LoginForm({
                         fill="currentColor"
                       />
                     </svg>
-                    Login with Google
+                    {t("oauthGoogle")}
                   </Button>
                 </div>
                 <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
-                    Or continue with
+                    {t("orContinueWith")}
                   </span>
                 </div>
                 <div className="grid gap-6">
                   <div className="grid gap-3">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t("fields.email")}</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder={t("fields.emailPlaceholder")}
                       required
                       value={email}
                       onChange={e => setEmail(e.target.value)}
@@ -92,12 +95,12 @@ export function LoginForm({
                   </div>
                   <div className="grid gap-3">
                     <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password">{t("fields.password")}</Label>
                       <a
                         href="#"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
-                        Forgot your password?
+                        {t("fields.forgot")}
                       </a>
                     </div>
                     <Input
@@ -110,16 +113,16 @@ export function LoginForm({
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Logging in..." : "Login"}
+                    {loading ? t("button.loggingIn") : t("button.login")}
                   </Button>
                   {error && (
                     <div className="text-red-500 text-sm text-center mt-2">{error}</div>
                   )}
                 </div>
                 <div className="text-center text-sm">
-                  Don&apos;t have an account?{" "}
+                  {t("noAccount.text")} {" "}
                   <a href="#" className="underline underline-offset-4">
-                    Sign up
+                    {t("noAccount.signUp")}
                   </a>
                 </div>
               </div>
@@ -127,8 +130,10 @@ export function LoginForm({
           </CardContent>
         </Card>
         <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-          By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-          and <a href="#">Privacy Policy</a>.
+          {tr.rich("disclaimer", {
+            terms: (chunks) => <a href="#">{chunks}</a>,
+            privacy: (chunks) => <a href="#">{chunks}</a>
+          })}
         </div>
       </div>
     </div>
