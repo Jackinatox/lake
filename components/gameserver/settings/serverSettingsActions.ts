@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient";
 import { prisma } from "@/prisma";
-import { Prisma } from "@prisma/client";
+import { headers } from "next/headers";
 import { ClientServer } from "pterodactyl.js";
 
 const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -12,10 +12,13 @@ const ptAdminKey = process.env.PTERODACTYL_API_KEY;
 
 
 export async function renameClientServer(ptServerId, newName: string): Promise<boolean> {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    if (!session?.user)
+    if (!session) {
         return false;
+    }
 
     if (newName.length > 200)
         return false;
@@ -47,11 +50,14 @@ export async function renameClientServer(ptServerId, newName: string): Promise<b
     return true;
 }
 
-export async function reinstallSerevr(server: string): Promise<boolean> {
-    const session = await auth();
+export async function reinstallServer(server: string): Promise<boolean> {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    if (!session?.user)
+    if (!session) {
         return false;
+    }
 
     try {
         fetch(`${ptUrl}/api/client/servers/${server}/settings/reinstall`, {
@@ -69,10 +75,13 @@ export async function reinstallSerevr(server: string): Promise<boolean> {
 }
 
 export async function changeServerStartup(server, docker_image: string): Promise<boolean> {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    if (!session?.user)
+    if (!session) {
         return false;
+    }
 
     let clientserver: ClientServer;
 

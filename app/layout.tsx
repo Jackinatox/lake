@@ -6,9 +6,9 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { auth } from "@/auth";
+import { headers } from "next/headers";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -38,7 +38,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-  const sess = await auth();
+    const session = await auth.api.getSession({
+      headers: await headers()
+    })
+  
 
   return (
     <html lang={locale} className={geistSans.className} suppressHydrationWarning>
@@ -52,7 +55,6 @@ export default async function RootLayout({
           >
             <main className="min-h-screen flex flex-col items-center">
               <div className="flex-1 w-full flex flex-col items-center">
-                <SessionProvider>
                   <Navbar locale={locale} />
                   <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
 
@@ -60,12 +62,11 @@ export default async function RootLayout({
                     <Toaster />
                     {process.env.NODE_ENV !== "production" &&
                         <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
-                        {JSON.stringify(sess?.user, null, 2)}
+                        {JSON.stringify(session?.user, null, 2)}
                         </pre>
                     }
 
                   </div>
-                </SessionProvider>
 
                 <Footer />
 

@@ -1,12 +1,15 @@
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
+import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers() // you need to pass the headers object.
+        })
 
-        if (!session?.user) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -16,7 +19,7 @@ export async function POST(req: NextRequest) {
         }
 
         const ticket = await prisma.supportTicket.create({
-            data:{
+            data: {
                 userId: session.user.id,
                 title: null,
                 message: data.description,

@@ -1,11 +1,13 @@
 "use server";
 import { auth } from "@/auth";
-import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { prisma } from "@/prisma";
+import { headers } from "next/headers";
 
 export async function deleteGameServers(ids: number[]) {
-    const session = await auth();
-    if (session?.user.role !== 'ADMIN') {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+    if (session?.user.role !== "admin") {
         throw new Error("Unauthorized");
     }
 
