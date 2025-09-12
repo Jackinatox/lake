@@ -31,7 +31,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     const isServerValid = await prisma.gameServer.findFirst({
         where: {
-            id: serverId,
+            ptServerId: serverId,
             userId: session.user.id,
             status: {
                 notIn: ['CREATION_FAILED', 'DELETED']
