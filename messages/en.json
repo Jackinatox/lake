@@ -209,5 +209,66 @@
       "description": "Select your preferred game settings",
       "noSpecific": "No specific configuration options available for this game."
     }
+  },
+  "RegisterLogin": {
+    "title": "Welcome",
+    "subtitle": "Register with your Discord or Google account",
+    "oauth": {
+      "discord": "Register with Discord",
+      "google": "Register with Google"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Login with your Discord or Google account",
+      "oauthDiscord": "Login with Discord",
+      "oauthGoogle": "Login with Google",
+      "orContinueWith": "Or continue with",
+      "fields": {
+        "email": "Email",
+        "emailPlaceholder": "mail@example.com",
+        "password": "Password",
+        "forgot": "Forgot your password?"
+      },
+      "button": {
+        "loggingIn": "Logging in...",
+        "login": "Login"
+      },
+      "noAccount": {
+        "text": "Don't have an account?",
+        "signUp": "Sign up"
+      },
+      "errors": {
+        "loginFailed": "Login failed",
+        "unexpected": "Unexpected error"
+      }
+    },
+    "orContinueWith": "Or continue with",
+    "fields": {
+      "username": "Username",
+      "usernamePlaceholder": "your username",
+      "email": "Email",
+      "emailPlaceholder": "mail@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "confirm password"
+    },
+    "validation": {
+      "passwordMin": "Password must be at least {min} characters",
+      "passwordsDontMatch": "Passwords do not match",
+      "emailRequired": "Email is required"
+    },
+    "errors": {
+      "registrationFailedTryAgain": "Registration failed. Please try again.",
+      "registrationFailed": "Registration failed"
+    },
+    "success": {
+      "registration": "Registration successful!"
+    },
+    "button": {
+      "registering": "Registering...",
+      "register": "Register"
+    },
+    "disclaimer": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
   }
 }

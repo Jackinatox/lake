@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
@@ -8,9 +9,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     try {
         const serverId = (await params).server_id;
 
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
 
-        if (!session?.user) {
+        if (!session) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
         }
 
@@ -48,9 +51,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ server_id: string }> }) {
     try {
         const serverId = (await params).server_id;
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
 
-        if (!session?.user) {
+        if (!session) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
         }
 
@@ -113,9 +118,11 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
         // console.log(serverId, backupId)
 
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
 
-        if (!session?.user) {
+        if (!session) {
             return NextResponse.json({ error: 'Not authenticated' }, { status: 403 });
         }
 
@@ -136,7 +143,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
         )
 
         if (response.status === 403 || response.status === 404) {
-            return NextResponse.json({ error: "Access denied", ptresponse: await response.json()}, { status: 403 })
+            return NextResponse.json({ error: "Access denied", ptresponse: await response.json() }, { status: 403 })
         }
 
         if (!response.ok) {

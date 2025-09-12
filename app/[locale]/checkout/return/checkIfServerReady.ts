@@ -3,6 +3,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/prisma";
 import { GameServerStatus } from "@/types/gameData";
+import { headers } from "next/headers";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
@@ -10,10 +11,13 @@ const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 export default async function checkIfServerReady(
     stripeSession: string
 ): Promise<{ status: GameServerStatus | null, serverId?: string | null }> {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
-    if (!session?.user)
+    if (!session) {
         throw new Error("User not authenticated");
+    }
 
     // -------------------------
 

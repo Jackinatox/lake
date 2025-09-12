@@ -44,7 +44,7 @@ type MenuItem = {
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
   // {
-  //   label: 'Admin',
+  //   label: "admin",
   //   Icon: Settings,
   //   subItems: [
   //     { label: 'Users', href: '/admin/users', Icon: Users },
