@@ -6,9 +6,6 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Slider } from "@/components/ui/slider"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
 import type { Game, GameConfig, SatisfactoryConfig } from "@/models/config"
 
 interface SatisfactoryConfigProps {
@@ -22,6 +19,10 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
   console.log("game:", game)
   const [config, setConfig] = useState<SatisfactoryConfig>({
     version: "experimental",
+    MAX_PLAYERS: 8,
+    NUM_AUTOSAVES: 4,
+    UPLOAD_CRASH_REPORT: true,
+    AUTOSAVE_INTERVAL: 300,
   })
 
   const handleChange = (key: string, value: any) => {
@@ -29,16 +30,10 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
     setConfig(newConfig)
     if (onChange) onChange(newConfig)
   }
-game.data
+  // Note: removed stray expression that caused a syntax error
 
   useImperativeHandle(ref, () => ({
     submit: () => {
-      // For Satisfactory, we just need an environment variable to switch between early access and production
-      const envVars = {
-        SATISFACTORY_EXPERIMENTAL: config.version === "experimental" ? "true" : "false",
-      }
-
-
       // Create a complete game configuration object
       const completeConfig: GameConfig = {
         gameId: game.id,
@@ -83,6 +78,79 @@ game.data
             id="isEarlyAccess"
             checked={config.version === "experimental"}
             onCheckedChange={(checked) => handleChange("version", checked ? "experimental" : "release")}
+          />
+        </div>
+
+        {/* MAX_PLAYERS */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+          <div className="space-y-1">
+            <Label htmlFor="maxPlayers" className="text-sm font-medium cursor-pointer">
+              Max Players
+            </Label>
+            <p className="text-xs text-muted-foreground">Maximum number of concurrent players</p>
+          </div>
+          <Input
+            id="maxPlayers"
+            type="number"
+            min={1}
+            max={64}
+            value={config.MAX_PLAYERS ?? 8}
+            onChange={(e) => handleChange("MAX_PLAYERS", Math.max(1, Math.min(64, Number(e.target.value) || 0)))}
+            className="w-40"
+          />
+        </div>
+
+        {/* NUM_AUTOSAVES */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+          <div className="space-y-1">
+            <Label htmlFor="numAutosaves" className="text-sm font-medium cursor-pointer">
+              Number of Autosaves
+            </Label>
+            <p className="text-xs text-muted-foreground">How many autosave files to keep</p>
+          </div>
+          <Input
+            id="numAutosaves"
+            type="number"
+            min={1}
+            max={100}
+            value={config.NUM_AUTOSAVES ?? 4}
+            onChange={(e) => handleChange("NUM_AUTOSAVES", Math.max(1, Math.min(100, Number(e.target.value) || 0)))}
+            className="w-40"
+          />
+        </div>
+
+        {/* AUTOSAVE_INTERVAL */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+          <div className="space-y-1">
+            <Label htmlFor="autosaveInterval" className="text-sm font-medium cursor-pointer">
+              Autosave Interval (seconds)
+            </Label>
+            <p className="text-xs text-muted-foreground">Time between autosaves</p>
+          </div>
+          <Input
+            id="autosaveInterval"
+            type="number"
+            min={60}
+            max={3600}
+            step={30}
+            value={config.AUTOSAVE_INTERVAL ?? 300}
+            onChange={(e) => handleChange("AUTOSAVE_INTERVAL", Math.max(60, Math.min(3600, Number(e.target.value) || 0)))}
+            className="w-40"
+          />
+        </div>
+
+        {/* UPLOAD_CRASH_REPORT */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+          <div className="space-y-1">
+            <Label htmlFor="uploadCrashReport" className="text-sm font-medium cursor-pointer">
+              Upload Crash Reports
+            </Label>
+            <p className="text-xs text-muted-foreground">Enable sending crash reports (0/1)</p>
+          </div>
+          <Switch
+            id="uploadCrashReport"
+            checked={(config.UPLOAD_CRASH_REPORT ?? 1) === 1}
+            onCheckedChange={(checked) => handleChange("UPLOAD_CRASH_REPORT", checked ? 1 : 0)}
           />
         </div>
       </div>

@@ -198,12 +198,12 @@ export function RegisterForm({
                     {loading ? t("button.registering") : t("button.register")}
                   </Button>
                 </div>
-                                <div className="text-center text-sm">
-                                  {t("alreadyAccount.text")} {" "}
-                                  <Link href="/login" className="underline underline-offset-4">
-                                    {t("alreadyAccount.login")}
-                                  </Link>
-                                </div>
+                <div className="text-center text-sm">
+                  {t("alreadyAccount.text")} {" "}
+                  <Link href="/login" className="underline underline-offset-4">
+                    {t("alreadyAccount.login")}
+                  </Link>
+                </div>
               </div>
             </form>
           </CardContent>
