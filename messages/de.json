@@ -213,10 +213,10 @@
   "RegisterLogin": {
     "title": "Willkommen",
     "subtitle": "Registriere dich mit deinem Discord- oder Google-Konto",
-    "oauth": {
+  "oauth": {
       "discord": "Mit Discord registrieren",
       "google": "Mit Google registrieren"
-    },
+  },
     "alreadyAccount": {
       "text": "Du hast bereits ein Konto?",
       "login": "Anmelden"
@@ -274,5 +274,21 @@
       "register": "Registrieren"
     },
     "disclaimer": "Durch Klicken auf Weiter stimmst du unseren <terms>Nutzungsbedingungen</terms> und unserer <privacy>Datenschutzerklärung</privacy> zu."
+  },
+  "payments": {
+    "orderType": {
+      "NEW": "Neuer Server",
+      "UPGRADE": "Upgrade",
+      "DOWNGRADE": "Downgrade",
+      "RENEW": "Verlängerung"
+    },
+  "serverExpired": "Server abgelaufen",
+  "historyTitle": "Zahlungshistorie",
+  "totalSpend": "Gesamtausgaben",
+  "noPayments": "Keine Zahlungen",
+  "profileTitle": "Profil",
+  "loggedInViaOauth": "Angemeldet via OAuth",
+  "changePassword": "Passwort ändern",
+  "loadingPayments": "Zahlungshistorie wird geladen..."
   }
 }

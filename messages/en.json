@@ -274,5 +274,21 @@
       "register": "Register"
     },
     "disclaimer": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+  },
+  "payments": {
+    "orderType": {
+      "NEW": "New server",
+      "UPGRADE": "Upgrade",
+      "DOWNGRADE": "Downgrade",
+      "RENEW": "Renewal"
+    },
+  "serverExpired": "Server expired",
+  "historyTitle": "Payment History",
+  "totalSpend": "Total spent",
+  "noPayments": "No payments",
+  "profileTitle": "Profile",
+  "loggedInViaOauth": "Logged in via OAuth",
+  "changePassword": "Change Password",
+  "loadingPayments": "Loading payment history..."
   }
 }
