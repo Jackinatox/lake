@@ -5,6 +5,7 @@ import Link from "next/link"
 import checkIfServerReady from "./checkIfServerReady"
 import { useTranslations } from "next-intl"
 import { GameServerStatus } from "@/types/gameData"
+import { Button } from "@/components/ui/button"
 
 
 const ERROR_STATES: ReadonlySet<GameServerStatus> = new Set([
@@ -79,44 +80,43 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
   const isSuccess = !!serverId
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="w-full max-w-md mx-auto p-8 text-center space-y-4">
         {!isSuccess && !isError && !networkError && (
           <>
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-foreground">
               {status != null ? statusTitle(status) : "Checking status..."}
             </h2>
             {status != null && (
-              <p className="text-gray-600">{statusMessage(status)}</p>
+              <p className="text-muted-foreground">{statusMessage(status)}</p>
             )}
           </>
         )}
 
         {networkError && (
           <>
-            <h2 className="text-xl font-semibold text-red-600">Error</h2>
-            <p className="text-gray-600">{networkError}</p>
+            <h2 className="text-xl font-semibold text-destructive">Error</h2>
+            <p className="text-muted-foreground">{networkError}</p>
           </>
         )}
 
         {isError && status != null && (
           <>
-            <h2 className="text-xl font-semibold text-red-600">{statusTitle(status)}</h2>
-            <p className="text-gray-600">{statusMessage(status)}</p>
+            <h2 className="text-xl font-semibold text-destructive">{statusTitle(status)}</h2>
+            <p className="text-muted-foreground">{statusMessage(status)}</p>
           </>
         )}
 
         {isSuccess && (
           <>
-            <h2 className="text-xl font-semibold text-green-700">{statusTitle(GameServerStatus.ACTIVE)}</h2>
-            <p className="text-gray-600">{statusMessage(GameServerStatus.ACTIVE)}</p>
+            <h2 className="text-xl font-semibold text-green-600 dark:text-green-400">{statusTitle(GameServerStatus.ACTIVE)}</h2>
+            <p className="text-muted-foreground">{statusMessage(GameServerStatus.ACTIVE)}</p>
             <div className="pt-2">
-              <Link
-                href={`/gameserver/${serverId}`}
-                className="inline-block bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 px-4 rounded"
-              >
-                Go to server
-              </Link>
+              <Button asChild>
+                <Link href={`/gameserver/${serverId}`}>
+                  Go to server
+                </Link>
+              </Button>
             </div>
           </>
         )}
