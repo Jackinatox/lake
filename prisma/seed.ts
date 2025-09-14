@@ -8,12 +8,12 @@ async function main() {
         }
     });
 
-    await prisma.gameData.create({
-        data: {
-            data: { id: 0, egg_id: 16, docker_image: 'ghcr.io/parkervcp/games:source', experimental: true },
-            name: "Satisfactory"
-        }
-    });
+    // await prisma.gameData.create({
+    //     data: {
+    //         data: { id: 0, egg_id: 16, docker_image: 'ghcr.io/parkervcp/games:source', experimental: true },
+    //         name: "Satisfactory"
+    //     }
+    // });
 
     const cpu1 = await prisma.cPU.create({
         data: {

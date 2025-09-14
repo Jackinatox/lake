@@ -31,7 +31,7 @@ export async function provisionServer(order: GameServerOrder) {
         startWhenInstalled: true,
         outOfMemoryKiller: false,
         featureLimits: {
-            allocations: 1,
+            allocations: 2,
             backups: calcBackups(serverOrder.cpuPercent, serverOrder.ramMB),
             databases: 0,
             split_limit: 0
@@ -92,12 +92,20 @@ export async function provisionServer(order: GameServerOrder) {
                     break;
             }
             break;
-        case 15: // Satisfactory
-            const satisfactoryConfig = gameConfig.version as SatisfactoryConfig;
+        case 2: // Satisfactory
+            const satisfactoryConfig = gameConfig.gameSpecificConfig as SatisfactoryConfig;
+            console.log(satisfactoryConfig)
             startAndVars = {
-                startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ServerQueryPort={{QUERY_PORT}} -BeaconPort={{BEACON_PORT}} -multihome=0.0.0.0',
+                startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ReliablePort={{RELIABLE_PORT}}',
                 environment: {
-                    SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public"
+                    SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public",
+                    MAX_PLAYERS: satisfactoryConfig.MAX_PLAYERS,
+                    NUM_AUTOSAVES: satisfactoryConfig.NUM_AUTOSAVES,
+                    UPLOAD_CRASH_REPORT: satisfactoryConfig.UPLOAD_CRASH_REPORT.toString(),
+                    AUTOSAVE_INTERVAL : satisfactoryConfig.AUTOSAVE_INTERVAL,
+                    // HardCoded: 
+                    RELIABLE_PORT: 8888,    // Will eb replaced by 
+                    SRCDS_APPID: 1690800,
                 }
             }
             break;
@@ -127,10 +135,13 @@ export async function provisionServer(order: GameServerOrder) {
         }
     });
 
+
     let newServer: Server;
     try {
         console.log(options)
         newServer = await pt.createServer(options);
+        
+        
     } catch (err) {
         const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
         const updated = await prisma.gameServer.update({
@@ -141,9 +152,6 @@ export async function provisionServer(order: GameServerOrder) {
             },
         });
 
-        // Throw a plain serializable object containing the persisted text and the
-        // local DB id. Server Actions/edge runtimes serialize Error objects and may
-        // drop the message; throwing a plain object ensures the client receives it.
         throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
     }
 

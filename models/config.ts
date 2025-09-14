@@ -21,6 +21,11 @@ export interface HardwareConfig {
 
 export interface SatisfactoryConfig {
   version: "release" | "experimental"
+  // Satisfactory specific options
+  MAX_PLAYERS?: number
+  NUM_AUTOSAVES?: number
+  UPLOAD_CRASH_REPORT?: boolean
+  AUTOSAVE_INTERVAL?: number // seconds
 }
 
 export interface GameConfig {
