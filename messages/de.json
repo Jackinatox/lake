@@ -240,6 +240,10 @@
       "errors": {
         "loginFailed": "Anmeldung fehlgeschlagen",
         "unexpected": "Unerwarteter Fehler"
+      },
+      "noAccount": {
+        "signUp": "Registrieren",
+        "text": "Noch keinen Account?"
       }
     },
     "orContinueWith": "Oder fahre fort mit",

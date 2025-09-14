@@ -122,9 +122,9 @@ export function LoginForm({
                   )}
                 </div>
                 <div className="text-center text-sm">
-                  {t("noAccount.text")} {" "}
+                  {tr("login.noAccount.text")} {" "}
                   <Link href="/register" className="underline underline-offset-4">
-                    {t("noAccount.signUp")}
+                    {tr("login.noAccount.signUp")}
                   </Link>
                 </div>
               </div>
