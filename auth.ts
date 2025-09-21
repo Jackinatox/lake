@@ -4,6 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins"
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
+import { lastLoginMethod } from "better-auth/plugins"
 
 
 
@@ -46,7 +47,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  plugins: [admin()],
+  plugins: [
+    lastLoginMethod({
+      storeInDatabase: true
+    }),
+    admin()],
   databaseHooks: {
     user: {
       create: {

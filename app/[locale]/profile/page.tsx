@@ -10,6 +10,7 @@ import LogoutButton from "./LogoutButton";
 import PaymentList from "./payments/PaymentList";
 import { prisma } from "@/prisma";
 import { getTranslations } from "next-intl/server";
+import LastLoggedIn from "./lastLoggedIn";
 
 export default async function ProfilePage() {
     const session = await auth.api.getSession({
@@ -19,6 +20,8 @@ export default async function ProfilePage() {
     if (!session) {
         return <NotLoggedIn />;
     }
+
+    const wasEmail = session.user.lastLoginMethod === "email";
 
     const user = await prisma.user.findUnique({
         where: { id: session.user.id },
@@ -59,15 +62,14 @@ export default async function ProfilePage() {
                                 <div className="flex items-center gap-2">
                                     <Shield className="h-4 w-4" />
                                     <span className="text-sm text-muted-foreground">
-                                        {t("loggedInViaOauth")}
-                                        {/* TODO: Display OAUTH provider name */}
+                                        <LastLoggedIn />
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="flex gap-2 pt-2">
-                            <Button variant="outline" size="sm" disabled>
+                            <Button variant="outline" size="sm" disabled={!wasEmail}>
                                 <Lock className="h-4 w-4 mr-2" />
                                 {t("changePassword")}
                             </Button>

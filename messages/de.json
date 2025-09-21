@@ -287,7 +287,7 @@
   "totalSpend": "Gesamtausgaben",
   "noPayments": "Keine Zahlungen",
   "profileTitle": "Profil",
-  "loggedInViaOauth": "Angemeldet via OAuth",
+  "loggedInVia": "Angemeldet via",
   "changePassword": "Passwort ändern",
   "loadingPayments": "Zahlungshistorie wird geladen..."
   }

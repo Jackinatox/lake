@@ -140,6 +140,7 @@ model GameServerOrder {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@index([stripeSessionId])
 }
 
@@ -182,13 +183,13 @@ model Verification {
 }
 
 model User {
-  id              String            @id
-  name            String
-  email           String
-  emailVerified   Boolean           @default(false)
-  image           String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @default(now()) @updatedAt
+  id            String   @id
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
 
   sessions        Session[]
   accounts        Account[]
@@ -204,6 +205,8 @@ model User {
   ptUserId     Int?
   ptKey        String?
   stripeUserId String?
+
+  lastLoginMethod String?
 
   @@unique([email])
   @@map("user")
