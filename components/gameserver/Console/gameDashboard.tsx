@@ -251,7 +251,7 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <RAMChart newData={serverStats} />ptApiKey
+            <RAMChart newData={serverStats} />
             <Separator className="my-3" />
             <div className="grid grid-cols-2 gap-1 text-sm">
               <div className="font-medium">Current:</div>

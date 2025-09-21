@@ -55,8 +55,6 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
   const isMinecraftServer = server.egg_id >= 0 && server.egg_id <= 5
 
   const handleSaveServerName = async () => {
-    // onServerUpdate?.({ name: serverName })
-    // TODO: Handle Name
     if (await renameClientServer(server.identifier, serverName)) {
       toast({
         title: "Server name updated",
