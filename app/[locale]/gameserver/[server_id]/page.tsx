@@ -74,7 +74,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         const pt = createPtClient();
         const adminServer = await pt.getServer(server.internal_id.toString());
 
-        const updatedServer = {
+        let updatedServer = {
             ...server,
             egg_id: adminServer.egg,
             // add more modifications here if needed

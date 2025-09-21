@@ -1,15 +1,10 @@
 import { auth } from "@/auth";
 import NotLoggedIn from "@/components/auth/NoAuthMessage";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lock, Mail, Shield, User } from "lucide-react";
-import { headers } from "next/headers";
-import { Suspense } from "react";
-import LogoutButton from "./LogoutButton";
-import PaymentList from "./payments/PaymentList";
 import { prisma } from "@/prisma";
 import { getTranslations } from "next-intl/server";
+import { headers } from "next/headers";
+import { Suspense } from "react";
+import PaymentList from "./payments/PaymentList";
 import ProfileInfo from "./profile-info";
 
 export default async function ProfilePage() {
