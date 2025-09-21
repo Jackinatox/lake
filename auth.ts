@@ -65,6 +65,7 @@ export const auth = betterAuth({
               username: user.name,
               email: user.email,
               password: generateRandomPassword(),
+              externalId: user.id
             })
 
             const newKey = await createUserApiKey(newPTUser.id);
