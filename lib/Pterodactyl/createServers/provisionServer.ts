@@ -2,12 +2,10 @@ import { calcBackups, calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic
 import { prisma } from "@/prisma";
 import { NewServerOptions, Server } from "@avionrx/pterodactyl-js";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
+import { GameServerOrder } from "@prisma/client";
+import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatisfactoryConfig";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-
-import { auth } from "@/auth";
-import { GameServerOrder } from "@prisma/client";
-import { SatisfactoryConfig } from "@/models/config";
 
 export async function provisionServer(order: GameServerOrder) {
     const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: order.id }, include: { user: true, creationGameData: true, creationLocation: true } });
@@ -99,12 +97,12 @@ export async function provisionServer(order: GameServerOrder) {
                 startup: './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ReliablePort={{RELIABLE_PORT}}',
                 environment: {
                     SRCDS_BETAID: satisfactoryConfig.version === "experimental" ? "experimental" : "public",
-                    MAX_PLAYERS: satisfactoryConfig.MAX_PLAYERS,
-                    NUM_AUTOSAVES: satisfactoryConfig.NUM_AUTOSAVES,
-                    UPLOAD_CRASH_REPORT: satisfactoryConfig.UPLOAD_CRASH_REPORT.toString(),
-                    AUTOSAVE_INTERVAL : satisfactoryConfig.AUTOSAVE_INTERVAL,
+                    MAX_PLAYERS: satisfactoryConfig.max_players,
+                    NUM_AUTOSAVES: satisfactoryConfig.num_autosaves,
+                    UPLOAD_CRASH_REPORT: satisfactoryConfig.upload_crash_report.toString(),
+                    AUTOSAVE_INTERVAL : satisfactoryConfig.autosave_interval,
                     // HardCoded: 
-                    RELIABLE_PORT: 8888,    // Will eb replaced by 
+                    RELIABLE_PORT: 8888,    // Will be replaced by 
                     SRCDS_APPID: 1690800,
                 }
             }

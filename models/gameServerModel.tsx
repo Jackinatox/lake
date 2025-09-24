@@ -1,3 +1,5 @@
+import { GameConfig } from "./config";
+
 export type GameServer = {
   server_owner: boolean;
   identifier: string;
@@ -34,7 +36,7 @@ export type GameServer = {
   is_installing: boolean;
   is_transferring: boolean;
   gameDataId: number;
-  gameData: any;  // To access current game specific conf
+  gameData: GameConfig;  // To access current game specific conf
   relationships: {
     allocations: {
       object: string;

@@ -4,10 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { ChevronsUpDown, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { TriangleAlert } from "lucide-react";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { GameFlavor } from "@/types/gameData";
 import { fetchGames } from "@/lib/actions";
 import { GameServer } from "@/models/gameServerModel";
@@ -21,12 +20,13 @@ interface MinecraftFlavorDialogProps {
   server: GameServer
 }
 
-export function MinecraftFlavorDialog({ triggerText = "Change server flavour", eggId, onConfirm, server }: MinecraftFlavorDialogProps) {
+export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", eggId, onConfirm, server }: MinecraftFlavorDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [flavors, setFlavors] = useState<Flavor[]>([])
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
-  const [flavorOpen, setFlavorOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  // Using shadcn Select (no search) for a clean mobile-friendly dropdown
 
   useEffect(() => {
     const run = async () => {
@@ -58,79 +58,110 @@ export function MinecraftFlavorDialog({ triggerText = "Change server flavour", e
     run()
   }, [open, flavors])
 
+  // Responsive behavior: use a bottom sheet on mobile for better UX
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(max-width: 640px)')
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile('matches' in e ? e.matches : (e as MediaQueryList).matches)
+    // Initialize
+    handler(mq)
+    // Subscribe
+    mq.addEventListener?.('change', handler as (e: MediaQueryListEvent) => void)
+    return () => {
+      mq.removeEventListener?.('change', handler as (e: MediaQueryListEvent) => void)
+    }
+  }, [])
+
+  const Body = (
+    <>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Game Flavor</Label>
+          <Select
+            value={selectedFlavorId !== null ? String(selectedFlavorId) : undefined}
+            onValueChange={(val) => setSelectedFlavorId(Number(val))}
+          >
+            <SelectTrigger className="w-full" disabled={loading || flavors.length === 0}>
+              <SelectValue placeholder="Select a flavor" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              <SelectGroup>
+                {flavors.map((flavor) => (
+                  <SelectItem key={flavor.id} value={String(flavor.id)}>
+                    {flavor.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Version selection removed */}
+      </div>
+      <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+        <Button variant="secondary" onClick={() => setOpen(false)}>Close</Button>
+        <Button
+          variant="destructive"
+          disabled={selectedFlavorId === server.gameData.flavorId}
+          onClick={() => {
+            if (!selectedFlavorId) return
+            onConfirm?.({ flavorId: selectedFlavorId, eggId })
+            setOpen(false)
+          }}
+        >
+          Apply
+        </Button>
+      </div>
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline">{triggerText}</Button>
+        </SheetTrigger>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-xl pb-6"
+          onInteractOutside={(e) => {
+            const target = e.target as HTMLElement | null
+            if (target && (target.closest('[data-radix-select-content]') || target.closest('[role="listbox"]'))) {
+              e.preventDefault()
+            }
+          }}
+        >
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2 text-lg font-semibold">
+              <TriangleAlert className="text-yellow-500 h-5 w-5" />
+              Server Flavor ändern
+            </SheetTitle>
+            <SheetDescription>
+              Nach dem wechseln wird der Server neu installiert, die Welt sollte erhalten bleiben, es wird aber ein <b className="text-primary font-semibold">Backup</b> empfohlen!
+            </SheetDescription>
+          </SheetHeader>
+          {Body}
+        </SheetContent>
+      </Sheet>
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">{triggerText}</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl w-[95vw]">
+      <DialogContent className="max-w-2xl w-[95vw] rounded-lg">
         <DialogHeader>
-          <DialogTitle>Change server flavour</DialogTitle>
-          <DialogDescription>Select a flavour and version for your Minecraft server.</DialogDescription>
+          <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+            <TriangleAlert className="text-yellow-500 h-5 w-5" />
+            Server Flavor ändern
+          </DialogTitle>
+          <DialogDescription>
+            Nach dem wechseln wird der Server neu installiert, die Welt sollte erhalten bleiben, es wird aber ein <b className="text-primary font-semibold">Backup</b> empfohlen!
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Game Flavor</Label>
-            <Popover open={flavorOpen} onOpenChange={setFlavorOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={flavorOpen}
-                  className="w-full justify-between text-left"
-                  disabled={loading || flavors.length === 0}
-                >
-                  <span className="truncate">
-                    {selectedFlavorId !== null
-                      ? flavors.find((flavor) => flavor.id === selectedFlavorId)?.name || "Select a flavor"
-                      : "Select a flavor"}
-                  </span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0 z-50" align="start">
-                <Command>
-                  <CommandInput placeholder="Search flavor..." className="h-9" />
-                  <CommandList>
-                    <CommandEmpty>No flavor found.</CommandEmpty>
-                    <CommandGroup>
-                      {flavors.map((flavor) => (
-                        <CommandItem
-                          key={flavor.id}
-                          value={flavor.name}
-                          onSelect={() => {
-                            setSelectedFlavorId(flavor.id)
-                            setFlavorOpen(false)
-                          }}
-                          className="cursor-pointer"
-                        >
-                          <Check className={cn("mr-2 h-4 w-4", selectedFlavorId === flavor.id ? "opacity-100" : "opacity-0")} />
-                          <span className="truncate">{flavor.name}</span>
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Version selection removed */}
-        </div>
-        <DialogFooter>
-          <Button variant="secondary" onClick={() => setOpen(false)}>Close</Button>
-          <Button
-            disabled={!selectedFlavorId}
-            onClick={() => {
-              if (!selectedFlavorId) return
-              onConfirm?.({ flavorId: selectedFlavorId, eggId })
-              setOpen(false)
-            }}
-          >
-            Apply
-          </Button>
-        </DialogFooter>
+        {Body}
       </DialogContent>
     </Dialog>
   )
