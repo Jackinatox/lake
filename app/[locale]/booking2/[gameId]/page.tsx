@@ -22,7 +22,7 @@ import { useEffect, useRef, useState } from "react";
 
 export type ServerConfig = {
     hardwareConfig: HardwareConfig;
-    gameConfig: GameConfig;
+    gameSpecificConfig: GameConfig;
 };
 
 export default function GameServerConfig() {
@@ -81,7 +81,7 @@ export default function GameServerConfig() {
         setStep(2);
     };
 
-    const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
+    const handleGameConfigSubmit = async (gameSpecificConfig: GameConfig) => {
         if (!hardwareConfig) return;
 
         // Create the final server configuration
@@ -95,7 +95,7 @@ export default function GameServerConfig() {
             duration: hardwareConfig.durationsDays,
             ptServerId: null,
             creationServerConfig: {
-                gameConfig: gameConfig,
+                gameSpecificConfig: gameSpecificConfig,
                 hardwareConfig: hardwareConfig,
             },
         };

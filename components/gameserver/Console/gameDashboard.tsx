@@ -21,15 +21,15 @@ import CPUChart from "./graphs/CPUChart"
 import RAMChart from "./graphs/RAMChart"
 import { PowerBtns } from "./powerBtns"
 import { Status } from "./status"
+import GameInfo from "../settings/gameSpecific/info/GameInfo"
 
 
 interface serverProps {
   server: GameServer
   ptApiKey: string
-  gameId: number
 }
 
-function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
+function GameDashboard({ server, ptApiKey }: serverProps) {
   const [logs, setLogs] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [eulaOpen, setEulaOpen] = useState(false);
@@ -311,8 +311,10 @@ function GameDashboard({ server, ptApiKey, gameId }: serverProps) {
                       )}
                     </span>
                   </div>
-                  <div className="font-medium">Players:</div>
-                  <div>{serverStats?.state.toLowerCase() === "online" ? "2/20" : "—"}</div>
+                  <div className="font-medium">Info:</div>
+                  <div>
+                    <GameInfo server={server} />
+                  </div>
                   <div className="font-medium">Uptime:</div>
                   <div>
                     {serverStats?.uptime !== undefined

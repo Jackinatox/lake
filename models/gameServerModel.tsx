@@ -1,7 +1,7 @@
 export type GameServer = {
   server_owner: boolean;
   identifier: string;
-  internal_id: number;
+  internal_id: string;
   uuid: string;
   name: string;
   node: string;
@@ -33,6 +33,8 @@ export type GameServer = {
   is_suspended: boolean;
   is_installing: boolean;
   is_transferring: boolean;
+  gameDataId: number;
+  gameData: any;  // To access current game specific conf
   relationships: {
     allocations: {
       object: string;

@@ -5,6 +5,7 @@ import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
+import { GameServer } from '@/models/gameServerModel';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 
@@ -19,6 +20,8 @@ if (!baseUrl || !apiKey) {
 
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
+
+    // -- Auth
     const serverId = (await params).server_id;
 
     const session = await auth.api.getSession({
@@ -29,6 +32,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         return <NotLoggedIn />;
     }
 
+    // actual server data
     const isServerValid = await prisma.gameServer.findFirst({
         where: {
             ptServerId: serverId,
@@ -57,11 +61,11 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         },
     )
 
-    const data = await response.json();
-
     if (response.status === 403 || response.status === 404) {
         return <NotAllowedMessage />
     }
+    
+    const data = await response.json();
 
     if (!response.ok) {
         console.error('error from pt API', data);
@@ -69,25 +73,25 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     }
 
 
-    try {
+    try {        
         let server = { ...data.attributes };
         const pt = createPtClient();
-        const adminServer = await pt.getServer(server.internal_id.toString());
+        const adminServer = await pt.getServer(isServerValid.ptAdminId.toString());
 
-        let updatedServer = {
+        let updatedServer: GameServer = {
             ...server,
             egg_id: adminServer.egg,
-            // add more modifications here if needed
+            gameDataId: isServerValid.gameDataId,
+            gameData: JSON.parse(isServerValid.gameConfig as string)
         };
 
-        // console.log('my server: ', JSON.stringify(updatedServer, null, 2));
 
         return (
             <div className='flex justify-center'>
 
                 <div className='max-w-screen-2xl'>
 
-                    <GameDashboard server={updatedServer} ptApiKey={ptApiKey} gameId={1}></GameDashboard>
+                    <GameDashboard server={updatedServer} ptApiKey={ptApiKey}></GameDashboard>
                 </div>
             </div>
         )

@@ -71,6 +71,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
     enableCommandBlocks: true,
     spawnProtection: 16,
     allowFlight: false,
+    flavor: "Vanilla",
   })
 
   const handleChange = (key: string, value: any) => {

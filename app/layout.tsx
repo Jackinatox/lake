@@ -38,10 +38,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
-    const session = await auth.api.getSession({
-      headers: await headers()
-    })
-  
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+
 
   return (
     <html lang={locale} className={geistSans.className} suppressHydrationWarning>
@@ -55,18 +55,18 @@ export default async function RootLayout({
           >
             <main className="min-h-screen flex flex-col items-center">
               <div className="flex-1 w-full flex flex-col items-center">
-                  <Navbar locale={locale} />
-                  <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
+                <Navbar locale={locale} />
+                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
 
-                    {children}
-                    <Toaster />
-                    {process.env.NODE_ENV !== "production" &&
-                        <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
-                        {JSON.stringify(session?.user, null, 2)}
-                        </pre>
-                    }
+                  {children}
+                  <Toaster />
+                  {process.env.NODE_ENV !== "production" &&
+                    <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
+                      {JSON.stringify(session?.user, null, 2)}
+                    </pre>
+                  }
 
-                  </div>
+                </div>
 
                 <Footer />
 
