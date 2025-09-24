@@ -10,10 +10,6 @@ export interface GameFlavor {
     versions: GameVersion[];
 }
 
-export interface GameData {
-    flavors: GameFlavor[];
-}
-
 
 export enum GameServerStatus {
   PROVISIONING, // Server created in pt

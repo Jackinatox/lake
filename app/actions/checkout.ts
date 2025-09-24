@@ -72,9 +72,9 @@ export async function checkoutAction(params: CheckoutParams) {
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
                     status: "PENDING",
-                    creationGameDataId: creationServerConfig.gameConfig.gameId,
+                    creationGameDataId: creationServerConfig.gameSpecificConfig.gameId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
-                    gameConfig: JSON.stringify(creationServerConfig.gameConfig)
+                    gameConfig: JSON.stringify(creationServerConfig.gameSpecificConfig)
                 }
             });
 

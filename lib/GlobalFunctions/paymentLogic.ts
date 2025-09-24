@@ -23,8 +23,6 @@ export function calculateNew(pf: PerformanceGroup, cpuPercent: number, ramMB: nu
     const { cents, percent } = calculateDiscount(duration, baseCalc.totalCents)
     const totalPrice: NewPriceDef = { totalCents: baseCalc.totalCents - cents, cents: { cpu: baseCalc.cents.cpu, ram: baseCalc.cents.ram }, discount: { cents: cents, percent: percent } };
 
-    console.log("return:", totalPrice)
-
     return totalPrice;
 }
 
