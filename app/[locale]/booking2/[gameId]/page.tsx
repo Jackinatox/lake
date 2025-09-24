@@ -22,7 +22,7 @@ import { useEffect, useRef, useState } from "react";
 
 export type ServerConfig = {
     hardwareConfig: HardwareConfig;
-    gameSpecificConfig: GameConfig;
+    gameConfig: GameConfig;
 };
 
 export default function GameServerConfig() {
@@ -95,7 +95,7 @@ export default function GameServerConfig() {
             duration: hardwareConfig.durationsDays,
             ptServerId: null,
             creationServerConfig: {
-                gameSpecificConfig: gameSpecificConfig,
+                gameConfig: gameSpecificConfig,
                 hardwareConfig: hardwareConfig,
             },
         };

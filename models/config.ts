@@ -1,3 +1,6 @@
+import { MinecraftConfig } from "./gameSpecificConfig/MinecraftConfig"
+import { SatisfactoryConfig } from "./gameSpecificConfig/SatifactoryConfig"
+
 export interface DiskOption {
   id: number
   size_gb: number
@@ -19,14 +22,6 @@ export interface HardwareConfig {
   durationsDays: number
 }
 
-export interface SatisfactoryConfig {
-  version: "release" | "experimental"
-  // Satisfactory specific options
-  MAX_PLAYERS?: number
-  NUM_AUTOSAVES?: number
-  UPLOAD_CRASH_REPORT?: boolean
-  AUTOSAVE_INTERVAL?: number // seconds
-}
 
 export interface GameConfig {
   gameId: number
@@ -35,5 +30,5 @@ export interface GameConfig {
   eggId: number
   version: string,
   dockerImage: string,
-  gameSpecificConfig: Record<string, any> // Game-specific configuration TODO: Try to remove it
+  gameSpecificConfig: SatisfactoryConfig | MinecraftConfig
 }

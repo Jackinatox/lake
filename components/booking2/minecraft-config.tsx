@@ -12,6 +12,7 @@ import type { Game, GameConfig } from "@/models/config"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { MinecraftConfig } from "@/models/gameSpecificConfig/MinecraftConfig"
 
 interface MinecraftConfigProps {
   onChange: (config: Record<string, any>) => void
@@ -31,7 +32,6 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
   const [versionOpen, setVersionOpen] = useState(false)
 
   useEffect(() => {
-    // Set default flavor to Vanilla (id: 3) if available
     const defaultFlavorId = game.data.flavors.find((f) => f.id === 3)?.id || game.data.flavors[0]?.id || null
     setSelectedFlavorId(defaultFlavorId)
 
@@ -47,8 +47,10 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
 
   useEffect(() => {
     if (selectedFlavorId !== null) {
+      console.log(game.data.flavors)
       const flavor = game.data.flavors.find((f) => f.id === selectedFlavorId)
       if (flavor) {
+        setConfig({ ...config, flavor: flavor.name })
         setGameVersions(flavor.versions)
         const versionStillExists = flavor.versions.some(
           (v) => v.version === selectedVersion?.version
@@ -61,7 +63,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
     }
   }, [selectedFlavorId, game.data.flavors, selectedVersion])
 
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<MinecraftConfig>({
     serverName: "My Minecraft Server",
     maxPlayers: 20,
     viewDistance: 10,
@@ -73,12 +75,6 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
     allowFlight: false,
     flavor: "Vanilla",
   })
-
-  const handleChange = (key: string, value: any) => {
-    const newConfig = { ...config, [key]: value }
-    setConfig(newConfig)
-    if (onChange) onChange(newConfig)
-  }
 
   useImperativeHandle(ref, () => ({
     submit: () => {
