@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import type { Game, GameConfig } from "@/models/config"
-import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatifactoryConfig"
+import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatisfactoryConfig"
 
 interface SatisfactoryConfigProps {
   onChange: (config: SatisfactoryConfig) => void

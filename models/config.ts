@@ -1,5 +1,5 @@
 import { MinecraftConfig } from "./gameSpecificConfig/MinecraftConfig"
-import { SatisfactoryConfig } from "./gameSpecificConfig/SatifactoryConfig"
+import { SatisfactoryConfig } from "./gameSpecificConfig/SatisfactoryConfig"
 
 export interface DiskOption {
   id: number

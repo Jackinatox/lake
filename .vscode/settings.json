@@ -1,12 +1,12 @@
 {
     "github.copilot.enable": {
-        "*": false,
+        "*": true,
         "plaintext": false,
         "markdown": false,
         "scminput": false,
         "json": true,
         "typescriptreact": true,
-        "typescript": false
+        "typescript": true
     },
     "i18n-ally.localesPaths": [
         "./messages",
