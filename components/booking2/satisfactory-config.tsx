@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import type { Game, GameConfig, SatisfactoryConfig } from "@/models/config"
+import type { Game, GameConfig } from "@/models/config"
+import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatifactoryConfig"
 
 interface SatisfactoryConfigProps {
-  onChange: (config: Record<string, any>) => void
+  onChange: (config: SatisfactoryConfig) => void
   game: Game
   onSubmit: (config: GameConfig) => void
 }
@@ -19,13 +20,15 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
   console.log("game:", game)
   const [config, setConfig] = useState<SatisfactoryConfig>({
     version: "experimental",
-    MAX_PLAYERS: 8,
-    NUM_AUTOSAVES: 4,
-    UPLOAD_CRASH_REPORT: true,
-    AUTOSAVE_INTERVAL: 300,
+    max_players: 8,
+    num_autosaves: 4,
+    upload_crash_report: true,
+    autosave_interval: 300,
   })
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = <K extends keyof SatisfactoryConfig>(
+    key: K,
+    value: SatisfactoryConfig[K]) => {
     const newConfig = { ...config, [key]: value }
     setConfig(newConfig)
     if (onChange) onChange(newConfig)
@@ -94,8 +97,8 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
             type="number"
             min={1}
             max={64}
-            value={config.MAX_PLAYERS ?? 8}
-            onChange={(e) => handleChange("MAX_PLAYERS", Math.max(1, Math.min(64, Number(e.target.value) || 0)))}
+            value={config.max_players ?? 8}
+            onChange={(e) => handleChange("max_players", Math.max(1, Math.min(64, Number(e.target.value) || 0)))}
             className="w-40"
           />
         </div>
@@ -113,8 +116,8 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
             type="number"
             min={1}
             max={100}
-            value={config.NUM_AUTOSAVES ?? 4}
-            onChange={(e) => handleChange("NUM_AUTOSAVES", Math.max(1, Math.min(100, Number(e.target.value) || 0)))}
+            value={config.num_autosaves ?? 4}
+            onChange={(e) => handleChange("num_autosaves", Math.max(1, Math.min(100, Number(e.target.value) || 0)))}
             className="w-40"
           />
         </div>
@@ -133,8 +136,8 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
             min={60}
             max={3600}
             step={30}
-            value={config.AUTOSAVE_INTERVAL ?? 300}
-            onChange={(e) => handleChange("AUTOSAVE_INTERVAL", Math.max(60, Math.min(3600, Number(e.target.value) || 0)))}
+            value={config.autosave_interval ?? 300}
+            onChange={(e) => handleChange("autosave_interval", Math.max(60, Math.min(3600, Number(e.target.value) || 0)))}
             className="w-40"
           />
         </div>
@@ -149,8 +152,8 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
           </div>
           <Switch
             id="uploadCrashReport"
-            checked={(config.UPLOAD_CRASH_REPORT ?? 1) === 1}
-            onCheckedChange={(checked) => handleChange("UPLOAD_CRASH_REPORT", checked ? 1 : 0)}
+            checked={(config.upload_crash_report ?? 1) === 1}
+            onCheckedChange={(checked) => handleChange("upload_crash_report", checked)}
           />
         </div>
       </div>

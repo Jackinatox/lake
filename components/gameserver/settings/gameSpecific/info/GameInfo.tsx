@@ -3,6 +3,7 @@
 import { GameServer } from '@/models/gameServerModel'
 import React from 'react'
 import MinecraftInfo from './MinecraftInfo'
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants'
 
 interface GameInfoProps {
     server: GameServer
@@ -11,10 +12,10 @@ interface GameInfoProps {
 function GameInfo({ server }: GameInfoProps) {
     return (
         <>
-            {server.egg_id === 1 && <MinecraftInfo server={server} />}
-            {server.egg_id === 2 && <MinecraftInfo server={server} />}
-            {server.egg_id === 3 && <MinecraftInfo server={server} />}
-            {server.egg_id === 16 && <MinecraftInfo server={server} />}
+            {server.egg_id === PaperEggId && <MinecraftInfo server={server} />}
+            {server.egg_id === VanillaEggId && <MinecraftInfo server={server} />}
+            {server.egg_id === ForgeEggId && <MinecraftInfo server={server} />}
+            {server.egg_id === FabricEggId && <MinecraftInfo server={server} />}
         </>
     )
 }

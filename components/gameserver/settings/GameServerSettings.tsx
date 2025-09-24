@@ -3,6 +3,7 @@
 import { GameServer } from "@/models/gameServerModel"
 import ServerSettingsCard from "./ServerSettingsCard"
 import MinecraftSettings from "./gameSpecific/settings/MinecraftSettings"
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from "@/app/GlobalConstants"
 
 interface GameServerSettingsProps {
   server: GameServer
@@ -13,10 +14,10 @@ export default function GameServerSettings({ server }: GameServerSettingsProps) 
     <>
       <div className="space-y-2">
         <ServerSettingsCard server={server} />
-        {server.egg_id === 1 && <MinecraftSettings server={server} />}
-        {server.egg_id === 2 && <MinecraftSettings server={server} />}
-        {server.egg_id === 3 && <MinecraftSettings server={server} />}
-        {server.egg_id === 16 && <MinecraftSettings server={server} />}
+        {server.egg_id === PaperEggId && <MinecraftSettings server={server} />}
+        {server.egg_id === VanillaEggId && <MinecraftSettings server={server} />}
+        {server.egg_id === ForgeEggId && <MinecraftSettings server={server} />}
+        {server.egg_id === FabricEggId && <MinecraftSettings server={server} />}
       </div>
     </>
   )
