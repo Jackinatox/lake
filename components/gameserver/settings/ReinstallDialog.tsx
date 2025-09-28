@@ -3,15 +3,32 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogD
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
-const ReinstallDialog: React.FC = () => {
+const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+
+interface ReinstallDialogProps {
+    apiKey: string;
+    server_id: string;
+}
+
+const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleReinstall = async () => {
         setIsLoading(true);
-        // Add reinstall logic here
-        // Simulate async operation
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const response = await fetch(`${ptUrl}/api/client/servers/${server_id}/settings/reinstall`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+        });
+
+        if (!response.ok) {
+            console.error("Failed to reinstall server:", response.statusText);
+        }
+
         setIsLoading(false);
         setOpen(false);
     };
