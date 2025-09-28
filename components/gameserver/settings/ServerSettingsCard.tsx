@@ -19,8 +19,6 @@ export interface ServerSettingsCardProps {
 
 export default function ServerSettingsCard({ server }: ServerSettingsCardProps) {
   const [serverName, setServerName] = useState(server.name)
-  const [isReinstalling, setIsReinstalling] = useState(false)
-  const [reinstallDialogOpen, setReinstallDialogOpen] = useState(false)
   const { toast } = useToast()
 
   const handleSaveServerName = async () => {
@@ -41,7 +39,6 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
   }
   return (
     <>
-      <ReinstallDialog open={reinstallDialogOpen} onOpenChange={setReinstallDialogOpen} />
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -55,15 +52,22 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
             {/* Server Name */}
             <div className="space-y-2">
               <Label htmlFor="server-name">Server Name</Label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   id="server-name"
                   value={serverName}
                   onChange={(e) => setServerName(e.target.value)}
                   placeholder="Enter server name"
+                  className="flex-1"
                 />
-                <Button onClick={handleSaveServerName} disabled={serverName === server.name} size="sm">
-                  <Save className="h-4 w-4" />
+                <Button 
+                  onClick={handleSaveServerName} 
+                  disabled={serverName === server.name} 
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
+                  <Save className="h-4 w-4 mr-2 sm:mr-0" />
+                  <span className="sm:hidden">Save</span>
                 </Button>
               </div>
             </div>
@@ -80,33 +84,6 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
               />
               <p className="text-xs text-muted-foreground">
                 This command is automatically generated and cannot be modified.
-              </p>
-            </div>
-
-            {/* Reinstall Button */}
-            <Separator />
-            <div className="space-y-2">
-              <Label>Server Management</Label>
-              <Button
-                onClick={() => setReinstallDialogOpen(true)}
-                disabled={isReinstalling}
-                variant="destructive"
-                className="w-full"
-              >
-                {isReinstalling ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Reinstalling...
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Reinstall Server
-                  </>
-                )}
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                This will reinstall the server software. Not all data will be preserved.
               </p>
             </div>
           </CardContent>
