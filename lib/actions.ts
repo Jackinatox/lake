@@ -21,7 +21,7 @@ export async function fetchPerformanceGroups() {
 }
 
 export async function fetchGames(gameId: number){
-  const data = await prisma.gameData.findUnique({
+  return await prisma.gameData.findUnique({
     where: { id: gameId },
     select: {
       id: true,
@@ -29,12 +29,5 @@ export async function fetchGames(gameId: number){
       data: true
     }
   });
-
-  if (!data) {
-    console.error("Error fetching games: Game not found");
-    return null;
-  }
-
-  return data;
 }
 

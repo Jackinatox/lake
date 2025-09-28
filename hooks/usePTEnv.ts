@@ -21,34 +21,70 @@ function getStore(server: string): EnvStore {
     return stores[server];
 }
 
-const ptUrl = process.env.NEXT_PUBLIC_PT_URL;
+const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
 async function fetchEnvVars(server: string, apiKey: string) {
     const store = getStore(server);
+    
+    // Validation
+    if (!server) {
+        const error = new Error("Server ID is required");
+        store.error = error;
+        notify(server);
+        return;
+    }
+    
+    if (!apiKey) {
+        const error = new Error("API key is required");
+        store.error = error;
+        notify(server);
+        return;
+    }
+    
+    if (!ptUrl) {
+        const error = new Error("NEXT_PUBLIC_PT_URL environment variable is not set");
+        store.error = error;
+        notify(server);
+        return;
+    }
+    
     store.loading = true;
+    store.error = null;
     notify(server);
+    
     try {
-        const res = await fetch(`${ptUrl}/api/client/servers/${server}/startup`, {
+        const url = `${ptUrl}/api/client/servers/${server}/startup`;
+        
+        const res = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${apiKey}`,
             },
         });
-        if (!res.ok) throw new Error("Failed to fetch env vars");
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Failed to fetch env vars: ${res.status} ${res.statusText} - ${errorText}`);
+        }
+        
         const data = await res.json();
-        if (Array.isArray(data.data)) {
+        
+        if (data && Array.isArray(data.data)) {
+            const envVars = data.data.filter((v: any) => v.object === "egg_variable");
+            
             store.vars = Object.fromEntries(
-                data.data
-                    .filter((v: any) => v.object === "egg_variable")
-                    .map((v: any) => [v.attributes.env_variable, v.attributes.server_value])
+                envVars.map((v: any) => [v.attributes.env_variable, v.attributes.server_value])
             );
         } else {
             store.vars = {};
         }
+        
         store.error = null;
+        
     } catch (err) {
-        store.error = err as Error;
+        const error = err as Error;
+        store.error = error;
     } finally {
         store.loading = false;
         notify(server);
@@ -65,32 +101,60 @@ export function usePTEnv(key: string, server: string, apiKey: string) {
     const [, setTick] = useState(0);
 
     useEffect(() => {
-        const cb = () => setTick(t => t + 1);
+        const cb = () => {
+            setTick(t => t + 1);
+        };
+        
         store.subscribers.add(cb);
+        
         if (store.vars === null && !store.loading) {
             void fetchEnvVars(server, apiKey);
         }
+        
         return () => {
             store.subscribers.delete(cb);
         };
-    }, [server, apiKey]);
+    }, [server, apiKey, key]);
 
     const setValue = async (value: string) => {
-        const res = await fetch(`${ptUrl}/api/client/servers/${server}/startup/variable`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({ key, value }),
-        });
-        if (!res.ok) throw new Error("Update failed");
-        store.vars = { ...(store.vars ?? {}), [key]: value };
-        notify(server);
+        if (!ptUrl) {
+            throw new Error("NEXT_PUBLIC_PT_URL environment variable is not set");
+        }
+        
+        if (!server || !apiKey) {
+            throw new Error("Server ID and API key are required for setValue");
+        }
+        
+        try {
+            const url = `${ptUrl}/api/client/servers/${server}/startup/variable`;
+            
+            const res = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`,
+                },
+                body: JSON.stringify({ key, value }),
+            });
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Update failed: ${res.status} ${res.statusText} - ${errorText}`);
+            }
+            
+            // Update local store
+            store.vars = { ...(store.vars ?? {}), [key]: value };
+            notify(server);
+            
+        } catch (error) {
+            throw error;
+        }
     };
 
+    const currentValue = store.vars?.[key] ?? null;
+
     return {
-        value: store.vars?.[key] ?? null,
+        value: currentValue,
         loading: store.loading,
         error: store.error,
         setValue,
