@@ -109,7 +109,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
             setOpen(false)
           }}
         >
-          Apply
+          Neuen Flavor installieren
         </Button>
       </div>
     </>
@@ -119,7 +119,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
     return (
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="outline">{triggerText}</Button>
+          <Button variant="outline" className="w-full sm:w-auto">{triggerText}</Button>
         </SheetTrigger>
         <SheetContent
           side="bottom"
@@ -149,7 +149,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">{triggerText}</Button>
+        <Button variant="outline" className="w-full sm:w-auto">{triggerText}</Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl w-[95vw] rounded-lg">
         <DialogHeader>

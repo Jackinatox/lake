@@ -342,7 +342,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           consoleComponent={ConsoleComponent}
           fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
           backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
-          settingsComponent={<GameServerSettings server={server} />}
+          settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey}  />}
         />
       </div>
     </>
