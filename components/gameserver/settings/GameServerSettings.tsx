@@ -58,7 +58,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                   These actions can affect your server's functionality. Please use with caution.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <ReinstallDialog />
+                  <ReinstallDialog apiKey={apiKey} server_id={server.identifier}/>
                 </div>
               </div>
             </div>

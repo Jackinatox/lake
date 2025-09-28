@@ -3,6 +3,7 @@
 import { GameServer } from '@/models/gameServerModel'
 import React, { useEffect, useState } from 'react'
 import { MinecraftFlavorDialog } from './MinecraftFlavorDialog'
+import DockerImageSelector from './DockerImageSelector'
 import { usePTEnv } from '@/hooks/usePTEnv'
 import { fetchGames } from '@/lib/actions'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -59,6 +60,8 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
         }
     }, [value, loading, initialVersion]);
 
+
+
     const handleVersionChange = async (version: string) => {
         setSelectedVersion(version);
         setIsUpdating(true);
@@ -76,6 +79,8 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             setIsUpdating(false);
         }
     };
+
+
 
     return (
         <div className="space-y-6">
@@ -122,12 +127,20 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 {updateError && (
                     <p className="text-sm text-red-500">{updateError}</p>
                 )}
-                <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-blue-800">
-                        <span className="font-medium">Note:</span> The server will need to be reinstalled for this version change to take effect. Your world data should be preserved during reinstallation.
-                    </p>
-                </div>
+            </div>
+
+            <DockerImageSelector 
+                serverIdentifier={server.identifier}
+                apiKey={apiKey}
+                availableVersions={availableVersions}
+                disabled={versionsLoading}
+            />
+
+            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-blue-800">
+                    <span className="font-medium">Note:</span> The server will need to be reinstalled for these changes to take effect. Your world data should be preserved during reinstallation.
+                </p>
             </div>
 
             {/* <div className="space-y-2">
