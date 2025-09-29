@@ -44,7 +44,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "eslint-config-next": "^15.4.6",
+    "eslint-config-next": "^15.5.4",
     "framer-motion": "^12.18.1",
     "import-in-the-middle": "^1.14.2",
     "lucide-react": "^0.468.0",
