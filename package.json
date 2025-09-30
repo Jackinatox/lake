@@ -64,7 +64,7 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
+    "@types/node": "^24.6.0",
     "@types/react": "^19.1.12",
     "@types/react-dom": "19.0.2",
     "prisma": "^6.15.0",
