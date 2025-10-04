@@ -8,8 +8,10 @@ import { usePTEnv } from '@/hooks/usePTEnv'
 import { fetchGames } from '@/lib/actions'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Check, Loader2, AlertCircle, Info } from "lucide-react"
+import { Check, Loader2, AlertCircle, Info, Save } from "lucide-react"
 import type { GameFlavor, GameVersion } from "@/types/gameData"
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Button } from '@/components/ui/button'
 
 interface MinecraftSettingsProps {
     server: GameServer
@@ -18,7 +20,7 @@ interface MinecraftSettingsProps {
 
 function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     const { value, error, loading, setValue } = usePTEnv("MINECRAFT_VERSION", server.identifier, apiKey);
-    
+
     const [availableVersions, setAvailableVersions] = useState<GameVersion[]>([]);
     const [versionsLoading, setVersionsLoading] = useState(false);
     const [selectedVersion, setSelectedVersion] = useState<string>("");
@@ -34,7 +36,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 const data = await fetchGames(server.gameDataId);
                 const raw = (data?.data as unknown) as any | null;
                 const flavors: GameFlavor[] = raw?.flavors ?? [];
-                
+
                 // Find the current flavor to get its versions
                 const currentFlavor = flavors.find((flavor) => flavor.id === server.gameData.flavorId);
                 if (currentFlavor) {
@@ -61,12 +63,14 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     }, [value, loading, initialVersion]);
 
 
-
     const handleVersionChange = async (version: string) => {
         setSelectedVersion(version);
+    }
+
+    const handleRemoteVersionChange = async (version: string) => {
         setIsUpdating(true);
         setUpdateError(""); // Clear any previous errors
-        
+
         try {
             await setValue(version);
             setLastSavedVersion(version);
@@ -87,14 +91,10 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <Label className="text-sm font-medium">Minecraft Version</Label>
+                    <span className="text-xs text-muted-foreground italic">(Reinstall required)</span>
+
                     {isUpdating && (
                         <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                    )}
-                    {!isUpdating && !updateError && selectedVersion === lastSavedVersion && selectedVersion && selectedVersion !== initialVersion && (
-                        <div className="flex items-center gap-1 text-green-600">
-                            <Check className="h-4 w-4" />
-                            <span className="text-xs font-medium">Saved</span>
-                        </div>
                     )}
                     {!isUpdating && updateError && (
                         <div className="flex items-center gap-1 text-red-600">
@@ -103,24 +103,39 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                         </div>
                     )}
                 </div>
-                <Select
-                    value={selectedVersion}
-                    onValueChange={handleVersionChange}
-                    disabled={loading || versionsLoading || availableVersions.length === 0 || isUpdating}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a version" />
-                    </SelectTrigger>
-                    <SelectContent className="w-full">
-                        <SelectGroup>
-                            {availableVersions.map((version) => (
-                                <SelectItem key={version.version} value={version.version}>
-                                    {version.version}
-                                </SelectItem>
-                            ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                <ButtonGroup className="w-full">
+                    <Select
+                        value={selectedVersion}
+                        onValueChange={handleVersionChange}
+                        disabled={loading || versionsLoading || availableVersions.length === 0 || isUpdating}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a version" />
+                        </SelectTrigger>
+                        <SelectContent className="w-full">
+                            <SelectGroup>
+                                {availableVersions.map((version) => (
+                                    <SelectItem key={version.version} value={version.version}>
+                                        {version.version}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Button
+                        variant="outline"
+                        disabled={
+                            selectedVersion === lastSavedVersion ||
+                            !selectedVersion ||
+                            isUpdating
+                        }
+                        onClick={() => handleRemoteVersionChange(selectedVersion)}
+                        className="flex items-center gap-2"
+                    >
+                        <Save className="h-4 w-4" />
+                        <span>Save</span>
+                    </Button>
+                </ButtonGroup>
                 {error && (
                     <p className="text-sm text-red-500">Error: {JSON.stringify(error)}</p>
                 )}
@@ -129,12 +144,14 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 )}
             </div>
 
-            <DockerImageSelector 
+            <DockerImageSelector
                 serverIdentifier={server.identifier}
                 apiKey={apiKey}
-                availableVersions={availableVersions}
                 disabled={versionsLoading}
+                title='Java Version'
+                ptSelectedDockerImage={server.docker_image}
             />
+            <span className='text-muted-foreground text-xs'>Du kannst die Java-Version ändern, wenn du willst, aber die ausgewählte sollte funktionieren.</span>
 
             <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
@@ -142,17 +159,6 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                     <span className="font-medium">Note:</span> The server will need to be reinstalled for these changes to take effect. Your world data should be preserved during reinstallation.
                 </p>
             </div>
-
-            {/* <div className="space-y-2">
-                <Label className="text-sm font-medium">Server JAR</Label>
-                <div className="text-sm text-gray-600">
-                    {jarLoading ? "Loading..." : jarValue || "Not set"}
-                </div>
-                {jarError && (
-                    <p className="text-sm text-red-500">Error: {JSON.stringify(jarError)}</p>
-                )}
-            </div> */}
-
             <MinecraftFlavorDialog eggId={server.egg_id} server={server} />
         </div>
     )
