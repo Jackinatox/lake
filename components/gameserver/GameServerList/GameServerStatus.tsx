@@ -23,7 +23,7 @@ function GameServerStatus({ server, apiKey }: { server: string, apiKey: string }
                 // handle data
                 console.log(data)
                 setLoading(false);
-                setStatus(data.attributes.current_state);
+                setStatus(data.attributes.current_state ? data.attributes.current_state : "Loading"); // Handle installing state
             });
 
         const timer = setTimeout(() => setLoading(false), 10000);

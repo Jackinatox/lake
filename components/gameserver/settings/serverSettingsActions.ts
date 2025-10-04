@@ -80,52 +80,49 @@ export async function changeServerStartup(server, docker_image: string): Promise
     })
 
     if (!session) {
-        return false;
+        throw new Error("Not authenticated");
     }
 
-    let clientserver: ClientServer;
+    const ptServer = await prisma.gameServer.findFirst(
+        { where: { ptServerId: server, userId: session.user.id } }
+    );
 
-    try {
-        const clientserver = await createPtUserClient(session?.user.ptKey).getClientServer(server);
-    } catch {
-        return false;
+    if (!ptServer) {
+        throw new Error("Server not found");
     }
 
 
     try {
-        if (clientserver.serverOwner) {
-            const admin = createPtClient();
+        const admin = createPtClient();
 
-            // Get full server details with admin API
-            const adminServer = await fetch(`${ptUrl}/api/application/servers/${clientserver.internalId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${ptAdminKey}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({})
-            }).then(response => response.json()).then(server => server.attributes);
+        // Get full server details with admin API
+        const adminServer = await fetch(`${ptUrl}/api/application/servers/${ptServer.ptAdminId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${ptAdminKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => response.json()).then(server => server.attributes);
 
-
-            // Update the serevr Configuration
-            await fetch(`${ptUrl}/api/application/servers/${clientserver.internalId}/startup`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${ptAdminKey}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    skip_scripts: false,
-                    egg: adminServer.egg,
-                    environment: adminServer.container.environment,
-                    startup: adminServer.container.startup_command,
-                    image: docker_image
-                })
-            });
-        }
+        // Update the server Configuration
+        const response = await fetch(`${ptUrl}/api/application/servers/${ptServer.ptAdminId}/startup`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${ptAdminKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                skip_scripts: false,
+                egg: adminServer.egg,
+                environment: adminServer.container.environment,
+                startup: adminServer.container.startup_command,
+                image: docker_image
+            })
+        });
     } catch (error) {
+        console.log(error)
         return false;
     }
     return true;

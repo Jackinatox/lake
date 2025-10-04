@@ -42,7 +42,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
   const handleWsMessage = async (msg: string) => {
     const data = JSON.parse(msg)
-    console.log("event: ", data.event)
 
     switch (data.event) {
       case "stats": {
@@ -139,8 +138,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
   const days = Math.floor(serverStats?.uptime / 86400) // 86400 Sekunden pro Tag
   const hours = Math.floor((serverStats?.uptime % 86400) / 3600) // Restliche Stunden
   const minutes = Math.floor((serverStats?.uptime % 3600) / 60) // Restliche Minuten
-
-  console.log(serverStats)
 
   const handleAcceptEula = async () => {
     if (!loading && wsRef.current) {
@@ -342,7 +339,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
           consoleComponent={ConsoleComponent}
           fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
           backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
-          settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey}  />}
+          settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey} />}
         />
       </div>
     </>
