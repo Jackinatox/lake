@@ -310,7 +310,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                   </div>
                   <div className="font-medium">Info:</div>
                   <div>
-                    <GameInfo server={server} />
+                    <GameInfo server={server} apiKey={ptApiKey} />
                   </div>
                   <div className="font-medium">Uptime:</div>
                   <div>

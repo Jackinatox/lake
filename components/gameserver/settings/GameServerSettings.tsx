@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import ReinstallDialog from "./ReinstallDialog"
 import { Settings, Gamepad2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface GameServerSettingsProps {
   server: GameServer
@@ -52,14 +53,17 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
             <CardTitle className="text-lg sm:text-xl">Server Management</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  These actions can affect your server's functionality. Please use with caution.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <ReinstallDialog apiKey={apiKey} server_id={server.identifier}/>
-                </div>
+            <div className="space-y-3">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                These actions can affect your server's functionality. Please use with caution.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
+              </div>
+              <div>
+                <Button>
+                  
+                </Button>
               </div>
             </div>
           </CardContent>
