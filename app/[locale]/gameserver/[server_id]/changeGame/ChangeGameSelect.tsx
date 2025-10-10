@@ -1,11 +1,14 @@
 "use server"
 
-import React from 'react';
-import GameCard from './gameCard';
-import { prisma } from '@/prisma';
+import GameCard from '@/components/order/game/gameCard';
+import { prisma } from '@/prisma'
+import React from 'react'
 
+interface ChangeGameSelectProps {
+    serverId: string
+}
 
-async function GameSelect() {
+async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     const data = await prisma.gameData.findMany();
 
     const games = data.map(game => {
@@ -23,13 +26,13 @@ async function GameSelect() {
     return (
         <>
             <div className='flex justify-center'>
-                <h2 className="text-3xl font-bold">Games</h2>
+                <h2 className="text-3xl font-bold">Choose a Game to Install</h2>
             </div>
             <div className="flex flex-wrap gap-4 justify-center">
                 {games.map((game) => {
                     return (
                         <GameCard key={game.id} card={{
-                            link: `/booking2/${game.id.toString()}`,
+                            link: `/gameserver/${serverId}/changeGame/${game.id.toString()}`,
                             name: game.name ?? ''
                         }} images={game.images} />
                     );
@@ -39,4 +42,4 @@ async function GameSelect() {
     );
 }
 
-export default GameSelect;
+export default ChangeGameSelect

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import ReinstallDialog from "./ReinstallDialog"
 import { Settings, Gamepad2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 interface GameServerSettingsProps {
   server: GameServer
@@ -61,9 +62,13 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                 <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
               </div>
               <div>
-                <Button>
-                  
-                </Button>
+                <Link href={`/gameserver/${server.identifier}/changeGame`}>
+                  <Button asChild>
+                    <a>
+                      Change game
+                    </a>
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
