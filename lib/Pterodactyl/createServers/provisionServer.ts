@@ -12,7 +12,7 @@ export async function provisionServer(order: GameServerOrder) {
     const pt = createPtClient();
 
     console.log('user id: ', serverOrder.user.ptUserId)
-    const gameConfig = JSON.parse(serverOrder.gameConfig as any);
+    const gameConfig = serverOrder.gameConfig as any;
     // console.log("GameConfig: ", gameConfig);
 
     let options: NewServerOptions;
@@ -80,7 +80,7 @@ export async function provisionServer(order: GameServerOrder) {
                 case 16: // Fabric
                     startAndVars = {
                         environment: {
-                            MC_VERSION: gameConfig.version,
+                            MINECRAFT_VERSION: gameConfig.version,
                             SERVER_JARFILE: 'server.jar',
                             FABRIC_VERSION: 'latest',
                             LOADER_VERSION: 'latest'

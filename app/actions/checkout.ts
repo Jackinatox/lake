@@ -74,7 +74,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     status: "PENDING",
                     creationGameDataId: creationServerConfig.gameConfig.gameId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
-                    gameConfig: JSON.stringify(creationServerConfig.gameConfig)
+                    gameConfig: creationServerConfig.gameConfig as any
                 }
             });
 
