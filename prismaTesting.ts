@@ -1,4 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
+import PTUserServerPowerAction from "./lib/Pterodactyl/Functions/StopPTUserServer";
 
 const prisma = new PrismaClient();
 // to run: pnpx ts-node prismaTesting.ts
@@ -20,12 +21,13 @@ async function main() {
   //     name: "Satisfactory"
   //   }
   // });
+  PTUserServerPowerAction("0045b0e0", "ptlc_lUcKfAGW26ndrbNMpU0AJ2Vs06J6Gtdz1Flr5TZ2dIm", "kill")
 
-  const cpu2 = await prisma.cPU.create({
-    data: {
-      name: 'R5-7600', cores: 6, threads: 12, singleScore: 100, multiScore: 1000, maxThreads: 10, minThreads: 1, pricePerCore: 85
-    }
-  });
+  // const cpu2 = await prisma.cPU.create({
+  //   data: {
+  //     name: 'R5-7600', cores: 6, threads: 12, singleScore: 100, multiScore: 1000, maxThreads: 10, minThreads: 1, pricePerCore: 85
+  //   }
+  // });
 
   // console.log(calculateBase(pf, 200, 2048, 30));
   // Example: Update something

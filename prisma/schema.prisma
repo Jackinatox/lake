@@ -106,8 +106,8 @@ enum GameServerStatus {
   CREATION_FAILED // Only when pt.createServer failes, not the actual installation
   ACTIVE // Server is installed
 
-  EXPIRED
-  DELETED
+  EXPIRED // Server expired, and will be deleted from pt soon
+  DELETED // Server deleted in pt
 }
 
 model GameServerOrder {

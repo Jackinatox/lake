@@ -58,6 +58,8 @@ export async function changeGame({
 
     PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
 
+    await new Promise(resolve => setTimeout(resolve, 200));    // Wait so the server is really killed
+
     const response = await fetch(`${ptUrl}/api/application/servers/${gameServer.ptAdminId}/startup`, {
         method: 'PATCH',
         headers: {
@@ -73,9 +75,7 @@ export async function changeGame({
         console.error("Error response from Pterodactyl:", errorData);
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
-
-    PTUserServerPowerAction(serverId, session.user.ptKey, 'start');
-
+    
     await prisma.gameServer.update({
         where: { id: gameServer.id },
         data: {
@@ -83,15 +83,18 @@ export async function changeGame({
             gameConfig: gameConfig as any,
         }
     });
-
+    
+    await new Promise(resolve => setTimeout(resolve, 200)); 
     const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey);
-
+    
     if (!response2.ok) {
         const errorData = await response2.json();
         console.error("Error response from Pterodactyl:", errorData);
         throw new Error(`Failed to restart server: ${response2.status} ${JSON.stringify(errorData)}`);
     }
-
+    
+    PTUserServerPowerAction(serverId, session.user.ptKey, 'start');
+    
     return {
         success: true,
     }

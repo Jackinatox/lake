@@ -12,6 +12,7 @@ import { Check, Loader2, AlertCircle, Info, Save } from "lucide-react"
 import type { GameFlavor, GameVersion } from "@/types/gameData"
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Button } from '@/components/ui/button'
+import StartupCommand from '../../StartupCommand'
 
 interface MinecraftSettingsProps {
     server: GameServer
@@ -87,9 +88,10 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
 
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <div className="flex items-center gap-2">
+        <div className="space-y-4">
+            <div className="">
+                <StartupCommand command={server.invocation} />
+                <div className="flex items-center gap-2 pt-4">
                     <Label className="text-sm font-medium">Minecraft Version</Label>
                     <span className="text-xs text-muted-foreground italic">(Reinstall required)</span>
 
