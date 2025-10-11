@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { headers } from "next/headers";
 
-export async function deleteGameServers(ids: number[]) {
+export async function deleteGameServers(ids: string[]) {
     const session = await auth.api.getSession({
         headers: await headers()
     })
@@ -13,10 +13,15 @@ export async function deleteGameServers(ids: number[]) {
 
     if (!Array.isArray(ids) || ids.length === 0) return { success: false, error: "No IDs provided" };
 
-    const deletedIds: number[] = [];
+    const deletedIds: string[] = [];
 
     for (const id of ids) {
         try {
+            const gameServer = await prisma.gameServer.findUnique({ where: { id } });
+            if (gameServer.status === "DELETED" || gameServer.status  === "CREATION_FAILED") {
+                deletedIds.push(id);
+                continue; // Skip already deleted servers
+            }
             const response = await fetch(process.env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -34,8 +39,8 @@ export async function deleteGameServers(ids: number[]) {
 
     try {
         for (const id of deletedIds) {
-            await prisma.gameServer.deleteMany({
-                where: { ptAdminId: id }
+            await prisma.gameServer.delete({
+                where: { id: id }
             });
         }
         return { success: true };

@@ -36,13 +36,13 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
         {/* Game-Specific Settings */}
         {isMinecraftServer && (
           <Card className="w-full">
-            <CardHeader>
+            <CardHeader className="pb-0 md:pb-0">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                 <Gamepad2 className="h-5 w-5" />
                 Game-Specific Settings
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="">
               <MinecraftSettings server={server} apiKey={apiKey} />
             </CardContent>
           </Card>
@@ -50,25 +50,26 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
 
         {/* Server Management Section */}
         <Card className="w-full">
-          <CardHeader>
+          <CardHeader className="pb-0 md:pb-0">
             <CardTitle className="text-lg sm:text-xl">Server Management</CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="space-y-3">
               <p className="text-xs sm:text-sm text-muted-foreground">
                 These actions can affect your server's functionality. Please use with caution.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
-                <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
-              </div>
-              <div>
-                <Link href={`/gameserver/${server.identifier}/changeGame`}>
-                  <Button asChild>
-                    <div>
+                <div className="w-full sm:w-1/2">
+                  <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
+                </div>
+                <div className="w-full sm:w-1/2">
+                  <Button asChild className="w-full" variant="destructive">
+                    <Link href={`/gameserver/${server.identifier}/changeGame`}>
+                      <Gamepad2 className="h-4 w-4 mr-2" />
                       Change game
-                    </div>
+                    </Link>
                   </Button>
-                </Link>
+                </div>
               </div>
             </div>
           </CardContent>

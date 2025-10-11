@@ -20,9 +20,9 @@ interface GameserversTableProps {
 
 const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers }) => {
   const toast = useToast();
-  const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
-  const handleCheckboxChange = (id: number, checked: boolean) => {
+  const handleCheckboxChange = (id: string, checked: boolean) => {
     setSelectedIds(prev =>
       checked ? [...prev, id] : prev.filter(selectedId => selectedId !== id)
     );
@@ -60,7 +60,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                 checked={selectedIds.length === gameservers.length && gameservers.length > 0}
                 onChange={e => {
                   if (e.target.checked) {
-                    setSelectedIds(gameservers.map(gs => gs.ptAdminId));
+                    setSelectedIds(gameservers.map(gs => gs.id));
                   } else {
                     setSelectedIds([]);
                   }
@@ -85,8 +85,8 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
               <TableCell>
                 <input
                   type="checkbox"
-                  checked={selectedIds.includes(gameserver.ptAdminId)}
-                  onChange={e => handleCheckboxChange(gameserver.ptAdminId, e.target.checked)}
+                  checked={selectedIds.includes(gameserver.id)}
+                  onChange={e => handleCheckboxChange(gameserver.id, e.target.checked)}
                 />
               </TableCell>
               <TableCell>{gameserver.id}</TableCell>

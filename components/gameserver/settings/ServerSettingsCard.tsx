@@ -39,16 +39,16 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
   }
   return (
     <>
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
+      <div>
+        <Card>          
+          <CardHeader className="pb-0 md:pb-0">
             <CardTitle className="flex items-center gap-2">
               <Server className="h-5 w-5" />
               Server Settings
             </CardTitle>
             <CardDescription>Configure your game server settings</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             {/* Server Name */}
             <div className="space-y-2">
               <Label htmlFor="server-name">Server Name</Label>
@@ -62,7 +62,7 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                 />
                 <Button 
                   onClick={handleSaveServerName} 
-                  disabled={serverName === server.name} 
+                  disabled={serverName === server.name || serverName.trim() === ""} 
                   size="sm"
                   className="w-full sm:w-auto"
                 >
@@ -70,21 +70,6 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                   <span className="sm:hidden">Save</span>
                 </Button>
               </div>
-            </div>
-
-            {/* Startup Command - Read Only */}
-            <div className="space-y-2">
-              <Label htmlFor="startup-command">Startup Command</Label>
-              <Textarea
-                id="startup-command"
-                value={server.invocation}
-                readOnly
-                className="font-mono text-sm bg-muted/50"
-                rows={3}
-              />
-              <p className="text-xs text-muted-foreground">
-                This command is automatically generated and cannot be modified.
-              </p>
             </div>
           </CardContent>
         </Card>

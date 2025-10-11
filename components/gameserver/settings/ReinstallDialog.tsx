@@ -29,7 +29,7 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
 
     return (
         <>
-            <Button variant="destructive" onClick={() => setOpen(true)} className="w-full sm:w-auto">
+            <Button variant="destructive" onClick={() => setOpen(true)} className="w-full">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Reinstall Server
             </Button>
