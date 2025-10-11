@@ -68,14 +68,14 @@ export async function changeGame({
             'Accept': 'application/json',
         },
         body: JSON.stringify(await buildBody(gameConfig, newGameData)),
-    }); 
+    });
 
     if (!response.ok) {
         const errorData = await response.json();
         console.error("Error response from Pterodactyl:", errorData);
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
-    
+
     await prisma.gameServer.update({
         where: { id: gameServer.id },
         data: {
@@ -83,18 +83,16 @@ export async function changeGame({
             gameConfig: gameConfig as any,
         }
     });
-    
-    await new Promise(resolve => setTimeout(resolve, 200)); 
+
+    await new Promise(resolve => setTimeout(resolve, 100));
     const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey);
-    
+
     if (!response2.ok) {
         const errorData = await response2.json();
         console.error("Error response from Pterodactyl:", errorData);
         throw new Error(`Failed to restart server: ${response2.status} ${JSON.stringify(errorData)}`);
     }
-    
-    PTUserServerPowerAction(serverId, session.user.ptKey, 'start');
-    
+
     return {
         success: true,
     }
