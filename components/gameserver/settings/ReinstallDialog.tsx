@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
+import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer";
 
 const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
@@ -16,14 +17,7 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
 
     const handleReinstall = async () => {
         setIsLoading(true);
-        const response = await fetch(`${ptUrl}/api/client/servers/${server_id}/settings/reinstall`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-        });
+        const response = await ReinstallPTUserServer(server_id, apiKey);
 
         if (!response.ok) {
             console.error("Failed to reinstall server:", response.statusText);

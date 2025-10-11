@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast"
 import type { Game, GameConfig } from "@/models/config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
 import { Loader2 } from "lucide-react"
-import { submitGameChangeRequest } from "./actions"
+import { changeGame } from "./changeGameAction"
 
 interface ChangeGameConfigClientProps {
     serverId: string
@@ -28,7 +28,7 @@ export default function ChangeGameConfigClient({
     const handleSubmit = async (config: GameConfig) => {
         try {
             setIsSubmitting(true)
-            await submitGameChangeRequest({
+            await changeGame({
                 serverId,
                 gameId: game.id,
                 gameConfig: config,
@@ -36,13 +36,13 @@ export default function ChangeGameConfigClient({
             setSubmittedConfig(config)
             toast({
                 title: "Configuration captured",
-                description: "Your desired game setup has been recorded.",
+                description: "Your game has been updated and is installing.",
             })
         } catch (error) {
             console.error("Failed to record game change request", error)
             toast({
                 title: "Unable to save",
-                description: "We could not record the configuration. Please try again.",
+                description: "Error while changing the game. Please try again.",
                 variant: "destructive",
             })
         } finally {

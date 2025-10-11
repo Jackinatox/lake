@@ -4,6 +4,8 @@ import { NewServerOptions, Server } from "@avionrx/pterodactyl-js";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { GameServerOrder } from "@prisma/client";
 import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatisfactoryConfig";
+import { buildMC_ENVs_and_startup } from "../buildMinecraftENVs";
+import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
@@ -45,52 +47,10 @@ export async function provisionServer(order: GameServerOrder) {
 
     let startAndVars;
     switch (serverOrder.creationGameData.id) {
-        case 1: //Minecraft
-            switch (parseInt(gameConfig.eggId)) {
-                case 2: // Vanilla
-                    startAndVars = {
-                        environment: {
-                            MINECRAFT_VERSION: gameConfig.version,
-                            SERVER_JARFILE: 'server.jar'
-                        },
-                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}',
-                    };
-                    break;
-                case 3: // Forge
-                    startAndVars = {
-                        environment: {
-                            MINECRAFT_VERSION: gameConfig.version,
-                            SERVER_JARFILE: 'server.jar',
-                            BUILD_TYPE: 'recommended'
-                        },
-                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )'
-
-                    };
-                    break;
-                case 1: // Paper
-                    startAndVars = {
-                        environment: {
-                            MINECRAFT_VERSION: gameConfig.version,
-                            SERVER_JARFILE: 'server.jar',
-                            BUILD_NUMBER: 'latest'
-                        },
-                        startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}'
-                    };
-                    break;
-                case 16: // Fabric
-                    startAndVars = {
-                        environment: {
-                            MINECRAFT_VERSION: gameConfig.version,
-                            SERVER_JARFILE: 'server.jar',
-                            FABRIC_VERSION: 'latest',
-                            LOADER_VERSION: 'latest'
-                        },
-                        startup: 'java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}'
-                    };
-                    break;
-            }
+        case MinecraftGameId:
+            startAndVars = buildMC_ENVs_and_startup(parseInt(gameConfig.eggId), gameConfig.version);
             break;
-        case 2: // Satisfactory
+        case SatisfactoryGameId:
             const satisfactoryConfig = gameConfig.gameSpecificConfig as SatisfactoryConfig;
             console.log(satisfactoryConfig)
             startAndVars = {
