@@ -9,7 +9,12 @@ interface ChangeGameSelectProps {
 }
 
 async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
-    const data = await prisma.gameData.findMany();
+    const data = await prisma.gameData.findMany({
+        select: {
+            id: true,
+            name: true,
+        }
+    });
 
     const games = data.map(game => {
         const imgName = `${game.name.toLowerCase()}.webp`;

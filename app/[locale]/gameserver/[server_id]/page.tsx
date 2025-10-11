@@ -82,7 +82,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             ...server,
             egg_id: adminServer.egg,
             gameDataId: isServerValid.gameDataId,
-            gameData: JSON.parse(isServerValid.gameConfig as string)
+            gameData: isServerValid.gameConfig as any
         };
 
 

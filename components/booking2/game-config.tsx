@@ -9,8 +9,6 @@ import { SatisfactoryConfigComponent } from "./satisfactory-config"
 
 interface GameConfigProps {
   game: Game
-  initialGameId?: number
-  additionalConfig?: Record<string, any>
   onAdditionalConfigChange?: (config: Record<string, any>) => void
   onSubmit: (config: GameConfig) => void
 }
@@ -18,18 +16,16 @@ interface GameConfigProps {
 export const GameConfigComponent = forwardRef((
   {
     game,
-    additionalConfig = {},
     onAdditionalConfigChange = () => { },
     onSubmit,
   }: GameConfigProps,
   ref
 ) => {
-  const [gameConfig, setGameConfig] = useState<Record<string, any>>({})
   const t = useTranslations("buyGameServer.gameConfig");
   const configRef = useRef<any>(null);
 
   const handleConfigChange = (config: Record<string, any>) => {
-    setGameConfig(config)
+    // setGameConfig(config)
     onAdditionalConfigChange(config)
   }
 

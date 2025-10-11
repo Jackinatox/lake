@@ -64,9 +64,9 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
               <div>
                 <Link href={`/gameserver/${server.identifier}/changeGame`}>
                   <Button asChild>
-                    <a>
+                    <div>
                       Change game
-                    </a>
+                    </div>
                   </Button>
                 </Link>
               </div>
