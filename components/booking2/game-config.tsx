@@ -25,7 +25,6 @@ export const GameConfigComponent = forwardRef((
   const configRef = useRef<any>(null);
 
   const handleConfigChange = (config: Record<string, any>) => {
-    // setGameConfig(config)
     onAdditionalConfigChange(config)
   }
 
