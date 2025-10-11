@@ -18,9 +18,12 @@ export async function deleteGameServers(ids: string[]) {
     for (const id of ids) {
         try {
             const gameServer = await prisma.gameServer.findUnique({ where: { id } });
+            if (!gameServer) {
+                continue;
+            }
             if (gameServer.status === "DELETED" || gameServer.status  === "CREATION_FAILED") {
                 deletedIds.push(id);
-                continue; // Skip already deleted servers
+                continue;
             }
             const response = await fetch(process.env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${id}`, {
                 method: 'DELETE',

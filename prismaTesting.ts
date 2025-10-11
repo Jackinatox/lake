@@ -21,7 +21,6 @@ async function main() {
   //     name: "Satisfactory"
   //   }
   // });
-  PTUserServerPowerAction("0045b0e0", "ptlc_lUcKfAGW26ndrbNMpU0AJ2Vs06J6Gtdz1Flr5TZ2dIm", "kill")
 
   // const cpu2 = await prisma.cPU.create({
   //   data: {
