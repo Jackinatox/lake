@@ -12,8 +12,6 @@ import { usePathname } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { BackupManager } from "../BackupManager/BackupManager"
 import EulaDialog from "../EulaDialog"
-import { FileApiService } from "../FileManager/file-api"
-import { FileManager } from "../FileManager/FileManager"
 import { TabsComponent } from "../GameserverTabs"
 import GameServerSettings from "../settings/GameServerSettings"
 import ConsoleV2 from "./ConsoleV2"
@@ -22,6 +20,8 @@ import RAMChart from "./graphs/RAMChart"
 import { PowerBtns } from "./powerBtns"
 import { Status } from "./status"
 import GameInfo from "../settings/gameSpecific/info/GameInfo"
+import FileManager from "../FileManager/FileManager"
+import { writeFile } from "../FileManager/pteroFileApi"
 
 
 interface serverProps {
@@ -141,8 +141,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
   const handleAcceptEula = async () => {
     if (!loading && wsRef.current) {
-      const apiService = new FileApiService(server.identifier, ptApiKey);
-      await apiService.saveFileContent('eula.txt', 'eula=true');
+      await writeFile(server.identifier, 'eula.txt', 'eula=true', ptApiKey)
       handleRestart();
     }
   }
@@ -337,7 +336,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
         <TabsComponent
           consoleComponent={ConsoleComponent}
-          fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
+          fileManagerComponent={<FileManager server={server.identifier} apiKey={ptApiKey} />}
           backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
           settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey} />}
         />

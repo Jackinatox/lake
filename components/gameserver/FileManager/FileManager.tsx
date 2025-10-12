@@ -1,246 +1,536 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FileText, RefreshCw, Upload } from "lucide-react"
+import { FileWarning, FolderTree } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
-import { BreadcrumbNavigation } from "./components/breadcrumb-navigation"
-import { FileList } from "./components/file-list"
-import { FileEditDialog } from "./components/file-edit-dialog"
-import { FileUploadDialog } from "./components/file-upload-dialog"
-import { FileApiService } from "./file-api"
-import type { FileManagerProps, FileEntry } from "../../../models/file-manager"
+import { DirectoryBreadcrumb } from "./components/DirectoryBreadcrumb"
+import { FileManagerToolbar } from "./components/FileManagerToolbar"
+import { DirectoryTable } from "./components/DirectoryTable"
+import { FileEditorDialog } from "./components/FileEditorDialog"
+import { FileUploadDialog } from "./components/FileUploadDialog"
+import type { FileEntry, SortColumn, SortDirection } from "./types"
+import {
+  getDownloadUrl,
+  listDirectory,
+  readFile,
+  uploadFiles,
+  writeFile,
+} from "./pteroFileApi"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { ChevronDown, KeyRound, Server } from "lucide-react"
 
-export function FileManager({ server, apiKey }: FileManagerProps) {
-  const router = useRouter()
-  const [currentPath, setCurrentPath] = useState("/")
-  const [files, setFiles] = useState<FileEntry[]>([])
-  const [loading, setLoading] = useState(true)
+interface FileManagerProps {
+  server: string
+  apiKey?: string
+}
+
+type UploadState = {
+  open: boolean
+  files: FileList | null
+  uploading: boolean
+  progress: number
+}
+
+type FileEditorState = {
+  isOpen: boolean
+  path: string | null
+  fileName: string | null
+  content: string
+  loading: boolean
+  saving: boolean
+  isBinary: boolean
+}
+
+const initialEditorState: FileEditorState = {
+  isOpen: false,
+  path: null,
+  fileName: null,
+  content: "",
+  loading: false,
+  saving: false,
+  isBinary: false,
+}
+
+const initialUploadState: UploadState = {
+  open: false,
+  files: null,
+  uploading: false,
+  progress: 0,
+}
+
+const MAX_EDITABLE_FILE_SIZE = 2 * 1024 * 1024
+const MAX_EDITABLE_FILE_SIZE_LABEL = "2 MB"
+const textLikeMimePrefixes = [
+  "text/",
+  "application/json",
+  "application/xml",
+  "application/yaml",
+  "application/x-yaml",
+  "application/javascript",
+  "application/x-sh",
+]
+
+const textLikeExtensions = [
+  ".txt",
+  ".log",
+  ".conf",
+  ".config",
+  ".cfg",
+  ".ini",
+  ".properties",
+  ".json",
+  ".xml",
+  ".yaml",
+  ".yml",
+  ".toml",
+  ".js",
+  ".ts",
+  ".jsx",
+  ".tsx",
+  ".css",
+  ".scss",
+  ".sass",
+  ".html",
+  ".htm",
+  ".md",
+  ".markdown",
+  ".sh",
+  ".bash",
+  ".bat",
+  ".cmd",
+  ".py",
+  ".java",
+  ".cpp",
+  ".c",
+  ".h",
+  ".hpp",
+  ".php",
+  ".rb",
+  ".go",
+  ".rs",
+  ".swift",
+  ".sql",
+  ".env",
+]
+
+function isTextLikeFile(entry: FileEntry) {
+  if (!entry.isFile) return false
+  if (textLikeMimePrefixes.some((prefix) => entry.mimetype?.startsWith(prefix))) {
+    return true
+  }
+
+  const lastDot = entry.name.lastIndexOf(".")
+  if (lastDot === -1) return false
+  const extension = entry.name.slice(lastDot).toLowerCase()
+  return textLikeExtensions.includes(extension)
+}
+
+function buildChildPath(parent: string, name: string, isDirectory: boolean) {
+  if (!parent || parent === "/") {
+    return `/${name}${isDirectory ? "/" : ""}`
+  }
+  return `${parent}${name}${isDirectory ? "/" : ""}`
+}
+
+function getParentPath(path: string) {
+  if (!path || path === "/") return "/"
+  const segments = path.split("/").filter(Boolean)
+  segments.pop()
+  return segments.length ? `/${segments.join("/")}/` : "/"
+}
+
+function normalizeDirectoryPath(path: string) {
+  if (!path) return "/"
+  if (path === "/") return "/"
+  return path.endsWith("/") ? path : `${path}/`
+}
+
+const parseTimestamp = (value: string | undefined) => {
+  if (!value) return 0
+  const timestamp = Date.parse(value)
+  return Number.isNaN(timestamp) ? 0 : timestamp
+}
+
+const sorters: Record<SortColumn, (a: FileEntry, b: FileEntry) => number> = {
+  name: (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  size: (a, b) => (a.size ?? 0) - (b.size ?? 0),
+  modifiedAt: (a, b) => parseTimestamp(a.modifiedAt) - parseTimestamp(b.modifiedAt),
+  createdAt: (a, b) => parseTimestamp(a.createdAt) - parseTimestamp(b.createdAt),
+}
+
+const FileManager = ({ server, apiKey }: FileManagerProps) => {
+  const { toast } = useToast()
+  const [currentPath, setCurrentPath] = useState<string>("/")
+  const [entries, setEntries] = useState<FileEntry[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
-  const [sortColumn, setSortColumn] = useState<string>("name")
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
-  const [selectedFile, setSelectedFile] = useState<FileEntry | null>(null)
-  const [fileContent, setFileContent] = useState<string>("")
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadingFile, setUploadingFile] = useState<File | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
+  const [sortColumn, setSortColumn] = useState<SortColumn>("name")
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+  const [filter, setFilter] = useState<string>("")
+  const [editorState, setEditorState] = useState<FileEditorState>(initialEditorState)
+  const [uploadState, setUploadState] = useState<UploadState>(initialUploadState)
+  const [isFtpDetailsOpen, setIsFtpDetailsOpen] = useState<boolean>(false)
 
-  const apiService = new FileApiService(server.identifier, apiKey)
+  const canInteract = Boolean(server && apiKey)
 
-  const handleApiError = (error: any) => {
-    if (error.redirect) {
-      router.push(error.redirect)
-      return
-    }
-    setError(error.error || "An error occurred")
-  }
+  const fetchDirectory = useCallback(
+    async (path: string) => {
+      if (!canInteract) return
 
-  const fetchFiles = async (path: string = currentPath) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await apiService.fetchFiles(path)
-
-      if (!data || !Array.isArray(data.data)) {
-        setError("Invalid response from server")
-        return
+      const normalized = normalizeDirectoryPath(path)
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await listDirectory(server, normalized, apiKey)
+        setEntries(response.data ?? [])
+        setCurrentPath(normalized)
+      } catch (err) {
+        console.error("Failed to load directory", err)
+        const message = err instanceof Error ? err.message : "Failed to load directory"
+        setError(message)
+        toast({
+          title: "Unable to list files",
+          description: message,
+          variant: "destructive",
+        })
+      } finally {
+        setLoading(false)
       }
+    },
+    [apiKey, canInteract, server, toast],
+  )
 
-      const validFiles = data.data.filter((file) => {
-        if (!file || typeof file.name !== "string") {
-          console.warn("Invalid file entry:", file)
-          return false
-        }
-        return true
-      })
+  useEffect(() => {
+    void fetchDirectory("/")
+  }, [fetchDirectory])
 
-      setFiles(validFiles)
-    } catch (err) {
-      console.error("Error fetching files:", err)
-      handleApiError(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const sortedEntries = useMemo(() => {
+    const filtered = filter
+      ? entries.filter((entry) => entry.name.toLowerCase().includes(filter.toLowerCase()))
+      : entries
 
-  const handleFileClick = async (file: FileEntry) => {
-    if (file.is_file) {
-      setSelectedFile(file)
-      if (file.is_editable) {
-        try {
-          const content = await apiService.fetchFileContent(`${currentPath}${file.name}`)
-          setFileContent(content)
-          setIsEditDialogOpen(true)
-        } catch (err) {
-          handleApiError(err)
-        }
-      } else {
-        // For non-editable files, trigger download
-        try {
-          await apiService.downloadFile(`${currentPath}${file.name}`)
-        } catch (err) {
-          handleApiError(err)
-        }
+    const sorted = [...filtered].sort((a, b) => {
+      if (a.isFile !== b.isFile) {
+        return a.isFile ? 1 : -1
       }
-    } else {
-      // Navigate to directory
-      const newPath = `${currentPath}${file.name}/`
-      setCurrentPath(newPath)
-      fetchFiles(newPath)
-    }
+      const comparator = sorters[sortColumn] ?? sorters.name
+      const directionFactor = sortDirection === "asc" ? 1 : -1
+      return comparator(a, b) * directionFactor
+    })
+
+    return sorted
+  }, [entries, filter, sortColumn, sortDirection])
+
+  const handleSort = (column: SortColumn) => {
+    setSortColumn((prevColumn) => {
+      if (prevColumn === column) {
+        setSortDirection((prevDirection) => (prevDirection === "asc" ? "desc" : "asc"))
+        return prevColumn
+      }
+      setSortDirection("asc")
+      return column
+    })
   }
 
-  const handleSaveFile = async () => {
-    if (!selectedFile) return
-
-    try {
-      await apiService.saveFileContent(`${currentPath}${selectedFile.name}`, fileContent)
-      setIsEditDialogOpen(false)
-      fetchFiles()
-    } catch (err) {
-      handleApiError(err)
-    }
+  const handleNavigateTo = (path: string) => {
+    if (!canInteract) return
+    void fetchDirectory(path)
   }
 
   const handleNavigateUp = () => {
-    if (currentPath === "/") return
-
-    const pathParts = currentPath.split("/").filter(Boolean)
-    pathParts.pop()
-    const newPath = pathParts.length ? `/${pathParts.join("/")}/` : "/"
-    setCurrentPath(newPath)
-    fetchFiles(newPath)
+    if (!canInteract) return
+    const parent = getParentPath(currentPath)
+    void fetchDirectory(parent)
   }
 
-  const handleNavigate = (path: string) => {
-    setCurrentPath(path)
-    fetchFiles(path)
+  const openFile = async (entry: FileEntry) => {
+    const filePath = buildChildPath(currentPath, entry.name, false)
+    const isText = isTextLikeFile(entry)
+
+    setEditorState({
+      ...initialEditorState,
+      isOpen: true,
+      path: filePath,
+      fileName: entry.name,
+      loading: isText,
+      isBinary: !isText,
+    })
+
+    if (!isText) {
+      return
+    }
+
+    try {
+      const content = await readFile(server, filePath, apiKey)
+      setEditorState((state) => ({
+        ...state,
+        content,
+        loading: false,
+      }))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to load file"
+      toast({
+        title: "Unable to open file",
+        description: message,
+        variant: "destructive",
+      })
+      setEditorState(initialEditorState)
+    }
   }
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+  const handleEntryOpen = (entry: FileEntry) => {
+    if (!canInteract) return
+    if (entry.isFile) {
+      if ((entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE) {
+        toast({
+          title: "File too large to edit",
+          description: `Only files up to ${MAX_EDITABLE_FILE_SIZE_LABEL} can be opened in the browser. Download the file to edit it locally.`,
+        })
+        return
+      }
+      void openFile(entry)
     } else {
-      setSortColumn(column)
-      setSortDirection("asc")
+      const directoryPath = buildChildPath(currentPath, entry.name, true)
+      void fetchDirectory(directoryPath)
     }
   }
 
-  const handleDownload = async (path: string) => {
-    try {
-      await apiService.downloadFile(path)
-    } catch (err) {
-      handleApiError(err)
-    }
+  const handleEditorClose = () => {
+    setEditorState(initialEditorState)
   }
 
-  const handleDelete = async (fileName: string) => {
-    try {
-      await apiService.deleteFile(currentPath, fileName)
-      fetchFiles()
-    } catch (err) {
-      handleApiError(err)
-    }
-  }
+  const handleSaveFile = async () => {
+    if (!editorState.path) return
 
-  const handleUpload = async (file: File) => {
-    setIsUploading(true)
-    setUploadProgress(0)
+    setEditorState((state) => ({ ...state, saving: true }))
 
     try {
-      await apiService.uploadFile(file, currentPath, setUploadProgress)
-      fetchFiles()
-      setIsUploadDialogOpen(false)
+      await writeFile(server, editorState.path, editorState.content, apiKey)
+      toast({
+        title: "File saved",
+        description: `${editorState.fileName} was updated successfully.`,
+      })
+      await fetchDirectory(currentPath)
     } catch (err) {
-      handleApiError(err)
+      const message = err instanceof Error ? err.message : "Failed to save file"
+      toast({
+        title: "Unable to save file",
+        description: message,
+        variant: "destructive",
+      })
     } finally {
-      setIsUploading(false)
+      setEditorState((state) => ({ ...state, saving: false }))
     }
   }
 
-  const handleCancelUpload = () => {
-    apiService.cancelUpload()
-    setIsUploading(false)
-    setUploadProgress(0)
-    setUploadingFile(null)
-    setIsUploadDialogOpen(false)
+  const handleDownload = async (entry: FileEntry) => {
+    if (!canInteract) return
+    if (!entry.isFile) return
+
+    const filePath = buildChildPath(currentPath, entry.name, false)
+
+    try {
+      const url = await getDownloadUrl(server, filePath, apiKey)
+      window.open(url, "_blank", "noopener,noreferrer")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to start download"
+      toast({
+        title: "Unable to download",
+        description: message,
+        variant: "destructive",
+      })
+    }
   }
 
-  useEffect(() => {
-    fetchFiles()
-  }, [])
+  const handleUploadDialogOpen = (open: boolean) => {
+    if (open) {
+      setUploadState((state) => ({ ...state, open: true }))
+    } else {
+      setUploadState(initialUploadState)
+    }
+  }
+
+  const handleFileSelect = (files: FileList | null) => {
+    setUploadState((state) => ({ ...state, files }))
+  }
+
+  const handleUpload = async () => {
+    if (!canInteract) return
+    if (!uploadState.files || uploadState.files.length === 0) {
+      toast({
+        title: "No files selected",
+        description: "Choose one or more files before uploading.",
+      })
+      return
+    }
+
+    setUploadState((state) => ({ ...state, uploading: true, progress: 0 }))
+
+    try {
+      await uploadFiles(server, currentPath, uploadState.files, apiKey, (progress) => {
+        setUploadState((state) => ({ ...state, progress }))
+      })
+
+      toast({
+        title: "Upload complete",
+        description: `${uploadState.files.length} file(s) uploaded successfully.`,
+      })
+
+      setUploadState(initialUploadState)
+      await fetchDirectory(currentPath)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Upload failed"
+      toast({
+        title: "Unable to upload",
+        description: message,
+        variant: "destructive",
+      })
+      setUploadState((state) => ({ ...state, uploading: false }))
+    }
+  }
+
+  const handleChangePassword = () => {
+    toast({
+      title: "Redirect coming soon",
+      description: "You’ll be able to change your FTP password from here in a future update.",
+    })
+  }
+
+  const ftpCredentials = useMemo(
+    () => [
+      { label: "Host", value: "ftp.yourpanel.com" },
+      { label: "Port", value: "21" },
+      { label: "Username", value: "server-user" },
+      { label: "Password", value: "••••••••" },
+    ],
+    [],
+  )
 
   return (
-    <Card className="w-full max-w-full overflow-hidden">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <FileText className="h-6 w-6 shrink-0" />
-            <span className="text-lg sm:text-xl truncate">File Manager</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap justify-end">
-            <Button className="w-full sm:w-auto" variant="outline" size="default" onClick={() => fetchFiles()}>
-              <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-            </Button>
-            <Button className="w-full sm:w-auto" variant="outline" size="default" onClick={() => setIsUploadDialogOpen(true)}>
-              <Upload className="h-4 w-4 mr-2" /> Upload
-            </Button>
-          </div>
+    <Card className="w-full">
+      <CardHeader className="space-y-3">
+        <CardTitle className="flex items-center gap-3 text-xl">
+          <FolderTree className="h-5 w-5" />
+          File Manager
         </CardTitle>
+        {!canInteract && (
+          <Alert variant="destructive">
+            <AlertDescription className="flex items-center gap-2 text-sm">
+              <FileWarning className="h-4 w-4" />
+              Provide a valid API key to browse and manage files.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardHeader>
+      <CardContent className="space-y-5">
+        <Collapsible open={isFtpDetailsOpen} onOpenChange={setIsFtpDetailsOpen}>
+          <div className="rounded-md border bg-muted/40">
+            <CollapsibleTrigger asChild>
+              <button
+                type="button"
+                className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium"
+              >
+                <span className="flex items-center gap-2">
+                  <Server className="h-4 w-4" />
+                  FTP access details
+                  <Badge variant="outline" className="ml-1 text-xs">
+                    Demo data
+                  </Badge>
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${isFtpDetailsOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4 pt-1">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {ftpCredentials.map((item) => (
+                  <div key={item.label} className="rounded border bg-background px-3 py-2 text-sm">
+                    <p className="text-xs uppercase text-muted-foreground">{item.label}</p>
+                    <p className="font-mono text-sm">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">
+                  Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.
+                </p>
+                <Button size="sm" onClick={handleChangePassword}>
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  Change FTP password
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
 
-      <CardContent className="space-y-6 px-2 sm:px-6">
+        <FileManagerToolbar
+          onRefresh={() => fetchDirectory(currentPath)}
+          onUploadClick={() => handleUploadDialogOpen(true)}
+          onFilterChange={setFilter}
+          disabled={!canInteract || loading}
+        />
+
+  <DirectoryBreadcrumb path={currentPath} onNavigate={handleNavigateTo} />
+
         {error && (
           <Alert variant="destructive">
-            <AlertDescription className="text-base">{error}</AlertDescription>
+            <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <BreadcrumbNavigation currentPath={currentPath} onNavigate={handleNavigate} />
-        </div>
-
-        <div className="overflow-x-auto -mx-2 sm:mx-0">
-          <FileList
-            files={files}
-            currentPath={currentPath}
-            loading={loading}
-            sortColumn={sortColumn}
-            sortDirection={sortDirection}
-            onFileClick={handleFileClick}
-            onSort={handleSort}
-            onNavigateUp={handleNavigateUp}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-          />
-        </div>
+        <DirectoryTable
+          entries={sortedEntries}
+          currentPath={currentPath}
+          loading={loading}
+          sortColumn={sortColumn}
+          sortDirection={sortDirection}
+          onSort={handleSort}
+          onOpen={handleEntryOpen}
+          onDownload={handleDownload}
+          onNavigateUp={handleNavigateUp}
+        />
       </CardContent>
 
-      <FileEditDialog
-        isOpen={isEditDialogOpen}
-        file={selectedFile}
-        content={fileContent}
-        onContentChange={setFileContent}
+      <FileEditorDialog
+        open={editorState.isOpen}
+        fileName={editorState.fileName}
+        filePath={editorState.path}
+        isBinary={editorState.isBinary}
+        loading={editorState.loading}
+        saving={editorState.saving}
+        content={editorState.content}
+        onChange={(value) => setEditorState((state) => ({ ...state, content: value }))}
         onSave={handleSaveFile}
-        onClose={() => setIsEditDialogOpen(false)}
+        onClose={handleEditorClose}
       />
 
       <FileUploadDialog
-        isOpen={isUploadDialogOpen}
-        currentPath={currentPath}
-        isUploading={isUploading}
-        uploadProgress={uploadProgress}
-        uploadingFile={uploadingFile}
-        onFileSelect={setUploadingFile}
+        open={uploadState.open}
+        directory={currentPath}
+        progress={uploadState.progress}
+        isUploading={uploadState.uploading}
+        files={uploadState.files}
+        onOpenChange={handleUploadDialogOpen}
+        onFileSelect={handleFileSelect}
         onUpload={handleUpload}
-        onCancel={handleCancelUpload}
-        onClose={() => setIsUploadDialogOpen(false)}
       />
     </Card>
   )
 }
+
+export default FileManager
