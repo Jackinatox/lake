@@ -1,13 +1,19 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input"
 import { FileWarning, FolderTree } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -21,6 +27,8 @@ import {
   getDownloadUrl,
   listDirectory,
   readFile,
+  deleteEntry,
+  renameEntry,
   uploadFiles,
   writeFile,
 } from "./pteroFileApi"
@@ -184,6 +192,11 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const [editorState, setEditorState] = useState<FileEditorState>(initialEditorState)
   const [uploadState, setUploadState] = useState<UploadState>(initialUploadState)
   const [isFtpDetailsOpen, setIsFtpDetailsOpen] = useState<boolean>(false)
+  const [renameTarget, setRenameTarget] = useState<FileEntry | null>(null)
+  const [renameValue, setRenameValue] = useState("")
+  const [renaming, setRenaming] = useState<boolean>(false)
+  const [deleteTarget, setDeleteTarget] = useState<FileEntry | null>(null)
+  const [deleting, setDeleting] = useState<boolean>(false)
 
   const canInteract = Boolean(server && apiKey)
 
@@ -356,6 +369,94 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     }
   }
 
+  const handleRenameRequest = (entry: FileEntry) => {
+    if (!canInteract) return
+    setRenameTarget(entry)
+    setRenameValue(entry.name)
+  }
+
+  const handleRenameConfirm = async () => {
+    if (!canInteract || !renameTarget) return
+    const trimmed = renameValue.trim()
+    if (!trimmed) {
+      toast({
+        title: "Name is required",
+        description: "Please enter a new name before saving.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (trimmed === renameTarget.name) {
+      setRenameTarget(null)
+      setRenameValue("")
+      return
+    }
+
+    setRenaming(true)
+    try {
+      await renameEntry(server, currentPath, renameTarget.name, trimmed, apiKey)
+      toast({
+        title: "Entry renamed",
+        description: `${renameTarget.name} is now ${trimmed}.`,
+      })
+      setRenameTarget(null)
+      setRenameValue("")
+      await fetchDirectory(currentPath)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to rename entry"
+      toast({
+        title: "Unable to rename",
+        description: message,
+        variant: "destructive",
+      })
+    } finally {
+      setRenaming(false)
+    }
+  }
+
+  const handleDeleteRequest = (entry: FileEntry) => {
+    if (!canInteract) return
+    setDeleteTarget(entry)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!canInteract || !deleteTarget) return
+    setDeleting(true)
+    try {
+      await deleteEntry(server, currentPath, deleteTarget.name, apiKey)
+      toast({
+        title: "Entry deleted",
+        description: `${deleteTarget.name} has been removed.`,
+      })
+      setDeleteTarget(null)
+      if (deleteTarget.isFile && editorState.fileName === deleteTarget.name) {
+        setEditorState(initialEditorState)
+      }
+      await fetchDirectory(currentPath)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to delete entry"
+      toast({
+        title: "Unable to delete",
+        description: message,
+        variant: "destructive",
+      })
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleRenameDialogClose = () => {
+    if (renaming) return
+    setRenameTarget(null)
+    setRenameValue("")
+  }
+
+  const handleDeleteDialogClose = () => {
+    if (deleting) return
+    setDeleteTarget(null)
+  }
+
   const handleUploadDialogOpen = (open: boolean) => {
     if (open) {
       setUploadState((state) => ({ ...state, open: true }))
@@ -502,6 +603,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
           onSort={handleSort}
           onOpen={handleEntryOpen}
           onDownload={handleDownload}
+          onRename={handleRenameRequest}
+          onDelete={handleDeleteRequest}
           onNavigateUp={handleNavigateUp}
         />
       </CardContent>
@@ -529,6 +632,56 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         onFileSelect={handleFileSelect}
         onUpload={handleUpload}
       />
+
+      <AlertDialog open={Boolean(renameTarget)} onOpenChange={(open) => (!open ? handleRenameDialogClose() : null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rename {renameTarget?.isFile ? "file" : "folder"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Choose a new name for <span className="font-semibold">{renameTarget?.name}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={renameValue}
+            onChange={(event) => setRenameValue(event.target.value)}
+            placeholder="New name"
+            autoFocus
+            disabled={renaming}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleRenameDialogClose} disabled={renaming}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleRenameConfirm} disabled={renaming}>
+              {renaming ? "Renaming…" : "Rename"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => (!open ? handleDeleteDialogClose() : null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {deleteTarget?.isFile ? "file" : "folder"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action can&apos;t be undone. You&apos;re about to permanently remove
+              <span className="font-semibold"> {deleteTarget?.name}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteDialogClose} disabled={deleting}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteConfirm}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   )
 }

@@ -194,3 +194,58 @@ export async function uploadFiles(
     xhr.send(formData);
   });
 }
+
+function normalizeDirectoryRoot(directory: string) {
+  if (!directory || directory === "/") {
+    return "/";
+  }
+
+  const ensured = ensureLeadingSlash(directory);
+  return ensured.endsWith("/") ? ensured : `${ensured}/`;
+}
+
+export async function renameEntry(
+  serverId: string,
+  directory: string,
+  from: string,
+  to: string,
+  apiKey?: string,
+): Promise<void> {
+  assertConfig(apiKey);
+  const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/rename`, {
+    method: "POST",
+    headers: {
+      ...buildHeaders(apiKey!),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      root: normalizeDirectoryRoot(directory),
+      files: [{ from, to }],
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to rename entry: ${response.status}`);
+  }
+}
+
+export async function deleteEntry(serverId: string, directory: string, name: string, apiKey?: string): Promise<void> {
+  assertConfig(apiKey);
+  const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/delete`, {
+    method: "POST",
+    headers: {
+      ...buildHeaders(apiKey!),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      root: normalizeDirectoryRoot(directory),
+      files: [name],
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Failed to delete entry: ${response.status}`);
+  }
+}

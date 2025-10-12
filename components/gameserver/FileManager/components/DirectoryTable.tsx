@@ -2,11 +2,18 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { FileText, Folder, FolderOpen, Loader2, MoreHorizontal } from "lucide-react"
+import { Download, FileText, Folder, FolderOpen, Loader2, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { FileEntry, SortColumn, SortDirection } from "../types"
 import { MouseEvent, memo } from "react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface DirectoryTableProps {
   entries: FileEntry[]
@@ -17,6 +24,8 @@ interface DirectoryTableProps {
   onSort: (column: SortColumn) => void
   onOpen: (entry: FileEntry) => void
   onDownload: (entry: FileEntry) => void
+  onRename: (entry: FileEntry) => void
+  onDelete: (entry: FileEntry) => void
   onNavigateUp: () => void
 }
 
@@ -70,6 +79,8 @@ const DirectoryTableComponent = ({
   onSort,
   onOpen,
   onDownload,
+  onRename,
+  onDelete,
   onNavigateUp,
 }: DirectoryTableProps) => {
   const hasParent = currentPath !== "/"
@@ -115,9 +126,9 @@ const DirectoryTableComponent = ({
           )}
 
           {!loading && hasParent && (
-            <TableRow className="cursor-pointer" onDoubleClick={onNavigateUp} onClick={onNavigateUp}>
-              <TableCell colSpan={5}>
-                <div className="flex items-center gap-3">
+            <TableRow className="cursor-pointer text-sm" onDoubleClick={onNavigateUp} onClick={onNavigateUp} style={{ height: "38px" }}>
+              <TableCell colSpan={5} className="py-2">
+                <div className="flex items-center gap-2">
                   <FolderOpen className="h-4 w-4 text-muted-foreground" />
                   ..
                 </div>
@@ -135,39 +146,50 @@ const DirectoryTableComponent = ({
 
           {!loading && entries.map((entry) => {
             const Icon = entry.isFile ? FileText : Folder
+            const OpenIcon = entry.isFile ? FileText : FolderOpen
             return (
               <TableRow
                 key={`${currentPath}${entry.name}`}
-                className="cursor-pointer"
+                className="group cursor-pointer text-sm"
                 onDoubleClick={() => onOpen(entry)}
                 onClick={(event) => handleRowClick(event, entry)}
+                style={{ height: "40px" }}
               >
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-3">
+                <TableCell className="py-2 font-medium">
+                  <div className="flex items-center gap-2">
                     <Icon className={cn("h-4 w-4", entry.isFile ? "text-blue-500" : "text-amber-500")} />
                     <span className="truncate" title={entry.name}>
                       {entry.name}
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                <TableCell className="hidden py-2 text-xs text-muted-foreground sm:table-cell">
                   {entry.isFile ? formatBytes(entry.size) : "—"}
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                <TableCell className="hidden py-2 text-xs text-muted-foreground md:table-cell">
                   {formatDate(entry.modifiedAt)}
                 </TableCell>
-                <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                <TableCell className="hidden py-2 text-xs text-muted-foreground lg:table-cell">
                   {formatDate(entry.createdAt)}
                 </TableCell>
                 <TableCell className="text-right">
-                  {entry.isFile && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" data-row-action="true">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 data-[state=open]:bg-muted"
+                        data-row-action="true"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                        }}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-36" data-row-action="true">
+                      <DropdownMenuGroup>
                         <DropdownMenuItem
                           onClick={(event) => {
                             event.preventDefault()
@@ -175,20 +197,48 @@ const DirectoryTableComponent = ({
                             onOpen(entry)
                           }}
                         >
+                          <OpenIcon className="mr-2 h-4 w-4" />
                           Open
                         </DropdownMenuItem>
+                        {entry.isFile && (
+                          <DropdownMenuItem
+                            onClick={(event) => {
+                              event.preventDefault()
+                              event.stopPropagation()
+                              onDownload(entry)
+                            }}
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            Download
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
                         <DropdownMenuItem
                           onClick={(event) => {
                             event.preventDefault()
                             event.stopPropagation()
-                            onDownload(entry)
+                            onRename(entry)
                           }}
                         >
-                          Download
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Rename
                         </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={(event) => {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            onDelete(entry)
+                          }}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             )
