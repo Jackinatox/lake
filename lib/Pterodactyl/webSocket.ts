@@ -1,13 +1,13 @@
+const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+
 async function webSocket(serverId: string, apiKey: string) {
-  const response = await fetch('/api/ptero', {
-    method: 'POST',
+  const response = await fetch(`${ptUrl}/api/client/servers/${serverId}/websocket`, {
+    method: 'GET',
     headers: {
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      apiKey: apiKey,
-      serverId: serverId,
-    }),
+      'Accept': 'application/json',
+    }
   });
 
   if (!response.ok) {

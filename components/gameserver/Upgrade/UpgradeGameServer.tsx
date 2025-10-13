@@ -9,6 +9,8 @@ import { toast } from '@/hooks/use-toast';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface UpgradeGameServerProps {
     serverId: string;
@@ -18,10 +20,17 @@ interface UpgradeGameServerProps {
 }
 
 function UpgradeGameServer({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
+    const router = useRouter();
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+
+    const handleBackToConfigure = React.useCallback(() => {
+        setSelectedConfig(null);
+        setClientSecret(null);
+        setStep('configure');
+    }, []);
 
     const handleNext = async (newHardwareConfig: HardwareConfig) => {
         const params: CheckoutParams = {
@@ -37,7 +46,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             setLoading(true);
             setSelectedConfig(newHardwareConfig);
             const secret = await checkoutAction(params);
-            // checkoutAction returns { client_secret: string }
+
             setClientSecret((secret as { client_secret: string }).client_secret);
             setStep('pay');
 
@@ -59,16 +68,23 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
     return (
         <div className="space-y-4">
             {step === 'configure' && (
-                <UpgradeHardwareConfig
-                    performanceOptions={performanceOptions}
-                    initialConfig={selectedConfig ?? minOptions}
-                    onNext={handleNext}
-                />
+                <>
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={`/gameserver/${serverId}`}>
+                            ← Go back
+                        </Link>
+                    </Button>
+                    <UpgradeHardwareConfig
+                        performanceOptions={performanceOptions}
+                        initialConfig={selectedConfig ?? minOptions}
+                        onNext={handleNext}
+                    />
+                </>
             )}
 
             {step === 'pay' && clientSecret && (
                 <Card className="w-full max-w-4xl mx-auto space-y-6 p-4 md:p-6">
-                    <Button variant="outline" onClick={() => setStep('configure')}>
+                    <Button variant="outline" onClick={() => handleBackToConfigure()}>
                         ← Back to configuration
                     </Button>
                     <div className="w-full">

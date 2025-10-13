@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { OrderType } from "@prisma/client";
-import { Receipt, Server, AlertCircle } from "lucide-react";
+import { Receipt, Server, AlertCircle, Cog } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -57,12 +57,12 @@ export function PaymentItem({
         {gameServerUrl && (
           serverExpired ? (
             <Button variant="outline" disabled>
-              <Server className="h-5 w-5" />
+              <Cog className="h-5 w-5" />
             </Button>
           ) : (
             <Button variant="outline" asChild>
               <Link href={gameServerUrl} target="_blank" rel="noopener noreferrer">
-                <Server className="h-5 w-5" />
+                <Cog className="h-5 w-5" />
               </Link>
             </Button>
           )
