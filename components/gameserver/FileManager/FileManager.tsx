@@ -34,6 +34,7 @@ import {
 } from "./pteroFileApi"
 import { GameServer } from "@/models/gameServerModel"
 import { FtpAccessDetails } from "./components/FtpAccessDetails"
+import { authClient } from "@/lib/auth-client"
 
 interface FileManagerProps {
   apiKey?: string
@@ -191,6 +192,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const [renaming, setRenaming] = useState<boolean>(false)
   const [deleteTarget, setDeleteTarget] = useState<FileEntry | null>(null)
   const [deleting, setDeleting] = useState<boolean>(false)
+  const { data: session } = authClient.useSession();
 
   const canInteract = Boolean(server && apiKey)
 
@@ -529,9 +531,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         <FtpAccessDetails
           isOpen={isFtpDetailsOpen}
           onOpenChange={setIsFtpDetailsOpen}
-          host={server.sftp_details.ip}
+          host={"sftp://" + server.sftp_details.ip}
           port={server.sftp_details.port.toString()}
-          username={ftpUsername}
+          username={session?.user.ptUsername + "." + server.identifier}
           onChangePassword={handleChangePassword}
         />
 

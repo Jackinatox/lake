@@ -5,6 +5,8 @@ import { admin } from "better-auth/plugins"
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 import { lastLoginMethod } from "better-auth/plugins"
+import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
+
 
 
 
@@ -36,6 +38,11 @@ export const auth = betterAuth({
         optional: true,
         required: false,
       },
+      ptUsername: {
+        type: "string",
+        optional: true,
+        required: false,
+      },
     },
   },
   socialProviders: {
@@ -58,11 +65,12 @@ export const auth = betterAuth({
         before: async (user, context) => {
           try {
             const ptAdmin = createPtClient();
+            const ptUsername = await generateUniqueUserName(user.email);
 
             const newPTUser = await ptAdmin.createUser({
               firstName: user.name,
               lastName: "Schulze",
-              username: user.name,
+              username: ptUsername,
               email: user.email,
               password: generateRandomPassword(),
               externalId: user.id
@@ -74,6 +82,7 @@ export const auth = betterAuth({
                 ...user,
                 ptUserId: newPTUser.id,
                 ptKey: newKey,
+                ptUsername: ptUsername
               },
             }
 

@@ -208,7 +208,10 @@ model User {
 
   lastLoginMethod String?
 
+  ptUsername String?
+
   @@unique([email])
+  @@unique([ptUsername])
   @@map("user")
 }
 

@@ -5,7 +5,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Copy, KeyRound, Server } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -13,8 +12,6 @@ import { useCallback } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 interface FtpAccessDetailsProps {
-  title?: string
-  description?: string
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   host: string
@@ -23,16 +20,12 @@ interface FtpAccessDetailsProps {
   onChangePassword: () => void
   passwordLabel?: string
   passwordPlaceholder?: string
-  showDemoBadge?: boolean
   className?: string
 }
 
 export function FtpAccessDetails({
-  title = "FTP access details",
-  description = "Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.",
   passwordLabel = "Password",
   passwordPlaceholder = "••••••••",
-  showDemoBadge = true,
   isOpen,
   onOpenChange,
   host,
@@ -92,12 +85,7 @@ export function FtpAccessDetails({
           >
             <span className="flex items-center gap-2">
               <Server className="h-4 w-4" />
-              {title}
-              {showDemoBadge && (
-                <Badge variant="outline" className="ml-1 text-xs">
-                  Demo data
-                </Badge>
-              )}
+              FTP access details
             </span>
             <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
           </button>
@@ -113,7 +101,7 @@ export function FtpAccessDetails({
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">{description}</p>
+            <p className="text-xs text-muted-foreground">Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.</p>
             <Button size="sm" onClick={onChangePassword}>
               <KeyRound className="mr-2 h-4 w-4" />
               Change FTP password
