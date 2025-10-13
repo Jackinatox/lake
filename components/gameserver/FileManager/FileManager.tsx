@@ -32,18 +32,12 @@ import {
   uploadFiles,
   writeFile,
 } from "./pteroFileApi"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ChevronDown, KeyRound, Server } from "lucide-react"
+import { GameServer } from "@/models/gameServerModel"
+import { FtpAccessDetails } from "./components/FtpAccessDetails"
 
 interface FileManagerProps {
-  server: string
   apiKey?: string
+  server: GameServer
 }
 
 type UploadState = {
@@ -208,7 +202,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
       setLoading(true)
       setError(null)
       try {
-        const response = await listDirectory(server, normalized, apiKey)
+        const response = await listDirectory(server.identifier, normalized, apiKey)
         setEntries(response.data ?? [])
         setCurrentPath(normalized)
       } catch (err) {
@@ -288,7 +282,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     }
 
     try {
-      const content = await readFile(server, filePath, apiKey)
+      const content = await readFile(server.identifier, filePath, apiKey)
       setEditorState((state) => ({
         ...state,
         content,
@@ -332,7 +326,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     setEditorState((state) => ({ ...state, saving: true }))
 
     try {
-      await writeFile(server, editorState.path, editorState.content, apiKey)
+      await writeFile(server.identifier, editorState.path, editorState.content, apiKey)
       toast({
         title: "File saved",
         description: `${editorState.fileName} was updated successfully.`,
@@ -357,7 +351,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     const filePath = buildChildPath(currentPath, entry.name, false)
 
     try {
-      const url = await getDownloadUrl(server, filePath, apiKey)
+      const url = await getDownloadUrl(server.identifier, filePath, apiKey)
       window.open(url, "_blank", "noopener,noreferrer")
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to start download"
@@ -395,7 +389,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
 
     setRenaming(true)
     try {
-      await renameEntry(server, currentPath, renameTarget.name, trimmed, apiKey)
+      await renameEntry(server.identifier, currentPath, renameTarget.name, trimmed, apiKey)
       toast({
         title: "Entry renamed",
         description: `${renameTarget.name} is now ${trimmed}.`,
@@ -424,7 +418,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     if (!canInteract || !deleteTarget) return
     setDeleting(true)
     try {
-      await deleteEntry(server, currentPath, deleteTarget.name, apiKey)
+      await deleteEntry(server.identifier, currentPath, deleteTarget.name, apiKey)
       toast({
         title: "Entry deleted",
         description: `${deleteTarget.name} has been removed.`,
@@ -482,7 +476,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     setUploadState((state) => ({ ...state, uploading: true, progress: 0 }))
 
     try {
-      await uploadFiles(server, currentPath, uploadState.files, apiKey, (progress) => {
+      await uploadFiles(server.identifier, currentPath, uploadState.files, apiKey, (progress) => {
         setUploadState((state) => ({ ...state, progress }))
       })
 
@@ -511,15 +505,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     })
   }
 
-  const ftpCredentials = useMemo(
-    () => [
-      { label: "Host", value: "ftp.yourpanel.com" },
-      { label: "Port", value: "21" },
-      { label: "Username", value: "server-user" },
-      { label: "Password", value: "••••••••" },
-    ],
-    [],
-  )
+  const ftpHost = useMemo(() => "ftp.yourpanel.com", [])
+  const ftpPort = useMemo(() => "21", [])
+  const ftpUsername = useMemo(() => "server-user", [])
 
   return (
     <Card className="w-full">
@@ -538,46 +526,14 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         )}
       </CardHeader>
       <CardContent className="space-y-5">
-        <Collapsible open={isFtpDetailsOpen} onOpenChange={setIsFtpDetailsOpen}>
-          <div className="rounded-md border bg-muted/40">
-            <CollapsibleTrigger asChild>
-              <button
-                type="button"
-                className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium"
-              >
-                <span className="flex items-center gap-2">
-                  <Server className="h-4 w-4" />
-                  FTP access details
-                  <Badge variant="outline" className="ml-1 text-xs">
-                    Demo data
-                  </Badge>
-                </span>
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${isFtpDetailsOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="px-4 pb-4 pt-1">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {ftpCredentials.map((item) => (
-                  <div key={item.label} className="rounded border bg-background px-3 py-2 text-sm">
-                    <p className="text-xs uppercase text-muted-foreground">{item.label}</p>
-                    <p className="font-mono text-sm">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <p className="text-xs text-muted-foreground">
-                  Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.
-                </p>
-                <Button size="sm" onClick={handleChangePassword}>
-                  <KeyRound className="mr-2 h-4 w-4" />
-                  Change FTP password
-                </Button>
-              </div>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
+        <FtpAccessDetails
+          isOpen={isFtpDetailsOpen}
+          onOpenChange={setIsFtpDetailsOpen}
+          host={server.sftp_details.ip}
+          port={server.sftp_details.port.toString()}
+          username={ftpUsername}
+          onChangePassword={handleChangePassword}
+        />
 
         <FileManagerToolbar
           onRefresh={() => fetchDirectory(currentPath)}
@@ -586,7 +542,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
           disabled={!canInteract || loading}
         />
 
-  <DirectoryBreadcrumb path={currentPath} onNavigate={handleNavigateTo} />
+        <DirectoryBreadcrumb path={currentPath} onNavigate={handleNavigateTo} />
 
         {error && (
           <Alert variant="destructive">

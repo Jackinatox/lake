@@ -16,7 +16,7 @@ function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
                 <DialogHeader>
                     <DialogTitle>Accept Minecraft® EULA</DialogTitle>
                     <DialogDescription>
-                        By pressing "I Accept" below you are indicating your agreement to the 
+                        By pressing "Accept Eula" below you are indicating your agreement to the 
                         <Link href='https://www.minecraft.net/de-de/eula' target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline"> Minecraft® EULA.</Link>
                     </DialogDescription>
                 </DialogHeader>

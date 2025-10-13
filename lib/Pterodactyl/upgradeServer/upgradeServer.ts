@@ -1,22 +1,12 @@
-import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { GameServerOrder } from "@prisma/client";
-import { createPtClient } from "../ptAdminClient";
 import * as Sentry from "@sentry/nextjs";
-import { headers } from "next/headers";
+import { createPtClient } from "../ptAdminClient";
 
 const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-
-    if (!session) {
-        throw new Error("Unauthorized");
-    }
-
     const gameServer = await prisma.gameServer.findUnique({
         where: { id: serverOrder.gameServerId },
         include: { user: true },
