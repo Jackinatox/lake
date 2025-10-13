@@ -16,7 +16,7 @@ interface PowerBtnsProps {
 
 export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }: PowerBtnsProps) {
     const isOnline = state ? state.toLowerCase() === "online" : false
-    const isOffline = state? state.toLowerCase() === "offline" : true
+    const isOffline = state ? state.toLowerCase() === "offline" : true
     const isTransitioning = !isOnline && !isOffline
 
     return (
@@ -34,7 +34,7 @@ export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }
             <Button
                 variant="outline"
                 size="sm"
-                onClick={onStop}
+                onClick={onRestart}
                 disabled={loading || isOffline}
                 className="flex items-center gap-1"
             >
@@ -44,7 +44,7 @@ export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }
             <Button
                 variant="outline"
                 size="sm"
-                onClick={onRestart}
+                onClick={onStop}
                 disabled={loading || isOffline}
                 className="flex items-center gap-1"
             >

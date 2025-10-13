@@ -67,7 +67,7 @@ const FileUploadDialogComponent = ({
           <div className="rounded-lg border border-dashed p-6 text-center">
             <UploadCloud className="mx-auto h-10 w-10 text-muted-foreground" />
             <p className="mt-4 text-sm text-muted-foreground">
-              Drag and drop files here or select from your device.
+              Select from your device.
             </p>
             <div className="mt-4 flex justify-center">
               <Label

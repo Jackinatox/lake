@@ -166,7 +166,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     {
                         price_data: {
                             currency: "eur",
-                            product_data: { name: `Upgrade Game Server to ${newConfig.cpuPercent}% CPU, ${newConfig.ramMb}MB RAM` },
+                            product_data: { name: `Upgrade Game Server to ${cpuPercent}% CPU, ${ramMB}MB RAM` },
                             unit_amount: Math.round(price.totalCents)
                         },
                         quantity: 1
