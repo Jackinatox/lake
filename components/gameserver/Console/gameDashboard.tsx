@@ -9,7 +9,6 @@ import { GameServer } from "@/models/gameServerModel"
 import { Cpu, MemoryStickIcon as Memory, Terminal } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
-import { BackupManager } from "../BackupManager/BackupManager"
 import EulaDialog from "../EulaDialog"
 import FileManager from "../FileManager/FileManager"
 import { writeFile } from "../FileManager/pteroFileApi"
@@ -22,6 +21,7 @@ import RAMChart from "./graphs/RAMChart"
 import { PowerBtns } from "./powerBtns"
 import { Status } from "./status"
 import { usePathname } from "next/navigation"
+import BackupManager from "../BackupManager/BackupManager"
 
 
 interface serverProps {
