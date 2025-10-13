@@ -14,6 +14,7 @@ export async function deleteGameServers(ids: string[]) {
     if (!Array.isArray(ids) || ids.length === 0) return { success: false, error: "No IDs provided" };
 
     const deletedIds: string[] = [];
+    const errors: string[] = [];
 
     for (const id of ids) {
         try {
@@ -25,18 +26,22 @@ export async function deleteGameServers(ids: string[]) {
                 deletedIds.push(id);
                 continue;
             }
-            const response = await fetch(process.env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${id}`, {
+            const response = await fetch(process.env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${gameServer.ptAdminId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${process.env.PTERODACTYL_API_KEY}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 }
             });
             if (response.ok) {
                 deletedIds.push(id);
+            } else {
+                const errorData = await response.json();
+                errors.push(`Failed to delete server ${id}: ${errorData.errors ? JSON.stringify(errorData.errors) : response.statusText}`);
             }
         } catch (error) {
-            return { success: false, error: error instanceof Error ? error.message : String(error) };
+            errors.push(error instanceof Error ? error.message : String(error));
         }
     }
 
@@ -45,6 +50,9 @@ export async function deleteGameServers(ids: string[]) {
             await prisma.gameServer.delete({
                 where: { id: id }
             });
+        }
+        if (errors.length > 0) {
+            return { success: false, error: errors.join(", ") };
         }
         return { success: true };
     } catch (error) {
