@@ -92,13 +92,8 @@ export function FtpAccessDetails({
         </CollapsibleTrigger>
         <CollapsibleContent className="px-4 pb-4 pt-1">
           <div className="grid gap-3 sm:grid-cols-2">
-            {renderCopyBox("Host", host)}
-            {renderCopyBox("Port", port)}
+            {renderCopyBox("Host", `${host}:${port}`)}
             {renderCopyBox("Username", username)}
-            <div className="rounded border bg-background px-3 py-2 text-sm">
-              <p className="text-xs uppercase text-muted-foreground">{passwordLabel}</p>
-              <p className="font-mono text-sm">{passwordPlaceholder}</p>
-            </div>
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
             <p className="text-xs text-muted-foreground">Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.</p>

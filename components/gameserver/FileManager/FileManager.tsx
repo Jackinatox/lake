@@ -34,6 +34,7 @@ import {
 } from "./pteroFileApi"
 import { GameServer } from "@/models/gameServerModel"
 import { FtpAccessDetails } from "./components/FtpAccessDetails"
+import { FtpPasswordDialog } from "./components/FtpPasswordDialog"
 import { authClient } from "@/lib/auth-client"
 
 interface FileManagerProps {
@@ -187,6 +188,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const [editorState, setEditorState] = useState<FileEditorState>(initialEditorState)
   const [uploadState, setUploadState] = useState<UploadState>(initialUploadState)
   const [isFtpDetailsOpen, setIsFtpDetailsOpen] = useState<boolean>(false)
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
   const [renameTarget, setRenameTarget] = useState<FileEntry | null>(null)
   const [renameValue, setRenameValue] = useState("")
   const [renaming, setRenaming] = useState<boolean>(false)
@@ -509,15 +511,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   }
 
   const handleChangePassword = () => {
-    toast({
-      title: "Redirect coming soon",
-      description: "You’ll be able to change your FTP password from here in a future update.",
-    })
+    setPasswordDialogOpen(true)
   }
-
-  const ftpHost = useMemo(() => "ftp.yourpanel.com", [])
-  const ftpPort = useMemo(() => "21", [])
-  const ftpUsername = useMemo(() => "server-user", [])
 
   return (
     <Card className="w-full">
@@ -599,6 +594,12 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         onOpenChange={handleUploadDialogOpen}
         onFileSelect={handleFileSelect}
         onUpload={handleUpload}
+      />
+
+      <FtpPasswordDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+        serverIdentifier={server.identifier}
       />
 
       <AlertDialog open={Boolean(renameTarget)} onOpenChange={(open) => (!open ? handleRenameDialogClose() : null)}>
