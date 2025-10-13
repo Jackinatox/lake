@@ -290,7 +290,8 @@
   "loggedInVia": "Angemeldet via",
   "changePassword": "Passwort ändern",
   "loadingPayments": "Zahlungshistorie wird geladen...",
-  "oauthPasswordChangeNotice": "Da du über OAuth angemeldet bist, kannst du dein Passwort nicht ändern.",
+  "oauthPasswordChangeNotice1": "Da du über",
+  "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
   "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast."
   }
 }

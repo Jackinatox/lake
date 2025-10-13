@@ -22,12 +22,6 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
   return (
     <div className="w-full mx-auto">
       <div className="space-y-4 sm:space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-4 sm:mb-6">
-          <Settings className="h-6 w-6 sm:h-7 sm:w-7" />
-          <h1 className="text-2xl sm:text-3xl font-bold">Server Settings</h1>
-        </div>
-
         {/* Server Settings Card */}
         <div className="w-full">
           <ServerSettingsCard server={server} />
@@ -37,7 +31,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
         {isMinecraftServer && (
           <Card className="w-full">
             <CardHeader className="pb-0 md:pb-0">
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <CardTitle className="flex items-center gap-2">
                 <Gamepad2 className="h-5 w-5" />
                 Game-Specific Settings
               </CardTitle>
@@ -52,12 +46,12 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
         <Card className="w-full">
           <CardHeader className="pb-0 md:pb-0">
             <CardTitle className="text-lg sm:text-xl">Server Management</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              These actions can affect your server's functionality. Please use with caution.
+            </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                These actions can affect your server's functionality. Please use with caution.
-              </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="w-full sm:w-1/2">
                   <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
