@@ -58,7 +58,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^2.15.1",
-    "require-in-the-middle": "^7.5.2",
+    "require-in-the-middle": "^8.0.0",
     "stripe": "^18.2.0",
     "unique-username-generator": "^1.4.0",
     "uuid": "^11.0.5"
