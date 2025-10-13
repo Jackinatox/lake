@@ -192,6 +192,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const [renaming, setRenaming] = useState<boolean>(false)
   const [deleteTarget, setDeleteTarget] = useState<FileEntry | null>(null)
   const [deleting, setDeleting] = useState<boolean>(false)
+  const [openMenuKey, setOpenMenuKey] = useState<string | null>(null)
   const { data: session } = authClient.useSession();
 
   const canInteract = Boolean(server && apiKey)
@@ -207,6 +208,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         const response = await listDirectory(server.identifier, normalized, apiKey)
         setEntries(response.data ?? [])
         setCurrentPath(normalized)
+        setOpenMenuKey(null)
       } catch (err) {
         console.error("Failed to load directory", err)
         const message = err instanceof Error ? err.message : "Failed to load directory"
@@ -268,20 +270,15 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
 
   const openFile = async (entry: FileEntry) => {
     const filePath = buildChildPath(currentPath, entry.name, false)
-    const isText = isTextLikeFile(entry)
 
     setEditorState({
       ...initialEditorState,
       isOpen: true,
       path: filePath,
       fileName: entry.name,
-      loading: isText,
-      isBinary: !isText,
+      loading: true,
+      isBinary: false,
     })
-
-    if (!isText) {
-      return
-    }
 
     try {
       const content = await readFile(server.identifier, filePath, apiKey)
@@ -304,6 +301,11 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const handleEntryOpen = (entry: FileEntry) => {
     if (!canInteract) return
     if (entry.isFile) {
+      const entryKey = `${currentPath}${entry.name}`
+      if (!isTextLikeFile(entry)) {
+        setOpenMenuKey(entryKey)
+        return
+      }
       if ((entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE) {
         toast({
           title: "File too large to edit",
@@ -311,8 +313,10 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         })
         return
       }
+      setOpenMenuKey(null)
       void openFile(entry)
     } else {
+      setOpenMenuKey(null)
       const directoryPath = buildChildPath(currentPath, entry.name, true)
       void fetchDirectory(directoryPath)
     }
@@ -351,6 +355,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     if (!entry.isFile) return
 
     const filePath = buildChildPath(currentPath, entry.name, false)
+    setOpenMenuKey(null)
 
     try {
       const url = await getDownloadUrl(server.identifier, filePath, apiKey)
@@ -369,6 +374,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     if (!canInteract) return
     setRenameTarget(entry)
     setRenameValue(entry.name)
+    setOpenMenuKey(null)
   }
 
   const handleRenameConfirm = async () => {
@@ -414,6 +420,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
   const handleDeleteRequest = (entry: FileEntry) => {
     if (!canInteract) return
     setDeleteTarget(entry)
+    setOpenMenuKey(null)
   }
 
   const handleDeleteConfirm = async () => {
@@ -426,6 +433,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         description: `${deleteTarget.name} has been removed.`,
       })
       setDeleteTarget(null)
+      setOpenMenuKey(null)
       if (deleteTarget.isFile && editorState.fileName === deleteTarget.name) {
         setEditorState(initialEditorState)
       }
@@ -564,6 +572,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
           onRename={handleRenameRequest}
           onDelete={handleDeleteRequest}
           onNavigateUp={handleNavigateUp}
+          menuOpenKey={openMenuKey}
+          onMenuOpenKeyChange={setOpenMenuKey}
         />
       </CardContent>
 

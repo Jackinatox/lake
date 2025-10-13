@@ -41,7 +41,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 // Find the current flavor to get its versions
                 const currentFlavor = flavors.find((flavor) => flavor.id === server.gameData.flavorId);
                 if (currentFlavor) {
-                    setAvailableVersions(currentFlavor.versions);
+                    setAvailableVersions(currentFlavor.versions.reverse());
                 }
             } catch (error) {
                 console.error("Error fetching versions:", error);
@@ -118,7 +118,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                             <SelectGroup>
                                 {availableVersions.map((version) => (
                                     <SelectItem key={version.version} value={version.version}>
-                                        {version.version}
+                                        {version.version} {version.version === value && "(Current)"}
                                     </SelectItem>
                                 ))}
                             </SelectGroup>

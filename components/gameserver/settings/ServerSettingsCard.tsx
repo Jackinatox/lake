@@ -59,6 +59,7 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                   onChange={(e) => setServerName(e.target.value)}
                   placeholder="Enter server name"
                   className="flex-1"
+                  maxLength={64}
                 />
                 <Button 
                   onClick={handleSaveServerName} 
