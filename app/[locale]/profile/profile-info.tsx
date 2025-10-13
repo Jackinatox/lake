@@ -2,12 +2,12 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar'
 import { Mail, Shield, User, Lock } from 'lucide-react'
 import React from 'react'
 import LogoutButton from './LogoutButton'
 import { authClient } from '@/lib/auth-client'
 import { useTranslations } from 'next-intl'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function ProfileInfo() {
     const session = authClient.useSession();
@@ -61,6 +61,16 @@ function ProfileInfo() {
                     </Button>
                     <LogoutButton />
                 </div>
+                {!wasEmail && (
+                    <span className="relative group">
+                        <p className="text-muted-foreground cursor-help underline decoration-dotted">
+                            {t("oauthPasswordChangeNotice")}
+                        </p>
+                        <span className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-64 -translate-x-1/2 rounded bg-background px-3 py-2 text-xs text-foreground shadow-lg opacity-0 transition-opacity group-hover:opacity-100">
+                            {t("oauthPasswordChangeTooltip")}
+                        </span>
+                    </span>
+                )}
             </CardContent>
         </Card>
     )
