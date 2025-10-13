@@ -29,7 +29,7 @@ export function BackupCard({
 }: BackupCardProps) {
     const statusLabel = deriveStatusLabel(backup.status)
     const statusVariant = backup.status === "failed" ? "destructive" : backup.status === "creating" ? "secondary" : "default"
-    const ignoredLabel = backup.ignoredFiles.length > 0 ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? "" : "s"}` : "All files"
+    const ignoredLabel = backup.ignoredFiles.length > 0 ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? "" : "s"}` : "No files"
     const checksum = backup.sha256Hash ? `${backup.sha256Hash.slice(0, 12)}…` : "Not available"
 
     const handleDownload = async () => {

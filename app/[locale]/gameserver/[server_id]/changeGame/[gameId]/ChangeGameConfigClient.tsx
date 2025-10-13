@@ -58,7 +58,7 @@ export default function ChangeGameConfigClient({
     if (!submittedConfig) {
         return (
             <div className="space-y-6">
-                <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-b from-background via-background to-muted/40">
+                <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="space-y-3">
                             <Badge variant="secondary" className="w-fit uppercase tracking-widest text-[0.65rem]">
@@ -77,7 +77,7 @@ export default function ChangeGameConfigClient({
                     </CardHeader>
                     <CardContent className="space-y-5 text-sm text-muted-foreground">
                         <div className="grid gap-3 sm:grid-cols-2">
-                            <div className="rounded-lg border border-dashed border-border/60 bg-background p-4 shadow-sm">
+                            <div className="rounded-lg border border-dashed border-border/60 p-4 shadow-sm">
                                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                                     Current game
                                 </p>
@@ -101,7 +101,7 @@ export default function ChangeGameConfigClient({
                                     </p>
                                 </div>
                             </div>
-                            <div className="rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 shadow-sm">
+                            <div className="rounded-lg border border-dashed border-primary/40 bg-primary/15 p-4 shadow-sm">
                                 <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                                     New selection
                                 </p>

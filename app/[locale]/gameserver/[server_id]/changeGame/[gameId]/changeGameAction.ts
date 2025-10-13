@@ -84,7 +84,7 @@ export async function changeGame({
         }
     });
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 500));
     const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey);
 
     if (!response2.ok) {

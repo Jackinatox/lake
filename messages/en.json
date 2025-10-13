@@ -290,7 +290,9 @@
   "loggedInVia": "Logged in via",
   "changePassword": "Change Password",
   "loadingPayments": "Loading payment history...",
-  "oauthPasswordChangeNotice": "Since you signed in via OAuth, you can't change your password here.",
+  "oauthPasswordChangeNotice1": "Since you signed in via",
+  "oauthPasswordChangeNotice2": ", you can't change your password here.",
+
   "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email."
   }
 }

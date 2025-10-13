@@ -63,8 +63,8 @@ function ProfileInfo() {
                 </div>
                 {!wasEmail && (
                     <span className="relative group">
-                        <p className="text-muted-foreground text-sm cursor-help underline decoration-dotted">
-                            {t("oauthPasswordChangeNotice")}
+                        <p className="text-muted-foreground text-sm cursor-help underline decoration-dotted pt-2">
+                            {`${t("oauthPasswordChangeNotice1")} ${method.charAt(0).toUpperCase() + method.slice(1)} ${t("oauthPasswordChangeNotice2")}`}
                         </p>
                         <span className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-64 -translate-x-1/2 rounded bg-background px-3 py-2 text-xs text-foreground shadow-lg opacity-0 transition-opacity group-hover:opacity-100">
                             {t("oauthPasswordChangeTooltip")}

@@ -12,6 +12,7 @@ import { BackupCard } from "./BackupCard"
 import { CreateBackupDialog } from "./CreateBackupDialog"
 import type { Backup, BackupStatus } from "./types"
 import { formatBytes } from "./utils"
+import { Card } from "@/components/ui/card"
 
 interface BackupManagerProps {
     apiKey: string
@@ -327,7 +328,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const limitReached = backupLimit > 0 && backups.length >= backupLimit
 
     return (
-        <div className="space-y-6">
+        <Card className="space-y-6 sm:p-4 p-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h2 className="text-xl font-semibold">Backups</h2>
@@ -435,7 +436,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                 isSubmitting={isCreating}
                 disabled={limitReached}
             />
-        </div>
+        </Card>
     )
 }
 
