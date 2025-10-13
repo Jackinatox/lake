@@ -11,6 +11,7 @@ interface GameConfigProps {
   game: Game
   onAdditionalConfigChange?: (config: Record<string, any>) => void
   onSubmit: (config: GameConfig) => void
+  fullWidth?: boolean
 }
 
 export const GameConfigComponent = forwardRef((
@@ -18,6 +19,7 @@ export const GameConfigComponent = forwardRef((
     game,
     onAdditionalConfigChange = () => { },
     onSubmit,
+    fullWidth = false,
   }: GameConfigProps,
   ref
 ) => {
@@ -36,8 +38,12 @@ export const GameConfigComponent = forwardRef((
     }
   }));
 
+  const containerClassName = fullWidth
+    ? "w-full"
+    : "w-full max-w-4xl mx-auto"
+
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className={containerClassName}>
       <Card className="shadow-lg">
         <div className="p-4 sm:p-6">
           {(() => {

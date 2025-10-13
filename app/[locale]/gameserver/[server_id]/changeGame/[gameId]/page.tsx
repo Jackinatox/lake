@@ -79,7 +79,7 @@ async function Page({ params }: { params: Promise<PageParams> }) {
       <ChangeGameConfigClient
         serverId={serverId}
         game={gameForConfig}
-        currentGameName={gameServer.gameData?.name ?? null}
+        currentGameName={gameServer.gameData?.name.toLowerCase() ?? null}
       />
     </div>
   )

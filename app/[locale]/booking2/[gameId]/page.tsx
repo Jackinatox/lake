@@ -126,6 +126,7 @@ export default function GameServerConfig() {
     };
 
     const handleNextStep = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" })
         if (step === 1 && hardwareConfigRef.current) {
             hardwareConfigRef.current.submit();
         } else if (step === 2 && gameConfigRef.current) {
@@ -168,10 +169,10 @@ export default function GameServerConfig() {
                             <div
                                 key={stepNumber}
                                 className={`h-2 flex-1 rounded ${stepNumber === step
-                                        ? "bg-primary"
-                                        : stepNumber < step
-                                            ? "bg-primary/60"
-                                            : "bg-muted"
+                                    ? "bg-primary"
+                                    : stepNumber < step
+                                        ? "bg-primary/60"
+                                        : "bg-muted"
                                     }`}
                             />
                         ))}
@@ -220,7 +221,10 @@ export default function GameServerConfig() {
                         {step > 1 && (
                             <Button
                                 variant="outline"
-                                onClick={() => setStep(step - 1)}
+                                onClick={() => {
+                                    window.scrollTo({ top: 0, behavior: "smooth" })
+                                    setStep(step - 1)
+                                }}
                                 className="w-full sm:w-auto"
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" />
