@@ -50,12 +50,36 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
                 const data: PterodactylStartupResponse = await res.json();
 
                 if (data.meta && data.meta.docker_images) {
-                    setDockerImages(data.meta.docker_images);
+                    // Sort docker images by name with trailing-number-aware sort
+                    const sortedEntries = Object.entries(data.meta.docker_images).sort(([a], [b]) => {
+                        const numA = extractTrailingNumber(a);
+                        const numB = extractTrailingNumber(b);
+
+                        let comparison: number;
+
+                        if (numA !== null && numB !== null) {
+                            comparison = numA - numB;
+                        } else if (numA !== null) {
+                            comparison = -1;
+                        } else if (numB !== null) {
+                            comparison = 1;
+                        } else {
+                            comparison = a.localeCompare(b, undefined, { sensitivity: 'base' }); // fallback
+                        }
+
+                        return -comparison;
+                    });
+
+                    const sortedDockerImages: PterodactylDockerImage = {};
+                    for (const [name, image] of sortedEntries) {
+                        sortedDockerImages[name] = image;
+                    }
+                    setDockerImages(sortedDockerImages);
 
                     // Set first docker image as default if none selected
-                    const imageKeys = Object.keys(data.meta.docker_images);
+                    const imageKeys = Object.keys(sortedDockerImages);
                     if (imageKeys.length > 0 && !selectedDockerImage) {
-                        setSelectedDockerImage(data.meta.docker_images[imageKeys[0]]);
+                        setSelectedDockerImage(sortedDockerImages[imageKeys[0]]);
                     }
                 }
             } catch (err) {
@@ -67,6 +91,11 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
 
         fetchDockerImages();
     }, [serverIdentifier, apiKey, ptUrl]);
+
+    function extractTrailingNumber(str: string): number | null {
+        const match = str.match(/(\d+)$/); // digits at the end of string
+        return match ? parseInt(match[1], 10) : null;
+    }
 
     const handleDockerImageChange = async (dockerImage: string) => {
         setSaving(true);
@@ -109,7 +138,7 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
                     </SelectContent>
                 </Select>
                 <Button className="gap-2"
-                    variant="outline" 
+                    variant="outline"
                     disabled={selectedDockerImage === savedDockerImage || !selectedDockerImage || saving}
                     onClick={() => handleDockerImageChange(selectedDockerImage)}>
                     <Save className="h-4 w-4" />

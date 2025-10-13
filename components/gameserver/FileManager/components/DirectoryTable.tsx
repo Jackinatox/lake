@@ -27,6 +27,8 @@ interface DirectoryTableProps {
   onRename: (entry: FileEntry) => void
   onDelete: (entry: FileEntry) => void
   onNavigateUp: () => void
+  menuOpenKey: string | null
+  onMenuOpenKeyChange: (key: string | null) => void
 }
 
 const sortLabel: Record<SortColumn, string> = {
@@ -82,6 +84,8 @@ const DirectoryTableComponent = ({
   onRename,
   onDelete,
   onNavigateUp,
+  menuOpenKey,
+  onMenuOpenKeyChange,
 }: DirectoryTableProps) => {
   const hasParent = currentPath !== "/"
 
@@ -147,6 +151,8 @@ const DirectoryTableComponent = ({
           {!loading && entries.map((entry) => {
             const Icon = entry.isFile ? FileText : Folder
             const OpenIcon = entry.isFile ? FileText : FolderOpen
+            const entryKey = `${currentPath}${entry.name}`
+
             return (
               <TableRow
                 key={`${currentPath}${entry.name}`}
@@ -173,7 +179,10 @@ const DirectoryTableComponent = ({
                   {formatDate(entry.createdAt)}
                 </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
+                  <DropdownMenu
+                    open={menuOpenKey === entryKey}
+                    onOpenChange={(open) => onMenuOpenKeyChange(open ? entryKey : null)}
+                  >
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
@@ -183,6 +192,7 @@ const DirectoryTableComponent = ({
                         onClick={(event) => {
                           event.preventDefault()
                           event.stopPropagation()
+                          onMenuOpenKeyChange(menuOpenKey === entryKey ? null : entryKey)
                         }}
                       >
                         <MoreHorizontal className="h-4 w-4" />
