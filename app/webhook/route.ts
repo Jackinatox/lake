@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
             case 'checkout.session.expired':
                 console.log(`Session expired: `, stripeIntent);
-                await prisma.gameServerOrder.update({
+                await prisma.gameServerOrder.updateMany({
                     where: {
                         stripeSessionId: stripeIntent.id
                     },

@@ -67,12 +67,6 @@ export function FtpPasswordDialog({ open, onOpenChange, serverIdentifier }: FtpP
         return fallback
     }, [])
 
-    const handleGeneratePassword = useCallback(() => {
-        const generated = generatePassword()
-        setPasswordInput(generated)
-        setPasswordConfirmInput(generated)
-        setPasswordError(null)
-    }, [generatePassword])
 
     const handlePasswordCopy = useCallback(async () => {
         if (!passwordResult) {
@@ -198,12 +192,7 @@ export function FtpPasswordDialog({ open, onOpenChange, serverIdentifier }: FtpP
                                 onChange={(event) => setPasswordInput(event.target.value)}
                                 disabled={isUpdatingPassword}
                             />
-                            <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                <span>Leave blank to generate a secure password automatically.</span>
-                                <Button type="button" variant="outline" size="sm" onClick={handleGeneratePassword} disabled={isUpdatingPassword}>
-                                    Generate
-                                </Button>
-                            </div>
+
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="ftp-password-confirm">Confirm password</Label>
@@ -232,7 +221,8 @@ export function FtpPasswordDialog({ open, onOpenChange, serverIdentifier }: FtpP
                             </Button>
                             <Button type="button" onClick={handlePasswordSubmit} disabled={isUpdatingPassword}>
                                 {isUpdatingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Update password
+
+                                {passwordInput.trim() ? "Set password" : "Generate password"}
                             </Button>
                         </>
                     )}
