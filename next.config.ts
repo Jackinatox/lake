@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
     //   ),
     // ],
   },
+  allowedDevOrigins: [
+    "localhost:3000",
+    "scyed.com"
+  ]
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), {

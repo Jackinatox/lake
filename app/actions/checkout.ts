@@ -80,6 +80,7 @@ export async function checkoutAction(params: CheckoutParams) {
 
             // 2. Create Stripe Checkout Session
             const stripeSession = await stripe.checkout.sessions.create({
+                locale: 'auto',
                 mode: "payment",
                 ui_mode: 'embedded',
                 invoice_creation: {
@@ -157,6 +158,7 @@ export async function checkoutAction(params: CheckoutParams) {
 
             // 2. Create Stripe Checkout Session
             const stripeSession = await stripe.checkout.sessions.create({
+                locale: 'auto',
                 mode: "payment",
                 ui_mode: 'embedded',
                 invoice_creation: {
