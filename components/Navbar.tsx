@@ -35,7 +35,7 @@ export default function Navbar({ locale }: { locale: string }) {
           </Link>
           <MainMenu locale={locale} />
         </div>
-        <div className="flex justify-between">
+        <div className="flex items-center space-x-2">
           <div className="hidden md:block">
             <LanguageSwitcher currentLocale={locale} />
           </div>

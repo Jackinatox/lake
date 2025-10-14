@@ -36,6 +36,7 @@ import { GameServer } from "@/models/gameServerModel"
 import { FtpAccessDetails } from "./components/FtpAccessDetails"
 import { FtpPasswordDialog } from "./components/FtpPasswordDialog"
 import { authClient } from "@/lib/auth-client"
+import { MAX_EDITABLE_FILE_SIZE, MAX_EDITABLE_FILE_SIZE_LABEL } from "@/app/GlobalConstants"
 
 interface FileManagerProps {
   apiKey?: string
@@ -76,8 +77,7 @@ const initialUploadState: UploadState = {
   progress: 0,
 }
 
-const MAX_EDITABLE_FILE_SIZE = 2 * 1024 * 1024
-const MAX_EDITABLE_FILE_SIZE_LABEL = "2 MB"
+
 const textLikeMimePrefixes = [
   "text/",
   "application/json",
@@ -569,6 +569,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
           onNavigateUp={handleNavigateUp}
           menuOpenKey={openMenuKey}
           onMenuOpenKeyChange={setOpenMenuKey}
+          isTextLikeFile={isTextLikeFile}
         />
       </CardContent>
 
