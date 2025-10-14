@@ -29,6 +29,7 @@ interface DirectoryTableProps {
   onNavigateUp: () => void
   menuOpenKey: string | null
   onMenuOpenKeyChange: (key: string | null) => void
+  isTextLikeFile: (entry: FileEntry) => boolean
 }
 
 const sortLabel: Record<SortColumn, string> = {
@@ -86,6 +87,7 @@ const DirectoryTableComponent = ({
   onNavigateUp,
   menuOpenKey,
   onMenuOpenKeyChange,
+  isTextLikeFile,
 }: DirectoryTableProps) => {
   const hasParent = currentPath !== "/"
 
@@ -201,6 +203,7 @@ const DirectoryTableComponent = ({
                     <DropdownMenuContent align="end" className="w-36" data-row-action="true">
                       <DropdownMenuGroup>
                         <DropdownMenuItem
+                          disabled={entry.isFile && !isTextLikeFile(entry)}
                           onClick={(event) => {
                             event.preventDefault()
                             event.stopPropagation()
