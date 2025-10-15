@@ -29,7 +29,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
 
     return (
         <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-            <Link href={`/gameserver/${server.ptServerId}`}>
+            <Link href={`/gameserver/${server.ptServerId}${server.status === "EXPIRED" ? "/upgrade" : ""}`}>
                 <CardContent className="p-4 sm:p-6">
                     {/* Mobile-first layout: stack vertically on small screens, horizontal on larger screens */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -66,7 +66,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
                                         <h3 className="font-semibold text-lg sm:text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                                             {server.name}
                                         </h3>
-                                        <GameServerStatus apiKey={apiKey} server={server.ptServerId} />
+                                        <GameServerStatus apiKey={apiKey} server={server} />
                                     </div>
                                 </div>
                                 {/* Specifications - grid layout on mobile, flex on desktop */}
