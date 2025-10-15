@@ -12,6 +12,7 @@ export async function getUserServer(userId: string): Promise<ClientServer[] | nu
                 notIn: ['CREATION_FAILED', 'DELETED']
             }
         },
+        take: 100,
         include: {
             gameData: true
         }
