@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import React, { useEffect, useState } from 'react'
+import { env } from 'next-runtime-env';
 import { Status } from '../Console/status';
 import { ClientServer } from '@/models/prisma';
 
@@ -20,7 +21,7 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer, apiKey: st
 
         // Add your fetching logic here
         // Example:
-        fetch(`${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server.ptServerId}/resources`, {
+        fetch(`${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${apiKey}`

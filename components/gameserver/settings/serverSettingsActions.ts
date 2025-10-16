@@ -1,14 +1,15 @@
 "use server"
 
 import { auth } from "@/auth"
+import { env } from 'next-runtime-env';
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient";
 import { prisma } from "@/prisma";
 import { headers } from "next/headers";
 import { ClientServer } from "pterodactyl.js";
 
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-const ptAdminKey = process.env.PTERODACTYL_API_KEY;
+const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+const ptAdminKey = env('PTERODACTYL_API_KEY');
 
 
 export async function renameClientServer(ptServerId, newName: string): Promise<boolean> {

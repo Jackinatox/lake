@@ -9,9 +9,11 @@ import { getLocale } from "next-intl/server";
 import { Toaster } from "@/components/ui/toaster";
 import { auth } from "@/auth";
 import { headers } from "next/headers";
+import { PublicEnvScript, env } from 'next-runtime-env';
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
+
+const defaultUrl = env('VERCEL_URL')
+  ? `https://${env('VERCEL_URL')}`
   : "http://localhost:3000";
 
 export const metadata = {
@@ -45,6 +47,9 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={geistSans.className} suppressHydrationWarning>
+      <head>
+        <PublicEnvScript />
+      </head>
       <NextIntlClientProvider>
         <body className="bg-background text-foreground">
           <ThemeProvider
@@ -60,7 +65,7 @@ export default async function RootLayout({
 
                   {children}
                   <Toaster />
-                  {process.env.NODE_ENV !== "production" &&
+                  {env('NODE_ENV') !== "production" &&
                     <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
                       {JSON.stringify(session?.user, null, 2)}
                     </pre>

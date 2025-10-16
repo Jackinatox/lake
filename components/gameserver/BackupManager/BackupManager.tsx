@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Plus, RefreshCw, Loader2 } from "lucide-react"
+import { env } from 'next-runtime-env';
 
 import type { GameServer } from "@/models/gameServerModel"
 import { Button } from "@/components/ui/button"
@@ -19,7 +20,7 @@ interface BackupManagerProps {
     server: GameServer
 }
 
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
+const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL')
 
 function mapStatus(attributes: any): BackupStatus {
     if (!attributes?.completed_at) return "creating"

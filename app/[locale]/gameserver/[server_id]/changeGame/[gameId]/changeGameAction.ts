@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from "@/auth"
+import { env } from 'next-runtime-env';
 import { prisma } from "@/prisma"
 import { headers } from "next/headers"
 import type { GameConfig } from "@/models/config"
@@ -12,8 +13,8 @@ import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient"
 import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer"
 import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer"
 
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-const ptAdminKey = process.env.PTERODACTYL_API_KEY;
+const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+const ptAdminKey = env('PTERODACTYL_API_KEY');
 
 interface SubmitGameChangeInput {
     serverId: string

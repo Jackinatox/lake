@@ -1,13 +1,13 @@
 import { prisma } from "@/prisma";
 import { GameServerOrder } from "@prisma/client";
 import * as Sentry from "@sentry/nextjs";
+import { env } from 'next-runtime-env';
 import { createPtClient } from "../ptAdminClient";
-
-const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
 // This function doesnt auth the user, make sure to do that before calling this function
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
+    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptApiKey = env('PTERODACTYL_API_KEY');
     const gameServer = await prisma.gameServer.findUnique({
         where: { id: serverOrder.gameServerId },
         include: { user: true },

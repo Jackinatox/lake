@@ -1,6 +1,8 @@
+import { env } from 'next-runtime-env';
+
 async function createUserApiKey(userId: number): Promise<any> {
-    const pturl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-    const apiKey = process.env.PTERODACTYL_API_KEY;
+    const pturl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const apiKey = env('PTERODACTYL_API_KEY');
     const url = `${pturl}/api/application/users/${userId}/api-keys`;
     const data = {
         description: 'API key for new user by lake',

@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from '@/auth';
+import { env } from 'next-runtime-env';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import GameDashboard from '@/components/gameserver/Console/gameDashboard';
@@ -9,12 +10,15 @@ import { GameServer } from '@/models/gameServerModel';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 
+async function getConfig() {
+  const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL')
+  const apiKey = env('PTERODACTYL_API_KEY');
 
-const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL
-const apiKey = process.env.PTERODACTYL_API_KEY;
-
-if (!baseUrl || !apiKey) {
+  if (!baseUrl || !apiKey) {
     throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
+  }
+
+  return { baseUrl, apiKey };
 }
 
 
@@ -23,6 +27,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     // -- Auth
     const serverId = (await params).server_id;
+    const { baseUrl, apiKey } = await getConfig();
 
     const session = await auth.api.getSession({
         headers: await headers()
