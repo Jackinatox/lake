@@ -1,15 +1,15 @@
 "use server"
 
 import { provisionServer } from "@/lib/Pterodactyl/createServers/provisionServer";
+import { env } from 'next-runtime-env';
 import upgradeGameServer from "@/lib/Pterodactyl/upgradeServer/upgradeServer";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
 
-const endpointSecret = process.env.webhookSecret;
-
 export async function POST(req: NextRequest) {
     const body = await req.text()
+    const endpointSecret = env('webhookSecret');
     let event;
 
 

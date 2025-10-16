@@ -1,6 +1,7 @@
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+import { env } from 'next-runtime-env';
 
 export default async function PTUserServerPowerAction(server: string, apiKey: string, powerAction: 'start' | 'stop' | 'restart' | 'kill') {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     await fetch(`${ptUrl}/api/client/servers/${server}/power`, {
         method: 'POST',
         headers: {

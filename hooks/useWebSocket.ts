@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { env } from 'next-runtime-env';
 
 type ServerStatus = 'offline' | 'starting' | 'stopping' | 'running' | 'unknown';
 type StatsPayload = {
@@ -28,7 +29,7 @@ export function useWebSocket(serverId: string, apiKey: string, options?: UseWebS
   const reconnectTimeoutRef = useRef<number | null>(null);
   const mountedRef = useRef<boolean>(false);
 
-  const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+  const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
   const getWebSocketToken = useCallback(async () => {
     const response = await fetch(`${panelUrl}/api/client/servers/${serverId}/websocket`, {

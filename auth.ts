@@ -1,14 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins"
-import createUserApiKey from "./lib/Pterodactyl/userApiKey";
-import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
-import { lastLoginMethod } from "better-auth/plugins"
+import { admin, lastLoginMethod } from "better-auth/plugins";
+import { env } from 'next-runtime-env';
 import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
-
-
-
+import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
+import createUserApiKey from "./lib/Pterodactyl/userApiKey";
 
 const prisma = new PrismaClient();
 
@@ -47,8 +44,8 @@ export const auth = betterAuth({
   },
   socialProviders: {
     discord: {
-      clientId: process.env.DISCORD_CLIENT_ID!,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      clientId: env('DISCORD_CLIENT_ID')!,
+      clientSecret: env('DISCORD_CLIENT_SECRET')!,
     }
   },
   emailAndPassword: {
@@ -69,7 +66,7 @@ export const auth = betterAuth({
 
             const newPTUser = await ptAdmin.createUser({
               firstName: user.name,
-              lastName: "Schulze",
+              lastName: "Scyed",
               username: ptUsername,
               email: user.email,
               password: generateRandomPassword(),

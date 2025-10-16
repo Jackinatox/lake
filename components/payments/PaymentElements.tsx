@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from 'react'
 import { Elements, EmbeddedCheckout, EmbeddedCheckoutProvider, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { env } from 'next-runtime-env';
 import { cn } from '@/lib/utils';
 
 
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(env('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'));
 
 interface CustomServerPaymentElementsProps {
     clientSecret: string;

@@ -1,5 +1,6 @@
 "use server";
 import { auth } from "@/auth";
+import { env } from 'next-runtime-env';
 import { prisma } from "@/prisma";
 import { headers } from "next/headers";
 
@@ -26,10 +27,10 @@ export async function deleteGameServers(ids: string[]) {
                 deletedIds.push(id);
                 continue;
             }
-            const response = await fetch(process.env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${gameServer.ptAdminId}`, {
+            const response = await fetch(env('NEXT_PUBLIC_PTERODACTYL_URL') + `/api/application/servers/${gameServer.ptAdminId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${process.env.PTERODACTYL_API_KEY}`,
+                    'Authorization': `Bearer ${env('PTERODACTYL_API_KEY')}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 }

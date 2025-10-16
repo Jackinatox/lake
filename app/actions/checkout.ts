@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from "@/auth";
+import { env } from 'next-runtime-env';
 import { calculateNew, calculateUpgradeCost } from "@/lib/GlobalFunctions/paymentLogic";
 import { prisma } from "@/prisma";
 import { OrderType } from "@prisma/client";
@@ -100,10 +101,10 @@ export async function checkoutAction(params: CheckoutParams) {
                     orderId: String(order.id)
                 },
                 customer: stripeUserId,
-                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
 
-                // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-                // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
+                // success_url: `${env('NEXT_PUBLIC_APP_URL')}/success`,
+                // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
             });
 
             // 3. Save Stripe Session ID
@@ -178,9 +179,9 @@ export async function checkoutAction(params: CheckoutParams) {
                     orderId: String(order.id)
                 },
                 customer: stripeUserId,
-                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/return?session_id={CHECKOUT_SESSION_ID}`   // TODO: new return url
-                // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-                // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`
+                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`   // TODO: new return url
+                // success_url: `${env('NEXT_PUBLIC_APP_URL')}/success`,
+                // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
             });
 
 

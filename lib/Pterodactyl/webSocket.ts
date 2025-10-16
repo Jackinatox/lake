@@ -1,6 +1,7 @@
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+import { env } from 'next-runtime-env';
 
 async function webSocket(serverId: string, apiKey: string) {
+  const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
   const response = await fetch(`${ptUrl}/api/client/servers/${serverId}/websocket`, {
     method: 'GET',
     headers: {

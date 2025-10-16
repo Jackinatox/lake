@@ -1,4 +1,5 @@
-const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+import { env } from 'next-runtime-env';
+
 
 export type PteroFileEntry = {
   name: string;
@@ -17,6 +18,7 @@ export type DirectoryListingResponse = {
 };
 
 function assertConfig(apiKey: string | undefined) {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   if (!PANEL_URL) {
     throw new Error("NEXT_PUBLIC_PTERODACTYL_URL environment variable is not set");
   }
@@ -41,6 +43,7 @@ function ensureLeadingSlash(path: string) {
 }
 
 export async function listDirectory(serverId: string, directory: string, apiKey?: string): Promise<DirectoryListingResponse> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const safeDirectory = encodeURIComponent(directory || "/");
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/list?directory=${safeDirectory}`, {
@@ -55,25 +58,26 @@ export async function listDirectory(serverId: string, directory: string, apiKey?
   const payload = await response.json();
   const data = Array.isArray(payload?.data)
     ? payload.data.map((entry: any) => {
-        const attr = entry?.attributes ?? {};
-        return {
-          name: String(attr.name ?? ""),
-          mode: String(attr.mode ?? ""),
-          modeBits: String(attr.mode_bits ?? ""),
-          size: Number(attr.size ?? 0),
-          isFile: Boolean(attr.is_file),
-          isSymlink: Boolean(attr.is_symlink),
-          mimetype: String(attr.mimetype ?? ""),
-          createdAt: String(attr.created_at ?? ""),
-          modifiedAt: String(attr.modified_at ?? ""),
-        } as PteroFileEntry;
-      })
+      const attr = entry?.attributes ?? {};
+      return {
+        name: String(attr.name ?? ""),
+        mode: String(attr.mode ?? ""),
+        modeBits: String(attr.mode_bits ?? ""),
+        size: Number(attr.size ?? 0),
+        isFile: Boolean(attr.is_file),
+        isSymlink: Boolean(attr.is_symlink),
+        mimetype: String(attr.mimetype ?? ""),
+        createdAt: String(attr.created_at ?? ""),
+        modifiedAt: String(attr.modified_at ?? ""),
+      } as PteroFileEntry;
+    })
     : [];
 
   return { data };
 }
 
 export async function readFile(serverId: string, filePath: string, apiKey?: string): Promise<string> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/contents?file=${safePath}`, {
@@ -92,6 +96,7 @@ export async function readFile(serverId: string, filePath: string, apiKey?: stri
 }
 
 export async function writeFile(serverId: string, filePath: string, content: string, apiKey?: string): Promise<void> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/write?file=${safePath}`, {
@@ -110,6 +115,7 @@ export async function writeFile(serverId: string, filePath: string, content: str
 }
 
 export async function getDownloadUrl(serverId: string, filePath: string, apiKey?: string): Promise<string> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/download?file=${safePath}`, {
@@ -144,6 +150,7 @@ export async function uploadFiles(
   apiKey?: string,
   onProgress?: UploadProgressHandler,
 ): Promise<void> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const targetDirectory = encodeURIComponent(directory || "/");
   const signedResponse = await fetch(
@@ -211,6 +218,7 @@ export async function renameEntry(
   to: string,
   apiKey?: string,
 ): Promise<void> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/rename`, {
     method: "POST",
@@ -231,6 +239,7 @@ export async function renameEntry(
 }
 
 export async function deleteEntry(serverId: string, directory: string, name: string, apiKey?: string): Promise<void> {
+  const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
   assertConfig(apiKey);
   const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/delete`, {
     method: "POST",

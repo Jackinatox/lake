@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { env } from 'next-runtime-env';
 import { RefreshCw } from "lucide-react";
 import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer";
 
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
 interface ReinstallDialogProps {
     apiKey: string;

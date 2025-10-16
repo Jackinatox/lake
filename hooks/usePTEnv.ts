@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { env } from 'next-runtime-env';
 
 type EnvStore = {
     vars: Record<string, string> | null;
@@ -21,7 +22,7 @@ function getStore(server: string): EnvStore {
     return stores[server];
 }
 
-const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
 async function fetchEnvVars(server: string, apiKey: string) {
     const store = getStore(server);

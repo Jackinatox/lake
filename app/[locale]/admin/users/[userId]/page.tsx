@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { env } from 'next-runtime-env';
 import NoAdmin from "@/components/admin/NoAdminMessage";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Builder } from "@avionrx/pterodactyl-js";
@@ -31,8 +32,8 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
     
     const userId = (await params).userId;
 
-    const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
-    const apiKey = process.env.PTERODACTYL_API_KEY;
+    const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const apiKey = env('PTERODACTYL_API_KEY');
 
     if (!url || !apiKey) {
         throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
