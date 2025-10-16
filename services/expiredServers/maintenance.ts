@@ -1,13 +1,9 @@
 import { prisma } from '../../prisma'
 import { handleExpired } from './handleExpired';
 import { workerState } from './status';
-export async function runMaintenance() {
-  
-  console.log("running maintanance")
-  await findExpired();
-}
 
-async function findExpired() {
+export async function findExpired() {
+  console.log("running maintanance")
   if (workerState.expiredServers.state === 'running') {
     console.log("Maintenance already running, skipping")
     return;
