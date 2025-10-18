@@ -46,3 +46,5 @@ lgtm/
 
 # Sentry Config File
 .env.sentry-build-plugin
+generated/
+dist/
