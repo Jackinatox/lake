@@ -40,16 +40,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install dependencies
-        run: pnpm install
-        working-directory: worker
-
       - name: Generate Prisma Client
         run: pnpx prisma generate
-
-      - name: Generate Prisma Client
-        run: pnpx prisma generate
-        working-directory: worker
 
       - name: Build project
         run: pnpm build
