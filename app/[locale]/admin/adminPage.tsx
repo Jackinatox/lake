@@ -1,71 +1,42 @@
 "use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { CalendarClock, Gamepad2Icon, icons, SquarePlay, UsersIcon } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import { CalendarClock, Cog, Gamepad2Icon, MonitorX, SquarePlay, UsersIcon } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+
+type AdminTile = {
+    name: string;
+    link: string;
+    Icon: typeof UsersIcon;
+    color: string;
+};
+
+const tiles: AdminTile[] = [
+    { name: 'Users', link: '/admin/users', Icon: UsersIcon, color: 'from-blue-500 to-blue-600' },
+    { name: 'Gameservers', link: '/admin/gameservers', Icon: Gamepad2Icon, color: 'from-green-500 to-emerald-600' },
+    { name: 'Wings', link: '/admin/wings', Icon: SquarePlay, color: 'from-purple-500 to-indigo-600' },
+    { name: 'Stripe Sessions', link: '/admin/sessions', Icon: CalendarClock, color: 'from-yellow-500 to-amber-500' },
+    { name: 'Provision By Id', link: '/admin/TestInternalFunctions/provisionById', Icon: Cog, color: 'from-orange-500 to-amber-600' },
+    { name: 'Job Status', link: '/admin/jobStatus', Icon: MonitorX, color: 'from-red-500 to-rose-600' },
+];
 
 const AdminPage = () => {
-    const router = useRouter();
-
-    const subSites = [
-        {
-            icon: <UsersIcon />,
-            name: 'Users',
-            imageUrl: '/images/users.png',
-            link: '/admin/users',
-        },
-        {
-            icon: <Gamepad2Icon />,
-            name: 'Gameservers',
-            imageUrl: '/images/gameservers.jpg',
-            link: '/admin/gameservers',
-        },
-        {
-            icon: <SquarePlay />,
-            name: 'Wings',
-            imageUrl: '/images/wings.jpg',
-            link: '/admin/wings',
-        },
-        {
-            icon: <CalendarClock />,
-            name: 'Stripe Sessions',
-            imageUrl: '/images/wings.jpg',
-            link: '/admin/sessions',
-        },
-        {
-            icon: <SquarePlay />,
-            name: "Provision By Id",
-            imageUrl: '/images/wings.jpg',
-            link: "/admin/TestInternalFunctions/provisionById"
-        }
-        // Add more sub-sites as needed
-    ];
-
     return (
-        <div className="flex flex-wrap gap-4 p-0 m-0">
-            {subSites.map((site) => (
-                <div
-                    key={site.name}
-                    className="w-[300px] h-[200px] cursor-pointer transition-transform hover:scale-[1.04]"
-                    onClick={() => router.push(site.link)}
-                >
-                    <Card className="overflow-hidden w-full h-full flex flex-col justify-end p-0 shadow-lg">
-                        <div className="relative w-full h-[130px]">
-                            <img
-                                src={site.imageUrl}
-                                alt={site.name}
-                                className="object-cover w-full h-full"
-                                style={{ objectFit: 'cover' }}
-                            />
-                        </div>
-                        <CardContent className="flex items-center gap-2 pt-4 pb-4">
-                            {site.icon}
-                            <span className="font-semibold text-lg">{site.name}</span>
-                        </CardContent>
-                    </Card>
-                </div>
-            ))}
+        <div className="w-full py-8 sm:mx-auto sm:max-w-6xl sm:px-4">
+            <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Lake Admin</h1>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {tiles.map(({ name, link, Icon, color }) => (
+                    <Link key={name} href={link} className="block">
+                        <Card className={`flex min-h-[120px] items-center justify-between gap-4 rounded-xl border-0 bg-gradient-to-br ${color} px-5 py-6 text-white shadow-lg transition-transform duration-200 hover:scale-[1.02] md:min-h-[150px] md:px-6`}>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-lg font-semibold md:text-xl">{name}</span>
+                                <span className="text-sm text-white/80">Open {name}</span>
+                            </div>
+                            <Icon className="h-10 w-10 shrink-0 md:h-12 md:w-12" />
+                        </Card>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 };
