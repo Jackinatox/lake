@@ -104,6 +104,7 @@ model GameServer {
   updatedAt DateTime @updatedAt
 
   ServerOrder GameServerOrder[]
+  WorkerLogs  WorkerLog[]
 }
 
 enum GameServerStatus {
@@ -202,6 +203,7 @@ model User {
   GameServerOrder GameServerOrder[]
   SupportTicket   SupportTicket[]
   GameServer      GameServer[]
+  WorkerLogs      WorkerLog[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -255,4 +257,38 @@ model Account {
   updatedAt             DateTime  @updatedAt
 
   @@map("account")
+}
+
+enum WorkerLogLevel {
+  INFO
+  WARN
+  ERROR
+  FATAL
+}
+
+enum WorkerJobType {
+  EXPIRE_SERVERS
+  // Add other job types as you create them
+}
+
+model WorkerLog {
+  id        Int            @id @default(autoincrement())
+  jobType   WorkerJobType
+  jobRun    String?        // Unique identifier for each job run
+  level     WorkerLogLevel
+  message   String
+  details   Json?          // Store error stack traces, context data, etc.
+  
+  // Optional relations for context
+  gameServerId String?
+  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
+  
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+
+  @@index([jobType, level, createdAt])
+  @@index([gameServerId])
+  @@index([userId])
 }
