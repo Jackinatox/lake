@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",
+    "bree": "^9.2.4",
     "express": "^5.1.0",
     "prisma": "^6.17.1"
   }
