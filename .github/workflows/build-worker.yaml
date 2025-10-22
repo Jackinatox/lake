@@ -27,11 +27,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '20'
-
       - uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
@@ -70,7 +65,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value={{branch}}-{{sha}}-{{date 'YYYYMMDD'}}
             type=raw,value=build-${{ github.run_number }}
             type=raw,value=latest,enable={{is_default_branch}}
 
@@ -85,5 +79,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-

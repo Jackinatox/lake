@@ -21,6 +21,7 @@
 - **Shared Types** Prefer `models/prisma.ts` and `models/config.ts` to stay aligned with Prisma payloads and form schemas when moving data between server actions and client components.
 - **Sentry** Instrumentation is already wired (`instrumentation.ts`, `instrumentation-client.ts`, `next.config.ts` with `withSentryConfig`); wrap risky operations with Sentry logging instead of `console.error` when possible.
 - **Intl Copy** Translations live in `messages/{locale}.json`; add keys there and access via `useTranslations()` to keep both locales in sync.
+- **Design choices** The Shadcn Card already has a dynamic padding so its more space efficient on mobile devices. Avoid adding extra padding/margin to it. when you dont use the Card component, go with p-2 md:p-6
 
 ## Tooling
 - **Install & Run** Use pnpm: `pnpm install`, `pnpm dev` (Turbopack), `pnpm build`, `pnpm start`; ensure `NEXT_PUBLIC_APP_URL` matches the dev URL for Stripe return links.
