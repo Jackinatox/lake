@@ -5,6 +5,7 @@ import GameServersPage from './ServerTable';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';
 import { env } from 'next-runtime-env';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 
@@ -27,10 +28,23 @@ async function UserServer() {
 
   return (
 
-    <Suspense fallback={<>loading</>}>
+    <Suspense fallback={<GameServersSkeleton />}>
       <GameServersPage></GameServersPage>
     </Suspense>
   )
 }
 
 export default UserServer
+
+function GameServersSkeleton() {
+  return (
+    <div className="space-y-4 p-2 md:p-6">
+      <Skeleton className="h-6 w-1/3" />
+      <div className="space-y-2">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-16 w-full" />
+        ))}
+      </div>
+    </div>
+  )
+}

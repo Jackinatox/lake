@@ -1,26 +1,26 @@
 import { parentPort } from "worker_threads";
 import { prisma } from "../../prisma";
-import { handleExpired } from "./handleExpired";
 import { logInfo, logWarn, logError, logFatal, generateJobRunId } from "../../lib/logger";
 import { WorkerJobType } from "../../generated/client";
+import SendEmail from "./sendEmail";
 
-const JobName = "ExpireServers";
+const JobName = "SendEmails";
 
 let processed = 0;
 var shutdown = false;
 
 // Generate a unique job run ID for this execution
-const jobRun = generateJobRunId(WorkerJobType.EXPIRE_SERVERS);
+const jobRun = generateJobRunId(WorkerJobType.SEND_EMAILS);
 
 const now = new Date();
-const count = await prisma.gameServer.count({
-    where: { expires: { lte: now }, status: { notIn: ['EXPIRED', 'DELETED', "CREATION_FAILED"] } },
+const emailCount = await prisma.email.count({
+    where: { retries: { lt: 4 }, status: { in: ["PENDING", "FAILED"] } },
 })
 
 parentPort?.on("message", (msg) => {
     if (msg?.type === "stop") {
         console.log(`${JobName} received stop signal`);
-        logWarn(WorkerJobType.EXPIRE_SERVERS, "Job received stop signal", null, { jobRun }).catch(console.error);
+        logWarn(WorkerJobType.SEND_EMAILS, "Job received stop signal", null, { jobRun }).catch(console.error);
         shutdown = true;
     }
 });
@@ -28,68 +28,67 @@ parentPort?.on("message", (msg) => {
 (async () => {
     try {
         console.log(`${JobName} started`);
-        await logInfo(WorkerJobType.EXPIRE_SERVERS, `Job started, processing ${count} servers`, {
-            totalServers: count,
+        await logInfo(WorkerJobType.SEND_EMAILS, `Job started, sending ${emailCount} emails`, {
+            totalServers: emailCount,
             jobRun
         }, { jobRun });
 
         for (let i = 0; i < 70; i++) {
             if (shutdown) {
-                await logWarn(WorkerJobType.EXPIRE_SERVERS, "Job stopping as requested", { iteration: i, processed }, { jobRun });
+                await logWarn(WorkerJobType.SEND_EMAILS, "Job stopping as requested", { iteration: i, processed }, { jobRun });
                 throw new Error(`${JobName} stopping as requested`);
             }
 
             while (true) {
-                const expiring = await prisma.gameServer.findMany({
-                    where: { expires: { lte: now }, status: { notIn: ['EXPIRED', 'DELETED', "CREATION_FAILED"] } },
+                const emails = await prisma.email.findMany({
+                    where: { retries: { lt: 4 }, status: { in: ["PENDING", "FAILED"] } },
                     take: 20,
-                    orderBy: { expires: 'asc' },
+                    orderBy: { createdAt: 'asc' },
                 })
 
-                if (expiring.length === 0) break
+                if (emails.length === 0) break
 
-                for (const server of expiring) {
+                for (const email of emails) {
                     try {
                         processed += 1;
-                        console.log(`Processing server ${server.id} expired at ${server.expires}`)
-                        await handleExpired(server, jobRun);
+                        await SendEmail(email, jobRun);
 
-                        parentPort?.postMessage({ processed, total: count });
+                        parentPort?.postMessage({ processed, total: emailCount });
 
                     } catch (serverError) {
                         // Individual server processing failed, but continue with others
-                        await logError(WorkerJobType.EXPIRE_SERVERS, `Failed to process individual server`, {
-                            serverId: server.id,
+                        await logError(WorkerJobType.SEND_EMAILS, `Failed to process individual server`, {
+                            serverId: email.id,
                             error: serverError instanceof Error ? serverError.message : String(serverError),
                             stack: serverError instanceof Error ? serverError.stack : undefined,
                             serverDetails: {
-                                id: server.id,
-                                expires: server.expires,
-                                status: server.status,
-                                userId: server.userId
+                                id: email.id,
+                                createdAt: email.createdAt,
+                                status: email.status,
+                                recipient: email.recipient
                             }
-                        }, { gameServerId: server.id, userId: server.userId, jobRun });
+                        }, { gameServerId: undefined, userId: undefined, jobRun });
 
-                        console.error(`Failed to process server ${server.id}:`, serverError);
-                        parentPort?.postMessage({ processed, total: count });
+                        console.error(`Failed to process email ${email.id}:`, serverError);
+                        parentPort?.postMessage({ processed, total: emailCount });
                     }
                     await new Promise((resolve) => setTimeout(resolve, 400)); // Throttle to not overwhelm db and email service
                 }
             }
         }
 
-        await logInfo(WorkerJobType.EXPIRE_SERVERS, `Job completed successfully`, {
+        await logInfo(WorkerJobType.SEND_EMAILS, `Job completed successfully`, {
             totalProcessed: processed,
-            totalServers: count
+            totalServers: emailCount
         }, { jobRun });
         console.log(`${JobName} completed successfully, processed ${processed} servers`);
 
     } catch (error) {
-        await logFatal(WorkerJobType.EXPIRE_SERVERS, `Job failed with critical error`, {
+        await logFatal(WorkerJobType.SEND_EMAILS, `Job failed with critical error`, {
             error: error instanceof Error ? error.message : String(error),
             stack: error instanceof Error ? error.stack : undefined,
             processed,
-            total: count,
+            total: emailCount,
             jobRun
         }, { jobRun });
 
@@ -99,11 +98,11 @@ parentPort?.on("message", (msg) => {
 
     parentPort?.postMessage('done');
 })().catch(async (error) => {
-    await logFatal(WorkerJobType.EXPIRE_SERVERS, `Job crashed unexpectedly`, {
+    await logFatal(WorkerJobType.SEND_EMAILS, `Job crashed unexpectedly`, {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
         processed,
-        total: count,
+        total: emailCount,
         jobRun
     }, { jobRun });
 

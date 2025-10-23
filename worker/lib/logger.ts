@@ -49,7 +49,7 @@ async function log(
         await prisma.workerLog.create({
             data: {
                 jobType,
-                jobRun: context?.jobRun || `${jobType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                jobRun: context?.jobRun || `error_no_jobRun_${Date.now()}`,
                 level,
                 message,
                 details: details ? JSON.parse(JSON.stringify(details)) : null,
@@ -65,6 +65,7 @@ async function log(
         // Fallback to console if database logging fails
         console.error('Failed to log to database:', error);
         console.log(`[${level}:${jobType}] ${message}`);
+        // TODO: Notify developers about logging failure (e.g., via email or external service)
     }
 }
 
