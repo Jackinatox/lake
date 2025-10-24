@@ -16,7 +16,8 @@ const jobStatus: JobStatusMap = {};
 
 const bree = new Bree({
     jobs: [
-        { name: "ExpireServers", interval: "1m", timeout: 0, path: path.join("jobs", "ExpireServers", "ExpireServers.ts") },
+        // { name: "ExpireServers", interval: "1m", timeout: 0, path: path.join("jobs", "ExpireServers", "ExpireServers.ts") },
+        { name: "SendEmails", interval: "1m", timeout: 0, path: path.join("jobs", "sendEmails", "Emails.ts") },
     ],
     logger: {
         info: () => { },

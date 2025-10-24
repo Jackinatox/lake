@@ -29,7 +29,7 @@ parentPort?.on("message", (msg) => {
     try {
         console.log(`${JobName} started`);
         await logInfo(WorkerJobType.SEND_EMAILS, `Job started, sending ${emailCount} emails`, {
-            totalServers: emailCount,
+            totalEmails: emailCount,
             jobRun
         }, { jobRun });
 
@@ -57,7 +57,8 @@ parentPort?.on("message", (msg) => {
 
                     } catch (serverError) {
                         // Individual server processing failed, but continue with others
-                        await logError(WorkerJobType.SEND_EMAILS, `Failed to process individual server`, {
+                        // TODO: Add Log function specialized to email
+                        await logError(WorkerJobType.SEND_EMAILS, `Failed to send Email`, {
                             serverId: email.id,
                             error: serverError instanceof Error ? serverError.message : String(serverError),
                             stack: serverError instanceof Error ? serverError.stack : undefined,
@@ -81,7 +82,7 @@ parentPort?.on("message", (msg) => {
             totalProcessed: processed,
             totalServers: emailCount
         }, { jobRun });
-        console.log(`${JobName} completed successfully, processed ${processed} servers`);
+        console.log(`${JobName} completed successfully, processed ${processed} emails`);
 
     } catch (error) {
         await logFatal(WorkerJobType.SEND_EMAILS, `Job failed with critical error`, {
