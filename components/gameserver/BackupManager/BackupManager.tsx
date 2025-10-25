@@ -52,6 +52,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
     const [downloadingId, setDownloadingId] = useState<string | null>(null)
+    const [unlockingId, setUnlockingId] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
 
     const backupLimit = server.feature_limits?.backups ?? 0
@@ -325,6 +326,55 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         [fetchBackups, headers, server.identifier, toast],
     )
 
+    const handleUnlock = useCallback(
+        async (backup: Backup) => {
+            if (!ptUrl) {
+                toast({
+                    title: "Missing configuration",
+                    description: "NEXT_PUBLIC_PTERODACTYL_URL is not set.",
+                    variant: "destructive",
+                })
+                return false
+            }
+
+            setUnlockingId(backup.uuid)
+
+            try {
+                const response = await fetch(
+                    `${ptUrl}/api/client/servers/${server.identifier}/backups/${backup.uuid}/lock`,
+                    {
+                        method: "POST",
+                        headers,
+                    },
+                )
+
+                if (!response.ok) {
+                    const message = await response.text()
+                    throw new Error(message || "Failed to unlock backup")
+                }
+
+                toast({
+                    title: "Backup unlocked",
+                    description: "The backup can now be deleted or modified.",
+                })
+
+                await fetchBackups({ silent: true })
+                return true
+            } catch (err) {
+                const message = err instanceof Error ? err.message : "Failed to unlock backup"
+                toast({
+                    title: "Unlock failed",
+                    description: message,
+                    variant: "destructive",
+                })
+                return false
+            } finally {
+                setUnlockingId(null)
+            }
+        },
+        [fetchBackups, headers, server.identifier, toast],
+    )
+
     const totalSize = useMemo(() => backups.reduce((sum, backup) => sum + (backup.bytes ?? 0), 0), [backups])
     const limitReached = backupLimit > 0 && backups.length >= backupLimit
 
@@ -423,8 +473,10 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                             onDownload={handleDownload}
                             onRestore={handleRestore}
                             onDelete={handleDelete}
+                            onUnlock={handleUnlock}
                             disabled={isRefreshing || isCreating}
                             isDownloading={downloadingId === backup.uuid}
+                            isUnlocking={unlockingId === backup.uuid}
                         />
                     ))}
                 </div>
