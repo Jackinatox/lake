@@ -4,19 +4,22 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Download, Loader2, Lock, RotateCcw, Trash2 } from "lucide-react"
+import { Download, Loader2, Lock, RotateCcw, Trash2, Unlock } from "lucide-react"
 import type { Backup } from "./types"
 import { deriveStatusLabel, formatBytes, formatDateTime } from "./utils"
 import { RestoreBackupDialog } from "./RestoreBackupDialog"
 import { DeleteBackupDialog } from "./DeleteBackupDialog"
+import { UnlockBackupDialog } from "./UnlockBackupDialog"
 
 interface BackupCardProps {
     backup: Backup
     onDownload: (backup: Backup) => Promise<void>
     onRestore: (backup: Backup, options: { truncate: boolean }) => Promise<boolean>
     onDelete: (backup: Backup) => Promise<boolean>
+    onUnlock: (backup: Backup) => Promise<boolean>
     disabled?: boolean
     isDownloading?: boolean
+    isUnlocking?: boolean
 }
 
 export function BackupCard({
@@ -24,8 +27,10 @@ export function BackupCard({
     onDownload,
     onRestore,
     onDelete,
+    onUnlock,
     disabled,
     isDownloading,
+    isUnlocking,
 }: BackupCardProps) {
     const statusLabel = deriveStatusLabel(backup.status)
     const statusVariant = backup.status === "failed" ? "destructive" : backup.status === "creating" ? "secondary" : "default"
@@ -39,6 +44,7 @@ export function BackupCard({
 
     const handleRestore = async (options: { truncate: boolean }) => onRestore(backup, options)
     const handleDelete = async () => onDelete(backup)
+    const handleUnlock = async () => onUnlock(backup)
 
     return (
         <Card className="flex flex-col">
@@ -119,22 +125,45 @@ export function BackupCard({
                     onConfirm={handleRestore}
                 />
 
-                <DeleteBackupDialog
-                    backup={backup}
-                    trigger={
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="border-destructive/60 text-destructive hover:bg-destructive/10"
-                            disabled={disabled || backup.isLocked}
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span className="hidden sm:inline">Delete</span>
-                            <span className="sm:hidden">Delete</span>
-                        </Button>
-                    }
-                    onConfirm={handleDelete}
-                />
+                {backup.isLocked ? (
+                    <UnlockBackupDialog
+                        backup={backup}
+                        trigger={
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-primary/40 text-primary hover:bg-primary/10"
+                                disabled={disabled || isUnlocking}
+                            >
+                                {isUnlocking ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Unlock className="mr-2 h-4 w-4" />
+                                )}
+                                <span className="hidden sm:inline">Unlock</span>
+                                <span className="sm:hidden">Unlock</span>
+                            </Button>
+                        }
+                        onConfirm={handleUnlock}
+                    />
+                ) : (
+                    <DeleteBackupDialog
+                        backup={backup}
+                        trigger={
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-destructive/60 text-destructive hover:bg-destructive/10"
+                                disabled={disabled}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Delete</span>
+                                <span className="sm:hidden">Delete</span>
+                            </Button>
+                        }
+                        onConfirm={handleDelete}
+                    />
+                )}
             </CardFooter>
         </Card>
     )
