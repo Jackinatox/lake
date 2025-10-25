@@ -220,6 +220,7 @@ model User {
   @@unique([email])
   @@unique([ptUsername])
   @@map("user")
+  UserSettings Json @default("{}")
 }
 
 model Session {
