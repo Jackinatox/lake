@@ -6,7 +6,7 @@
         "scminput": false,
         "json": true,
         "typescriptreact": true,
-        "typescript": true
+        "typescript": false
     },
     "i18n-ally.localesPaths": [
         "./messages",

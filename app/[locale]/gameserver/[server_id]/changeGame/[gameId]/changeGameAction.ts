@@ -12,6 +12,7 @@ import { buildMC_ENVs_and_startup } from "@/lib/Pterodactyl/buildMinecraftENVs"
 import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient"
 import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer"
 import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer"
+import DeleteAllFilesUserServer from "@/lib/Pterodactyl/Functions/DeleteAllFilesUser";
 
 const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 const ptAdminKey = env('PTERODACTYL_API_KEY');
@@ -86,7 +87,7 @@ export async function changeGame({
     });
 
     await new Promise(resolve => setTimeout(resolve, 500));
-    const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey);
+    const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey, true);
 
     if (!response2.ok) {
         const errorData = await response2.json();

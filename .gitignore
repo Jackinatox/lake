@@ -48,3 +48,4 @@ lgtm/
 .env.sentry-build-plugin
 generated/
 dist/
+prismaTesting.ts
