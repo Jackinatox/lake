@@ -18,8 +18,12 @@ const defaultUrl = env('VERCEL_URL')
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Scyed #lake",
-  description: "with Next.js and now with nextauth !!!!",
+  title: "Scyed Hosting",
+  description: "A little above average Gameserver hosting platform",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export const viewport = {

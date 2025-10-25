@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
 import type { Game, GameConfig } from "@/models/config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { ArrowRight, CheckCircle2, Gamepad2, Loader2 } from "lucide-react"
+import { AlertTriangle, ArrowRight, CheckCircle2, Gamepad2, Loader2 } from "lucide-react"
 import { changeGame } from "./changeGameAction"
 import Link from "next/link"
 
@@ -122,6 +122,16 @@ export default function ChangeGameConfigClient({
                                     />
                                     <p className="text-base font-semibold text-foreground">{game.name}</p>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive shadow-sm dark:border-destructive/60 dark:bg-destructive/25 dark:text-destructive-foreground dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]">
+                            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive dark:text-destructive-foreground" />
+                            <div className="space-y-1">
+                                <p className="text-sm font-semibold uppercase tracking-wide">All files will be deleted</p>
+                                <p className="text-sm text-destructive/80 dark:text-destructive-foreground/90">
+                                    Switching to a new game wipes the current server files. Back up anything important before you continue.
+                                </p>
                             </div>
                         </div>
 

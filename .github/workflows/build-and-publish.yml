@@ -57,6 +57,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=build-${{ github.run_number }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       # Extract metadata for worker image
@@ -70,6 +72,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=build-${{ github.run_number }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       # Build and push web app Docker image
