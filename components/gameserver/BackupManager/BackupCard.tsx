@@ -35,7 +35,6 @@ export function BackupCard({
     const statusLabel = deriveStatusLabel(backup.status)
     const statusVariant = backup.status === "failed" ? "destructive" : backup.status === "creating" ? "secondary" : "default"
     const ignoredLabel = backup.ignoredFiles.length > 0 ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? "" : "s"}` : "No files"
-    const checksum = backup.sha256Hash ? `${backup.sha256Hash.slice(0, 12)}…` : "Not available"
 
     const handleDownload = async () => {
         if (disabled) return
@@ -85,10 +84,6 @@ export function BackupCard({
                         <span className="text-muted-foreground">Ignored</span>
                         <span className="font-medium">{ignoredLabel}</span>
                     </div>
-                </div>
-                <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
-                    <p className="font-medium uppercase tracking-wide text-muted-foreground/80">Checksum</p>
-                    <p className="font-mono text-sm">{checksum}</p>
                 </div>
             </CardContent>
 

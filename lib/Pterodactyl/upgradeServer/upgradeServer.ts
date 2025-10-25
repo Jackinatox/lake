@@ -1,6 +1,5 @@
 import { prisma } from "@/prisma";
 import { GameServerOrder } from "@prisma/client";
-import * as Sentry from "@sentry/nextjs";
 import { env } from 'next-runtime-env';
 import { createPtClient } from "../ptAdminClient";
 
@@ -58,8 +57,6 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
         });
     } catch (error) {
         // TODO: notify admin
-        Sentry.logger.fatal('Upgrade Server Error', { error })
-
         console.error("Error upgrading game server:", error);
         throw new Error("Failed to upgrade game server");
     }
