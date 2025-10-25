@@ -157,6 +157,15 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                     },
                 )
 
+                if (response.status === 429) {
+                    toast({
+                        title: "Rate limit exceeded",
+                        description: "You can only create 2 Backups every 10 minutes.",
+                        variant: "destructive"
+                    })
+                    await fetchBackups({ silent: true })
+                    return false
+                }
                 if (!response.ok) {
                     const message = await response.text()
                     throw new Error(message || "Failed to create backup")
@@ -379,7 +388,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const limitReached = backupLimit > 0 && backups.length >= backupLimit
 
     return (
-        <Card className="space-y-6 sm:p-4 p-2">
+        <Card className="space-y-6 sm:p-6 p-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h2 className="text-xl font-semibold">Backups</h2>
