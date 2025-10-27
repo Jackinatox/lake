@@ -161,6 +161,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                     <span className="font-medium">Note:</span> The server will need to be reinstalled for these changes to take effect. Your world data should be preserved during reinstallation.
                 </p>
             </div>
+            // TODO 
             <MinecraftFlavorDialog eggId={server.egg_id} server={server} />
         </div>
     )

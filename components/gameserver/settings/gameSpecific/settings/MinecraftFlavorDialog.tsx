@@ -105,6 +105,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
           disabled={selectedFlavorId === server.gameData.flavorId}
           onClick={() => {
             if (!selectedFlavorId) return
+            console.log("switcing egg")
             onConfirm?.({ flavorId: selectedFlavorId, eggId })
             setOpen(false)
           }}
