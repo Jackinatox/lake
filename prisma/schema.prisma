@@ -17,6 +17,7 @@ generator client {
 generator worker {
   provider = "prisma-client-js"
   output   = "../worker/generated/client"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 model GameData {
