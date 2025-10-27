@@ -1,0 +1,1 @@
+export const DELETE_GAMESERVER_AFTER_DAYS = 90;

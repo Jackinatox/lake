@@ -87,7 +87,7 @@ model GameServer {
 
   ptServerId String?
   ptAdminId  Int?
-  name       String? @default("GameServer")
+  name       String // @default("GameServer")
 
   status    GameServerStatus @default(CREATED)
   errorText String?
@@ -104,6 +104,8 @@ model GameServer {
 
   ServerOrder GameServerOrder[]
   WorkerLogs  WorkerLog[]
+
+  Email Email[]
 }
 
 enum GameServerStatus {
@@ -215,12 +217,12 @@ model User {
 
   lastLoginMethod String?
 
-  ptUsername String?
+  ptUsername   String?
+  UserSettings Json    @default("{}")
 
   @@unique([email])
   @@unique([ptUsername])
   @@map("user")
-  UserSettings Json @default("{}")
 }
 
 model Session {
@@ -269,7 +271,7 @@ enum WorkerLogLevel {
 enum WorkerJobType {
   EXPIRE_SERVERS
   SEND_EMAILS
-  // Add other job types as you create them
+  GENERATE_EMAILS
 }
 
 model WorkerLog {
@@ -295,20 +297,22 @@ model WorkerLog {
 }
 
 model Email {
-  id        Int         @id @default(autoincrement())
-  recipient String
-  subject   String
-  html      String
-  sentAt    DateTime    @default(now())
-  type      EmailType
-  status    EmailStatus @default(PENDING)
-  errorText String?
-  retries   Int         @default(0)
+  id           Int         @id @default(autoincrement())
+  recipient    String
+  subject      String
+  html         String
+  sentAt       DateTime    @default(now())
+  type         EmailType
+  status       EmailStatus @default(PENDING)
+  GameServerId String?
+  GameServer   GameServer? @relation(fields: [GameServerId], references: [id], onDelete: SetNull)
+  errorText    String?
+  retries      Int         @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([status])
+  @@index([GameServerId, status])
 }
 
 enum EmailStatus {
@@ -324,4 +328,6 @@ enum EmailType {
   EXPIRED_GAME_SERVER
   EXPIRE_GAME_SERVER7DAYS
   EXPIRE_GAME_SERVER1DAY
+  DELETE_GAME_SERVER_1DAY
+  DELETE_GAME_SERVER_7DAYS
 }

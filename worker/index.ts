@@ -7,7 +7,7 @@ const app = express();
 const port = 8080;
 
 console.log("Worker starting...");
-console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+console.log(`Environment: ${process.env.NODE_ENV || "Node env nicht gefunden"}`);
 console.log(`Starting Bree`);
 
 
@@ -17,6 +17,7 @@ const jobStatus: JobStatusMap = {};
 const bree = new Bree({
     jobs: [
         // { name: "ExpireServers", interval: "1m", timeout: 0, path: path.join("jobs", "ExpireServers", "ExpireServers.ts") },
+        // { name: "Generate1DayExpirdEmails", interval: "5m", timeout: 0, path: path.join("jobs", "Reminder", "DayExpiry.ts") },
         { name: "SendEmails", interval: "1m", timeout: 0, path: path.join("jobs", "sendEmails", "Emails.ts") },
     ],
     logger: {

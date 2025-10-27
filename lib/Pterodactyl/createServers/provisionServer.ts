@@ -71,8 +71,9 @@ export async function provisionServer(order: GameServerOrder) {
             throw new Error('No Handler for this GameServer')
     }
 
+    const serverName = serverOrder.creationGameData.name + " Gameserver";
     options = {
-        name: serverOrder.creationGameData.name + " Gameserver",
+        name: serverName,
         ...preOptions,
         ...startAndVars
     };
@@ -90,6 +91,7 @@ export async function provisionServer(order: GameServerOrder) {
             gameDataId: serverOrder.creationGameDataId,
             locationId: serverOrder.creationLocation.ptLocationId,
             gameConfig: serverOrder.gameConfig,
+            name: serverName,
         }
     });
 

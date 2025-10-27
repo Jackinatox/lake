@@ -34,7 +34,8 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
   }
 
   const toggleAll = (checked: boolean) => {
-    setSelected(checked ? sessions.map((s) => s.stripeSessionId) : [])
+    setSelected(checked ? sessions.map((s) => s.stripeSessionId)
+     : [])
   }
 
   const onExpire = async () => {
