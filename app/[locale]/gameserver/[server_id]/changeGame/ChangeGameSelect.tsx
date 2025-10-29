@@ -16,6 +16,10 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
         }
     });
 
+    if (!data || data.length === 0) {
+        return <div>No Games.</div>;
+    }
+
     const games = data.map(game => {
         const imgName = `${game.name.toLowerCase()}.webp`;
 

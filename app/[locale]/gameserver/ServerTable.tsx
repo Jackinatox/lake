@@ -45,11 +45,15 @@ export default async function GameServersPage() {
         headers: await headers()
     })
 
-    if (!session) {
+    if (!session || !session.user || !session.user.ptKey) {
         return <NotLoggedIn />;
     }
 
     const clientServers = await getUserServer(session.user.id);
+
+    if (!clientServers) {
+        return <div>Failed to load servers.</div>;
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">

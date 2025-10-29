@@ -27,7 +27,6 @@ import InfoButton from "../InfoButton";
 import { calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic";
 
 interface HardwareConfigProps {
-  diskOptions?: { id: number; size_gb: number; price_per_gb: number }[];
   performanceOptions: PerformanceGroup[];
   onNext: (config: HardwareConfig) => void;
   initialConfig: HardwareConfig | null;

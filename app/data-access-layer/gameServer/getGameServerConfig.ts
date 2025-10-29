@@ -3,7 +3,7 @@ import 'server-only'
 import { prisma } from '@/prisma';
 import { HardwareConfig } from '@/models/config';
 
-export async function getGameServerConfig(server_id, userId: string): Promise<HardwareConfig | null> {
+export async function getGameServerConfig(server_id: string, userId: string): Promise<HardwareConfig | null> {
     const server = await prisma.gameServer.findFirst({
         where: {
             userId: userId,

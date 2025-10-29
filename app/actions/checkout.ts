@@ -14,7 +14,7 @@ import { headers } from "next/headers";
 export type CheckoutParams = {
     type: OrderType;
     creationServerConfig?: ServerConfig;    // Needed for Server Creation!!!
-    ptServerId: string;
+    ptServerId: string | null;
     ramMB: number;
     cpuPercent: number;
     diskMB: number;
@@ -31,7 +31,10 @@ export async function checkoutAction(params: CheckoutParams) {
     if (!session) throw new Error("Not authenticated");
     const user = session.user;
 
-    let stripeUserId = await prisma.user.findUnique({ where: { id: user.id } }).then(u => u.stripeUserId);
+    if (!creationServerConfig) throw new Error("No Serverconfigration given");
+
+    const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+    let stripeUserId = dbUser?.stripeUserId ?? null;
 
     if (!stripeUserId) {
         const newCustomer = await stripe.customers.create({
@@ -53,7 +56,7 @@ export async function checkoutAction(params: CheckoutParams) {
 
     switch (type) {
         case "NEW": {
-            const location = await prisma.location.findFirst({
+            const location = await prisma.location.findFirstOrThrow({
                 where: { id: creationServerConfig.hardwareConfig.pfGroupId },
                 include: { cpu: true, ram: true }
             });
@@ -120,10 +123,14 @@ export async function checkoutAction(params: CheckoutParams) {
                 where: { ptServerId: ptServerId, userId: user.id }
             });
 
+            if (!server) throw new Error(`No Server Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id}`);
+
             const performanceGroup = await prisma.location.findUnique({
                 where: { id: server.locationId },
                 include: { cpu: true, ram: true }
             });
+
+            if (!performanceGroup) throw new Error(`No performanceGroup Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id} pfId: ${server.locationId}`);
 
             const oldConfig: HardwareConfig = {
                 cpuPercent: server.cpuPercent,

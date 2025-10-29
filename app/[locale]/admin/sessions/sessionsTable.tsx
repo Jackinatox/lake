@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { expireSessions, deleteOrders } from '@/app/[locale]/admin/sessions/sessions_actions'
 import { useToast } from '@/hooks/use-toast'
 import { DbSession } from '@/models/prisma'
+import { sso } from 'better-auth/plugins/sso'
 
 type Props = { sessions: DbSession[] }
 
@@ -34,19 +35,24 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
   }
 
   const toggleAll = (checked: boolean) => {
-    setSelected(checked ? sessions.map((s) => s.stripeSessionId)
-     : [])
+    setSelected(
+      checked
+        ? sessions
+          .map((s) => s.stripeSessionId)
+          .filter((id): id is string => id != null)
+        : []
+    )
   }
 
   const onExpire = async () => {
     if (!selected.length) return
-  const res = await expireSessions(selected)
+    const res = await expireSessions(selected)
     toast({ title: 'Expire', description: `Expired: ${res.expired.length}, failed: ${res.failed.length}` })
   }
 
   const onDeleteOrders = async () => {
     if (!selected.length) return
-  const res = await deleteOrders(selected)
+    const res = await deleteOrders(selected)
     toast({ title: 'Delete Orders', description: `Deleted: ${res.deleted}, not found: ${res.notFound}` })
   }
 
@@ -131,10 +137,10 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sorted.map((s) => (
+          {sorted.map((s) => (s.stripeSessionId ? (
             <TableRow key={s.stripeSessionId} data-state={selected.includes(s.stripeSessionId) ? 'selected' : undefined}>
               <TableCell className="w-10">
-                <Checkbox checked={selected.includes(s.stripeSessionId)} onCheckedChange={() => toggle(s.stripeSessionId)} aria-label="Select row" />
+                <Checkbox checked={selected.includes(s.stripeSessionId)} onCheckedChange={() => toggle(s.stripeSessionId ? s.stripeSessionId : '')} aria-label="Select row" />
               </TableCell>
               <TableCell className="font-mono text-xs">{s.stripeSessionId}</TableCell>
               <TableCell>#{s.id}</TableCell>
@@ -145,6 +151,7 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
               <TableCell>{formatUtc(s.createdAt)}</TableCell>
               <TableCell>{formatUtc(s.expiresAt)}</TableCell>
             </TableRow>
+          ) : <>No Stripe Session ID - This is very bad</>
           ))}
         </TableBody>
       </Table>

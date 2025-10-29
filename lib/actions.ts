@@ -1,12 +1,12 @@
-"use server"
-
+import { Game } from "@/models/config";
 import { prisma } from "@/prisma";
+import { Nuosu_SIL } from "next/font/google";
 
 export async function fetchPerformanceGroups() {
-  const data = await prisma.location.findMany({ 
+  const data = await prisma.location.findMany({
     include: {
       cpu: true,
-      ram: true, 
+      ram: true,
     },
     where: {
       enabled: true
@@ -20,8 +20,8 @@ export async function fetchPerformanceGroups() {
   return data;
 }
 
-export async function fetchGames(gameId: number){
-  return await prisma.gameData.findUnique({
+export async function fetchGames(gameId: number): Promise<Game | null> {
+  const game = await prisma.gameData.findUnique({
     where: { id: gameId },
     select: {
       id: true,
@@ -29,5 +29,13 @@ export async function fetchGames(gameId: number){
       data: true
     }
   });
+  
+  if (!game) return null;
+
+  return {
+    data: game.data,
+    id: game.id,
+    name: game.name || "kein name"
+  }
 }
 

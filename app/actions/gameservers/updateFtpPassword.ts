@@ -43,15 +43,15 @@ export async function updateFtpPassword({
     headers: await headers(),
   })
 
-  if (!session) {
+  if (!session || !session.user || !session.user.ptKey || !session.user.ptUserId) {
     return { success: false, error: "You must be signed in to change the FTP password." }
   }
 
   const gameServer = await prisma.gameServer.findFirst({
-    where: { 
-        ptServerId: serverIdentifier,
-        userId: session.user.id,
-     },
+    where: {
+      ptServerId: serverIdentifier,
+      userId: session.user.id,
+    },
   })
 
   if (!gameServer) {

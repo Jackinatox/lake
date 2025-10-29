@@ -42,11 +42,12 @@ parentPort?.on("message", (msg) => {
                 const cutoffDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
                 const expiring = await prisma.gameServer.findMany({
                     where: {
-            expires: { lte: cutoffDate, gt: now },
+                        expires: { lte: cutoffDate, gt: now },
                         status: { notIn: ['EXPIRED', 'DELETED', 'CREATION_FAILED'] },
                         Email: {
                             none: {
-                                type: "DELETE_GAME_SERVER_1DAY"
+                                type: "DELETE_GAME_SERVER_1DAY",
+                                // createdAt: { gt: }   // TODO Only emails that belong to the currenrt server time range
                             }
                         }
                     },

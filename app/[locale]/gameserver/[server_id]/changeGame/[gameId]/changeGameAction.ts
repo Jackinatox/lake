@@ -1,18 +1,15 @@
 "use server"
 
-import { auth } from "@/auth"
+import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants";
+import { auth } from "@/auth";
+import { buildMC_ENVs_and_startup } from "@/lib/Pterodactyl/buildMinecraftENVs";
+import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer";
+import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer";
+import type { GameConfig } from "@/models/config";
+import { prisma } from "@/prisma";
+import type { GameData } from "@prisma/client";
 import { env } from 'next-runtime-env';
-import { prisma } from "@/prisma"
-import { headers } from "next/headers"
-import type { GameConfig } from "@/models/config"
-import type { GameData, GameServer } from "@prisma/client"
-import { MinecraftConfig } from "@/models/gameSpecificConfig/MinecraftConfig"
-import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants"
-import { buildMC_ENVs_and_startup } from "@/lib/Pterodactyl/buildMinecraftENVs"
-import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient"
-import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer"
-import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer"
-import DeleteAllFilesUserServer from "@/lib/Pterodactyl/Functions/DeleteAllFilesUser";
+import { headers } from "next/headers";
 
 const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 const ptAdminKey = env('PTERODACTYL_API_KEY');
@@ -32,7 +29,7 @@ export async function changeGame({
         headers: await headers(),
     })
 
-    if (!session) {
+    if (!session || !session.user || !session.user.ptKey) {
         throw new Error("Not authenticated")
     }
 

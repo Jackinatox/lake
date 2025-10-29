@@ -48,7 +48,7 @@ async function PaymentList() {
                             amount={pay.price}
                             paymentType={pay.type}
                             date={pay.createdAt}
-                            receiptUrl={pay.receipt_url}
+                            receiptUrl={pay.receipt_url ?? undefined}
                             gameServerUrl={`/gameserver/${pay.gameServer?.ptServerId}`}
                             serverExpired={!pay.gameServer}
                         />

@@ -14,7 +14,7 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
     headers: await headers()
   })
 
-  if (!session) {
+  if (!session || !session.user || !session.user.ptKey) {
     return <NotLoggedIn />;
   }
 

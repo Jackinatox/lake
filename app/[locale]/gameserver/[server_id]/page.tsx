@@ -10,30 +10,16 @@ import { GameServer } from '@/models/gameServerModel';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 
-async function getConfig() {
-  const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL')
-  const apiKey = env('PTERODACTYL_API_KEY');
-
-  if (!baseUrl || !apiKey) {
-    throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');
-  }
-
-  return { baseUrl, apiKey };
-}
-
-
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
 
     // -- Auth
     const serverId = (await params).server_id;
-    const { baseUrl, apiKey } = await getConfig();
-
     const session = await auth.api.getSession({
         headers: await headers()
     })
 
-    if (!session) {
+    if (!session || !session.user || !session.user.ptKey) {
         return <NotLoggedIn />;
     }
 
@@ -48,11 +34,12 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         }
     });
 
-    if (!isServerValid) {
+    if (!isServerValid || !isServerValid.ptAdminId) {
         return <NotAllowedMessage />
     }
 
     const ptApiKey = session.user.ptKey;
+    const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
     const response = await fetch(
         `${baseUrl}/api/client/servers/${serverId}`,

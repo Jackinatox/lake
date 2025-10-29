@@ -15,6 +15,10 @@ export async function POST(req: NextRequest) {
 
     if (endpointSecret) {
         const signature = req.headers.get('stripe-signature');
+        if (!signature) {
+            throw new Error("Missing signature header");
+        }
+        
         try {
             event = stripe.webhooks.constructEvent(
                 body,
@@ -77,8 +81,8 @@ export async function POST(req: NextRequest) {
                         await provisionServer(serverOrder);
                         break;
                     case "UPGRADE":
-                        await upgradeGameServer(serverOrder);    
-                    break;
+                        await upgradeGameServer(serverOrder);
+                        break;
                     default:
                         console.error(`Unhandled server order type: ${serverOrder.type}`);
                 }

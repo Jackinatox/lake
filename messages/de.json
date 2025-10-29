@@ -213,10 +213,10 @@
   "RegisterLogin": {
     "title": "Willkommen",
     "subtitle": "Registriere dich mit deinem Discord- oder Google-Konto",
-  "oauth": {
+    "oauth": {
       "discord": "Mit Discord registrieren",
       "google": "Mit Google registrieren"
-  },
+    },
     "alreadyAccount": {
       "text": "Du hast bereits ein Konto?",
       "login": "Anmelden"
@@ -282,16 +282,17 @@
       "DOWNGRADE": "Downgrade",
       "RENEW": "Verlängerung"
     },
-  "serverExpired": "Server abgelaufen",
-  "historyTitle": "Zahlungshistorie",
-  "totalSpend": "Gesamtausgaben",
-  "noPayments": "Keine Zahlungen",
-  "profileTitle": "Profil",
-  "loggedInVia": "Angemeldet via",
-  "changePassword": "Passwort ändern",
-  "loadingPayments": "Zahlungshistorie wird geladen...",
-  "oauthPasswordChangeNotice1": "Da du über",
-  "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
-  "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast."
+    "serverExpired": "Server abgelaufen",
+    "historyTitle": "Zahlungshistorie",
+    "totalSpend": "Gesamtausgaben",
+    "noPayments": "Keine Zahlungen",
+    "profileTitle": "Profil",
+    "loggedInVia": "Angemeldet via",
+    "changePassword": "Passwort ändern",
+    "loadingPayments": "Zahlungshistorie wird geladen...",
+    "oauthPasswordChangeNotice1": "Da du über",
+    "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
+    "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast.",
+    "noReceipt": "Kein Beleg"
   }
 }

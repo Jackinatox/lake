@@ -13,6 +13,8 @@ export async function provisionServer(order: GameServerOrder) {
     const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: order.id }, include: { user: true, creationGameData: true, creationLocation: true } });
     const pt = createPtClient();
 
+    if (!serverOrder || !serverOrder.creationGameData || !serverOrder.creationLocation) throw new Error(`No Server found for serverOrder: ${order.id}`)
+
     console.log('user id: ', serverOrder.user.ptUserId)
     const gameConfig = serverOrder.gameConfig as any;
     // console.log("GameConfig: ", gameConfig);
@@ -76,7 +78,7 @@ export async function provisionServer(order: GameServerOrder) {
         name: serverName,
         ...preOptions,
         ...startAndVars
-    };
+    } as NewServerOptions;
 
     const dbNewServer = await prisma.gameServer.create({
         data: {
@@ -88,9 +90,9 @@ export async function provisionServer(order: GameServerOrder) {
             ramMB: preOptions.limits.memory,
             expires: serverOrder.expiresAt,
             userId: serverOrder.user.id,
-            gameDataId: serverOrder.creationGameDataId,
+            gameDataId: serverOrder.creationGameDataId || -1,
             locationId: serverOrder.creationLocation.ptLocationId,
-            gameConfig: serverOrder.gameConfig,
+            gameConfig: serverOrder.gameConfig || undefined,
             name: serverName,
         }
     });

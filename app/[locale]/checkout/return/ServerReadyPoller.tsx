@@ -51,7 +51,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
       if (stopped) return
       try {
         const { status, serverId } = await checkIfServerReady(sessionId)
-        if (stopped) return
+        if (stopped || !status) return
         setStatus(status)
         if (serverId) {
           setServerId(serverId)

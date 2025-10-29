@@ -3,22 +3,24 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import React from "react";
+import { getTranslations } from "next-intl/server";
 
 export type Game = {
-    id: string;
-    name: string;
-    images: {
-      light: string;
-      dark: string;
-    };
+  id: string;
+  name: string;
+  images: {
+    light: string;
+    dark: string;
   };
+};
 type SupportedGamesListProps = {
   supportedGames: Array<Game>;
-  t: (key: string) => string;
 };
 
 
-export function SupportedGamesList({ supportedGames, t }: SupportedGamesListProps) {
+export async function SupportedGamesList({ supportedGames }: SupportedGamesListProps) {
+  const t = await getTranslations("landingpage");
+
   return (
     <div className="bg-background/80 backdrop-blur-sm rounded-xl p-6 border">
       <h2 className="text-2xl font-bold mb-6">{t("supportedGames")}</h2>

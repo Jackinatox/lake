@@ -10,7 +10,7 @@ interface PaymentItemProps {
   amount: number
   paymentType: OrderType
   date: Date
-  receiptUrl: string
+  receiptUrl?: string
   gameServerUrl?: string
   serverExpired?: boolean
   locale?: string
@@ -50,9 +50,21 @@ export function PaymentItem({
       <div className="flex items-center gap-2">
         <span className="font-medium">{(amount / 100).toFixed(2)} €</span>
         <Button variant="outline" asChild>
-          <Link href={receiptUrl} target="_blank" rel="noopener noreferrer">
-            <Receipt className="h-5 w-5" />
-          </Link>
+          {
+            receiptUrl ? (
+              <Link href={receiptUrl} target="_blank" rel="noopener noreferrer">
+                <Receipt className="h-5 w-5" />
+              </Link>
+            ) : (
+              <span
+                title={t("noReceipt")}
+                className="inline-flex items-center justify-center opacity-50 cursor-not-allowed"
+                aria-disabled
+              >
+                <Receipt className="h-5 w-5" />
+              </span>
+            )
+          }
         </Button>
         {gameServerUrl && (
           serverExpired ? (

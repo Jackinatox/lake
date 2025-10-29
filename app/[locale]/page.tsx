@@ -1,10 +1,9 @@
 "use server"
 
-import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { prisma } from "@/prisma";
-import { CheckCircle, ChevronRight, Shield, Zap } from "lucide-react";
+import { CheckCircle, Shield, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -88,7 +87,7 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            <SupportedGamesList supportedGames={supportedGames} t={t} />
+            <SupportedGamesList supportedGames={supportedGames} />
           </div>
         </div>
       </section>
