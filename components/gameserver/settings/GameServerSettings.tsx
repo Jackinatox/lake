@@ -1,19 +1,18 @@
 "use client"
 
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from "@/app/GlobalConstants"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { GameServer } from "@/models/gameServerModel"
+import { Gamepad2 } from "lucide-react"
+import Link from "next/link"
+import ReinstallDialog from "./ReinstallDialog"
 import ServerSettingsCard from "./ServerSettingsCard"
 import MinecraftSettings from "./gameSpecific/settings/MinecraftSettings"
-import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from "@/app/GlobalConstants"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import ReinstallDialog from "./ReinstallDialog"
-import { Settings, Gamepad2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 interface GameServerSettingsProps {
   server: GameServer
-  apiKey?: string
+  apiKey: string
 }
 
 export default function GameServerSettings({ server, apiKey }: GameServerSettingsProps) {

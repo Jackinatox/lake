@@ -152,7 +152,7 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
           </div>
           <Switch
             id="uploadCrashReport"
-            checked={(config.upload_crash_report ?? 1) === 1}
+            checked={(config.upload_crash_report)}
             onCheckedChange={(checked) => handleChange("upload_crash_report", checked)}
           />
         </div>

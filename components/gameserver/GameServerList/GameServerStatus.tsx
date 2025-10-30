@@ -10,7 +10,6 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer, apiKey: st
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("Loading");
 
-    // Simulate loading for demonstration
     useEffect(() => {
         // Only fetch data if server status is not expired
         if (server.status === "EXPIRED") {
@@ -19,8 +18,6 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer, apiKey: st
             return;
         }
 
-        // Add your fetching logic here
-        // Example:
         fetch(`${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`, {
             headers: {
                 Accept: "application/json",
@@ -29,24 +26,14 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer, apiKey: st
         })
             .then(res => res.json())
             .then(data => {
-                // handle data
                 console.log(data)
                 setLoading(false);
                 setStatus(data.attributes.current_state ? data.attributes.current_state : "Loading"); // Handle installing state
             });
 
-        const timer = setTimeout(() => setLoading(false), 10000);
+        const timer = setTimeout(() => setLoading(false), 5000);
         return () => clearTimeout(timer);
     }, [server.status, server.ptServerId, apiKey]);
-
-
-    if (loading) {
-        return (
-            <>
-                <Status state={null}></Status>
-            </>
-        )
-    }
 
     return (
         <>

@@ -65,7 +65,11 @@ const MENU: MenuItem[] = [
   },
 ]
 
-export default function MainMenu({ locale }) {
+interface MainMenuInterface {
+  locale: string
+}
+
+export default function MainMenu({ locale }: MainMenuInterface) {
   const [open, setOpen] = React.useState(false)
   return (
     <header className="">

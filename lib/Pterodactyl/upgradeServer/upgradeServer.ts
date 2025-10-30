@@ -7,13 +7,13 @@ import { createPtClient } from "../ptAdminClient";
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
     const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const ptApiKey = env('PTERODACTYL_API_KEY');
-    const gameServer = await prisma.gameServer.findUnique({
-        where: { id: serverOrder.gameServerId },
+    const gameServer = await prisma.gameServer.findUniqueOrThrow({
+        where: { id: serverOrder.gameServerId || "", ptAdminId: { not: null } },
         include: { user: true },
     });
     const pt = createPtClient();
 
-    const ptServer = await pt.getServer(gameServer.ptAdminId.toString());
+    const ptServer = await pt.getServer(gameServer.ptAdminId!.toString()); // ! is ok because its checked in the query above
 
     console.log("expires: ", gameServer.expires);
     try {

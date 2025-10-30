@@ -1,10 +1,17 @@
 "use client"
 
-interface InfoProps { state: string }
+interface InfoProps {
+  state: string | null
+}
 
 
 export function Status({ state }: InfoProps) {
+
   const getStatusColor = () => {
+    if (!state) {
+      return "bg-gray-500"
+    }
+
     switch (state?.toLowerCase()) {
       case "running":
         return "bg-green-500"
@@ -22,7 +29,7 @@ export function Status({ state }: InfoProps) {
   return (
     <div className="flex items-center gap-2">
       <div className={`h-3 w-3 rounded-full ${getStatusColor()}`} />
-      <span className="font-medium capitalize">{state}</span>
+      <span className="font-medium capitalize">{state || "Loading"}</span>
     </div>
   )
 }

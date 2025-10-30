@@ -1,18 +1,16 @@
 "use server"
 
-import { auth } from "@/auth"
-import { env } from 'next-runtime-env';
+import { auth } from "@/auth";
 import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
-import { createPtUserClient } from "@/lib/Pterodactyl/ptUserClient";
 import { prisma } from "@/prisma";
+import { env } from 'next-runtime-env';
 import { headers } from "next/headers";
-import { ClientServer } from "pterodactyl.js";
 
 const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 const ptAdminKey = env('PTERODACTYL_API_KEY');
 
 
-export async function renameClientServer(ptServerId, newName: string): Promise<boolean> {
+export async function renameClientServer(ptServerId: string, newName: string): Promise<boolean> {
     const session = await auth.api.getSession({
         headers: await headers()
     })
@@ -75,7 +73,7 @@ export async function reinstallServer(server: string): Promise<boolean> {
     return true;
 }
 
-export async function changeServerStartup(server, docker_image: string): Promise<boolean> {
+export async function changeServerStartup(server: string, docker_image: string): Promise<boolean> {
     const session = await auth.api.getSession({
         headers: await headers()
     })

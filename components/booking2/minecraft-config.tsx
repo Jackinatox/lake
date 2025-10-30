@@ -1,18 +1,15 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
-import { useTranslations } from "next-intl"
-import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ArrowLeft, ChevronDown, ChevronUp, Check, ChevronsUpDown } from "lucide-react"
-import type { Game, GameConfig } from "@/models/config"
+import { CardDescription, CardTitle } from "@/components/ui/card"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import type { Game, GameConfig } from "@/models/config"
 import { MinecraftConfig } from "@/models/gameSpecificConfig/MinecraftConfig"
+import { GameFlavor } from "@/types/gameData"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 
 interface MinecraftConfigProps {
   onChange: (config: Record<string, any>) => void
@@ -22,7 +19,7 @@ interface MinecraftConfigProps {
   onSubmit: (config: GameConfig) => void
 }
 
-export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }: MinecraftConfigProps, ref) => {
+export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame, onSubmit }: MinecraftConfigProps, ref) => {
   const t = useTranslations("buyGameServer.gameConfig");
   const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
   const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
@@ -30,6 +27,12 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
   const [loading, setLoading] = useState(false)
   const [flavorOpen, setFlavorOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
+
+  const game = {
+    ...givenGame, data: {
+      flavors: givenGame.data.flavours as GameFlavor[]
+    }
+  }
 
   useEffect(() => {
     const defaultFlavorId = game.data.flavors.find((f) => f.id === 3)?.id || game.data.flavors[0]?.id || null
@@ -88,7 +91,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game, onSubmit }
         gameId: game.id,
         gameType: game.name,
         flavorId: selectedFlavorId,
-        eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id,
+        eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id ?? 1,
         version: selectedVersion.version,
         dockerImage: selectedVersion.docker_image,
         gameSpecificConfig: {

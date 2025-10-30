@@ -90,7 +90,7 @@ export async function provisionServer(order: GameServerOrder) {
             ramMB: preOptions.limits.memory,
             expires: serverOrder.expiresAt,
             userId: serverOrder.user.id,
-            gameDataId: serverOrder.creationGameDataId || -1,
+            gameDataId: serverOrder.creationGameData.id,
             locationId: serverOrder.creationLocation.ptLocationId,
             gameConfig: serverOrder.gameConfig || undefined,
             name: serverName,

@@ -6,11 +6,12 @@ import upgradeGameServer from "@/lib/Pterodactyl/upgradeServer/upgradeServer";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/prisma";
 import { NextRequest } from "next/server";
+import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
     const body = await req.text()
     const endpointSecret = env('webhookSecret');
-    let event;
+    let event: Stripe.Event;
 
 
     if (endpointSecret) {
@@ -34,8 +35,6 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const stripeIntent = event.data.object;
-
 
         switch (event.type) {
             case 'payment_intent.succeeded':
@@ -43,12 +42,13 @@ export async function POST(req: NextRequest) {
                 break;
 
             case 'checkout.session.completed':
-                const serverOrderId = parseInt(stripeIntent.metadata.orderId);
-                console.log('ServerOrder: ', stripeIntent);
+                const checkoutSession = event.data.object as Stripe.Checkout.Session;
+                const serverOrderId = parseInt(checkoutSession.metadata?.orderId || '0');
+                console.log('ServerOrder: ', checkoutSession);
 
 
                 const session = await stripe.checkout.sessions.retrieve(
-                    event.data.object.id,
+                    checkoutSession.id,
                     {
                         expand: ['payment_intent.latest_charge'],
                     }
@@ -69,13 +69,13 @@ export async function POST(req: NextRequest) {
                         id: serverOrderId,
                     },
                     data: {
-                        stripeSessionId: stripeIntent.id,
+                        stripeSessionId: checkoutSession.id,
                         status: 'PAID',
                         receipt_url: receiptUrl
                     }
                 })
 
-                const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: serverOrderId } });
+                const serverOrder = await prisma.gameServerOrder.findUniqueOrThrow({ where: { id: serverOrderId } });
                 switch (serverOrder.type) {
                     case "NEW":
                         await provisionServer(serverOrder);
@@ -90,10 +90,11 @@ export async function POST(req: NextRequest) {
                 break;
 
             case 'checkout.session.expired':
-                console.log(`Session expired: `, stripeIntent);
+                const expiredSession = event.data.object as Stripe.Checkout.Session;
+                console.log(`Session expired: `, expiredSession);
                 await prisma.gameServerOrder.updateMany({
                     where: {
-                        stripeSessionId: stripeIntent.id
+                        stripeSessionId: expiredSession.id
                     },
                     data: {
                         status: "EXPIRED"

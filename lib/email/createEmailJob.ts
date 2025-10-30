@@ -5,7 +5,7 @@ import ExpiredServerTemplate from "./templates/ExpiredServerTemplate";
 import { DELETE_GAMESERVER_AFTER_DAYS } from "../../worker/WorkerConstants";
 
 export default async function createEmailExpiredServer(serverId: string) {
-    const server = await prisma.gameServer.findUnique({
+    const server = await prisma.gameServer.findUniqueOrThrow({
         where: { id: serverId },
         include: { user: true }
     });

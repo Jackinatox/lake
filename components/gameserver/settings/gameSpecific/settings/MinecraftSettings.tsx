@@ -16,7 +16,7 @@ import StartupCommand from '../../StartupCommand'
 
 interface MinecraftSettingsProps {
     server: GameServer
-    apiKey?: string
+    apiKey: string
 }
 
 function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {

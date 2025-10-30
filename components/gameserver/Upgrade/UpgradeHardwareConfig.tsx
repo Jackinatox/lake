@@ -2,24 +2,24 @@
 
 import Loading from "@/app/[locale]/gameserver/[server_id]/upgrade/loading"
 import InfoButton from "@/components/InfoButton"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
-import { Table, TableBody, TableCaption, TableCell, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { calculateBase, calculateUpgradeCost, UpgradePriceDef } from "@/lib/GlobalFunctions/paymentLogic"
+import { calculateUpgradeCost, UpgradePriceDef } from "@/lib/GlobalFunctions/paymentLogic"
+import { calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic"
 import type { HardwareConfig } from "@/models/config"
 import { PerformanceGroup } from "@/models/prisma"
 import { Info } from "lucide-react"
-import { useEffect, useState } from "react"
-import { calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic"
 import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
 
 interface HardwareConfigProps {
     diskOptions?: { id: number; size_gb: number; price_per_gb: number }[]
     performanceOptions: PerformanceGroup[]
     onNext: (config: HardwareConfig) => void
-    initialConfig: HardwareConfig | null
+    initialConfig: HardwareConfig
 }
 
 export function UpgradeHardwareConfig({ initialConfig, performanceOptions, onNext }: HardwareConfigProps) {
