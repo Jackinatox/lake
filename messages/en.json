@@ -246,6 +246,38 @@
         "unexpected": "Unexpected error"
       }
     },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email address and we'll send you a reset link.",
+      "button": {
+        "send": "Send reset link",
+        "sending": "Sending..."
+      },
+      "success": {
+        "request": "If an account exists for that email, we've sent reset instructions."
+      },
+      "errors": {
+        "requestFailed": "We couldn't send the reset email. Please try again."
+      }
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "subtitle": "Set a new password to regain access to your account.",
+      "button": {
+        "reset": "Reset password",
+        "resetting": "Resetting..."
+      },
+      "success": {
+        "reset": "Your password has been updated. You can now log in."
+      },
+      "errors": {
+        "tokenMissing": "The reset token is missing. Please use the link from your email.",
+        "tokenInvalid": "This reset link is invalid or has expired. Request a new one.",
+        "resetFailed": "We couldn't reset your password. Please try again.",
+        "generic": "Something went wrong while validating your reset link."
+      },
+      "backToLogin": "Back to login"
+    },
     "orContinueWith": "Or continue with",
     "fields": {
       "username": "Username",
@@ -254,6 +286,8 @@
       "emailPlaceholder": "mail@example.com",
       "password": "Password",
       "passwordPlaceholder": "password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter a new password",
       "confirmPassword": "Confirm Password",
       "confirmPasswordPlaceholder": "confirm password"
     },

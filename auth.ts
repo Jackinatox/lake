@@ -6,6 +6,7 @@ import { env } from 'next-runtime-env';
 import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
+import sendResetPasswordEmail from "./lib/email/sendResetPasswordEmail";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["discord", "google"]
+    }
+  },
   user: {
     additionalFields: {
       ptUserId: {
@@ -49,7 +56,14 @@ export const auth = betterAuth({
     }
   },
   emailAndPassword: {
-    enabled: true
+    enabled: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendResetPasswordEmail(
+        user.email,
+        url,
+        token
+      );
+    },
   },
   plugins: [
     lastLoginMethod({

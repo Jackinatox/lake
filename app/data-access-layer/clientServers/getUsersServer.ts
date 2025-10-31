@@ -15,6 +15,7 @@ export async function getUserServer(userId: string): Promise<ClientServer[] | nu
         take: 100,
         include: {
             gameData: true
-        }
+        },
+        orderBy: { expires: 'desc' }
     });
 }

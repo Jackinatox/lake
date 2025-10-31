@@ -30,7 +30,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
 
   const game = {
     ...givenGame, data: {
-      flavors: givenGame.data.flavours as GameFlavor[]
+      flavors: givenGame.data.flavors as GameFlavor[]
     }
   }
 

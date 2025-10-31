@@ -1,15 +1,15 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { TriangleAlert } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import type { GameFlavor } from "@/types/gameData";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { fetchGames } from "@/lib/actions";
 import { GameServer } from "@/models/gameServerModel";
+import type { GameFlavor } from "@/types/gameData";
+import { TriangleAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Flavor = GameFlavor
 

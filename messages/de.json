@@ -246,6 +246,38 @@
         "text": "Noch keinen Account?"
       }
     },
+    "forgotPassword": {
+      "title": "Passwort vergessen?",
+      "subtitle": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.",
+      "button": {
+        "send": "Link zum Zurücksetzen senden",
+        "sending": "Sende..."
+      },
+      "success": {
+        "request": "Wenn ein Konto für diese E-Mail existiert, haben wir dir gerade Anweisungen geschickt."
+      },
+      "errors": {
+        "requestFailed": "Wir konnten die Reset-E-Mail nicht senden. Bitte versuche es erneut."
+      }
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "subtitle": "Lege ein neues Passwort fest, um wieder Zugriff auf dein Konto zu erhalten.",
+      "button": {
+        "reset": "Passwort zurücksetzen",
+        "resetting": "Setze zurück..."
+      },
+      "success": {
+        "reset": "Dein Passwort wurde aktualisiert. Du kannst dich jetzt anmelden."
+      },
+      "errors": {
+        "tokenMissing": "Der Reset-Token fehlt. Bitte verwende den Link aus deiner E-Mail.",
+        "tokenInvalid": "Dieser Reset-Link ist ungültig oder abgelaufen. Fordere einen neuen an.",
+        "resetFailed": "Wir konnten dein Passwort nicht zurücksetzen. Bitte versuche es erneut.",
+        "generic": "Beim Überprüfen deines Reset-Links ist ein Fehler aufgetreten."
+      },
+      "backToLogin": "Zurück zur Anmeldung"
+    },
     "orContinueWith": "Oder fahre fort mit",
     "fields": {
       "username": "Benutzername",
@@ -254,6 +286,8 @@
       "emailPlaceholder": "mail@beispiel.de",
       "password": "Passwort",
       "passwordPlaceholder": "Passwort",
+      "newPassword": "Neues Passwort",
+      "newPasswordPlaceholder": "Neues Passwort eingeben",
       "confirmPassword": "Passwort bestätigen",
       "confirmPasswordPlaceholder": "Passwort bestätigen"
     },

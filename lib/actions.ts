@@ -1,6 +1,7 @@
+"use server"
+
 import { Game } from "@/models/config";
 import { prisma } from "@/prisma";
-import { Nuosu_SIL } from "next/font/google";
 
 export async function fetchPerformanceGroups() {
   const data = await prisma.location.findMany({
