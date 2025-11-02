@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 
 export default async function checkIfServerReady(
     stripeSession: string
-): Promise<{ status: GameServerStatus | null, serverId?: string | null }> {
+): Promise<{ status: GameServerStatus, serverId?: string | null }> {
     const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const session = await auth.api.getSession({
         headers: await headers()

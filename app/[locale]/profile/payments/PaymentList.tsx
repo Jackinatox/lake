@@ -21,6 +21,7 @@ async function PaymentList() {
     const payments = await prisma.gameServerOrder.findMany({
         where: { userId: session.user.id, status: "PAID" },
         include: { gameServer: true },
+        orderBy: { createdAt: "desc"}
     });
 
     const totalSpent = payments.reduce((acc, pay) => acc + pay.price, 0);
