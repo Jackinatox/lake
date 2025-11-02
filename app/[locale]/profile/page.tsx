@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import NotLoggedIn from "@/components/auth/NoAuthMessage";
-import { prisma } from "@/prisma";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Suspense } from "react";
@@ -15,15 +14,6 @@ export default async function ProfilePage() {
     if (!session) {
         return <NotLoggedIn />;
     }
-
-    const wasEmail = session.user.lastLoginMethod === "email";
-
-    const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        include: {
-            accounts: true,
-        }
-    });
 
     const t = await getTranslations("payments");
 

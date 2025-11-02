@@ -8,6 +8,7 @@ import LogoutButton from './LogoutButton'
 import { authClient } from '@/lib/auth-client'
 import { useTranslations } from 'next-intl'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Link from 'next/link'
 
 function ProfileInfo() {
     const session = authClient.useSession();
@@ -16,6 +17,11 @@ function ProfileInfo() {
     if (session.isPending) {
         return <div>Loading...</div>;
     }
+
+    if (!session.data?.user) {
+        return (<div>User not found</div>);
+    }
+
 
     const user = session?.data?.user;
     const method = authClient.getLastUsedLoginMethod();
@@ -60,9 +66,11 @@ function ProfileInfo() {
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" disabled={!wasEmail}>
-                        <Lock className="h-4 w-4 mr-2" />
-                        {t("changePassword")}
+                    <Button asChild variant="outline" size="sm" disabled={!wasEmail}>
+                        <Link href={`forgot-password?email=${encodeURI(user?.email)}`}>
+                            <Lock className="h-4 w-4 mr-2" />
+                            {t("changePassword")}
+                        </Link>
                     </Button>
                     <LogoutButton />
                 </div>
