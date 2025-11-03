@@ -39,7 +39,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 const flavors: GameFlavor[] = raw?.flavors ?? [];
 
                 // Find the current flavor to get its versions
-                const currentFlavor = flavors.find((flavor) => flavor.id === server.gameData.flavorId);
+                const currentFlavor = flavors.find((flavor) => flavor.egg_id === server.gameData.eggId);
                 if (currentFlavor) {
                     setAvailableVersions(currentFlavor.versions.reverse());
                 }
@@ -50,7 +50,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             }
         };
         fetchVersions();
-    }, [server.gameDataId, server.gameData.flavorId]);
+    }, [server.gameDataId, server.gameData.eggId]);
 
     useEffect(() => {
         if (value && !loading) {

@@ -20,7 +20,7 @@ import CPUChart from "./graphs/CPUChart"
 import RAMChart from "./graphs/RAMChart"
 import { PowerBtns } from "./powerBtns"
 import { Status } from "./status"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import BackupManager from "../BackupManager/BackupManager"
 
 
@@ -35,6 +35,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     const [eulaOpen, setEulaOpen] = useState(false);
     const wsRef = useRef<WebSocket | null>(null)
     const wsCreds = useRef<any>(null)
+    const searchParams = useSearchParams()
+    const autoStart = useRef(searchParams.get("start") === "true");
+    const router = useRouter();
 
     const pathname = usePathname();
 
@@ -99,6 +102,20 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 }
 
                 setLoading(false)
+
+                if (autoStart.current) {
+                    // Send start command directly (we know WebSocket is ready)
+                    wsRef.current?.send(
+                        JSON.stringify({
+                            event: "set state",
+                            args: ["start"],
+                        }),
+                    )
+                    autoStart.current = false;
+                    router.replace(pathname, { scroll: false });
+                } else {
+                    console.log("auto satart is false")
+                }
             }
         }
     }

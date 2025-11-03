@@ -34,7 +34,7 @@ export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }
             <Button
                 variant="outline"
                 size="sm"
-                onClick={onRestart}
+                onClick={onStop}
                 disabled={loading || isOffline}
                 className="flex items-center gap-1"
             >
@@ -44,7 +44,7 @@ export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }
             <Button
                 variant="outline"
                 size="sm"
-                onClick={onStop}
+                onClick={onRestart}
                 disabled={loading || isOffline}
                 className="flex items-center gap-1"
             >

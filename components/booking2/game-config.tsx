@@ -52,7 +52,6 @@ export const GameConfigComponent = forwardRef((
                 return (
                   <MinecraftConfigComponent
                     ref={configRef}
-                    onChange={handleConfigChange}
                     onSubmit={onSubmit}
                     game={game}
                   />

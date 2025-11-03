@@ -4,7 +4,6 @@ export interface GameVersion {
 }
 
 export interface GameFlavor {
-    id: number;
     name: string;
     egg_id: number;
     versions: GameVersion[];

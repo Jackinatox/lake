@@ -24,7 +24,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [flavors, setFlavors] = useState<Flavor[]>([])
-  const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
+  const [selectedEggId, setSelectedFlavorId] = useState<number | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   // Using shadcn Select (no search) for a clean mobile-friendly dropdown
 
@@ -48,12 +48,12 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
   useEffect(() => {
     if (!flavors) return
     const run = async () => {
-      const selected = flavors.find((x) => x.id === server.gameData.flavorId)
+      const selected = flavors.find((x) => x.egg_id === server.gameData.eggId)
       console.log("Gamedata:", server.gameData)
       console.log("flavours: ", flavors)
-      const defaultFlavorId = selected?.id ?? flavors[0]?.id
+      const defaultEggId = selected?.egg_id ?? flavors[0]?.egg_id
       console.log(flavors)
-      setSelectedFlavorId(defaultFlavorId)
+      setSelectedFlavorId(defaultEggId)
     }
     run()
   }, [open, flavors])
@@ -78,7 +78,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
         <div className="space-y-2">
           <Label className="text-sm font-medium">Game Flavor</Label>
           <Select
-            value={selectedFlavorId !== null ? String(selectedFlavorId) : undefined}
+            value={selectedEggId !== null ? String(selectedEggId) : undefined}
             onValueChange={(val) => setSelectedFlavorId(Number(val))}
           >
             <SelectTrigger className="w-full" disabled={loading || flavors.length === 0}>
@@ -87,7 +87,7 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
             <SelectContent className="w-full">
               <SelectGroup>
                 {flavors.map((flavor) => (
-                  <SelectItem key={flavor.id} value={String(flavor.id)}>
+                  <SelectItem key={flavor.egg_id} value={String(flavor.egg_id)}>
                     {flavor.name}
                   </SelectItem>
                 ))}
@@ -102,11 +102,11 @@ export function MinecraftFlavorDialog({ triggerText = "Server flavour ändern", 
         <Button variant="secondary" onClick={() => setOpen(false)}>Close</Button>
         <Button
           variant="destructive"
-          disabled={selectedFlavorId === server.gameData.flavorId}
+          disabled={selectedEggId === server.gameData.eggId}
           onClick={() => {
-            if (!selectedFlavorId) return
+            if (!selectedEggId) return
             console.log("switcing egg")
-            onConfirm?.({ flavorId: selectedFlavorId, eggId })
+            onConfirm?.({ flavorId: selectedEggId, eggId })
             setOpen(false)
           }}
         >

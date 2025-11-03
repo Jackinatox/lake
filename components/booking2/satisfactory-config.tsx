@@ -42,7 +42,6 @@ export const SatisfactoryConfigComponent = forwardRef(({ onChange, game, onSubmi
         gameId: game.id,
         gameType: game.name,
         eggId: game.data.egg_id,
-        flavorId: 1, // Assuming there's only one flavor for Satisfactory
         version: "latest", // Assuming we always use the latest version
         dockerImage: game.data.docker_image,
         gameSpecificConfig: {

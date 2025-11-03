@@ -1,15 +1,13 @@
+import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants";
 import { calcBackups, calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic";
+import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
+import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatisfactoryConfig";
 import { prisma } from "@/prisma";
 import { NewServerOptions, Server } from "@avionrx/pterodactyl-js";
-import { env } from 'next-runtime-env';
-import { createPtClient } from "@/lib/Pterodactyl/ptAdminClient";
 import { GameServerOrder } from "@prisma/client";
-import { SatisfactoryConfig } from "@/models/gameSpecificConfig/SatisfactoryConfig";
 import { buildMC_ENVs_and_startup } from "../buildMinecraftENVs";
-import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants";
 
 export async function provisionServer(order: GameServerOrder) {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const serverOrder = await prisma.gameServerOrder.findUnique({ where: { id: order.id }, include: { user: true, creationGameData: true, creationLocation: true } });
     const pt = createPtClient();
 
@@ -30,7 +28,7 @@ export async function provisionServer(order: GameServerOrder) {
             swap: 512
         },
         egg: gameConfig.eggId,
-        startWhenInstalled: true,
+        startWhenInstalled: false,
         outOfMemoryKiller: false,
         featureLimits: {
             allocations: 2,

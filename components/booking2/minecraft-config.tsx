@@ -1,3 +1,4 @@
+import { PaperEggId } from "@/app/GlobalConstants"
 import { Button } from "@/components/ui/button"
 import { CardDescription, CardTitle } from "@/components/ui/card"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
@@ -6,54 +7,47 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import type { Game, GameConfig } from "@/models/config"
 import { MinecraftConfig } from "@/models/gameSpecificConfig/MinecraftConfig"
-import { GameFlavor } from "@/types/gameData"
+import { GameFlavor, GameVersion } from "@/types/gameData"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react"
 
 interface MinecraftConfigProps {
-  onChange: (config: Record<string, any>) => void
   game: Game
   additionalConfig?: Record<string, any>
   onAdditionalConfigChange?: (config: Record<string, any>) => void
   onSubmit: (config: GameConfig) => void
 }
 
-export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame, onSubmit }: MinecraftConfigProps, ref) => {
+export const MinecraftConfigComponent = forwardRef(({ game: givenGame, onSubmit }: MinecraftConfigProps, ref) => {
   const t = useTranslations("buyGameServer.gameConfig");
-  const [selectedFlavorId, setSelectedFlavorId] = useState<number | null>(null)
-  const [selectedVersion, setSelectedVersion] = useState<any | null>(null)
-  const [gameVersions, setGameVersions] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [selectedEggId, setSelectedFlavorId] = useState<number | null>(null)
+  const [selectedVersion, setSelectedVersion] = useState<GameVersion | null>(null)
+  const [gameVersions, setGameVersions] = useState<GameVersion[]>([])
   const [flavorOpen, setFlavorOpen] = useState(false)
   const [versionOpen, setVersionOpen] = useState(false)
 
-  const game = {
-    ...givenGame, data: {
-      flavors: givenGame.data.flavors as GameFlavor[]
-    }
-  }
+  const flavors = useMemo(() => (givenGame.data.flavors as GameFlavor[]) ?? [], [givenGame]);
 
   useEffect(() => {
-    const defaultFlavorId = game.data.flavors.find((f) => f.id === 3)?.id || game.data.flavors[0]?.id || null
-    setSelectedFlavorId(defaultFlavorId)
+    const defaultEggId = flavors.find((f) => f.egg_id === PaperEggId)?.egg_id || flavors[0]?.egg_id || null
+    setSelectedFlavorId(defaultEggId)
 
     // Set default version to the first version of the selected flavor
-    if (defaultFlavorId !== null) {
-      const flavor = game.data.flavors.find((f) => f.id === defaultFlavorId)
+    if (defaultEggId !== null) {
+      const flavor = flavors.find((f) => f.egg_id === defaultEggId)
       if (flavor && flavor.versions.length > 0) {
         setSelectedVersion(flavor.versions[flavor.versions.length - 1])
         setGameVersions(flavor.versions)
       }
     }
-  }, [game])
+  }, [flavors])
 
   useEffect(() => {
-    if (selectedFlavorId !== null) {
-      console.log(game.data.flavors)
-      const flavor = game.data.flavors.find((f) => f.id === selectedFlavorId)
+    if (selectedEggId !== null) {
+      const flavor = flavors.find((f) => f.egg_id === selectedEggId)
       if (flavor) {
-        setConfig({ ...config, flavor: flavor.name })
+        setConfig((prevConfig) => ({ ...prevConfig, flavor: flavor.name }))
         setGameVersions(flavor.versions)
         const versionStillExists = flavor.versions.some(
           (v) => v.version === selectedVersion?.version
@@ -64,7 +58,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
         }
       }
     }
-  }, [selectedFlavorId, game.data.flavors, selectedVersion])
+  }, [selectedEggId, flavors])
 
   const [config, setConfig] = useState<MinecraftConfig>({
     serverName: "My Minecraft Server",
@@ -81,17 +75,16 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
 
   useImperativeHandle(ref, () => ({
     submit: () => {
-      if (selectedFlavorId === null || !selectedVersion) {
+      if (selectedEggId === null || !selectedVersion) {
         console.error("Missing required selection")
         return
       }
 
       // Create a complete game configuration object
       const completeConfig: GameConfig = {
-        gameId: game.id,
-        gameType: game.name,
-        flavorId: selectedFlavorId,
-        eggId: game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.egg_id ?? 1,
+        gameId: givenGame.id,
+        gameType: givenGame.name,
+        eggId: selectedEggId,
         version: selectedVersion.version,
         dockerImage: selectedVersion.docker_image,
         gameSpecificConfig: {
@@ -109,7 +102,7 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="flex-1">
-            <CardTitle className="text-lg sm:text-xl">{t("title", { game: game.name || "Game" })}</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">{t("title", { game: givenGame.name || "Game" })}</CardTitle>
             <CardDescription className="text-sm">{t("description")}</CardDescription>
           </div>
         </div>
@@ -125,34 +118,34 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
               role="combobox"
               aria-expanded={flavorOpen}
               className="w-full justify-between text-left"
-              disabled={loading || game.data.flavors.length === 0}
+              disabled={flavors.length === 0}
             >
               <span className="truncate">
-                {selectedFlavorId !== null
-                  ? game.data.flavors.find((flavor) => flavor.id === selectedFlavorId)?.name || "Select a flavor"
+                {selectedEggId !== null
+                  ? flavors.find((flavor) => flavor.egg_id === selectedEggId)?.name || "Select a flavor"
                   : "Select a flavor"}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0 z-50" align="start">
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
             <Command>
               <CommandInput placeholder="Search flavor..." className="h-9" />
               <CommandList>
                 <CommandEmpty>No flavor found.</CommandEmpty>
                 <CommandGroup>
-                  {game.data.flavors.map((flavor) => (
+                  {flavors.map((flavor) => (
                     <CommandItem
-                      key={flavor.id}
+                      key={flavor.egg_id}
                       value={flavor.name}
                       onSelect={() => {
-                        setSelectedFlavorId(flavor.id)
+                        setSelectedFlavorId(flavor.egg_id)
                         setFlavorOpen(false)
                       }}
                       className="cursor-pointer"
                     >
                       <Check
-                        className={cn("mr-2 h-4 w-4", selectedFlavorId === flavor.id ? "opacity-100" : "opacity-0")}
+                        className={cn("mr-2 h-4 w-4", selectedEggId === flavor.egg_id ? "opacity-100" : "opacity-0")}
                       />
                       <span className="truncate">{flavor.name}</span>
                     </CommandItem>
@@ -174,13 +167,13 @@ export const MinecraftConfigComponent = forwardRef(({ onChange, game: givenGame,
               role="combobox"
               aria-expanded={versionOpen}
               className="w-full justify-between text-left"
-              disabled={loading || gameVersions.length === 0}
+              disabled={gameVersions.length === 0}
             >
               <span className="truncate">{selectedVersion?.version || "Select a version"}</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0 z-50" align="start">
+          <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
             <Command>
               <CommandInput placeholder="Search version..." className="h-9" />
               <CommandList>
