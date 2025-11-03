@@ -1,7 +1,11 @@
+import { TicketCategory } from '@prisma/client';
 import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_SUBJECT_LENGTH = 120;
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,15 +18,33 @@ export async function POST(req: NextRequest) {
         }
 
         const data = await req.json();
-        if (!data.description) {
+        const rawDescription = typeof data.description === 'string' ? data.description.trim() : '';
+        const rawSubject = typeof data.subject === 'string' ? data.subject.trim() : '';
+        const rawCategory = typeof data.category === 'string' ? data.category.toUpperCase() : undefined;
+
+        if (!rawDescription) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
+
+        if (rawDescription.length > MAX_MESSAGE_LENGTH) {
+            return NextResponse.json({ error: 'Message too long' }, { status: 400 });
+        }
+
+        if (rawSubject.length > MAX_SUBJECT_LENGTH) {
+            return NextResponse.json({ error: 'Subject too long' }, { status: 400 });
+        }
+
+        const availableCategories = new Set(Object.values(TicketCategory));
+        const category = rawCategory && availableCategories.has(rawCategory as TicketCategory)
+            ? (rawCategory as TicketCategory)
+            : TicketCategory.GENERAL;
 
         const ticket = await prisma.supportTicket.create({
             data: {
                 userId: session.user.id,
-                title: null,
-                message: data.description,
+                title: rawSubject || null,
+                message: rawDescription,
+                category,
                 status: 'OPEN',
             }
         });

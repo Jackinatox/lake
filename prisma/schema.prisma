@@ -159,6 +159,13 @@ enum OrderType {
   RENEW
 }
 
+enum TicketCategory {
+  GENERAL
+  TECHNICAL
+  BILLING
+  ACCOUNT
+}
+
 enum TicketStatus {
   OPEN
   CLOSED
@@ -172,6 +179,7 @@ model SupportTicket {
   user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   title   String?
   message String
+  category TicketCategory @default(GENERAL)
   status  TicketStatus @default(OPEN)
 
   createdAt DateTime @default(now())

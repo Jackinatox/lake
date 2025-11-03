@@ -18,11 +18,6 @@ export type ServerConfig = {
     gameConfig: GameConfig;
 };
 
-interface GameServerConfigProps {
-    performanceGroups: PerformanceGroup[];
-    game: Game
-}
-
 export default async function page({
     params,
 }: {

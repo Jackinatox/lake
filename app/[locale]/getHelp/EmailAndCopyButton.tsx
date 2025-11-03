@@ -1,49 +1,57 @@
-"use client"
+"use client";
 
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Copy } from 'lucide-react'
-import { useTranslations } from 'next-intl';
+import { Mail, Copy, Sparkles } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslations } from "next-intl";
+
+const SUPPORT_EMAIL = "support@scyed.com";
 
 export default function EmailAndCopyButton() {
     const t = useTranslations("getHelp");
+    const { toast } = useToast();
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(SUPPORT_EMAIL);
+            toast({ title: t("copyEmailSuccess"), description: SUPPORT_EMAIL });
+        } catch (error) {
+            toast({ title: t("copyEmailError"), variant: "destructive" });
+        }
+    };
+
+    const openMailClient = () => {
+        window.location.href = `mailto:${SUPPORT_EMAIL}`;
+    };
+
     return (
         <Card className="flex-1 rounded-md">
             <CardHeader>
-                <CardTitle>
-                    {t('writeEmail')}
+                <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    {t("writeEmail")}
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <CopyButton />
+            <CardContent className="space-y-4 text-sm text-muted-foreground">
+                <p>
+                    {t("writeEmailTo")} {" "}
+                    <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-primary underline">
+                        {SUPPORT_EMAIL}
+                    </a>{" "}
+                    {t("weWillAnswer")}
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                    <Button onClick={openMailClient} className="gap-2">
+                        <Mail className="h-4 w-4" />
+                        {t("openMail")}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleCopy} className="gap-2">
+                        <Copy className="h-4 w-4" />
+                        {t("copyEmail")}
+                    </Button>
+                </div>
             </CardContent>
         </Card>
-    )
-}
-function CopyButton() {
-    const t = useTranslations("getHelp");
-
-    return (
-        <div className="text-base leading-relaxed">
-            {t('writeEmailTo')}{' '}
-            <span className="inline-flex items-center">
-                <a
-                    href="mailto:support@scyed.com"
-                    className="text-blue-600 underline inline-flex items-center"
-                >
-                    support@scyed.com
-                </a>
-                <button
-                    type="button"
-                    className="ml-1 p-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    style={{ border: 'none', background: 'transparent', paddingTop: 2 }}
-                    onClick={() => navigator.clipboard.writeText('support@scyed.com')}
-                >
-                    <Copy size={16} />
-                </button>
-            </span>
-            {' '} {t('weWillAnswer')}
-        </div>
     );
-
 }

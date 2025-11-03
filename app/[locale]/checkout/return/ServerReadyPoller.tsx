@@ -110,7 +110,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     if (!isCountdownActive || !serverId) return
     if (countdown <= 0) {
       setIsCountdownActive(false)
-      router.push(`/gameserver/${serverId}`)
+      router.push(`/gameserver/${encodeURIComponent(serverId)}?start=true`)
       return
     }
     const timer = window.setTimeout(() => {
@@ -304,7 +304,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                   <Link href="/getHelp">{pollerT("contactSupport")}</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/profile">{pollerT("returnToDashboard")}</Link>
+                  <Link href="/dashboard">{pollerT("returnToDashboard")}</Link>
                 </Button>
               </div>
             )}
@@ -316,7 +316,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                 </p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Button asChild>
-                    <Link href={`/gameserver/${serverId}`}>{pollerT("successButton")}</Link>
+                    <Link href={encodeURI(`/gameserver/${serverId}?start=true`)}>{pollerT("successButton")}</Link>
                   </Button>
                   <Button asChild variant="outline">
                     <Link href="/getHelp">{pollerT("contactSupport")}</Link>
