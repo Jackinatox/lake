@@ -4,7 +4,6 @@ import { auth } from '@/auth'
 import NotLoggedIn from '@/components/auth/NoAuthMessage'
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage'
 import { headers } from 'next/headers'
-import React from 'react'
 import { prisma } from '@/prisma'
 import ChangeGameSelect from './ChangeGameSelect'
 

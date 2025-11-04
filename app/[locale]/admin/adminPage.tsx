@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { CalendarClock, Cog, Gamepad2Icon, MonitorX, SquarePlay, UsersIcon } from 'lucide-react';
+import { CalendarClock, Cog, Gamepad2Icon, MonitorX, SquarePlay, Ticket, UsersIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 type AdminTile = {
@@ -15,6 +15,7 @@ const tiles: AdminTile[] = [
     { name: 'Users', link: '/admin/users', Icon: UsersIcon, color: 'from-blue-500 to-blue-600' },
     { name: 'Gameservers', link: '/admin/gameservers', Icon: Gamepad2Icon, color: 'from-green-500 to-emerald-600' },
     { name: 'Wings', link: '/admin/wings', Icon: SquarePlay, color: 'from-purple-500 to-indigo-600' },
+    { name: 'Tickets', link: '/admin/tickets', Icon: Ticket, color: 'from-cyan-500 to-teal-600' },
     { name: 'Stripe Sessions', link: '/admin/sessions', Icon: CalendarClock, color: 'from-yellow-500 to-amber-500' },
     { name: 'Provision By Id', link: '/admin/TestInternalFunctions/provisionById', Icon: Cog, color: 'from-orange-500 to-amber-600' },
     { name: 'Job Status', link: '/admin/jobStatus', Icon: MonitorX, color: 'from-red-500 to-rose-600' },

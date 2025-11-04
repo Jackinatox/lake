@@ -1,12 +1,11 @@
+import { LogLevel } from "@prisma/client"
 import { ErrorBadge, JobTypeBadge, JobRunId } from "./ErrorBadges"
 import { ErrorContextInfo } from "./ErrorContextInfo"
-import { ErrorDetails } from "./ErrorDetails"
-import { WorkerLogLevel } from "../../../../worker/generated/client"
 
 interface ErrorCardProps {
     error: {
         id: number
-        level: WorkerLogLevel
+        level: LogLevel
         jobType: string
         jobRun: string | null
         message: string

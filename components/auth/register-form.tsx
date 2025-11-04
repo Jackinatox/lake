@@ -31,7 +31,8 @@ export function RegisterForm({
       password,
       name: username,
       image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
-      callbackURL: "/dashboard",
+      callbackURL: "/gameserver",
+      // TODO: redirect to EmailVerified
     }, {
       onRequest: () => {
         setLoading(true);

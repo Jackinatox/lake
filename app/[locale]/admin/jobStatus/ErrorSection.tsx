@@ -1,13 +1,13 @@
 import { ErrorStatusHeader } from "./ErrorStatusHeader"
 import { ErrorCard } from "./ErrorCard"
 import { ErrorEmptyState } from "./ErrorEmptyState"
-import { WorkerLogLevel } from "../../../../worker/generated/client"
+import { LogLevel } from "@prisma/client"
 
 interface ErrorSectionProps {
     errorCount: number
     recentErrors: Array<{
         id: number
-        level: WorkerLogLevel
+        level: LogLevel
         jobType: string
         jobRun: string | null
         message: string

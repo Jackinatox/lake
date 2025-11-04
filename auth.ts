@@ -7,6 +7,7 @@ import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
 import sendResetPasswordEmail from "./lib/email/sendResetPasswordEmail";
+import sendConfirmEmail from "./lib/email/sendEmailConfirm";
 
 const prisma = new PrismaClient();
 
@@ -57,6 +58,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
     sendResetPassword: async ({ user, url, token }, request) => {
       await sendResetPasswordEmail(
         user.email,
@@ -64,6 +66,14 @@ export const auth = betterAuth({
         token
       );
     },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }, request) => {
+      await sendConfirmEmail(user.email, url);
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    
   },
   plugins: [
     lastLoginMethod({

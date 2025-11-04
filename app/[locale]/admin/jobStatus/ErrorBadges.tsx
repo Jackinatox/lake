@@ -1,7 +1,7 @@
-import { WorkerLogLevel } from "../../../../worker/generated/client"
+import { LogLevel } from "@prisma/client"
 
 interface ErrorBadgeProps {
-    level: WorkerLogLevel
+    level: LogLevel
 }
 
 export function ErrorBadge({ level }: ErrorBadgeProps) {
