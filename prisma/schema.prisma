@@ -15,8 +15,8 @@ generator client {
 }
 
 generator worker {
-  provider = "prisma-client-js"
-  output   = "../worker/generated/client"
+  provider      = "prisma-client-js"
+  output        = "../worker/generated/client"
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
@@ -50,7 +50,7 @@ model Location {
 }
 
 model CPU {
-  id           Int     @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   name         String
   cores        Int?
   threads      Int?
@@ -58,13 +58,13 @@ model CPU {
   multiScore   Int?
   maxThreads   Int
   minThreads   Int
-  pricePerCore Float   @default(0.2)
+  pricePerCore Float  @default(0.2)
 
   locations Location[]
 }
 
 model RAM {
-  id         Int     @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   name       String
   speed      Int?
   pricePerGb Float
@@ -107,6 +107,8 @@ model GameServer {
   WorkerLogs  WorkerLog[]
 
   Email Email[]
+
+  ApplicationLog ApplicationLog[]
 }
 
 enum GameServerStatus {
@@ -174,13 +176,13 @@ enum TicketStatus {
 }
 
 model SupportTicket {
-  id      Int          @id @default(autoincrement())
-  userId  String
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title   String?
-  message String
+  id       Int            @id @default(autoincrement())
+  userId   String
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title    String?
+  message  String
   category TicketCategory @default(GENERAL)
-  status  TicketStatus @default(OPEN)
+  status   TicketStatus   @default(OPEN)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -226,8 +228,9 @@ model User {
 
   lastLoginMethod String?
 
-  ptUsername   String?
-  UserSettings Json    @default("{}")
+  ptUsername     String?
+  UserSettings   Json             @default("{}")
+  ApplicationLog ApplicationLog[]
 
   @@unique([email])
   @@unique([ptUsername])
@@ -270,7 +273,7 @@ model Account {
   @@map("account")
 }
 
-enum WorkerLogLevel {
+enum LogLevel {
   INFO
   WARN
   ERROR
@@ -284,10 +287,10 @@ enum WorkerJobType {
 }
 
 model WorkerLog {
-  id      Int            @id @default(autoincrement())
+  id      Int           @id @default(autoincrement())
   jobType WorkerJobType
   jobRun  String? // Unique identifier for each job run
-  level   WorkerLogLevel
+  level   LogLevel
   message String
   details Json? // Store error stack traces, context data, etc.
 
@@ -303,6 +306,43 @@ model WorkerLog {
   @@index([jobType, level, createdAt])
   @@index([gameServerId])
   @@index([userId])
+}
+
+enum LogType {
+  SYSTEM
+  AUTHENTICATION
+  PAYMENT
+  GAME_SERVER
+  EMAIL
+  SUPPORT_TICKET
+}
+
+model ApplicationLog {
+  id      Int      @id @default(autoincrement())
+  level   LogLevel
+  type    LogType
+  message String
+  details Json?
+
+  // Request context
+  method    String?
+  path      String?
+  userAgent String?
+  ipAddress String?
+
+  // User context (optional)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  gameServerId String?
+  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([level, createdAt])
+  @@index([userId])
+  @@index([gameServerId])
+  @@index([path, method])
 }
 
 model Email {

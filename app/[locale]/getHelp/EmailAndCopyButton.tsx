@@ -1,14 +1,15 @@
 "use client";
 
-import { Mail, Copy, Sparkles } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Copy, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { env } from "next-runtime-env";
 
-const SUPPORT_EMAIL = "support@scyed.com";
 
 export default function EmailAndCopyButton() {
+    const SUPPORT_EMAIL = env("NEXT_PUBLIC_SUPPORT_MAIL")!;
     const t = useTranslations("getHelp");
     const { toast } = useToast();
 
@@ -29,7 +30,7 @@ export default function EmailAndCopyButton() {
         <Card className="flex-1 rounded-md">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
+                    <Mail className="h-4 w-4 text-primary" />
                     {t("writeEmail")}
                 </CardTitle>
             </CardHeader>
