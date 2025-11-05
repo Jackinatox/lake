@@ -177,6 +177,7 @@ enum TicketStatus {
 
 model SupportTicket {
   id       Int            @id @default(autoincrement())
+  ticketId String         @unique @default(cuid())
   userId   String
   user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   title    String?
@@ -188,6 +189,7 @@ model SupportTicket {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([ticketId])
 }
 
 model Verification {

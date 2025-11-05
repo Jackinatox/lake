@@ -47,7 +47,7 @@ export default function EmailAndCopyButton() {
                         <Mail className="h-4 w-4" />
                         {t("openMail")}
                     </Button>
-                    <Button type="button" variant="outline" onClick={handleCopy} className="gap-2">
+                    <Button type="button" variant="outline" onClick={handleCopy} className="gap-2 text-primary">
                         <Copy className="h-4 w-4" />
                         {t("copyEmail")}
                     </Button>

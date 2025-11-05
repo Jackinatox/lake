@@ -3,6 +3,8 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { sendTicketCreatedEmail } from '@/lib/email/sendEmailEmailsFromLake';
+import { logger } from '@/lib/logger';
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_SUBJECT_LENGTH = 120;
@@ -48,10 +50,29 @@ export async function POST(req: NextRequest) {
                 status: 'OPEN',
             }
         });
-        // TODO: Notify Admin/Supporters about new ticket
+
+        sendTicketCreatedEmail(session.user.email, ticket).catch((error) => {
+            logger.email(
+                "Failed to send support ticket created email",
+                "ERROR",
+                {
+                    userId: session.user.id,
+                    details: {
+                        ticketId: ticket.ticketId,
+                        error: error instanceof Error ? error.message : String(error),
+                    },
+                }
+            ).catch((logError) => {
+                console.error("Failed to record email send failure", logError);
+            });
+        });
 
         return NextResponse.json({ ticket: ticket }, { status: 201 });
     } catch (error) {
+        logger.logError(error as Error, "SUPPORT_TICKET", {
+            method: "POST",
+            path: "/api/tickets",
+        }).catch(() => { /* swallow logging errors */ });
         return NextResponse.json({ error: JSON.stringify(error) }, { status: 400 });
     }
 }

@@ -24,8 +24,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslations } from "next-intl";
+import { authClient } from "@/lib/auth-client";
 
 export default function ContactForm() {
+    const session = authClient.useSession();
     const { toast } = useToast();
     const t = useTranslations("getHelp");
     const categories = ["GENERAL", "TECHNICAL", "BILLING", "ACCOUNT"] as const;
@@ -90,7 +92,7 @@ export default function ContactForm() {
 
             const data = await response.json();
             toast({
-                title: t("ticketCreated", { id: data.ticket.id }),
+                title: t("ticketCreated", { id: data.ticket.ticketId }),
                 description: t("ticketCreatedDescription"),
             });
             setMessage("");
@@ -161,8 +163,8 @@ export default function ContactForm() {
                         </div>
                     </div>
 
-                    <CardFooter className="flex justify-end px-0">
-                        <Button type="submit" disabled={isSubmitting || !trimmedMessage || messageTooLong}>
+                    <CardFooter className="flex flex-col items-end gap-2 p-0 md:p-0">
+                        <Button type="submit" disabled={!session.data?.user || isSubmitting || !trimmedMessage || messageTooLong}>
                             {isSubmitting ? (
                                 <span className="flex items-center gap-2">
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -172,6 +174,9 @@ export default function ContactForm() {
                                 t("submit")
                             )}
                         </Button>
+                        {!(session.isPending || session.data?.user) && (
+                            <p className="text-sm text-muted-foreground">{t("loginRequiredTitle")}</p>
+                        )}
                     </CardFooter>
                 </form>
             </CardContent>

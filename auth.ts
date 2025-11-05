@@ -6,9 +6,7 @@ import { env } from 'next-runtime-env';
 import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
-import sendResetPasswordEmail from "./lib/email/sendResetPasswordEmail";
-import sendConfirmEmail from "./lib/email/sendEmailConfirm";
-
+import { sendConfirmEmail, sendResetPasswordEmail } from "./lib/email/sendEmailEmailsFromLake";
 const prisma = new PrismaClient();
 
 function generateRandomPassword(length: number = 32): string {
