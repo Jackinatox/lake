@@ -338,6 +338,33 @@
       },
       "backToLogin": "Back to login"
     },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "titleVerified": "Email confirmed",
+      "subtitle": "We sent a verification link to <strong>{email}</strong>.",
+      "subtitleFallback": "We sent a verification link to your email address.",
+      "description": "Open the link in that email to activate your account.",
+      "resend": {
+        "button": "Resend email",
+        "sending": "Sending..."
+      },
+      "status": {
+        "sent": "Verification email sent. Please check your inbox.",
+        "error": "We couldn't resend the email. Please try again.",
+        "missingEmail": "We need an email address to resend the verification link.",
+        "alreadyVerified": "Your email <strong>{email}</strong> is already verified.",
+        "verifiedInfo": "You're all set. Head back to your dashboard to keep going."
+      },
+      "tips": {
+        "checkSpam": "Check your spam or junk folder if you don't see the email.",
+        "contact": "Still nothing? Contact support and we'll help you out.",
+        "typo": "Used the wrong email during sign up? Register again with the correct address."
+      },
+      "cta": {
+        "dashboard": "Go to dashboard"
+      },
+      "backToLogin": "Back to login"
+    },
     "orContinueWith": "Or continue with",
     "fields": {
       "username": "Username",

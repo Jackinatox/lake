@@ -54,7 +54,7 @@ function ProfileInfo() {
                         <div className="flex items-center gap-2">
                             <Shield className="h-4 w-4" />
                             <span className="text-sm text-muted-foreground">
-                                <div>{t("loggedInVia")}:
+                                <div>{t("loggedInVia") + ": "}
                                     {method ?
                                         method.charAt(0).toUpperCase() + method.slice(1) :
                                         'Error Loading Login Provider'
@@ -66,12 +66,19 @@ function ProfileInfo() {
                 </div>
 
                 <div className="flex gap-2 pt-2">
-                    <Button asChild variant="outline" size="sm" disabled={!wasEmail}>
-                        <Link href={`forgot-password?email=${encodeURI(user?.email)}`}>
+                    {wasEmail ? (
+                        <Button asChild variant="outline" size="sm">
+                            <Link href={`forgot-password?email=${encodeURI(user?.email ?? "")}`}>
+                                <Lock className="h-4 w-4 mr-2" />
+                                {t("changePassword")}
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Button variant="outline" size="sm" disabled>
                             <Lock className="h-4 w-4 mr-2" />
                             {t("changePassword")}
-                        </Link>
-                    </Button>
+                        </Button>
+                    )}
                     <LogoutButton />
                 </div>
                 {!wasEmail && (

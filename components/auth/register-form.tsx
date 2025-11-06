@@ -22,23 +22,23 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const brouter = useRouter();
+  const router = useRouter();
   const t = useTranslations("RegisterLogin");
 
   const registerUser = async ({ username, email, password }: { username: string; email: string; password: string }) => {
+    const trimmedEmail = email.trim();
     const { data, error } = await authClient.signUp.email({
-      email,
+      email: trimmedEmail,
       password,
       name: username,
       image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
-      callbackURL: "/gameserver",
-      // TODO: redirect to EmailVerified
+      callbackURL: "/verify-email",
     }, {
       onRequest: () => {
         setLoading(true);
       },
       onSuccess: () => {
-        brouter.push("/gameserver");
+        router.push(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
       },
       onError: () => {
         setError(t("errors.registrationFailedTryAgain"));

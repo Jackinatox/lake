@@ -338,6 +338,33 @@
       },
       "backToLogin": "Zurück zur Anmeldung"
     },
+    "verifyEmail": {
+      "title": "Bestätige deine E-Mail",
+      "titleVerified": "E-Mail bestätigt",
+      "subtitle": "Wir haben einen Bestätigungslink an <strong>{email}</strong> geschickt.",
+      "subtitleFallback": "Wir haben dir gerade einen Bestätigungslink geschickt.",
+      "description": "Öffne die E-Mail und klicke auf den Link, um dein Konto freizuschalten.",
+      "resend": {
+        "button": "E-Mail erneut senden",
+        "sending": "Sende..."
+      },
+      "status": {
+        "sent": "Verifizierungs-E-Mail wurde erneut gesendet. Bitte prüfe dein Postfach.",
+        "error": "Die E-Mail konnte nicht gesendet werden. Versuche es bitte erneut.",
+        "missingEmail": "Wir benötigen eine E-Mail-Adresse, um den Link erneut zu senden.",
+        "alreadyVerified": "Deine E-Mail <strong>{email}</strong> ist bereits bestätigt.",
+        "verifiedInfo": "Alles erledigt! Zurück zur Übersicht und weiter geht's."
+      },
+      "tips": {
+        "checkSpam": "Schau auch im Spam- oder Junk-Ordner nach, falls du nichts findest.",
+        "contact": "Immer noch nichts? Wende dich an den Support, wir helfen dir weiter.",
+        "typo": "Vertippt bei der Anmeldung? Registriere dich mit der richtigen Adresse erneut."
+      },
+      "cta": {
+        "dashboard": "Zur Übersicht"
+      },
+      "backToLogin": "Zurück zum Login"
+    },
     "orContinueWith": "Oder fahre fort mit",
     "fields": {
       "username": "Benutzername",

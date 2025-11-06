@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { useCallback, useState } from "react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export function LoginForm({
   className,
@@ -22,6 +23,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const t = useTranslations("RegisterLogin.login");
   const tr = useTranslations("RegisterLogin");
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -32,9 +34,22 @@ export function LoginForm({
     setError(null);
     setLoading(true);
     try {
-      const { data, error } = await authClient.signIn.email({ email, password, callbackURL: "/gameserver" });
+      const trimmedEmail = email.trim();
+      const { data, error } = await authClient.signIn.email({ email: trimmedEmail, password, callbackURL: "/gameserver" });
       if (error) {
-        setError(error.message || t("errors.loginFailed"));
+        const message = error.message || t("errors.loginFailed");
+        const errorCode = (error as { code?: string | undefined }).code?.toLowerCase();
+        const shouldRedirectToVerification =
+          errorCode === "email_not_verified" ||
+          errorCode === "email-not-verified" ||
+          /verify/.test(message.toLowerCase());
+
+        if (shouldRedirectToVerification) {
+          router.push(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
+          return;
+        }
+
+        setError(message);
       } else {
         // success path (optional redirect already handled by callbackURL)
       }
@@ -43,7 +58,7 @@ export function LoginForm({
     } finally {
       setLoading(false);
     }
-  }, [email, password, t]);
+  }, [email, password, router, t]);
 
 
   return (
