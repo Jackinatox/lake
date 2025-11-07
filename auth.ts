@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin, lastLoginMethod } from "better-auth/plugins";
@@ -7,7 +6,7 @@ import generateUniqueUserName from "./lib/auth/generateUniqueUserName";
 import { createPtClient } from "./lib/Pterodactyl/ptAdminClient";
 import createUserApiKey from "./lib/Pterodactyl/userApiKey";
 import { sendConfirmEmail, sendResetPasswordEmail } from "./lib/email/sendEmailEmailsFromLake";
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 function generateRandomPassword(length: number = 32): string {
   return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');

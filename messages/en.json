@@ -1,12 +1,24 @@
 {
   "NotLoggedIn": {
-    "title": "You’re not logged in",
+    "title": "You're not logged in",
     "description": "Please log in to access your account and see personalized content.",
     "login": "Log In"
   },
   "NotAllowed": {
     "title": "Access Denied",
     "description": "You do not have permission to view this page. Please contact support.",
+    "home": "Go to Home"
+  },
+  "ServerDeleted": {
+    "title": "Server Deleted",
+    "description": "This server has been permanently deleted. If you believe this was a mistake or need access to a backup, please reach out to our support team. We may still have a backup available that we can restore for you.",
+    "contactSupport": "Contact Support",
+    "home": "Go to Home"
+  },
+  "ServerExpired": {
+    "title": "Server Expired",
+    "description": "Your server subscription has expired. To continue using your server, please extend your subscription. All your data is still safe and will be available once you renew.",
+    "extendServer": "Extend Server",
     "home": "Go to Home"
   },
   "landingpage": {

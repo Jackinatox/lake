@@ -9,6 +9,18 @@
     "description": "Du hast keine Berechtigung, diese Seite zu sehen. Bitte kontaktiere den Support.",
     "home": "Zur Startseite"
   },
+  "ServerDeleted": {
+    "title": "Server gelöscht",
+    "description": "Dieser Server wurde dauerhaft gelöscht. Falls du glaubst, dass dies ein Fehler war oder Zugriff auf ein Backup benötigst, wende dich bitte an unser Support-Team. Möglicherweise haben wir noch ein Backup, das wir für dich wiederherstellen können.",
+    "contactSupport": "Support kontaktieren",
+    "home": "Zur Startseite"
+  },
+  "ServerExpired": {
+    "title": "Server abgelaufen",
+    "description": "Dein Server-Abonnement ist abgelaufen. Um deinen Server weiter zu nutzen, verlängere bitte dein Abonnement. Alle deine Daten sind noch sicher und werden verfügbar sein, sobald du verlängerst.",
+    "extendServer": "Server verlängern",
+    "home": "Zur Startseite"
+  },
   "landingpage": {
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",

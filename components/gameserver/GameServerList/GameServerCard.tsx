@@ -1,11 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Cpu, HardDrive, Calendar, MemoryStick } from "lucide-react";
-import Image from "next/image";
-import GameServerStatus from "./GameServerStatus";
-import { Suspense } from "react";
-import { Badge } from "@/components/ui/badge";
 import { ClientServer } from "@/models/prisma";
+import { Calendar, Cpu, HardDrive, MemoryStick } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import GameServerStatus from "./GameServerStatus";
 
 
 function formatExpirationDate(date: Date) {
@@ -13,19 +11,33 @@ function formatExpirationDate(date: Date) {
     const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+    // Format: "15.01.2025 14:30"
+    const formattedDate = date.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    const formattedTime = date.toLocaleTimeString('de-DE', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+
     if (diffDays < 0) {
         return { text: "Expired", color: "text-red-600 dark:text-red-400" };
     } else if (diffDays <= 7) {
-        return { text: `${diffDays} days left`, color: "text-orange-600 dark:text-orange-400" };
+        return { text: `${formattedDate} ${formattedTime}`, color: "text-orange-600 dark:text-orange-400" };
     } else if (diffDays <= 30) {
-        return { text: `${diffDays} days left`, color: "text-yellow-600 dark:text-yellow-400" };
+        return { text: `${formattedDate} ${formattedTime}`, color: "text-yellow-600 dark:text-yellow-400" };
     } else {
-        return { text: date.toLocaleDateString(), color: "text-slate-600 dark:text-slate-400" };
+        return { text: `${formattedDate} ${formattedTime}`, color: "text-slate-600 dark:text-slate-400" };
     }
 }
 
 function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }) {
-    const expiration = formatExpirationDate(server.expires);
+    const expiration = server.status === "EXPIRED"
+        ? { text: "Expired", color: "text-red-600 dark:text-red-400" }
+        : formatExpirationDate(server.expires);
 
     return (
         <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">

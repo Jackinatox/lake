@@ -9,6 +9,8 @@ import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { GameServer } from '@/models/gameServerModel';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
+import ServerExpired from '@/components/auth/ServerExpired';
+import ServerDeleted from '@/components/auth/ServerDeleted';
 
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
@@ -36,6 +38,14 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     if (!isServerValid || !isServerValid.ptAdminId) {
         return <NotAllowedMessage />
+    }
+
+    if (isServerValid.status === 'EXPIRED') {
+        return <ServerExpired serverId={serverId} />
+    }
+
+    if (isServerValid.status === 'DELETED') {
+        return <ServerDeleted />
     }
 
     const ptApiKey = session.user.ptKey;
