@@ -26,7 +26,7 @@ export function JobStatusCard({ jobName, job }: JobStatusCardProps) {
                     <div className="flex items-center justify-between text-sm mb-2">
                         <span className="text-muted-foreground">Progress</span>
                         <span className="font-medium text-foreground">
-                            {job.processed.toLocaleString()} / {job.total.toLocaleString()}
+                            {job.processed} / {job.total}
                         </span>
                     </div>
                     <Progress value={progressPercentage} className="h-2" />

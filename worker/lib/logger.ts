@@ -1,4 +1,4 @@
-import { WorkerJobType, WorkerLogLevel } from "../generated/client";
+import { LogLevel, type WorkerJobType } from "../generated/client";
 import { prisma } from "../prisma";
 
 // Simple logging functions
@@ -8,7 +8,7 @@ export async function logInfo(
     details?: any,
     context?: { gameServerId?: string; userId?: string; jobRun?: string }
 ) {
-    return log(WorkerLogLevel.INFO, jobType, message, details, context);
+    return log(LogLevel.INFO, jobType, message, details, context);
 }
 
 export async function logWarn(
@@ -17,7 +17,7 @@ export async function logWarn(
     details?: any,
     context?: { gameServerId?: string; userId?: string; jobRun?: string }
 ) {
-    return log(WorkerLogLevel.WARN, jobType, message, details, context);
+    return log(LogLevel.WARN, jobType, message, details, context);
 }
 
 export async function logError(
@@ -26,7 +26,7 @@ export async function logError(
     details?: any,
     context?: { gameServerId?: string; userId?: string; jobRun?: string }
 ) {
-    return log(WorkerLogLevel.ERROR, jobType, message, details, context);
+    return log(LogLevel.ERROR, jobType, message, details, context);
 }
 
 export async function logFatal(
@@ -35,11 +35,11 @@ export async function logFatal(
     details?: any,
     context?: { gameServerId?: string; userId?: string; jobRun?: string }
 ) {
-    return log(WorkerLogLevel.FATAL, jobType, message, details, context);
+    return log(LogLevel.FATAL, jobType, message, details, context);
 }
 
 async function log(
-    level: WorkerLogLevel,
+    level: LogLevel,
     jobType: WorkerJobType,
     message: string,
     details?: any,
@@ -96,7 +96,7 @@ export async function getErrorLogs(jobType?: WorkerJobType, hours: number = 24) 
     return prisma.workerLog.findMany({
         where: {
             jobType,
-            level: { in: [WorkerLogLevel.ERROR, WorkerLogLevel.FATAL] },
+            level: { in: [LogLevel.ERROR, LogLevel.FATAL] },
             createdAt: { gte: since }
         },
         include: {
@@ -132,7 +132,7 @@ export async function getFailedJobRuns(jobType?: WorkerJobType, hours: number = 
         by: ['jobRun'],
         where: {
             jobType,
-            level: { in: [WorkerLogLevel.ERROR, WorkerLogLevel.FATAL] },
+            level: { in: [LogLevel.ERROR, LogLevel.FATAL] },
             createdAt: { gte: since }
         },
         _count: { id: true }

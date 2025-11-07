@@ -1,31 +1,17 @@
 import { JobStatusCard } from "./Job-Status-Card"
 import { ErrorSection } from "./ErrorSection"
-import { JobStatus, JobStatusMap } from "../../../../worker/workerTypes"
+import { JobStatus } from "../../../../worker/workerTypes"
 import { prisma } from "@/prisma"
+import { env } from "next-runtime-env"
 
 // Async function to fetch job statuses
-async function getJobStatuses(): Promise<JobStatusMap> {
-    // TODO: Replace with actual API call
-    // const response = await fetch('/status', { cache: 'no-store' })
-    // if (!response.ok) throw new Error('Failed to fetch job statuses')
-    // return response.json()
-
-    // Dummy data for development
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    return {
-        "SendingEmails": {
-            running: true,
-            processed: 1247,
-            total: 2500,
-            lastRun: "2 minutes ago",
-        },
-        "Data Sync": {
-            running: false,
-            processed: 5000,
-            total: 5000,
-            lastRun: "15 minutes ago",
-        }
+async function getJobStatuses(): Promise<any[]> {
+    try {
+        const response = await fetch(`${env("WORKER_IP")}/status`, { cache: 'no-store' })
+        if (!response.ok) throw new Error('Failed to fetch job statuses')
+        return (await response.json()).jobs;
+    } catch (error) {
+        return [];
     }
 }
 
@@ -39,7 +25,7 @@ export async function JobStatusList() {
             }
         }
     })
-    
+
     const recentErrors = await prisma.workerLog.findMany({
         where: {
             level: { in: ['ERROR', 'FATAL'] },
@@ -58,17 +44,17 @@ export async function JobStatusList() {
         orderBy: {
             createdAt: 'desc'
         },
-        take: 10 // Show last 10 errors
+        take: 100 // Show last 100 errors
     })
 
     return (
         <div className="px-1 md:px-0">
             <div className="grid gap-3 md:gap-4 md:grid-cols-2">
-                {Object.entries(jobStatuses).map(([jobName, job]) => {
-                    return <JobStatusCard key={jobName} job={job} jobName={jobName} />
-                })}
+                {jobStatuses.length > 0 ? jobStatuses.map((job) => {
+                    return <JobStatusCard key={job.name} job={job} jobName={job.name} />
+                }) : <p className="text-red-600">Could not fetch Jobs</p>}
             </div>
-            
+
             <ErrorSection errorCount={errorCount} recentErrors={recentErrors} />
         </div>
     )

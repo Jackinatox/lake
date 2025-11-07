@@ -359,11 +359,13 @@ model Email {
   GameServer   GameServer? @relation(fields: [GameServerId], references: [id], onDelete: SetNull)
   errorText    String?
   retries      Int         @default(0)
+  expiresAt    DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([GameServerId, status])
+  @@index([GameServerId, type, expiresAt])
 }
 
 enum EmailStatus {

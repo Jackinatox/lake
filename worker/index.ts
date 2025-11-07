@@ -1,7 +1,7 @@
 import Bree from "bree";
 import express from "express";
-import path from "path";
 import type { JobStatusMap } from "./workerTypes";
+import path from "path";
 
 const app = express();
 const port = 8080;
@@ -15,9 +15,10 @@ const jobStatus: JobStatusMap = {};
 
 
 const bree = new Bree({
+    root: false, // Disable default job directory scanning
     jobs: [
         { name: "ExpireServers", interval: "1m", timeout: 0, path: path.join("jobs", "ExpireServers", "ExpireServers.ts") },
-        { name: "Generate1DayExpirdEmails", interval: "5m", timeout: 0, path: path.join("jobs", "Reminder", "DayExpiry.ts") },
+        { name: "GenerateExpiryEmails", interval: "5m", timeout: 0, path: path.join("jobs", "Reminder", "ExpiryEmails.ts") },
         { name: "SendEmails", interval: "1m", timeout: 0, path: path.join("jobs", "sendEmails", "Emails.ts") },
     ],
     logger: {
@@ -60,7 +61,15 @@ app.get("/", (req, res) => {
 });
 
 app.get('/status', (_, res) => {
-    res.json(jobStatus);
+    const jobs = Object.entries(jobStatus).map(([name, status]) => ({
+        name,
+        ...status
+    }));
+    
+    res.json({
+        jobs,
+        timestamp: new Date().toISOString()
+    });
 });
 
 const server = app.listen(port, () => {
