@@ -31,13 +31,14 @@ parentPort?.on("message", (msg) => {
         }, { jobRun });
 
         // Process 1-day expiry reminders
-        const cutoffDate1Day = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        // Find servers that expire in approximately 1 day (between now and 2 days from now)
+        const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
         const expiring1day = await prisma.gameServer.findMany({
             where: {
-                expires: { lte: cutoffDate1Day, gt: now },
+                expires: { lte: twoDaysFromNow, gt: now },
                 status: { notIn: ['EXPIRED', 'DELETED', 'CREATION_FAILED'] },
                 Email: {
-                    none: { type: "DELETE_GAME_SERVER_1DAY", expiresAt: { gt: now, lte: cutoffDate1Day } }
+                    none: { type: "GAME_SERVER_EXPIRING_1_DAY" }
                 }
             },
             orderBy: { expires: 'asc' },
@@ -50,14 +51,15 @@ parentPort?.on("message", (msg) => {
         }
 
         // Process 7-day expiry reminders
-
-        const cutoffDate7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        // Find servers that expire in approximately 7 days (between 6 and 8 days from now)
+        const sixDaysFromNow = new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000);
+        const eightDaysFromNow = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
         const expiring7days = await prisma.gameServer.findMany({
             where: {
-                expires: { lte: cutoffDate7Days, gt: now },
+                expires: { lte: eightDaysFromNow, gte: sixDaysFromNow },
                 status: { notIn: ['EXPIRED', 'DELETED', 'CREATION_FAILED'] },
                 Email: {
-                    none: { type: "DELETE_GAME_SERVER_7DAYS", expiresAt: { gt: now, lte: cutoffDate7Days } }
+                    none: { type: "GAME_SERVER_EXPIRING_7_DAYS" }
                 }
             },
             orderBy: { expires: 'asc' },

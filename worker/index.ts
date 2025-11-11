@@ -19,6 +19,8 @@ const bree = new Bree({
     jobs: [
         { name: "ExpireServers", interval: "1m", timeout: 0, path: path.join("jobs", "ExpireServers", "ExpireServers.ts") },
         { name: "GenerateExpiryEmails", interval: "5m", timeout: 0, path: path.join("jobs", "Reminder", "ExpiryEmails.ts") },
+        { name: "DeleteServers", interval: "1m", timeout: 0, path: path.join("jobs", "DeleteServers", "DeleteServers.ts") },
+        { name: "GenerateDeletionEmails", interval: "5m", timeout: 0, path: path.join("jobs", "DeletionReminder", "DeletionEmails.ts") },
         { name: "SendEmails", interval: "1m", timeout: 0, path: path.join("jobs", "sendEmails", "Emails.ts") },
     ],
     logger: {

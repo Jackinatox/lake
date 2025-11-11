@@ -1,39 +1,35 @@
 import { render } from "@react-email/render";
-import ExpiredServerTemplate from "../../email/templates/ExpiersInXDays";
+import DeleteServerTemplate from "../../email/templates/DeleteInXDays";
 import { EmailType } from "../../generated/client";
 import { prisma } from "../../prisma";
-import { DELETE_GAMESERVER_AFTER_DAYS } from "../../WorkerConstants";
 
 
-export const handleServer = async (serverId: string, days: 1 | 7, jobRun: string, expiresAt: Date) => {
+export const handleServer = async (serverId: string, days: 1 | 7, jobRun: string, deletionDate: Date) => {
     const server = await prisma.gameServer.findUnique({
         where: { id: serverId, ptServerId: { not: null } },
         include: { user: true }
     });
 
-    if (!server) throw new Error("Couold not find Server to generate Email for");
-
-    const deleteDate = new Date(server.expires);
-    deleteDate.setDate(deleteDate.getDate() + DELETE_GAMESERVER_AFTER_DAYS);
+    if (!server) throw new Error("Could not find Server to generate Email for");
 
     let emailType: EmailType;
     if (days === 1) {
-        emailType = EmailType.GAME_SERVER_EXPIRING_1_DAY;
+        emailType = EmailType.GAME_SERVER_DELETION_1_DAY;
     } else if (days === 7) {
-        emailType = EmailType.GAME_SERVER_EXPIRING_7_DAYS;
+        emailType = EmailType.GAME_SERVER_DELETION_7_DAYS;
     } else {
         throw new Error(`Invalid days value: ${days}. Expected 1 or 7.`);
     }
 
-    const html = await render(ExpiredServerTemplate({
+    const html = await render(DeleteServerTemplate({
         username: server.user.name,
         serverName: server.name,
         expirationDate: server.expires,
-        deleteDate: deleteDate,
-        expirationDays: days,
+        deletionDate: deletionDate,
+        deletionDays: days,
         serverId: server.ptServerId!
     }));
-    await createEmailJob(emailType, server.user.email, "Dein Server läuft bald ab", html, server.id, expiresAt);
+    await createEmailJob(emailType, server.user.email, "Dein Server wird bald gelöscht", html, server.id, deletionDate);
 }
 
 
