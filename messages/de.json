@@ -439,5 +439,15 @@
     "filesKeptDesc": "Deine aktuellen Server-Dateien und Weltdaten werden bei der Neuinstallation behalten. Dies wird für Varianten-Wechsel innerhalb des gleichen Spiels empfohlen.",
     "filesDeletedTitle": "Alle Dateien werden gelöscht!",
     "filesDeletedDesc": "Deine aktuellen Server-Dateien und Weltdaten werden vor der Neuinstallation dauerhaft gelöscht. Dies stellt eine saubere Installation sicher, aber du verlierst alle vorhandenen Daten."
+  },
+  "legal": {
+    "impressum": "Impressum",
+    "agb": "AGB",
+    "datenschutz": "Datenschutzerklärung"
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "agb": "AGB",
+    "datenschutz": "Datenschutz"
   }
 }

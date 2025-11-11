@@ -31,8 +31,6 @@ export async function checkoutAction(params: CheckoutParams) {
     if (!session) throw new Error("Not authenticated");
     const user = session.user;
 
-    if (!creationServerConfig) throw new Error("No Serverconfigration given");
-
     const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
     let stripeUserId = dbUser?.stripeUserId ?? null;
 
@@ -56,6 +54,7 @@ export async function checkoutAction(params: CheckoutParams) {
 
     switch (type) {
         case "NEW": {
+            if (!creationServerConfig) throw new Error("No Serverconfigration given");
             const location = await prisma.location.findFirstOrThrow({
                 where: { id: creationServerConfig.hardwareConfig.pfGroupId },
                 include: { cpu: true, ram: true }
@@ -159,7 +158,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     cpuPercent,
                     diskMB,
                     price: price.totalCents,
-                    expiresAt: new Date(server.expires.getTime() + duration * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Math.max(server.expires.getTime(), new Date().getTime()) + duration * 24 * 60 * 60 * 1000),
                     status: "PENDING",
                 }
             });

@@ -385,3 +385,18 @@ enum EmailType {
   DELETE_GAME_SERVER_1DAY
   DELETE_GAME_SERVER_7DAYS
 }
+
+model KeyValue {
+  id      Int      @id @default(autoincrement())
+  key     String   @unique
+  string  String?
+  json    Json?
+  number  Float?
+  boolean Boolean?
+  note    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}

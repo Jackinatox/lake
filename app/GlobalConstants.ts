@@ -10,6 +10,15 @@ export const MinecraftGameId = 1;
 export const SatisfactoryGameId = 2;
 
 
+// Legal Content Keys
+export const LEGAL_IMPRESSUM_DE = "legal_impressum_de";
+export const LEGAL_IMPRESSUM_EN = "legal_impressum_en";
+export const LEGAL_AGB_DE = "legal_agb_de";
+export const LEGAL_AGB_EN = "legal_agb_en";
+export const LEGAL_DATENSCHUTZ_DE = "legal_datenschutz_de";
+export const LEGAL_DATENSCHUTZ_EN = "legal_datenschutz_en";
+
+
 // FTP
 export const FTP_PASSWORD_MIN_LENGTH = 8;
 export const FTP_PASSWORD_MAX_LENGTH = 64;

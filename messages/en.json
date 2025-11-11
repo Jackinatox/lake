@@ -439,5 +439,15 @@
     "filesKeptDesc": "Your current server files and world data will be kept during the reinstallation. This is recommended for flavor changes within the same game.",
     "filesDeletedTitle": "All files will be deleted!",
     "filesDeletedDesc": "Your current server files and world data will be permanently deleted before reinstalling. This ensures a clean installation but you will lose all existing data."
+  },
+  "legal": {
+    "impressum": "Imprint",
+    "agb": "Terms and Conditions",
+    "datenschutz": "Privacy Policy"
+  },
+  "footer": {
+    "impressum": "Imprint",
+    "agb": "Terms",
+    "datenschutz": "Privacy"
   }
 }
