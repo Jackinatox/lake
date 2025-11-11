@@ -1,16 +1,15 @@
 "use client"
 
-import { HardwareConfig } from '@/models/config';
-import { PerformanceGroup } from '@/models/prisma';
-import React from 'react'
-import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
-import { toast } from '@/hooks/use-toast';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
+import { HardwareConfig } from '@/models/config';
+import { PerformanceGroup } from '@/models/prisma';
 import Link from 'next/link';
+import React from 'react';
+import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
 
 interface UpgradeGameServerProps {
     serverId: string;
@@ -20,7 +19,6 @@ interface UpgradeGameServerProps {
 }
 
 function UpgradeGameServer({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
-    const router = useRouter();
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);

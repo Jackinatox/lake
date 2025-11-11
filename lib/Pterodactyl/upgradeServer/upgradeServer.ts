@@ -2,8 +2,16 @@ import { prisma } from "@/prisma";
 import { GameServerOrder } from "@prisma/client";
 import { env } from 'next-runtime-env';
 import { createPtClient } from "../ptAdminClient";
+import { logger } from "@/lib/logger";
+import toggleSuspendGameServer from "../suspendServer/suspendServer";
 
-// This function doesnt auth the user, make sure to do that before calling this function
+/**
+ * Upgrades a game server's resources (CPU and RAM) based on a server order.
+ * 
+ * @remarks
+ * This function does not perform user authentication. Ensure proper authentication
+ * is handled before calling this function.
+ */
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
     const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const ptApiKey = env('PTERODACTYL_API_KEY');
@@ -15,8 +23,8 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
 
     const ptServer = await pt.getServer(gameServer.ptAdminId!.toString()); // ! is ok because its checked in the query above
 
-    console.log("expires: ", gameServer.expires);
     try {
+        await toggleSuspendGameServer(gameServer.id, 'unsuspend');
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
             {
@@ -42,22 +50,25 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
         );
 
         if (!response.ok) {
+            logger.error("PT API Error: ", "GAME_SERVER", { details: await response.json(), gameServerId: gameServer.id });
             throw new Error("PT API Error: " + (await response.json()));
         }
-        console.log("ptServer: ", ptServer);
-        const responseData = await response.json();
-        console.log("response: ", responseData);
         await prisma.gameServer.update({
             where: { id: gameServer.id },
             data: {
                 cpuPercent: serverOrder.cpuPercent,
                 ramMB: serverOrder.ramMB,
                 expires: serverOrder.expiresAt,
+                status: 'ACTIVE',
             },
         });
     } catch (error) {
-        // TODO: notify admin
         console.error("Error upgrading game server:", error);
+        logger.fatal("Error upgrading game server", "GAME_SERVER", {
+            details: { error, gameServerId: gameServer.id },
+            gameServerId: gameServer.id,
+            userId: gameServer.userId,
+        });
         throw new Error("Failed to upgrade game server");
     }
 }

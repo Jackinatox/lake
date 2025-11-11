@@ -48,7 +48,10 @@ async function suspendServer(server: GameServer, jobRun: string) {
         throw new Error(`Missing Pterodactyl IDs for server ${server.id}`);
     }
 
-    console.log(`Suspending server ${server.id}`);
+    await logInfo(WorkerJobType.EXPIRE_SERVERS, `Suspending server via Pterodactyl API`, {
+        serverId: server.id,
+        ptAdminId: server.ptAdminId
+    }, { gameServerId: server.id, userId: server.userId, jobRun });
 
     const response = await fetch(env.NEXT_PUBLIC_PTERODACTYL_URL + `/api/application/servers/${server.ptAdminId}/suspend`, {
         method: 'POST',
@@ -68,7 +71,7 @@ async function suspendServer(server: GameServer, jobRun: string) {
         serverId: server.id,
         ptAdminId: server.ptAdminId,
         responseStatus: response.status
-    }, { gameServerId: server.id, userId: server.userId, jobRun });
+    }, { gameServerId: server.id, userId: server.userId, jobRun }).catch(() => { console.log("Failed to log suspension success - THIS IS SUPER-CRITICAL") });
 
     await new Promise((resolve) => setTimeout(resolve, 50));
 }

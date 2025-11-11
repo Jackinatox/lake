@@ -1,6 +1,5 @@
 import { fetchPerformanceGroups } from '@/lib/actions';
 import UpgradeGameServer from './UpgradeGameServer';
-import React from 'react';
 import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameServerConfig';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 
@@ -10,7 +9,7 @@ interface UpgradeGameServerServerProps {
     userId: string;
 }
 
-// Server component to fetch data and pass to client component
+
 export default async function UpgradeGameServerServer({ serverId, apiKey, userId }: UpgradeGameServerServerProps) {
     const performanceOptions = await fetchPerformanceGroups();
     const minOptions = await getGameServerConfig(serverId, userId);

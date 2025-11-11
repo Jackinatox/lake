@@ -23,7 +23,7 @@ export async function getGameServerConfig(server_id: string, userId: string): Pr
     const now = new Date();
     const expires = server.expires as Date;
     const diffMs = expires.getTime() - now.getTime();
-    const durationsDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const durationsDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 
     return {
         cpuPercent: server.cpuPercent,

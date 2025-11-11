@@ -41,6 +41,7 @@ class Logger {
      */
     private async log(entry: LogEntry): Promise<void> {
         try {
+            console.log(`[${entry.level}] [${entry.type}] ${entry.message}`, entry.details);
             await this.prisma.applicationLog.create({
                 data: {
                     level: entry.level,
@@ -56,7 +57,6 @@ class Logger {
                 },
             });
         } catch (error) {
-            // Fallback to console if database logging fails
             console.error("Failed to write to ApplicationLog:", error);
             console.error("Original log entry:", entry);
         }

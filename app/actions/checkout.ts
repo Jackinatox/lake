@@ -136,7 +136,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 cpuPercent: server.cpuPercent,
                 ramMb: server.ramMB,
                 diskMb: server.diskMB,
-                durationsDays: Math.round((server.expires.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+                durationsDays: Math.max(0, Math.round((server.expires.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))),
                 pfGroupId: server.locationId
             };
 
