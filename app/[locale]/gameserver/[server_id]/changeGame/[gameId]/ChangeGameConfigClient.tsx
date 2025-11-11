@@ -6,28 +6,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import type { Game, GameConfig } from "@/models/config"
 import { GameConfigComponent } from "@/components/booking2/game-config"
-import { AlertTriangle, ArrowRight, CheckCircle2, Gamepad2, Loader2 } from "lucide-react"
+import { AlertTriangle, ArrowRight, CheckCircle2, Gamepad2, Info, Loader2, Shield } from "lucide-react"
 import { changeGame } from "./changeGameAction"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 
 interface ChangeGameConfigClientProps {
     serverId: string
     game: Game
     currentGameName?: string | null
+    currentGameId?: number
+    defaultDeleteFiles?: boolean
 }
 
 export default function ChangeGameConfigClient({
     serverId,
     game,
-    currentGameName
+    currentGameName,
+    currentGameId,
+    defaultDeleteFiles = true
 }: ChangeGameConfigClientProps) {
+    const t = useTranslations('changeGame')
     const { toast } = useToast()
     const gameConfigRef = useRef<{ submit: () => void } | null>(null)
     const [submittedConfig, setSubmittedConfig] = useState<GameConfig | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles)
+    
+    const isFlavorChange = currentGameId === game.id
 
     const handleSubmit = async (config: GameConfig) => {
         try {
@@ -36,6 +47,7 @@ export default function ChangeGameConfigClient({
                 serverId,
                 gameId: game.id,
                 gameConfig: config,
+                deleteFiles,
             })
             setSubmittedConfig(config)
             toast({
@@ -125,13 +137,76 @@ export default function ChangeGameConfigClient({
                             </div>
                         </div>
 
-                        <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive shadow-sm dark:border-destructive/60 dark:bg-destructive/25 dark:text-destructive-foreground dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]">
-                            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive dark:text-destructive-foreground" />
-                            <div className="space-y-1">
-                                <p className="text-sm font-semibold uppercase tracking-wide">All files will be deleted</p>
-                                <p className="text-sm text-destructive/80 dark:text-destructive-foreground/90">
-                                    Switching to a new game wipes the current server files. Back up anything important before you continue.
-                                </p>
+                        <div className="space-y-3">
+                            {/* Initial context - flavor change or game change */}
+                            <div className={`flex items-start gap-3 rounded-lg border p-4 shadow-sm ${
+                                isFlavorChange 
+                                    ? 'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/20'
+                                    : 'border-destructive/40 bg-destructive/10 dark:border-destructive/60 dark:bg-destructive/25 dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]'
+                            }`}>
+                                {isFlavorChange ? (
+                                    <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                ) : (
+                                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive dark:text-destructive-foreground" />
+                                )}
+                                <div className="space-y-1">
+                                    <p className={`text-sm font-semibold ${
+                                        isFlavorChange 
+                                            ? 'text-blue-900 dark:text-blue-100'
+                                            : 'text-destructive dark:text-destructive-foreground uppercase tracking-wide'
+                                    }`}>
+                                        {isFlavorChange ? t('flavorChangeTitle') : t('gameChangeTitle')}
+                                    </p>
+                                    <p className={`text-sm ${
+                                        isFlavorChange 
+                                            ? 'text-blue-800 dark:text-blue-200'
+                                            : 'text-destructive/80 dark:text-destructive-foreground/90'
+                                    }`}>
+                                        {isFlavorChange ? t('flavorChangeDesc') : t('gameChangeDesc')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Dynamic warning based on checkbox state */}
+                            {deleteFiles ? (
+                                <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive shadow-sm dark:border-destructive/60 dark:bg-destructive/25 dark:text-destructive-foreground dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]">
+                                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive dark:text-destructive-foreground" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold uppercase tracking-wide text-destructive dark:text-destructive-foreground">
+                                            {t('filesDeletedTitle')}
+                                        </p>
+                                        <p className="text-sm text-destructive/80 dark:text-destructive-foreground/90">
+                                            {t('filesDeletedDesc')}
+                                        </p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm dark:border-blue-900/50 dark:bg-blue-950/20">
+                                    <Shield className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                                            {t('filesKeptTitle')}
+                                        </p>
+                                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                                            {t('filesKeptDesc')}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Checkbox */}
+                            <div className="flex items-center space-x-2 rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <Checkbox
+                                    id="delete-files"
+                                    checked={deleteFiles}
+                                    onCheckedChange={(checked) => setDeleteFiles(checked === true)}
+                                />
+                                <Label
+                                    htmlFor="delete-files"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                >
+                                    {isFlavorChange ? t('flavorChangeCheckbox') : t('gameChangeCheckbox')}
+                                </Label>
                             </div>
                         </div>
 

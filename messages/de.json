@@ -427,5 +427,17 @@
     "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
     "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast.",
     "noReceipt": "Kein Beleg"
+  },
+  "changeGame": {
+    "flavorChangeTitle": "Spiel-Variante ändern",
+    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Deine Weltdaten bleiben erhalten, außer du wählst alle Dateien zu löschen.",
+    "flavorChangeCheckbox": "Alle Dateien löschen (Neuinstallation)",
+    "gameChangeTitle": "Achtung: Alle Dateien werden gelöscht!",
+    "gameChangeDesc": "Der Wechsel zu einem anderen Spiel erfordert eine saubere Installation. Alle vorhandenen Dateien werden dauerhaft gelöscht. Stelle sicher, dass du wichtige Daten vorher gesichert hast!",
+    "gameChangeCheckbox": "Alle Dateien löschen (erforderlich für Spielwechsel)",
+    "filesKeptTitle": "Dateien bleiben erhalten",
+    "filesKeptDesc": "Deine aktuellen Server-Dateien und Weltdaten werden bei der Neuinstallation behalten. Dies wird für Varianten-Wechsel innerhalb des gleichen Spiels empfohlen.",
+    "filesDeletedTitle": "Alle Dateien werden gelöscht!",
+    "filesDeletedDesc": "Deine aktuellen Server-Dateien und Weltdaten werden vor der Neuinstallation dauerhaft gelöscht. Dies stellt eine saubere Installation sicher, aber du verlierst alle vorhandenen Daten."
   }
 }

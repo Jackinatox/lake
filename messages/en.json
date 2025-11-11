@@ -427,5 +427,17 @@
     "oauthPasswordChangeNotice2": ", you can't change your password here.",
     "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email.",
     "noReceipt": "No receipt"
+  },
+  "changeGame": {
+    "flavorChangeTitle": "Changing game flavor",
+    "flavorChangeDesc": "You're switching between different versions of the same game. Your world data will be preserved unless you choose to delete all files.",
+    "flavorChangeCheckbox": "Delete all files (fresh install)",
+    "gameChangeTitle": "Warning: All files will be deleted!",
+    "gameChangeDesc": "Switching to a different game requires a clean installation. All existing files will be permanently deleted. Make sure to backup anything important before continuing!",
+    "gameChangeCheckbox": "Delete all files (required for game changes)",
+    "filesKeptTitle": "Files will be preserved",
+    "filesKeptDesc": "Your current server files and world data will be kept during the reinstallation. This is recommended for flavor changes within the same game.",
+    "filesDeletedTitle": "All files will be deleted!",
+    "filesDeletedDesc": "Your current server files and world data will be permanently deleted before reinstalling. This ensures a clean installation but you will lose all existing data."
   }
 }

@@ -18,12 +18,14 @@ interface SubmitGameChangeInput {
     serverId: string
     gameId: number
     gameConfig: GameConfig
+    deleteFiles?: boolean
 }
 
 export async function changeGame({
     serverId,
     gameId,
     gameConfig,
+    deleteFiles = true,
 }: SubmitGameChangeInput) {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -84,7 +86,9 @@ export async function changeGame({
     });
 
     await new Promise(resolve => setTimeout(resolve, 500));
-    const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey, true);
+    
+    // Reinstall the server, optionally deleting all files first
+    const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey, deleteFiles);
 
     if (!response2.ok) {
         const errorData = await response2.json();

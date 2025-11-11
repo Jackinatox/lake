@@ -14,8 +14,17 @@ interface PageParams {
   gameId: string
 }
 
-async function Page({ params }: { params: Promise<PageParams> }) {
+async function Page({ 
+  params,
+  searchParams 
+}: { 
+  params: Promise<PageParams>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   const { server_id: serverId, gameId } = await params
+  const search = await searchParams
+  // If deleteFiles param is explicitly 'false', then deleteFiles = false, otherwise default to true
+  const deleteFiles = search.deleteFiles !== 'false'
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -75,11 +84,13 @@ async function Page({ params }: { params: Promise<PageParams> }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
+    <div className="mx-auto w-full max-w-5xl md:px-4 md:py-6 sm:py-10">
       <ChangeGameConfigClient
         serverId={serverId}
         game={gameForConfig}
         currentGameName={gameServer.gameData?.name.toLowerCase() ?? null}
+        currentGameId={gameServer.gameDataId}
+        defaultDeleteFiles={deleteFiles}
       />
     </div>
   )

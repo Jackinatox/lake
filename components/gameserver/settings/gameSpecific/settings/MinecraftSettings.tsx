@@ -162,7 +162,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                 </p>
             </div>
             // TODO 
-            <MinecraftFlavorDialog eggId={server.egg_id} server={server} />
+            <MinecraftFlavorDialog server={server} />
         </div>
     )
 }
