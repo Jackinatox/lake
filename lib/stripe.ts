@@ -3,4 +3,4 @@ import 'server-only'
 
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(env("STRIPE_SECRET_KEY") ?? "sample_key", { apiVersion: '2025-09-30.clover' })
+export const stripe = new Stripe(env("STRIPE_SECRET_KEY") ?? "sample_key", { apiVersion: '2025-10-29.clover' })
