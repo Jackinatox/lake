@@ -22,8 +22,16 @@
     "home": "Zur Startseite"
   },
   "landingpage": {
+    "heroBadge": "Next-Gen Game Hosting",
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",
+    "heroSubtitle": "Starte deinen Gameserver in Sekunden. Professionelle Infrastruktur mit intuitivem Control Panel.",
+    "statUptime": "99,0%",
+    "statUptimeLabel": "Verfügbarkeit",
+    "statSupport": "24/7",
+    "statSupportLabel": "Support",
+    "statSetup": "<60s",
+    "statSetupLabel": "Einrichtung",
     "boxLabel1": "Einfach",
     "boxDesc1": "Schnelle Einrichtung",
     "boxLabel2": "Sicher",
@@ -184,7 +192,7 @@
   "upgrade": {
     "info": {
       "title": "Upgrade Informationen",
-      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Für Downgrades schau bitte hier."
+      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Downgrades sind noch nciht möglich."
     },
     "config": {
       "title": "Performance-Konfiguration",
