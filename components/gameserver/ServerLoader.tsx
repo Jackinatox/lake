@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
+import { on as onServerEvent } from './serverEvents';
 
 interface ServerLoaderProps {
     serverId: string;
@@ -21,6 +22,7 @@ interface ServerLoaderProps {
 export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServer }: ServerLoaderProps) {
     const [server, setServer] = useState<GameServer | null>(null);
     const [isInstalling, setIsInstalling] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const t = useTranslations();
@@ -60,7 +62,8 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
             };
 
             setServer(updatedServer);
-            setIsInstalling(serverData.is_installing);
+            setIsInstalling(!!serverData.is_installing);
+            setIsRestoring(serverData.status === 'restoring_backup');
             setError(null);
         } catch (err) {
             console.error('Error fetching server data:', err);
@@ -74,16 +77,55 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
         fetchServerData();
     }, []);
 
-    // Auto-refresh every 2 seconds while installing
+    // Listen for manual restore/reinstall start/stop events from other components
     useEffect(() => {
-        if (isInstalling) {
+        const offStart = onServerEvent('restore_started', (p) => {
+            if (p?.serverId === serverId) {
+                setIsRestoring(true);
+                setLoading(false);
+            }
+        });
+
+        const offStop = onServerEvent('restore_stopped', (p) => {
+            if (p?.serverId === serverId) {
+                // re-fetch immediately to pick up final state
+                fetchServerData();
+            }
+        });
+
+        const offReinstallStart = onServerEvent('reinstall_started', (p) => {
+            if (p?.serverId === serverId) {
+                // reinstall is treated the same as a fresh install
+                setIsInstalling(true);
+                setLoading(false);
+            }
+        });
+
+        const offReinstallStop = onServerEvent('reinstall_stopped', (p) => {
+            if (p?.serverId === serverId) {
+                // re-fetch immediately to pick up final state
+                fetchServerData();
+            }
+        });
+
+        return () => {
+            offStart();
+            offStop();
+            offReinstallStart();
+            offReinstallStop();
+        };
+    }, [serverId]);
+
+    // Auto-refresh every 2 seconds while installing or restoring
+    useEffect(() => {
+        if (isInstalling || isRestoring) {
             const interval = setInterval(() => {
                 fetchServerData();
             }, 2000);
 
             return () => clearInterval(interval);
         }
-    }, [isInstalling]);
+    }, [isInstalling, isRestoring]);
 
     if (loading) {
         return (
@@ -138,6 +180,34 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
             </div>
         );
     }
+
+    if (isRestoring && server) {
+        return (
+            <div className="flex justify-center items-center min-h-[60vh]">
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Restoring Server Backup
+                        </CardTitle>
+                        <CardDescription>
+                            Your server <strong>{server.name}</strong> is currently being restored from a backup.
+                            This page will automatically refresh when the restore finishes.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                            <p>• Restoring files and database (if any)</p>
+                            <p>• Applying backup metadata and configurations</p>
+                            <p>• This can take several minutes depending on backup size</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    
 
     if (!server) {
         return (

@@ -12,6 +12,7 @@ import { BackupCard } from "./BackupCard";
 import { CreateBackupDialog } from "./CreateBackupDialog";
 import type { Backup, BackupStatus } from "./types";
 import { formatBytes } from "./utils";
+import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer";
 
 interface BackupManagerProps {
     apiKey: string
@@ -263,6 +264,13 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
             }
 
             try {
+                await PTUserServerPowerAction(server.identifier, apiKey, "kill")
+                await new Promise((resolve) => setTimeout(resolve, 200));
+            } catch (error) {
+                console.log(error)
+            }
+
+            try {
                 const response = await fetch(
                     `${ptUrl}/api/client/servers/${server.identifier}/backups/${backup.uuid}/restore`,
                     {
@@ -285,7 +293,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                     description: "The server will revert to the selected backup shortly.",
                 })
 
-                await fetchBackups({ silent: true })
+                // await fetchBackups({ silent: true })
                 return true
             } catch (err) {
                 const message = err instanceof Error ? err.message : "Failed to restore backup"
@@ -489,6 +497,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                         <BackupCard
                             key={backup.uuid}
                             backup={backup}
+                            server={server}
                             onDownload={handleDownload}
                             onRestore={handleRestore}
                             onDelete={handleDelete}

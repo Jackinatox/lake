@@ -10,9 +10,11 @@ import { deriveStatusLabel, formatBytes, formatDateTime } from "./utils"
 import { RestoreBackupDialog } from "./RestoreBackupDialog"
 import { DeleteBackupDialog } from "./DeleteBackupDialog"
 import { UnlockBackupDialog } from "./UnlockBackupDialog"
+import { GameServer } from "@/models/gameServerModel"
 
 interface BackupCardProps {
     backup: Backup
+    server: GameServer
     onDownload: (backup: Backup) => Promise<void>
     onRestore: (backup: Backup, options: { truncate: boolean }) => Promise<boolean>
     onDelete: (backup: Backup) => Promise<boolean>
@@ -24,6 +26,7 @@ interface BackupCardProps {
 
 export function BackupCard({
     backup,
+    server,
     onDownload,
     onRestore,
     onDelete,
@@ -105,6 +108,7 @@ export function BackupCard({
 
                 <RestoreBackupDialog
                     backup={backup}
+                    server={server}
                     trigger={
                         <Button
                             size="sm"

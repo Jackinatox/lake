@@ -18,14 +18,17 @@ import { Loader2 } from "lucide-react"
 
 import type { Backup } from "./types"
 import { formatBytes, formatDateTime, deriveStatusLabel } from "./utils"
+import { notifyRestoreStarted } from "../serverEvents"
+import { GameServer } from "@/models/gameServerModel"
 
 interface RestoreBackupDialogProps {
+    server: GameServer
     backup: Backup
     trigger: ReactNode
     onConfirm: (options: { truncate: boolean }) => Promise<boolean>
 }
 
-export function RestoreBackupDialog({ backup, trigger, onConfirm }: RestoreBackupDialogProps) {
+export function RestoreBackupDialog({ backup, trigger, onConfirm, server }: RestoreBackupDialogProps) {
     const [open, setOpen] = useState(false)
     const [truncate, setTruncate] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -42,6 +45,7 @@ export function RestoreBackupDialog({ backup, trigger, onConfirm }: RestoreBacku
         event.preventDefault()
         if (isSubmitting) return
         setIsSubmitting(true)
+        notifyRestoreStarted(server.identifier);
         const ok = await onConfirm({ truncate })
         if (ok) {
             handleOpenChange(false)
