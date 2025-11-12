@@ -155,13 +155,9 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             />
             <span className='text-muted-foreground text-xs'>Du kannst die Java-Version ändern, wenn du willst, aber die ausgewählte sollte funktionieren.</span>
 
-            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-blue-800">
-                    <span className="font-medium">Note:</span> The server will need to be reinstalled for these changes to take effect. Your world data should be preserved during reinstallation.
-                </p>
-            </div>
+            <div className="flex items-start gap-2">
             <MinecraftFlavorDialog server={server} />
+            </div>
         </div>
     )
 }

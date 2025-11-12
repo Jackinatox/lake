@@ -1,19 +1,17 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { Plus, RefreshCw, Loader2 } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import type { GameServer } from "@/models/gameServerModel";
+import { Loader2, Plus, RefreshCw } from "lucide-react";
 import { env } from 'next-runtime-env';
-
-import type { GameServer } from "@/models/gameServerModel"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { useToast } from "@/hooks/use-toast"
-
-import { BackupCard } from "./BackupCard"
-import { CreateBackupDialog } from "./CreateBackupDialog"
-import type { Backup, BackupStatus } from "./types"
-import { formatBytes } from "./utils"
-import { Card } from "@/components/ui/card"
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BackupCard } from "./BackupCard";
+import { CreateBackupDialog } from "./CreateBackupDialog";
+import type { Backup, BackupStatus } from "./types";
+import { formatBytes } from "./utils";
 
 interface BackupManagerProps {
     apiKey: string
@@ -123,6 +121,18 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     useEffect(() => {
         void fetchBackups()
     }, [fetchBackups])
+
+    useEffect(() => {
+        const anyCreating = backups.filter((b) => b.status === "creating").length > 0;
+
+        if (anyCreating) {
+            const interval = setInterval(() => {
+                fetchBackups({ silent: true });
+            }, 2000);
+
+            return () => clearInterval(interval);
+        }
+    }, [backups]);
 
     const handleCreateBackup = useCallback(
         async (payload: { name?: string; ignoredPatterns: string[]; isLocked: boolean }) => {

@@ -37,7 +37,7 @@ export const MinecraftConfigComponent = forwardRef(({ game: givenGame, onSubmit 
     if (defaultEggId !== null) {
       const flavor = flavors.find((f) => f.egg_id === defaultEggId)
       if (flavor && flavor.versions.length > 0) {
-        setSelectedVersion(flavor.versions[flavor.versions.length - 1])
+        setSelectedVersion(flavor.versions[0])
         setGameVersions(flavor.versions)
       }
     }
@@ -54,7 +54,7 @@ export const MinecraftConfigComponent = forwardRef(({ game: givenGame, onSubmit 
         );
 
         if (!versionStillExists) {
-          setSelectedVersion(flavor.versions.length > 0 ? flavor.versions[flavor.versions.length - 1] : null);
+          setSelectedVersion(flavor.versions.length > 0 ? flavor.versions[0] : null);
         }
       }
     }
@@ -179,7 +179,7 @@ export const MinecraftConfigComponent = forwardRef(({ game: givenGame, onSubmit 
               <CommandList>
                 <CommandEmpty>No version found.</CommandEmpty>
                 <CommandGroup>
-                  {gameVersions.slice().reverse().map((version) => (
+                  {gameVersions.slice().map((version) => (
                     <CommandItem
                       key={version.version}
                       value={version.version}

@@ -51,7 +51,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 const stats = JSON.parse(data.args[0])
 
                 const roundedStats = {
-                    cpu_absolute: Number.parseFloat(stats.cpu_absolute.toFixed(1)),
+                    cpu_absolute: Number.parseFloat((stats.cpu_absolute / server.limits.cpu * 100).toFixed(1)),
                     disk_bytes: Number.parseFloat((stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2)),
                     memory_bytes: Number.parseFloat((stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2)),
                     memory_limit_bytes: Number.parseFloat((stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2)),
@@ -247,7 +247,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Card>
                     <CardHeader className="pb-0 space-y-0">
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Cpu className="h-5 w-5" /> CPU Usage
+                            <Cpu className="h-5 w-5" /> CPU Usage ({server.limits.cpu / 100 } Kerne)
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -255,7 +255,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 gap-1 text-sm">
                             <div className="font-medium">Current:</div>
-                            <div>{serverStats?.cpu_absolute + "% / " + server.limits.cpu + ' %'}</div>
+                            <div>{serverStats?.cpu_absolute + "% / " + 100 + ' %'}</div>
                         </div>
                     </CardContent>
                 </Card>
@@ -289,11 +289,11 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 {/* Header with server info and controls - spans full width */}
                 <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
                     <CardHeader className="pb-2">
-                        <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                        <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
                             <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
-                            <Link href={`${pathname}/upgrade`}>
-                                <Button variant="outline">Upgrade</Button>
-                            </Link>
+                            <Button asChild variant="outline">
+                                <Link href={`${pathname}/upgrade`}>Upgrade</Link>
+                            </Button>
                         </div>
                     </CardHeader>
                     <CardContent>

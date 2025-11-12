@@ -1,9 +1,11 @@
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from "@/app/GlobalConstants";
+
 export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
 
     let startAndVars;
 
     switch (id) {
-        case 2: // Vanilla
+        case VanillaEggId:
             startAndVars = {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
@@ -12,18 +14,17 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                 startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -jar {{SERVER_JARFILE}}',
             };
             break;
-        case 3: // Forge
+        case ForgeEggId: // Forge
             startAndVars = {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
                     SERVER_JARFILE: 'server.jar',
-                    BUILD_TYPE: 'recommended'
+                    BUILD_TYPE: 'latest'
                 },
                 startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )'
-
             };
             break;
-        case 1: // Paper
+        case PaperEggId: // Paper
             startAndVars = {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
@@ -33,7 +34,7 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                 startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}'
             };
             break;
-        case 16: // Fabric
+        case FabricEggId: // Fabric
             startAndVars = {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
