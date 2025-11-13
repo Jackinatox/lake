@@ -22,9 +22,9 @@ export default function ConfirmEmailTemplate({ url }: ConfirmEmailTemplateProps)
             <Head />
             <Preview>Bestätige deine E-Mail-Adresse für Scyed.</Preview>
             <Tailwind>
-                <Body className="bg-slate-100 py-10">
-                    <Container className="mx-auto max-w-[520px] rounded-xl bg-white px-8 py-8 shadow-lg">
-                        <Heading className="m-0 text-2xl font-bold text-slate-900">E-Mail-Adresse bestätigen</Heading>
+                <Body style={{ backgroundColor: '#f8f9fa', margin: 0, padding: 0 }}>
+                    <Container style={{ margin: '0 auto', maxWidth: '520px', backgroundColor: '#ffffff', padding: '32px 24px' }}>
+                        <Heading style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>E-Mail-Adresse bestätigen</Heading>
                         <Text className="mt-6 text-base leading-6 text-slate-600">
                             Hallo,
                         </Text>

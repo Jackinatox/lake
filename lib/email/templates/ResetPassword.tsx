@@ -24,9 +24,9 @@ export default function ResetPasswordTemplate({ url, token }: ResetPasswordTempl
             <Head />
             <Preview>Setze dein Passwort für Scyed zurück.</Preview>
             <Tailwind>
-                <Body className="bg-slate-100 py-10">
-                    <Container className="mx-auto max-w-[520px] rounded-xl bg-white px-8 py-8 shadow-lg">
-                        <Heading className="m-0 text-2xl font-bold text-slate-900">Passwort zurücksetzen</Heading>
+                <Body style={{ backgroundColor: '#f8f9fa', margin: 0, padding: 0 }}>
+                    <Container style={{ margin: '0 auto', maxWidth: '520px', backgroundColor: '#ffffff', padding: '32px 24px' }}>
+                        <Heading style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: '#0f172a' }}>Passwort zurücksetzen</Heading>
                         <Text className="mt-6 text-base leading-6 text-slate-600">
                             Hallo,
                         </Text>
@@ -50,7 +50,7 @@ export default function ResetPasswordTemplate({ url, token }: ResetPasswordTempl
                         </Text>
                         <Text className="mt-6 text-base font-medium text-slate-900">Dein Scyed Team</Text>
                         <Text className="mt-8 text-sm leading-6 text-slate-400">
-                            Du erhältst diese E-Mail, weil du ein Konto bei Scyed hast. Wenn du diese Benachrichtigungen nicht mehr erhalten möchtest, kontaktiere bitte den Support.
+                            Du erhältst diese E-Mail, weil du ein Konto bei Scyed hast. Wenn du diese Benachrichtigungen nicht mehr erhalten möchtest, kontaktiere bitte den <a href={`${process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || "http://localhost:3000"}/support`} style={{ color: '#94a3b8', textDecoration: 'underline' }}>Support</a>.
                         </Text>
                     </Container>
                 </Body>
