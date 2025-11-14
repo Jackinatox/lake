@@ -26,6 +26,126 @@ export default async function LandingPage() {
         };
     });
 
+    const stuff = (
+        <div className="p-2 md:p-6 l:p-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t('toolsHeader')}</h2>
+
+            {/* Control Panel */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+                <div className="order-2 lg:order-1">
+                    <h3 className="text-2xl font-bold mb-4">{t('panelTitle')}</h3>
+                    <p className="text-muted-foreground mb-6">{t('panelDesc')}</p>
+                    <ul className="space-y-2 mb-6">
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('panelFeature1')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('panelFeature2')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('panelFeature3')}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div className="order-1 lg:order-2">
+                    <Image
+                        src="/images/dark/home/panel.webp"
+                        width={2074}
+                        height={1412}
+                        alt="Control panel screenshot"
+                        className="rounded-lg shadow-lg border hidden dark:block"
+                    />
+                    <Image
+                        src="/images/light/home/panel.webp"
+                        width={2074}
+                        height={1412}
+                        alt="Control panel screenshot"
+                        className="rounded-lg shadow-lg border block dark:hidden"
+                    />
+                </div>
+            </div>
+
+            {/* File Manager */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
+                <div>
+                    <Image
+                        src="/images/dark/home/filemanager.webp"
+                        width={1812}
+                        height={906}
+                        alt="Filemanager screenshot"
+                        className="rounded-lg shadow-lg border hidden dark:block"
+                    />
+                    <Image
+                        src="/images/light/home/filemanager.webp"
+                        width={1812}
+                        height={906}
+                        alt="Filemanager screenshot"
+                        className="rounded-lg shadow-lg border block dark:hidden"
+                    />
+                </div>
+                <div>
+                    <h3 className="text-2xl font-bold mb-4">{t('fileManagerTitle')}</h3>
+                    <p className="text-muted-foreground mb-6">{t('fileManagerDesc')}</p>
+                    <ul className="space-y-2 mb-6">
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('fileManagerFeature1')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('fileManagerFeature2')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('fileManagerFeature3')}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {/* Backup Manager */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="order-2 lg:order-1">
+                    <h3 className="text-2xl font-bold mb-4">{t('backupTitle')}</h3>
+                    <p className="text-muted-foreground mb-6">{t('backupDesc')}</p>
+                    <ul className="space-y-2 mb-6">
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('backupFeature1')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('backupFeature2')}</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-primary" />
+                            <span>{t('backupFeature3')}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div className="order-1 lg:order-2">
+                    <Image
+                        src="/images/dark/home/backups.webp"
+                        width={1608}
+                        height={818}
+                        alt="Backups screenshot"
+                        className="rounded-lg shadow-lg border hidden dark:block"
+                    />
+                    <Image
+                        src="/images/light/home/backups.webp"
+                        width={1608}
+                        height={818}
+                        alt="Backups screenshot"
+                        className="rounded-lg shadow-lg border block dark:hidden"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <main className="flex flex-col min-h-screen -mx-2 md:-mx-6 lg:-mx-8 -my-5">
             {/* Hero Section - Completely Redesigned */}
@@ -134,127 +254,12 @@ export default async function LandingPage() {
             </section>
 
             {/* Tools Section */}
-            <Card className="mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
-                <div className="p-2 md:p-6 l:p-8">
-                    <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-                        {t('toolsHeader')}
-                    </h2>
-
-                    {/* Control Panel */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-                        <div className="order-2 lg:order-1">
-                            <h3 className="text-2xl font-bold mb-4">{t('panelTitle')}</h3>
-                            <p className="text-muted-foreground mb-6">{t('panelDesc')}</p>
-                            <ul className="space-y-2 mb-6">
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('panelFeature1')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('panelFeature2')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('panelFeature3')}</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="order-1 lg:order-2">
-                            <Image
-                                src="/images/dark/home/panel.webp"
-                                width={2074}
-                                height={1412}
-                                alt="Control panel screenshot"
-                                className="rounded-lg shadow-lg border hidden dark:block"
-                            />
-                            <Image
-                                src="/images/light/home/panel.webp"
-                                width={2074}
-                                height={1412}
-                                alt="Control panel screenshot"
-                                className="rounded-lg shadow-lg border block dark:hidden"
-                            />
-                        </div>
-                    </div>
-
-                    {/* File Manager */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-                        <div>
-                            <Image
-                                src="/images/dark/home/filemanager.webp"
-                                width={1812}
-                                height={906}
-                                alt="Filemanager screenshot"
-                                className="rounded-lg shadow-lg border hidden dark:block"
-                            />
-                            <Image
-                                src="/images/light/home/filemanager.webp"
-                                width={1812}
-                                height={906}
-                                alt="Filemanager screenshot"
-                                className="rounded-lg shadow-lg border block dark:hidden"
-                            />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold mb-4">{t('fileManagerTitle')}</h3>
-                            <p className="text-muted-foreground mb-6">{t('fileManagerDesc')}</p>
-                            <ul className="space-y-2 mb-6">
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('fileManagerFeature1')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('fileManagerFeature2')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('fileManagerFeature3')}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Backup Manager */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        <div className="order-2 lg:order-1">
-                            <h3 className="text-2xl font-bold mb-4">{t('backupTitle')}</h3>
-                            <p className="text-muted-foreground mb-6">{t('backupDesc')}</p>
-                            <ul className="space-y-2 mb-6">
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('backupFeature1')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('backupFeature2')}</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    <CheckCircle className="h-5 w-5 text-primary" />
-                                    <span>{t('backupFeature3')}</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="order-1 lg:order-2">
-                            <Image
-                                src="/images/dark/home/backups.webp"
-                                width={1608}
-                                height={818}
-                                alt="Backups screenshot"
-                                className="rounded-lg shadow-lg border hidden dark:block"
-                            />
-                            <Image
-                                src="/images/light/home/backups.webp"
-                                width={1608}
-                                height={818}
-                                alt="Backups screenshot"
-                                className="rounded-lg shadow-lg border block dark:hidden"
-                            />
-                        </div>
-                    </div>
-                </div>
+            <Card className="hidden md:block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
+                {stuff}
             </Card>
+            <div className="md:hidden block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
+                {stuff}
+            </div>
 
             {/* CTA Section */}
             <Card className="mt-5 py-20 px-4 md:px-6 bg-primary/30">

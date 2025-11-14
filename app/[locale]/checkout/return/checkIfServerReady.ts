@@ -47,7 +47,7 @@ export default async function checkIfServerReady(
         if (gs.status === 'CREATION_FAILED') {
             return { status: GameServerStatus.CREATION_FAILED };
         }
-        if (gs.status === 'EXPIRED') {
+        if (gs.status === 'EXPIRED' && serverOrder.type !== 'UPGRADE') {
             return { status: GameServerStatus.EXPIRED };
         }
         if (gs.status === 'DELETED') {

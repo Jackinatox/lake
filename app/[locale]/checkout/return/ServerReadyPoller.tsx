@@ -1,9 +1,5 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import {
     AlertTriangle,
     CheckCircle2,
@@ -14,10 +10,14 @@ import {
     Sparkles,
     WifiOff,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-import checkIfServerReady from './checkIfServerReady';
-import { GameServerStatus } from '@/types/gameData';
 import { Button } from '@/components/ui/button';
+import { GameServerStatus } from '@/types/gameData';
+import checkIfServerReady from './checkIfServerReady';
 
 const ERROR_STATES: ReadonlySet<GameServerStatus> = new Set([
     GameServerStatus.DOES_NOT_EXIST,

@@ -1,10 +1,9 @@
 'use server';
 
-import React from 'react';
-import ServerReadyPoller from './ServerReadyPoller';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';
+import ServerReadyPoller from './ServerReadyPoller';
 
 export default async function ReturnPage({
     searchParams,

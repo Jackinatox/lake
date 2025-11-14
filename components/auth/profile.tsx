@@ -9,13 +9,23 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
+    DropdownMenuRadioGroup,
+    DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, User, UserRoundCog } from 'lucide-react';
+import { LogOut, User, UserRoundCog, Laptop, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export default function Profile() {
     const { data: session, isPending, error } = authClient.useSession();
+    const [mounted, setMounted] = useState(false);
+    const { theme, setTheme } = useTheme();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     if (isPending) {
         return (
@@ -80,6 +90,35 @@ export default function Profile() {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                {mounted && (
+                    <div className="flex items-center justify-center gap-1 px-2 py-1.5">
+                        <Button
+                            variant={theme === 'light' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setTheme('light')}
+                            className="flex-1"
+                        >
+                            <Sun className="h-5 w-5" />
+                        </Button>
+                        <Button
+                            variant={theme === 'dark' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setTheme('dark')}
+                            className="flex-1"
+                        >
+                            <Moon className="h-5 w-5" />
+                        </Button>
+                        <Button
+                            variant={theme === 'system' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setTheme('system')}
+                            className="flex-1"
+                        >
+                            <Laptop className="h-5 w-5" />
+                        </Button>
+                    </div>
+                )}
+                {(mounted || session?.user.role === 'admin') && <DropdownMenuSeparator />}
                 {session?.user.role === 'admin' && (
                     <>
                         <DropdownMenuItem>

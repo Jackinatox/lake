@@ -162,10 +162,24 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                         </form>
                     </CardContent>
                 </Card>
-                <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+                <div className="text-muted-foreground text-center text-xs text-balance">
                     {tr.rich('disclaimer', {
-                        terms: (chunks) => <a href="#">{chunks}</a>,
-                        privacy: (chunks) => <a href="#">{chunks}</a>,
+                        terms: (chunks) => (
+                            <Link
+                                href="/legal/agb"
+                                className="underline underline-offset-4 hover:text-primary"
+                            >
+                                {chunks}
+                            </Link>
+                        ),
+                        privacy: (chunks) => (
+                            <Link
+                                href="/legal/datenschutz"
+                                className="underline underline-offset-4 hover:text-primary"
+                            >
+                                {chunks}
+                            </Link>
+                        ),
                     })}
                 </div>
             </div>

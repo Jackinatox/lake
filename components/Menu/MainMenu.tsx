@@ -160,48 +160,66 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     </SheetTitle>
                                 </SheetHeader>
 
-                                <nav className="flex flex-col space-y-2 mt-4">
-                                    {MENU.map((item) =>
-                                        item.subItems ? (
-                                            <DropdownMenu key={item.label}>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="flex items-center w-full justify-between"
-                                                    >
-                                                        <span className="flex items-center">
-                                                            <item.Icon className="h-5 w-5 mr-2" />
-                                                            {item.label}
-                                                        </span>
-                                                        <ChevronDown className="h-5 w-5" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent className="w-full">
-                                                    {item.subItems.map((sub) => (
-                                                        <DropdownMenuItem asChild key={sub.label}>
-                                                            <Link
-                                                                href={sub.href}
-                                                                className="flex items-center"
-                                                                onClick={() => setOpen(false)}
+                                <nav className="flex flex-col space-y-2 mt-6">
+                                    {/* Dashboard prominently at the top */}
+                                    <Link
+                                        href="/gameserver"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center px-4 py-3 text-lg font-semibold bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                                    >
+                                        <LayoutDashboard className="h-6 w-6 mr-3" />
+                                        Dashboard
+                                    </Link>
+
+                                    {/* Divider */}
+                                    <div className="border-t my-2" />
+
+                                    {/* Other menu items */}
+                                    {MENU.filter((item) => item.label !== 'Dashboard').map(
+                                        (item) =>
+                                            item.subItems ? (
+                                                <DropdownMenu key={item.label}>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="flex items-center w-full justify-between"
+                                                        >
+                                                            <span className="flex items-center">
+                                                                <item.Icon className="h-5 w-5 mr-2" />
+                                                                {item.label}
+                                                            </span>
+                                                            <ChevronDown className="h-5 w-5" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="w-full">
+                                                        {item.subItems.map((sub) => (
+                                                            <DropdownMenuItem
+                                                                asChild
+                                                                key={sub.label}
                                                             >
-                                                                <sub.Icon className="h-5 w-5 mr-2" />
-                                                                {sub.label}
-                                                            </Link>
-                                                        </DropdownMenuItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        ) : (
-                                            <Link
-                                                key={item.label}
-                                                href={item.href!}
-                                                onClick={() => setOpen(false)}
-                                                className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
-                                            >
-                                                <item.Icon className="h-5 w-5 mr-3" />
-                                                {item.label}
-                                            </Link>
-                                        ),
+                                                                <Link
+                                                                    href={sub.href}
+                                                                    className="flex items-center"
+                                                                    onClick={() => setOpen(false)}
+                                                                >
+                                                                    <sub.Icon className="h-5 w-5 mr-2" />
+                                                                    {sub.label}
+                                                                </Link>
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            ) : (
+                                                <Link
+                                                    key={item.label}
+                                                    href={item.href!}
+                                                    onClick={() => setOpen(false)}
+                                                    className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
+                                                >
+                                                    <item.Icon className="h-5 w-5 mr-3" />
+                                                    {item.label}
+                                                </Link>
+                                            ),
                                     )}
 
                                     <div className="absolute bottom-4 left-0 w-full flex justify-center">
