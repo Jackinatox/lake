@@ -65,7 +65,7 @@
         "react": "19.2.0",
         "react-dom": "19.2.0",
         "react-email": "^4.3.2",
-        "recharts": "^2.15.4",
+        "recharts": "^3.4.1",
         "stripe": "^19.3.0",
         "unique-username-generator": "^1.5.1",
         "uuid": "^11.1.0"
