@@ -22,12 +22,13 @@ import { calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface HardwareConfigProps {
     performanceOptions: PerformanceGroup[];
+    onPriceChange: (cents: NewPriceDef) => void;
     onNext: (config: HardwareConfig) => void;
     initialConfig: HardwareConfig | null;
 }
 
 export const HardwareConfigComponent = forwardRef(
-    ({ initialConfig, performanceOptions, onNext }: HardwareConfigProps, ref) => {
+    ({ initialConfig, performanceOptions, onNext, onPriceChange }: HardwareConfigProps, ref) => {
         const t = useTranslations('buyGameServer.hardware');
         const tp = useTranslations('buyGameServer.hardware.price');
         const tl = useTranslations('buyGameServer.hardware.labels');
@@ -63,6 +64,7 @@ export const HardwareConfigComponent = forwardRef(
 
         useEffect(() => {
             setPriceToSmall(totalPrice.totalCents < 100);
+            onPriceChange(totalPrice)
         }, [totalPrice]);
 
         // Calculate total price whenever configuration changes

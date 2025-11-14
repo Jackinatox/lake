@@ -7,6 +7,7 @@ import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth-client';
+import { NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { Game, GameConfig, HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function GameServerConfig({
     const [clientSecret, setClientSecret] = useState('');
     const [step, setStep] = useState(1);
     const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null);
+    const [totalPrice, setTotalPrice] = useState<number>(0);
     const { toast } = useToast();
     const hardwareConfigRef = useRef<any>(null);
     const gameConfigRef = useRef<any>(null);
@@ -43,6 +45,10 @@ export default function GameServerConfig({
     const handleHardwareConfigNext = (config: HardwareConfig) => {
         setHardwareConfig(config);
         setStep(2);
+    };
+
+    const handlePriceChange = (price: NewPriceDef) => {
+        setTotalPrice(price.totalCents);
     };
 
     const handleGameConfigSubmit = async (gameSpecificConfig: GameConfig) => {
@@ -87,14 +93,21 @@ export default function GameServerConfig({
     };
 
     return (
-        <div className="min-h-screen bg-background -mx-5 -mt-5">
+        <div className="min-h-screen bg-background md:-my-4">
             {/* Header with step indicator - STICKY TO TOP */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
-                <div className="w-full px-4 py-4 max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between">
+            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
+                <div className="w-full px-1 max-w-7xl mx-auto">
+                    <div className="flex items-center justify-between gap-4">
                         <h1 className="text-xl sm:text-2xl font-bold">{t('header.title')}</h1>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {t('header.step', { current: step, total: 3 })}
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
+                                <span className="text-sm text-muted-foreground hidden sm:inline">
+                                    Total:
+                                </span>
+                                <span className="text-lg sm:text-xl font-bold text-primary">
+                                    €{(totalPrice / 100).toFixed(2)}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -117,13 +130,14 @@ export default function GameServerConfig({
             </div>
 
             {/* Main content with padding for sticky footer */}
-            <div className="w-full px-4 py-6 pb-28 max-w-7xl mx-auto">
+            <div className="w-full pt-4 pb-28 max-w-7xl mx-auto">
                 {step === 1 && (
                     <div className="bg-card border rounded-lg p-2 md:p-6">
                         <HardwareConfigComponent
                             ref={hardwareConfigRef}
                             performanceOptions={performanceGroups}
                             onNext={handleHardwareConfigNext}
+                            onPriceChange={handlePriceChange}
                             initialConfig={hardwareConfig}
                         />
                     </div>

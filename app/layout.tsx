@@ -61,7 +61,7 @@ export default async function RootLayout({
                         <main className="min-h-screen flex flex-col items-center">
                             <div className="flex-1 w-full flex flex-col items-center">
                                 <Navbar locale={locale} />
-                                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
+                                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4">
                                     {children}
                                     <Toaster />
                                     {env('NODE_ENV') !== 'production' && (
