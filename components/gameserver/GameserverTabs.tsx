@@ -4,6 +4,7 @@ import type React from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, HardDrive, Network, Settings } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface TabsComponentProps {
@@ -22,17 +23,18 @@ export function TabsComponent({
     settingsComponent,
 }: TabsComponentProps) {
     const [activeTab, setActiveTab] = useState('console');
+    const t = useTranslations();
 
     return (
         <Tabs defaultValue="console" className="w-full" onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="console" className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
-                    <span className="hidden sm:inline">Console</span>
+                    <span className="hidden sm:inline">{t('gameserver.tabs.console')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="files" className="flex items-center gap-2">
                     <FileText className="h-4 w-4" />
-                    <span className="hidden sm:inline">Files</span>
+                    <span className="hidden sm:inline">{t('gameserver.tabs.files')}</span>
                 </TabsTrigger>
                 <TabsTrigger
                     value="network"
@@ -40,7 +42,7 @@ export function TabsComponent({
                     disabled={!networkControlComponent}
                 >
                     <Network className="h-4 w-4" />
-                    <span className="hidden sm:inline">Network</span>
+                    <span className="hidden sm:inline">{t('gameserver.tabs.network')}</span>
                 </TabsTrigger>
                 <TabsTrigger
                     value="backups"
@@ -65,7 +67,7 @@ export function TabsComponent({
                         <path d="m15 14-3 3 3 3" />
                         <path d="M18 14h-6v6" />
                     </svg>
-                    <span className="hidden sm:inline">Backups</span>
+                    <span className="hidden sm:inline">{t('gameserver.tabs.backups')}</span>
                 </TabsTrigger>
                 <TabsTrigger
                     value="settings"
@@ -73,7 +75,7 @@ export function TabsComponent({
                     disabled={!settingsComponent}
                 >
                     <Settings className="h-4 w-4" />
-                    <span className="hidden sm:inline">Settings</span>
+                    <span className="hidden sm:inline">{t('gameserver.tabs.settings')}</span>
                 </TabsTrigger>
             </TabsList>
             <TabsContent value="console" className="mt-4">
@@ -84,16 +86,16 @@ export function TabsComponent({
             </TabsContent>
             <TabsContent value="network" className="mt-4">
                 {networkControlComponent || (
-                    <div className="text-center py-8">Network control coming soon</div>
+                    <div className="text-center py-8">{t('gameserver.tabs.networkComingSoon')}</div>
                 )}
             </TabsContent>
             <TabsContent value="backups" className="mt-4">
                 {backupManagerComponent || (
-                    <div className="text-center py-8">Backup manager coming soon</div>
+                    <div className="text-center py-8">{t('gameserver.tabs.backupsComingSoon')}</div>
                 )}
             </TabsContent>
             <TabsContent value="settings" className="mt-4">
-                {settingsComponent || <div className="text-center py-8">Settings coming soon</div>}
+                {settingsComponent || <div className="text-center py-8">{t('gameserver.tabs.settingsComingSoon')}</div>}
             </TabsContent>
         </Tabs>
     );

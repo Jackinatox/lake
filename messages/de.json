@@ -457,5 +457,66 @@
         "impressum": "Impressum",
         "agb": "AGB",
         "datenschutz": "Datenschutz"
+    },
+    "gameserver": {
+        "loading": "Server wird geladen...",
+        "error": "Fehler",
+        "serverNotFound": "Server nicht gefunden",
+        "serverNotFoundDesc": "Server-Daten konnten nicht geladen werden",
+        "serverNotFoundAccess": "Server nicht gefunden oder Zugriff verweigert",
+        "failedFetch": "Server-Daten konnten nicht abgerufen werden",
+        "errorLoading": "Ein Fehler ist beim Laden der Server-Daten aufgetreten",
+        "installation": {
+            "title": "Server-Installation läuft",
+            "description": "Dein Server <strong>{serverName}</strong> wird gerade installiert. Diese Seite wird automatisch aktualisiert und dich zum Dashboard weitergeleitet, sobald die Installation abgeschlossen ist.",
+            "step1": "Abhängigkeiten und Spieldateien werden installiert",
+            "step2": "Server-Einstellungen werden konfiguriert",
+            "step3": "Dies dauert normalerweise 1-3 Minuten"
+        },
+        "restore": {
+            "title": "Server-Backup wird wiederhergestellt",
+            "description": "Dein Server <strong>{serverName}</strong> wird gerade aus einem Backup wiederhergestellt. Diese Seite wird automatisch aktualisiert, sobald die Wiederherstellung abgeschlossen ist.",
+            "step1": "Dateien und Datenbank werden wiederhergestellt (falls vorhanden)",
+            "step2": "Backup-Metadaten und Konfigurationen werden angewendet",
+            "step3": "Dies kann mehrere Minuten dauern, je nach Backup-Größe"
+        },
+        "tabs": {
+            "console": "Konsole",
+            "files": "Dateien",
+            "network": "Netzwerk",
+            "backups": "Backups",
+            "settings": "Einstellungen",
+            "networkComingSoon": "Netzwerk-Steuerung kommt bald",
+            "backupsComingSoon": "Backup-Manager kommt bald",
+            "settingsComingSoon": "Einstellungen kommen bald"
+        },
+        "eula": {
+            "title": "Minecraft® EULA akzeptieren",
+            "description": "Durch Klicken auf \"EULA akzeptieren\" bestätigst du, dass du der",
+            "eulaLink": "Minecraft® EULA zustimmst.",
+            "cancel": "Abbrechen",
+            "accept": "EULA akzeptieren"
+        },
+        "dashboard": {
+            "preparing": "Checkout wird vorbereitet…",
+            "header": {
+                "upgrade": "Upgrade"
+            },
+            "status": "Status:",
+            "serverIP": "Server-IP:",
+            "noAllocation": "Keine Zuweisung gefunden",
+            "copyIPPort": "Kopieren",
+            "info": "Info:",
+            "uptime": "Betriebszeit:",
+            "serverControls": "Server-Steuerung",
+            "cpu": {
+                "usage": "CPU-Auslastung",
+                "cores": "Kerne"
+            },
+            "memory": {
+                "usage": "Speicherauslastung",
+                "current": "Aktuell:"
+            }
+        }
     }
 }

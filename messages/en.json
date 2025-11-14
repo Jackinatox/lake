@@ -457,5 +457,66 @@
         "impressum": "Imprint",
         "agb": "Terms",
         "datenschutz": "Privacy"
+    },
+    "gameserver": {
+        "loading": "Loading Server...",
+        "error": "Error",
+        "serverNotFound": "Server Not Found",
+        "serverNotFoundDesc": "Unable to load server data",
+        "serverNotFoundAccess": "Server not found or access denied",
+        "failedFetch": "Failed to fetch server data",
+        "errorLoading": "An error occurred while loading server data",
+        "installation": {
+            "title": "Server Installation in Progress",
+            "description": "Your server <strong>{serverName}</strong> is currently being installed. This page will automatically refresh and redirect you to the dashboard once the installation is complete.",
+            "step1": "Installing dependencies and game files",
+            "step2": "Configuring server settings",
+            "step3": "This usually takes 1-3 minutes"
+        },
+        "restore": {
+            "title": "Restoring Server Backup",
+            "description": "Your server <strong>{serverName}</strong> is currently being restored from a backup. This page will automatically refresh when the restore finishes.",
+            "step1": "Restoring files and database (if any)",
+            "step2": "Applying backup metadata and configurations",
+            "step3": "This can take several minutes depending on backup size"
+        },
+        "tabs": {
+            "console": "Console",
+            "files": "Files",
+            "network": "Network",
+            "backups": "Backups",
+            "settings": "Settings",
+            "networkComingSoon": "Network control coming soon",
+            "backupsComingSoon": "Backup manager coming soon",
+            "settingsComingSoon": "Settings coming soon"
+        },
+        "eula": {
+            "title": "Accept Minecraft® EULA",
+            "description": "By pressing \"Accept Eula\" below you are indicating your agreement to the",
+            "eulaLink": "Minecraft® EULA.",
+            "cancel": "Cancel",
+            "accept": "Accept Eula"
+        },
+        "dashboard": {
+            "preparing": "Preparing checkout…",
+            "header": {
+                "upgrade": "Upgrade"
+            },
+            "status": "Status:",
+            "serverIP": "Server IP:",
+            "noAllocation": "No Allocation found",
+            "copyIPPort": "Copy",
+            "info": "Info:",
+            "uptime": "Uptime:",
+            "serverControls": "Server Controls",
+            "cpu": {
+                "usage": "CPU Usage",
+                "cores": "Kerne"
+            },
+            "memory": {
+                "usage": "Memory Usage",
+                "current": "Current:"
+            }
+        }
     }
 }

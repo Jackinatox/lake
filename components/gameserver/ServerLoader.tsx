@@ -45,9 +45,9 @@ export default function ServerLoader({
 
             if (!response.ok) {
                 if (response.status === 403 || response.status === 404) {
-                    setError('Server not found or access denied');
+                    setError(t('gameserver.serverNotFoundAccess'));
                 } else {
-                    setError('Failed to fetch server data');
+                    setError(t('gameserver.failedFetch'));
                 }
                 return;
             }
@@ -69,7 +69,7 @@ export default function ServerLoader({
             setError(null);
         } catch (err) {
             console.error('Error fetching server data:', err);
-            setError('An error occurred while loading server data');
+            setError(t('gameserver.errorLoading'));
         } finally {
             setLoading(false);
         }
@@ -136,7 +136,7 @@ export default function ServerLoader({
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
-                            Loading Server...
+                            {t('gameserver.loading')}
                         </CardTitle>
                     </CardHeader>
                 </Card>
@@ -149,7 +149,7 @@ export default function ServerLoader({
             <div className="flex justify-center items-center min-h-[60vh]">
                 <Card className="w-full max-w-md">
                     <CardHeader>
-                        <CardTitle className="text-destructive">Error</CardTitle>
+                        <CardTitle className="text-destructive">{t('gameserver.error')}</CardTitle>
                         <CardDescription>{error}</CardDescription>
                     </CardHeader>
                 </Card>
@@ -164,19 +164,17 @@ export default function ServerLoader({
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
-                            Server Installation in Progress
+                            {t('gameserver.installation.title')}
                         </CardTitle>
                         <CardDescription>
-                            Your server <strong>{server.name}</strong> is currently being installed.
-                            This page will automatically refresh and redirect you to the dashboard
-                            once the installation is complete.
+                            {t('gameserver.installation.description', { serverName: server.name })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2 text-sm text-muted-foreground">
-                            <p>• Installing dependencies and game files</p>
-                            <p>• Configuring server settings</p>
-                            <p>• This usually takes 1-3 minutes</p>
+                            <p>• {t('gameserver.installation.step1')}</p>
+                            <p>• {t('gameserver.installation.step2')}</p>
+                            <p>• {t('gameserver.installation.step3')}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -191,19 +189,17 @@ export default function ServerLoader({
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
-                            Restoring Server Backup
+                            {t('gameserver.restore.title')}
                         </CardTitle>
                         <CardDescription>
-                            Your server <strong>{server.name}</strong> is currently being restored
-                            from a backup. This page will automatically refresh when the restore
-                            finishes.
+                            {t('gameserver.restore.description', { serverName: server.name })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2 text-sm text-muted-foreground">
-                            <p>• Restoring files and database (if any)</p>
-                            <p>• Applying backup metadata and configurations</p>
-                            <p>• This can take several minutes depending on backup size</p>
+                            <p>• {t('gameserver.restore.step1')}</p>
+                            <p>• {t('gameserver.restore.step2')}</p>
+                            <p>• {t('gameserver.restore.step3')}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -216,8 +212,8 @@ export default function ServerLoader({
             <div className="flex justify-center items-center min-h-[60vh]">
                 <Card className="w-full max-w-md">
                     <CardHeader>
-                        <CardTitle className="text-destructive">Server Not Found</CardTitle>
-                        <CardDescription>Unable to load server data</CardDescription>
+                        <CardTitle className="text-destructive">{t('gameserver.serverNotFound')}</CardTitle>
+                        <CardDescription>{t('gameserver.serverNotFoundDesc')}</CardDescription>
                     </CardHeader>
                 </Card>
             </div>

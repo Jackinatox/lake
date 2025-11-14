@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
     Dialog,
@@ -10,6 +12,7 @@ import {
 } from '../ui/dialog';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface EulaDialogProps {
     isOpen: boolean;
@@ -18,6 +21,8 @@ interface EulaDialogProps {
 }
 
 function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
+    const t = useTranslations();
+
     return (
         <Dialog
             open={isOpen}
@@ -27,9 +32,9 @@ function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
         >
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Accept Minecraft® EULA</DialogTitle>
+                    <DialogTitle>{t('gameserver.eula.title')}</DialogTitle>
                     <DialogDescription>
-                        By pressing "Accept Eula" below you are indicating your agreement to the
+                        {t('gameserver.eula.description')}
                         <Link
                             href="https://www.minecraft.net/de-de/eula"
                             target="_blank"
@@ -37,7 +42,7 @@ function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
                             className="text-blue-500 hover:underline"
                         >
                             {' '}
-                            Minecraft® EULA.
+                            {t('gameserver.eula.eulaLink')}
                         </Link>
                     </DialogDescription>
                 </DialogHeader>
@@ -48,7 +53,7 @@ function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
                             setOpen(false);
                         }}
                     >
-                        Cancel
+                        {t('gameserver.eula.cancel')}
                     </Button>
                     <Button
                         onClick={() => {
@@ -56,7 +61,7 @@ function EulaDialog({ isOpen, onAcceptEula, setOpen }: EulaDialogProps) {
                             setOpen(false);
                         }}
                     >
-                        Accept Eula
+                        {t('gameserver.eula.accept')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

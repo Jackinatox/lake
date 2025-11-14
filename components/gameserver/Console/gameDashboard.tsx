@@ -8,6 +8,7 @@ import webSocket from '@/lib/Pterodactyl/webSocket';
 import { GameServer } from '@/models/gameServerModel';
 import { Cpu, MemoryStickIcon as Memory, Terminal } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import EulaDialog from '../EulaDialog';
 import FileManager from '../FileManager/FileManager';
@@ -37,6 +38,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     const searchParams = useSearchParams();
     const autoStart = useRef(searchParams.get('start') === 'true');
     const router = useRouter();
+    const t = useTranslations();
 
     const pathname = usePathname();
 
@@ -243,7 +245,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             <Card className="lg:col-span-8 lg:row-span-1">
                 <CardHeader className="pb-2">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                        <Terminal className="h-5 w-5" /> Console
+                        <Terminal className="h-5 w-5" /> {t('gameserver.tabs.console')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="h-[calc(100%-4rem)]">
@@ -258,14 +260,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Card>
                     <CardHeader className="pb-0 space-y-0">
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Cpu className="h-5 w-5" /> CPU Usage ({server.limits.cpu / 100} Kerne)
+                            <Cpu className="h-5 w-5" /> {t('gameserver.dashboard.cpu.usage')} ({server.limits.cpu / 100} {t('gameserver.dashboard.cpu.cores')})
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <CPUChart newData={serverStats} />
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">Current:</div>
+                            <div className="font-medium">{t('gameserver.dashboard.memory.current')}</div>
                             <div>{serverStats?.cpu_absolute + '% / ' + 100 + ' %'}</div>
                         </div>
                     </CardContent>
@@ -274,14 +276,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Memory className="h-5 w-5" /> Memory Usage
+                            <Memory className="h-5 w-5" /> {t('gameserver.dashboard.memory.usage')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <RAMChart newData={serverStats} />
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">Current:</div>
+                            <div className="font-medium">{t('gameserver.dashboard.memory.current')}</div>
                             <div>
                                 {' '}
                                 {serverStats?.memory_bytes + ' GiB'} /{' '}
@@ -304,7 +306,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
                             <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
                             <Button asChild variant="outline">
-                                <Link href={`${pathname}/upgrade`}>Upgrade</Link>
+                                <Link href={`${pathname}/upgrade`}>{t('gameserver.dashboard.header.upgrade')}</Link>
                             </Button>
                         </div>
                     </CardHeader>
@@ -312,7 +314,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
                             <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
                                 <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="font-medium">Status:</div>
+                                    <div className="font-medium">{t('gameserver.dashboard.status')}</div>
                                     <div>
                                         <Badge
                                             variant={
@@ -325,29 +327,29 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                             <Status state={serverStats?.state} />
                                         </Badge>
                                     </div>
-                                    <div className="font-medium">Server IP:</div>
+                                    <div className="font-medium">{t('gameserver.dashboard.serverIP')}</div>
                                     <div>
                                         <span className="flex items-center gap-2">
-                                            {ipPortCombo ? ipPortCombo : 'No Allocation found'}
+                                            {ipPortCombo ? ipPortCombo : t('gameserver.dashboard.noAllocation')}
                                             {ipPortCombo && (
                                                 <button
                                                     type="button"
                                                     className="ml-2 rounded bg-slate-200 px-2 py-1 text-xs hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-                                                    title="Copy IP:Port"
+                                                    title={t('gameserver.dashboard.copyIPPort')}
                                                     onClick={() => {
                                                         navigator.clipboard.writeText(ipPortCombo);
                                                     }}
                                                 >
-                                                    Copy
+                                                    {t('gameserver.dashboard.copyIPPort')}
                                                 </button>
                                             )}
                                         </span>
                                     </div>
-                                    <div className="font-medium">Info:</div>
+                                    <div className="font-medium">{t('gameserver.dashboard.info')}</div>
                                     <div>
                                         <GameInfo server={server} apiKey={ptApiKey} />
                                     </div>
-                                    <div className="font-medium">Uptime:</div>
+                                    <div className="font-medium">{t('gameserver.dashboard.uptime')}</div>
                                     <div>
                                         {serverStats?.uptime !== undefined
                                             ? `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${Math.floor(serverStats.uptime % 60)}s`
@@ -357,7 +359,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                             </div>
 
                             <div className="rounded-md border bg-card p-3 sm:col-span-1 lg:col-span-8">
-                                <h3 className="mb-2 font-semibold">Server Controls</h3>
+                                <h3 className="mb-2 font-semibold">{t('gameserver.dashboard.serverControls')}</h3>
                                 <PowerBtns
                                     loading={loading}
                                     onStart={handleStart}
