@@ -1,14 +1,12 @@
-import React from 'react'
+import React from 'react';
 
 interface ReturnUpgradeInterface {
     serverId: string;
-    stripeSession: string
+    stripeSession: string;
 }
 
 function ReturnUpgrade() {
-    return (
-        <div>ReturnComponent</div>
-    )
+    return <div>ReturnComponent</div>;
 }
 
-export default ReturnUpgrade
+export default ReturnUpgrade;

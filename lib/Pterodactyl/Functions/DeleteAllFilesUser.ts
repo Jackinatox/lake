@@ -7,8 +7,8 @@ export default async function DeleteAllFilesUserServer(server: string, apiKey: s
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        Accept: 'application/json',
     };
 
     const response = await fetch(`${ptUrl}/api/client/servers/${server}/files/list`, {
@@ -25,15 +25,17 @@ export default async function DeleteAllFilesUserServer(server: string, apiKey: s
     const data = await response.json();
     const files = data.data;
 
-    const toDelete = files.filter((path: string) => path !== '/').map((file: any) => file.attributes.name);
+    const toDelete = files
+        .filter((path: string) => path !== '/')
+        .map((file: any) => file.attributes.name);
 
     const deleted = await fetch(`${ptUrl}/api/client/servers/${server}/files/delete`, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
-            root: "/",
-            files: toDelete
-        })
+            root: '/',
+            files: toDelete,
+        }),
     });
 
     return deleted;

@@ -9,16 +9,15 @@ export interface GameFlavor {
     versions: GameVersion[];
 }
 
-
 export enum GameServerStatus {
-  PROVISIONING, // Server created in pt
-  ACTIVE,  // Server is installed
-  
-  PAYMENT_PROCESSING,
-  // Errors:
-  DOES_NOT_EXIST,
-  PAYMENT_FAILED,
-  CREATION_FAILED, // Only when pt.createServer fails, not the actual installation
-  EXPIRED,
-  DELETED
+    PROVISIONING, // Server created in pt
+    ACTIVE, // Server is installed
+
+    PAYMENT_PROCESSING,
+    // Errors:
+    DOES_NOT_EXIST,
+    PAYMENT_FAILED,
+    CREATION_FAILED, // Only when pt.createServer fails, not the actual installation
+    EXPIRED,
+    DELETED,
 }

@@ -1,6 +1,8 @@
-import { env } from 'next-runtime-env'
-import 'server-only'
+import { env } from 'next-runtime-env';
+import 'server-only';
 
-import Stripe from 'stripe'
+import Stripe from 'stripe';
 
-export const stripe = new Stripe(env("STRIPE_SECRET_KEY") ?? "sample_key", { apiVersion: '2025-10-29.clover' })
+export const stripe = new Stripe(env('STRIPE_SECRET_KEY') ?? 'sample_key', {
+    apiVersion: '2025-10-29.clover',
+});

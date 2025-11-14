@@ -1,29 +1,44 @@
-"use client"
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
+import React, { useEffect, useState } from 'react';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { env } from 'next-runtime-env';
-import { Loader2, Save } from "lucide-react"
-import { ButtonGroup } from '@/components/ui/button-group'
-import { Button } from '@/components/ui/button'
-import { changeServerStartup } from '../../serverSettingsActions'
+import { Loader2, Save } from 'lucide-react';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Button } from '@/components/ui/button';
+import { changeServerStartup } from '../../serverSettingsActions';
 
 interface DockerImageSelectorProps {
-    serverIdentifier: string
-    apiKey?: string
-    disabled?: boolean
-    ptSelectedDockerImage: string
-    title: string
+    serverIdentifier: string;
+    apiKey?: string;
+    disabled?: boolean;
+    ptSelectedDockerImage: string;
+    title: string;
 }
 
-function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title, ptSelectedDockerImage }: DockerImageSelectorProps) {
+function DockerImageSelector({
+    serverIdentifier,
+    apiKey,
+    disabled = false,
+    title,
+    ptSelectedDockerImage,
+}: DockerImageSelectorProps) {
     const [dockerImages, setDockerImages] = useState<PterodactylDockerImage>({});
-    const [selectedDockerImage, setSelectedDockerImage] = useState<string>(ptSelectedDockerImage || "");
-    const [savedDockerImage, setSavedDockerImage] = useState<string>(ptSelectedDockerImage || "");
+    const [selectedDockerImage, setSelectedDockerImage] = useState<string>(
+        ptSelectedDockerImage || '',
+    );
+    const [savedDockerImage, setSavedDockerImage] = useState<string>(ptSelectedDockerImage || '');
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string>("");
+    const [error, setError] = useState<string>('');
 
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
@@ -32,44 +47,48 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
             if (!serverIdentifier || !apiKey || !ptUrl) return;
 
             setLoading(true);
-            setError("");
+            setError('');
 
             try {
                 const url = `${ptUrl}/api/client/servers/${serverIdentifier}/startup`;
                 const res = await fetch(url, {
-                    method: "GET",
+                    method: 'GET',
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${apiKey}`,
                     },
                 });
 
                 if (!res.ok) {
-                    throw new Error(`Failed to fetch startup data: ${res.status} ${res.statusText}`);
+                    throw new Error(
+                        `Failed to fetch startup data: ${res.status} ${res.statusText}`,
+                    );
                 }
 
                 const data: PterodactylStartupResponse = await res.json();
 
                 if (data.meta && data.meta.docker_images) {
                     // Sort docker images by name with trailing-number-aware sort
-                    const sortedEntries = Object.entries(data.meta.docker_images).sort(([a], [b]) => {
-                        const numA = extractTrailingNumber(a);
-                        const numB = extractTrailingNumber(b);
+                    const sortedEntries = Object.entries(data.meta.docker_images).sort(
+                        ([a], [b]) => {
+                            const numA = extractTrailingNumber(a);
+                            const numB = extractTrailingNumber(b);
 
-                        let comparison: number;
+                            let comparison: number;
 
-                        if (numA !== null && numB !== null) {
-                            comparison = numA - numB;
-                        } else if (numA !== null) {
-                            comparison = -1;
-                        } else if (numB !== null) {
-                            comparison = 1;
-                        } else {
-                            comparison = a.localeCompare(b, undefined, { sensitivity: 'base' }); // fallback
-                        }
+                            if (numA !== null && numB !== null) {
+                                comparison = numA - numB;
+                            } else if (numA !== null) {
+                                comparison = -1;
+                            } else if (numB !== null) {
+                                comparison = 1;
+                            } else {
+                                comparison = a.localeCompare(b, undefined, { sensitivity: 'base' }); // fallback
+                            }
 
-                        return -comparison;
-                    });
+                            return -comparison;
+                        },
+                    );
 
                     const sortedDockerImages: PterodactylDockerImage = {};
                     for (const [name, image] of sortedEntries) {
@@ -84,7 +103,7 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
                     }
                 }
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Failed to fetch docker images");
+                setError(err instanceof Error ? err.message : 'Failed to fetch docker images');
             } finally {
                 setLoading(false);
             }
@@ -104,7 +123,7 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
             await changeServerStartup(serverIdentifier, dockerImage);
             setSavedDockerImage(dockerImage);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to save docker image");
+            setError(err instanceof Error ? err.message : 'Failed to save docker image');
         } finally {
             setSaving(false);
         }
@@ -115,9 +134,7 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
             <div className="flex items-center gap-2">
                 <Label className="text-sm font-medium">{title}</Label>
                 <span className="text-xs text-muted-foreground italic">(Restart required)</span>
-                {(loading || saving) && (
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                )}
+                {(loading || saving) && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
             </div>
             <ButtonGroup className="w-full">
                 <Select
@@ -138,23 +155,24 @@ function DockerImageSelector({ serverIdentifier, apiKey, disabled = false, title
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-                <Button className="gap-2"
+                <Button
+                    className="gap-2"
                     variant="outline"
-                    disabled={selectedDockerImage === savedDockerImage || !selectedDockerImage || saving}
-                    onClick={() => handleDockerImageChange(selectedDockerImage)}>
+                    disabled={
+                        selectedDockerImage === savedDockerImage || !selectedDockerImage || saving
+                    }
+                    onClick={() => handleDockerImageChange(selectedDockerImage)}
+                >
                     <Save className="h-4 w-4" />
                     <span>{saving ? 'Saving...' : 'Save'}</span>
                 </Button>
             </ButtonGroup>
-            {error && (
-                <p className="text-sm text-red-500">Error: {error}</p>
-            )}
+            {error && <p className="text-sm text-red-500">Error: {error}</p>}
         </div>
-    )
+    );
 }
 
-export default DockerImageSelector
-
+export default DockerImageSelector;
 
 interface PterodactylDockerImage {
     [name: string]: string; // e.g., "Java 21": "ghcr.io/pterodactyl/yolks:java_21"

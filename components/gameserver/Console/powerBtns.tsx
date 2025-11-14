@@ -1,9 +1,8 @@
-"use client"
+'use client';
 
-import React from 'react'
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Power, RefreshCw, Square } from 'lucide-react';
-
 
 interface PowerBtnsProps {
     loading: boolean;
@@ -15,9 +14,9 @@ interface PowerBtnsProps {
 }
 
 export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }: PowerBtnsProps) {
-    const isOnline = state ? state.toLowerCase() === "online" : false
-    const isOffline = state ? state.toLowerCase() === "offline" : true
-    const isTransitioning = !isOnline && !isOffline
+    const isOnline = state ? state.toLowerCase() === 'online' : false;
+    const isOffline = state ? state.toLowerCase() === 'offline' : true;
+    const isTransitioning = !isOnline && !isOffline;
 
     return (
         <div className="flex flex-wrap gap-2">
@@ -62,5 +61,5 @@ export function PowerBtns({ loading, onStart, onRestart, onStop, onKill, state }
                 Kill
             </Button>
         </div>
-    )
+    );
 }

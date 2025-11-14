@@ -1,5 +1,5 @@
-import { RegisterForm } from '@/components/auth/register-form'
-import React from 'react'
+import { RegisterForm } from '@/components/auth/register-form';
+import React from 'react';
 
 function page() {
     return (
@@ -8,7 +8,7 @@ function page() {
                 <RegisterForm />
             </div>
         </div>
-    )
+    );
 }
 
-export default page
+export default page;

@@ -1,24 +1,26 @@
-import 'server-only'
+import 'server-only';
 
 import { prisma } from '@/prisma';
 import { HardwareConfig } from '@/models/config';
 
-export async function getGameServerConfig(server_id: string, userId: string): Promise<HardwareConfig | null> {
+export async function getGameServerConfig(
+    server_id: string,
+    userId: string,
+): Promise<HardwareConfig | null> {
     const server = await prisma.gameServer.findFirst({
         where: {
             userId: userId,
             ptServerId: server_id,
             status: {
-                notIn: ['CREATION_FAILED', 'DELETED']
-            }
+                notIn: ['CREATION_FAILED', 'DELETED'],
+            },
         },
         include: {
-            gameData: true
-        }
+            gameData: true,
+        },
     });
 
     if (!server) return null;
-
 
     const now = new Date();
     const expires = server.expires as Date;
@@ -30,7 +32,7 @@ export async function getGameServerConfig(server_id: string, userId: string): Pr
         ramMb: server.ramMB,
         diskMb: server.diskMB,
         durationsDays,
-        pfGroupId: server.locationId
+        pfGroupId: server.locationId,
         // TODO: Check if this needs ptId or dbId
     } satisfies HardwareConfig;
 }

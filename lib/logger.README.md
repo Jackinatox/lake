@@ -17,7 +17,7 @@ A unified logging solution for the Lake project that writes to the `ApplicationL
 The logger is already available in your project. Simply import it:
 
 ```typescript
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 ```
 
 ## Basic Usage
@@ -26,44 +26,44 @@ import { logger } from "@/lib/logger";
 
 ```typescript
 // Info log
-await logger.info("Server started successfully");
+await logger.info('Server started successfully');
 
 // Warning
-await logger.warn("High memory usage detected");
+await logger.warn('High memory usage detected');
 
 // Error
-await logger.error("Failed to connect to database");
+await logger.error('Failed to connect to database');
 
 // Fatal error
-await logger.fatal("Critical system failure");
+await logger.fatal('Critical system failure');
 ```
 
 ### Category-Specific Logging
 
 ```typescript
 // System events
-await logger.system("Application initialized");
+await logger.system('Application initialized');
 
 // Authentication
-await logger.auth("User logged in", "INFO", { userId: "user123" });
+await logger.auth('User logged in', 'INFO', { userId: 'user123' });
 
 // Payment events
-await logger.payment("Payment processed", "INFO", { 
-  userId: "user123",
-  details: { amount: 1000, currency: "USD" }
+await logger.payment('Payment processed', 'INFO', {
+    userId: 'user123',
+    details: { amount: 1000, currency: 'USD' },
 });
 
 // Game server events
-await logger.gameServer("Server created", "INFO", {
-  gameServerId: "server456",
-  userId: "user123"
+await logger.gameServer('Server created', 'INFO', {
+    gameServerId: 'server456',
+    userId: 'user123',
 });
 
 // Email events
-await logger.email("Welcome email sent", "INFO", { userId: "user123" });
+await logger.email('Welcome email sent', 'INFO', { userId: 'user123' });
 
 // Support tickets
-await logger.ticket("New ticket created", "INFO", { userId: "user123" });
+await logger.ticket('New ticket created', 'INFO', { userId: 'user123' });
 ```
 
 ## Advanced Usage
@@ -73,29 +73,29 @@ await logger.ticket("New ticket created", "INFO", { userId: "user123" });
 In API routes or server actions:
 
 ```typescript
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
-  const requestContext = logger.extractRequestContext(request);
-  
-  await logger.info("API endpoint called", "SYSTEM", {
-    ...requestContext,
-    details: { endpoint: "/api/servers" }
-  });
+    const requestContext = logger.extractRequestContext(request);
+
+    await logger.info('API endpoint called', 'SYSTEM', {
+        ...requestContext,
+        details: { endpoint: '/api/servers' },
+    });
 }
 ```
 
 With Next.js headers:
 
 ```typescript
-import { headers } from "next/headers";
-import { logger } from "@/lib/logger";
+import { headers } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 export async function myServerAction() {
-  const headersList = await headers();
-  const requestContext = logger.extractHeadersContext(headersList);
-  
-  await logger.info("Server action executed", "SYSTEM", requestContext);
+    const headersList = await headers();
+    const requestContext = logger.extractHeadersContext(headersList);
+
+    await logger.info('Server action executed', 'SYSTEM', requestContext);
 }
 ```
 
@@ -103,29 +103,29 @@ export async function myServerAction() {
 
 ```typescript
 try {
-  // Your code
+    // Your code
 } catch (error) {
-  await logger.logError(error, "GAME_SERVER", {
-    gameServerId: "server123",
-    userId: "user456",
-    details: { operation: "createServer" }
-  });
+    await logger.logError(error, 'GAME_SERVER', {
+        gameServerId: 'server123',
+        userId: 'user456',
+        details: { operation: 'createServer' },
+    });
 }
 ```
 
 ### Rich Context
 
 ```typescript
-await logger.payment("Checkout completed", "INFO", {
-  userId: session.user.id,
-  method: "POST",
-  path: "/api/checkout",
-  details: {
-    orderId: order.id,
-    amount: order.price,
-    gameType: order.gameData.name,
-    timestamp: new Date().toISOString()
-  }
+await logger.payment('Checkout completed', 'INFO', {
+    userId: session.user.id,
+    method: 'POST',
+    path: '/api/checkout',
+    details: {
+        orderId: order.id,
+        amount: order.price,
+        gameType: order.gameData.name,
+        timestamp: new Date().toISOString(),
+    },
 });
 ```
 
@@ -140,24 +140,24 @@ const recentErrors = await logger.getRecentErrors(50);
 ### Get User-Specific Logs
 
 ```typescript
-const userLogs = await logger.getUserLogs("user123", 100);
+const userLogs = await logger.getUserLogs('user123', 100);
 ```
 
 ### Get Game Server Logs
 
 ```typescript
-const serverLogs = await logger.getGameServerLogs("server456", 100);
+const serverLogs = await logger.getGameServerLogs('server456', 100);
 ```
 
 ### Custom Queries
 
 ```typescript
 const logs = await logger.query({
-  level: "ERROR",
-  type: "PAYMENT",
-  startDate: new Date("2025-01-01"),
-  endDate: new Date("2025-12-31"),
-  limit: 200
+    level: 'ERROR',
+    type: 'PAYMENT',
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
+    limit: 200,
 });
 ```
 
@@ -183,29 +183,29 @@ const logs = await logger.query({
 
 ```typescript
 // app/actions/checkout.ts
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 export async function checkoutAction(data: CheckoutFormData) {
-  try {
-    // ... checkout logic
-    
-    await logger.payment("Checkout session created", "INFO", {
-      userId: session.user.id,
-      details: {
-        sessionId: stripeSession.id,
-        amount: totalPrice,
-        type: orderType
-      }
-    });
-    
-    return { clientSecret: stripeSession.client_secret };
-  } catch (error) {
-    await logger.logError(error, "PAYMENT", {
-      userId: session.user.id,
-      details: { formData: data }
-    });
-    throw error;
-  }
+    try {
+        // ... checkout logic
+
+        await logger.payment('Checkout session created', 'INFO', {
+            userId: session.user.id,
+            details: {
+                sessionId: stripeSession.id,
+                amount: totalPrice,
+                type: orderType,
+            },
+        });
+
+        return { clientSecret: stripeSession.client_secret };
+    } catch (error) {
+        await logger.logError(error, 'PAYMENT', {
+            userId: session.user.id,
+            details: { formData: data },
+        });
+        throw error;
+    }
 }
 ```
 
@@ -213,25 +213,25 @@ export async function checkoutAction(data: CheckoutFormData) {
 
 ```typescript
 // app/webhook/route.ts
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
-  const requestContext = logger.extractRequestContext(request);
-  
-  try {
-    // ... webhook processing
-    
-    await logger.payment("Webhook processed successfully", "INFO", {
-      ...requestContext,
-      details: { 
-        eventType: event.type,
-        sessionId: session.id 
-      }
-    });
-  } catch (error) {
-    await logger.logError(error, "PAYMENT", requestContext);
-    return new Response("Webhook error", { status: 400 });
-  }
+    const requestContext = logger.extractRequestContext(request);
+
+    try {
+        // ... webhook processing
+
+        await logger.payment('Webhook processed successfully', 'INFO', {
+            ...requestContext,
+            details: {
+                eventType: event.type,
+                sessionId: session.id,
+            },
+        });
+    } catch (error) {
+        await logger.logError(error, 'PAYMENT', requestContext);
+        return new Response('Webhook error', { status: 400 });
+    }
 }
 ```
 
@@ -239,29 +239,29 @@ export async function POST(request: Request) {
 
 ```typescript
 // lib/Pterodactyl/createServers/provisionServer.ts
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
 export async function provisionServer(order: GameServerOrder) {
-  try {
-    const server = await createPtServer(order);
-    
-    await logger.gameServer("Server provisioned", "INFO", {
-      userId: order.userId,
-      gameServerId: server.id,
-      details: {
-        ptServerId: server.ptServerId,
-        gameType: order.creationGameData?.name
-      }
-    });
-    
-    return server;
-  } catch (error) {
-    await logger.logError(error, "GAME_SERVER", {
-      userId: order.userId,
-      details: { orderId: order.id }
-    });
-    throw error;
-  }
+    try {
+        const server = await createPtServer(order);
+
+        await logger.gameServer('Server provisioned', 'INFO', {
+            userId: order.userId,
+            gameServerId: server.id,
+            details: {
+                ptServerId: server.ptServerId,
+                gameType: order.creationGameData?.name,
+            },
+        });
+
+        return server;
+    } catch (error) {
+        await logger.logError(error, 'GAME_SERVER', {
+            userId: order.userId,
+            details: { orderId: order.id },
+        });
+        throw error;
+    }
 }
 ```
 
@@ -277,16 +277,16 @@ Example switching to console + file:
 
 ```typescript
 class Logger {
-  private writeToFile(entry: LogEntry) {
-    // File writing logic
-  }
+    private writeToFile(entry: LogEntry) {
+        // File writing logic
+    }
 
-  private async log(entry: LogEntry): Promise<void> {
-    console.log(entry);
-    this.writeToFile(entry);
-  }
-  
-  // Rest of the API stays the same
+    private async log(entry: LogEntry): Promise<void> {
+        console.log(entry);
+        this.writeToFile(entry);
+    }
+
+    // Rest of the API stays the same
 }
 ```
 
@@ -317,8 +317,8 @@ Use the built-in query methods to create monitoring dashboards:
 // Get error rate
 const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
 const errors = await logger.query({
-  level: "ERROR",
-  startDate: last24h
+    level: 'ERROR',
+    startDate: last24h,
 });
 
 // Monitor specific user activity
@@ -326,8 +326,8 @@ const userActivity = await logger.getUserLogs(userId);
 
 // Track server issues
 const serverErrors = await logger.query({
-  type: "GAME_SERVER",
-  level: "ERROR",
-  limit: 100
+    type: 'GAME_SERVER',
+    level: 'ERROR',
+    limit: 100,
 });
 ```

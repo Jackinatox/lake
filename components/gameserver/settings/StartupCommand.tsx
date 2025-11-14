@@ -1,9 +1,9 @@
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import React from 'react'
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import React from 'react';
 
 interface StartupCommandProps {
-    command: string
+    command: string;
 }
 
 function StartupCommand({ command }: StartupCommandProps) {
@@ -21,7 +21,7 @@ function StartupCommand({ command }: StartupCommandProps) {
                 This command is automatically generated and cannot be modified.
             </p>
         </div>
-    )
+    );
 }
 
-export default StartupCommand
+export default StartupCommand;

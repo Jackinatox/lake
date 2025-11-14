@@ -1,13 +1,13 @@
-import { prisma } from "@/prisma";
-import { GameServerOrder } from "@prisma/client";
+import { prisma } from '@/prisma';
+import { GameServerOrder } from '@prisma/client';
 import { env } from 'next-runtime-env';
-import { createPtClient } from "../ptAdminClient";
-import { logger } from "@/lib/logger";
-import toggleSuspendGameServer from "../suspendServer/suspendServer";
+import { createPtClient } from '../ptAdminClient';
+import { logger } from '@/lib/logger';
+import toggleSuspendGameServer from '../suspendServer/suspendServer';
 
 /**
  * Upgrades a game server's resources (CPU and RAM) based on a server order.
- * 
+ *
  * @remarks
  * This function does not perform user authentication. Ensure proper authentication
  * is handled before calling this function.
@@ -16,7 +16,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
     const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const ptApiKey = env('PTERODACTYL_API_KEY');
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
-        where: { id: serverOrder.gameServerId || "", ptAdminId: { not: null } },
+        where: { id: serverOrder.gameServerId || '', ptAdminId: { not: null } },
         include: { user: true },
     });
     const pt = createPtClient();
@@ -28,10 +28,10 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
             {
-                method: "PATCH",
+                method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${ptApiKey}`,
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     allocation: ptServer.allocation,
@@ -50,8 +50,11 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
         );
 
         if (!response.ok) {
-            logger.error("PT API Error: ", "GAME_SERVER", { details: await response.json(), gameServerId: gameServer.id });
-            throw new Error("PT API Error: " + (await response.json()));
+            logger.error('PT API Error: ', 'GAME_SERVER', {
+                details: await response.json(),
+                gameServerId: gameServer.id,
+            });
+            throw new Error('PT API Error: ' + (await response.json()));
         }
         await prisma.gameServer.update({
             where: { id: gameServer.id },
@@ -63,12 +66,12 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             },
         });
     } catch (error) {
-        console.error("Error upgrading game server:", error);
-        logger.fatal("Error upgrading game server", "GAME_SERVER", {
+        console.error('Error upgrading game server:', error);
+        logger.fatal('Error upgrading game server', 'GAME_SERVER', {
             details: { error, gameServerId: gameServer.id },
             gameServerId: gameServer.id,
             userId: gameServer.userId,
         });
-        throw new Error("Failed to upgrade game server");
+        throw new Error('Failed to upgrade game server');
     }
 }

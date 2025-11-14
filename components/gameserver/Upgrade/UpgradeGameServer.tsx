@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
@@ -37,8 +37,8 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             cpuPercent: newHardwareConfig.cpuPercent,
             diskMB: newHardwareConfig.diskMb,
             duration: newHardwareConfig.durationsDays,
-            ramMB: newHardwareConfig.ramMb
-        }
+            ramMB: newHardwareConfig.ramMb,
+        };
 
         try {
             setLoading(true);
@@ -47,30 +47,24 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
 
             setClientSecret((secret as { client_secret: string }).client_secret);
             setStep('pay');
-
-
         } catch (error) {
-            console.error("Error during checkout:", error);
+            console.error('Error during checkout:', error);
             toast({
-                title: "Checkout Error",
-                description: "An error occurred during the checkout process.",
-                variant: "destructive"
+                title: 'Checkout Error',
+                description: 'An error occurred during the checkout process.',
+                variant: 'destructive',
             });
         } finally {
             setLoading(false);
         }
-
-
-    }
+    };
 
     return (
         <div className="space-y-4">
             {step === 'configure' && (
                 <>
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={`/gameserver/${serverId}`}>
-                            ← Go back
-                        </Link>
+                        <Link href={`/gameserver/${serverId}`}>← Go back</Link>
                     </Button>
                     <UpgradeHardwareConfig
                         performanceOptions={performanceOptions}
@@ -86,16 +80,17 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
                         ← Back to configuration
                     </Button>
                     <div className="w-full">
-                        <CustomServerPaymentElements className="w-full" clientSecret={clientSecret} />
+                        <CustomServerPaymentElements
+                            className="w-full"
+                            clientSecret={clientSecret}
+                        />
                     </div>
                 </Card>
             )}
 
-            {loading && (
-                <div className="text-sm text-muted-foreground">Preparing checkout…</div>
-            )}
+            {loading && <div className="text-sm text-muted-foreground">Preparing checkout…</div>}
         </div>
-    )
+    );
 }
 
-export default UpgradeGameServer
+export default UpgradeGameServer;

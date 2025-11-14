@@ -1,5 +1,5 @@
-import { prisma } from "@/prisma";
-import { generateFromEmail, generateUsername } from "unique-username-generator";
+import { prisma } from '@/prisma';
+import { generateFromEmail, generateUsername } from 'unique-username-generator';
 
 const MAX_ATTEMPTS = 100;
 
@@ -28,11 +28,11 @@ export default async function generateUniqueUserName(email: string): Promise<str
         attempt++;
     }
 
-    throw new Error("Unable to generate a unique username after multiple attempts.");
+    throw new Error('Unable to generate a unique username after multiple attempts.');
 }
 
 function normalizeCandidate(username: string): string {
-    return username.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+    return username.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 }
 
 async function checkAvailability(username: string): Promise<boolean> {

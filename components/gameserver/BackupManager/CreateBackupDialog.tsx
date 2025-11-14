@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -8,30 +8,26 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
 interface CreateBackupDialogProps {
-    open: boolean
-    onOpenChange: (open: boolean) => void
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     onCreate: (payload: {
-        name?: string
-        ignoredPatterns: string[]
-        isLocked: boolean
-    }) => Promise<boolean>
-    isSubmitting: boolean
-    disabled?: boolean
+        name?: string;
+        ignoredPatterns: string[];
+        isLocked: boolean;
+    }) => Promise<boolean>;
+    isSubmitting: boolean;
+    disabled?: boolean;
 }
 
-const ignoredPlaceholder = [
-    "*.log",
-    "cache/*",
-    "temp/*",
-].join("\n")
+const ignoredPlaceholder = ['*.log', 'cache/*', 'temp/*'].join('\n');
 
 export function CreateBackupDialog({
     open,
@@ -40,35 +36,35 @@ export function CreateBackupDialog({
     isSubmitting,
     disabled,
 }: CreateBackupDialogProps) {
-    const [name, setName] = useState("")
-    const [ignored, setIgnored] = useState("")
-    const [isLocked, setIsLocked] = useState(false)
+    const [name, setName] = useState('');
+    const [ignored, setIgnored] = useState('');
+    const [isLocked, setIsLocked] = useState(false);
 
     useEffect(() => {
         if (!open) {
-            setName("")
-            setIgnored("")
-            setIsLocked(false)
+            setName('');
+            setIgnored('');
+            setIsLocked(false);
         }
-    }, [open])
+    }, [open]);
 
     const handleSubmit = async () => {
-        if (disabled) return false
+        if (disabled) return false;
         const wasCreated = await onCreate({
             name: name.trim() || undefined,
             ignoredPatterns: ignored
-                .split("\n")
+                .split('\n')
                 .map((line) => line.trim())
                 .filter(Boolean),
             isLocked,
-        })
+        });
 
         if (wasCreated) {
-            onOpenChange(false)
+            onOpenChange(false);
         }
 
-        return wasCreated
-    }
+        return wasCreated;
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,8 +72,8 @@ export function CreateBackupDialog({
                 <DialogHeader>
                     <DialogTitle>Create backup</DialogTitle>
                     <DialogDescription>
-                        Capture the server state. You can optionally name the backup,
-                        lock it from accidental deletion, and exclude temporary files.
+                        Capture the server state. You can optionally name the backup, lock it from
+                        accidental deletion, and exclude temporary files.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -116,11 +112,7 @@ export function CreateBackupDialog({
                                 </span>
                             </Label>
                         </div>
-                        <Switch
-                            id="backup-lock"
-                            checked={isLocked}
-                            onCheckedChange={setIsLocked}
-                        />
+                        <Switch id="backup-lock" checked={isLocked} onCheckedChange={setIsLocked} />
                     </div>
                 </div>
 
@@ -138,10 +130,10 @@ export function CreateBackupDialog({
                         onClick={handleSubmit}
                         disabled={isSubmitting || disabled}
                     >
-                        {isSubmitting ? "Creating..." : "Create backup"}
+                        {isSubmitting ? 'Creating...' : 'Create backup'}
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    )
+    );
 }

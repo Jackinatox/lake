@@ -1,24 +1,24 @@
-"use server"
+'use server';
 
-import { MinecraftGameId, SatisfactoryGameId } from "@/app/GlobalConstants";
-import { auth } from "@/auth";
-import { buildMC_ENVs_and_startup } from "@/lib/Pterodactyl/buildMinecraftENVs";
-import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer";
-import PTUserServerPowerAction from "@/lib/Pterodactyl/Functions/StopPTUserServer";
-import type { GameConfig } from "@/models/config";
-import { prisma } from "@/prisma";
-import type { GameData } from "@prisma/client";
+import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
+import { auth } from '@/auth';
+import { buildMC_ENVs_and_startup } from '@/lib/Pterodactyl/buildMinecraftENVs';
+import ReinstallPTUserServer from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
+import PTUserServerPowerAction from '@/lib/Pterodactyl/Functions/StopPTUserServer';
+import type { GameConfig } from '@/models/config';
+import { prisma } from '@/prisma';
+import type { GameData } from '@prisma/client';
 import { env } from 'next-runtime-env';
-import { headers } from "next/headers";
+import { headers } from 'next/headers';
 
 const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 const ptAdminKey = env('PTERODACTYL_API_KEY');
 
 interface SubmitGameChangeInput {
-    serverId: string
-    gameId: number
-    gameConfig: GameConfig
-    deleteFiles?: boolean
+    serverId: string;
+    gameId: number;
+    gameConfig: GameConfig;
+    deleteFiles?: boolean;
 }
 
 export async function changeGame({
@@ -29,10 +29,10 @@ export async function changeGame({
 }: SubmitGameChangeInput) {
     const session = await auth.api.getSession({
         headers: await headers(),
-    })
+    });
 
     if (!session || !session.user || !session.user.ptKey) {
-        throw new Error("Not authenticated")
+        throw new Error('Not authenticated');
     }
 
     const [gameServer, newGameData] = await Promise.all([
@@ -41,39 +41,42 @@ export async function changeGame({
                 ptServerId: serverId,
                 userId: session.user.id,
                 status: {
-                    notIn: ["CREATION_FAILED", "DELETED"],
+                    notIn: ['CREATION_FAILED', 'DELETED'],
                 },
-            }
+            },
         }),
 
-        prisma.gameData.findUnique({ where: { id: gameId } })
+        prisma.gameData.findUnique({ where: { id: gameId } }),
     ]);
 
     if (!gameServer) {
-        throw new Error("Server not found or wrong user")
+        throw new Error('Server not found or wrong user');
     }
 
     if (!newGameData) {
-        throw new Error("Selected game not found")
+        throw new Error('Selected game not found');
     }
 
     await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
 
-    await new Promise(resolve => setTimeout(resolve, 200));    // Wait so the server is really killed
+    await new Promise((resolve) => setTimeout(resolve, 200)); // Wait so the server is really killed
 
-    const response = await fetch(`${ptUrl}/api/application/servers/${gameServer.ptAdminId}/startup`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${ptAdminKey}`,
-            'Accept': 'application/json',
+    const response = await fetch(
+        `${ptUrl}/api/application/servers/${gameServer.ptAdminId}/startup`,
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${ptAdminKey}`,
+                Accept: 'application/json',
+            },
+            body: JSON.stringify(await buildBody(gameConfig, newGameData)),
         },
-        body: JSON.stringify(await buildBody(gameConfig, newGameData)),
-    });
+    );
 
     if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error response from Pterodactyl:", errorData);
+        console.error('Error response from Pterodactyl:', errorData);
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
 
@@ -82,32 +85,33 @@ export async function changeGame({
         data: {
             gameDataId: newGameData.id,
             gameConfig: gameConfig as any,
-        }
+        },
     });
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     // Reinstall the server, optionally deleting all files first
     const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey, deleteFiles);
 
     if (!response2.ok) {
         const errorData = await response2.json();
-        console.error("Error response from Pterodactyl:", errorData);
-        throw new Error(`Failed to restart server: ${response2.status} ${JSON.stringify(errorData)}`);
+        console.error('Error response from Pterodactyl:', errorData);
+        throw new Error(
+            `Failed to restart server: ${response2.status} ${JSON.stringify(errorData)}`,
+        );
     }
 
     return {
         success: true,
-    }
+    };
 }
-
 
 async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
     const plainBody = {
         skip_scripts: false,
         egg: gameConfig.eggId,
-        image: gameConfig.dockerImage
-    }
+        image: gameConfig.dockerImage,
+    };
 
     let body;
     switch (newGameData.id) {
@@ -116,13 +120,11 @@ async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
             break;
         case SatisfactoryGameId:
             // Build body for game 2
-            throw new Error("Not implemented yet");
+            throw new Error('Not implemented yet');
             break;
         default:
-            throw new Error("Unsupported game ID")
+            throw new Error('Unsupported game ID');
     }
 
     return { ...plainBody, ...body };
 }
-
-

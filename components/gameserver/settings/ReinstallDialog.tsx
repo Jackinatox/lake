@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -7,13 +7,13 @@ import {
     DialogTitle,
     DialogDescription,
     DialogClose,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { RefreshCw } from "lucide-react";
-import ReinstallPTUserServer from "@/lib/Pterodactyl/Functions/ReinstallPTUserServer";
-import { notifyReinstallStarted } from "../serverEvents";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { RefreshCw } from 'lucide-react';
+import ReinstallPTUserServer from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
+import { notifyReinstallStarted } from '../serverEvents';
 
 interface ReinstallDialogProps {
     apiKey: string;
@@ -38,7 +38,7 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
         const response = await ReinstallPTUserServer(server_id, apiKey, deleteAllFiles);
 
         if (!response.ok) {
-            console.error("Failed to reinstall server:", response.statusText);
+            console.error('Failed to reinstall server:', response.statusText);
         }
 
         setIsLoading(false);
@@ -57,7 +57,9 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                     <DialogHeader>
                         <DialogTitle>Reinstall Server?</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to reinstall your server? This will reinstall the server software. All data will be preserved unless you choose to delete all files below.
+                            Are you sure you want to reinstall your server? This will reinstall the
+                            server software. All data will be preserved unless you choose to delete
+                            all files below.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center gap-2 pt-4">
@@ -73,10 +75,16 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
-                            <Button variant="outline" disabled={isLoading}>Cancel</Button>
+                            <Button variant="outline" disabled={isLoading}>
+                                Cancel
+                            </Button>
                         </DialogClose>
-                        <Button variant="destructive" onClick={handleReinstall} disabled={isLoading}>
-                            {isLoading ? "Reinstalling..." : "Reinstall"}
+                        <Button
+                            variant="destructive"
+                            onClick={handleReinstall}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Reinstalling...' : 'Reinstall'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

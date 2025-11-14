@@ -1,27 +1,27 @@
-"use client"
+'use client';
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Download, Loader2, Lock, RotateCcw, Trash2, Unlock } from "lucide-react"
-import type { Backup } from "./types"
-import { deriveStatusLabel, formatBytes, formatDateTime } from "./utils"
-import { RestoreBackupDialog } from "./RestoreBackupDialog"
-import { DeleteBackupDialog } from "./DeleteBackupDialog"
-import { UnlockBackupDialog } from "./UnlockBackupDialog"
-import { GameServer } from "@/models/gameServerModel"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Download, Loader2, Lock, RotateCcw, Trash2, Unlock } from 'lucide-react';
+import type { Backup } from './types';
+import { deriveStatusLabel, formatBytes, formatDateTime } from './utils';
+import { RestoreBackupDialog } from './RestoreBackupDialog';
+import { DeleteBackupDialog } from './DeleteBackupDialog';
+import { UnlockBackupDialog } from './UnlockBackupDialog';
+import { GameServer } from '@/models/gameServerModel';
 
 interface BackupCardProps {
-    backup: Backup
-    server: GameServer
-    onDownload: (backup: Backup) => Promise<void>
-    onRestore: (backup: Backup, options: { truncate: boolean }) => Promise<boolean>
-    onDelete: (backup: Backup) => Promise<boolean>
-    onUnlock: (backup: Backup) => Promise<boolean>
-    disabled?: boolean
-    isDownloading?: boolean
-    isUnlocking?: boolean
+    backup: Backup;
+    server: GameServer;
+    onDownload: (backup: Backup) => Promise<void>;
+    onRestore: (backup: Backup, options: { truncate: boolean }) => Promise<boolean>;
+    onDelete: (backup: Backup) => Promise<boolean>;
+    onUnlock: (backup: Backup) => Promise<boolean>;
+    disabled?: boolean;
+    isDownloading?: boolean;
+    isUnlocking?: boolean;
 }
 
 export function BackupCard({
@@ -35,27 +35,33 @@ export function BackupCard({
     isDownloading,
     isUnlocking,
 }: BackupCardProps) {
-    const statusLabel = deriveStatusLabel(backup.status)
-    const statusVariant = backup.status === "failed" ? "destructive" : backup.status === "creating" ? "secondary" : "default"
-    const ignoredLabel = backup.ignoredFiles.length > 0 ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? "" : "s"}` : "No files"
+    const statusLabel = deriveStatusLabel(backup.status);
+    const statusVariant =
+        backup.status === 'failed'
+            ? 'destructive'
+            : backup.status === 'creating'
+              ? 'secondary'
+              : 'default';
+    const ignoredLabel =
+        backup.ignoredFiles.length > 0
+            ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? '' : 's'}`
+            : 'No files';
 
     const handleDownload = async () => {
-        if (disabled) return
-        await onDownload(backup)
-    }
+        if (disabled) return;
+        await onDownload(backup);
+    };
 
-    const handleRestore = async (options: { truncate: boolean }) => onRestore(backup, options)
-    const handleDelete = async () => onDelete(backup)
-    const handleUnlock = async () => onUnlock(backup)
+    const handleRestore = async (options: { truncate: boolean }) => onRestore(backup, options);
+    const handleDelete = async () => onDelete(backup);
+    const handleUnlock = async () => onUnlock(backup);
 
     return (
         <Card className="flex flex-col">
             <CardHeader className="p-4">
                 <div className="flex items-start justify-between gap-3">
                     <div>
-                        <CardTitle className="text-base font-semibold">
-                            {backup.name}
-                        </CardTitle>
+                        <CardTitle className="text-base font-semibold">{backup.name}</CardTitle>
                         <p className="text-xs text-muted-foreground">
                             Created {formatDateTime(backup.createdAt)}
                         </p>
@@ -165,5 +171,5 @@ export function BackupCard({
                 )}
             </CardFooter>
         </Card>
-    )
+    );
 }

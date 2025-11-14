@@ -1,8 +1,8 @@
 export type UserSettings = {
-    NewsLetter: NotificationSettings
-    ServerExpires7Days: NotificationSettings
-    ServerExpires1Day: NotificationSettings
-    ServerDeleted: NotificationSettings
+    NewsLetter: NotificationSettings;
+    ServerExpires7Days: NotificationSettings;
+    ServerExpires1Day: NotificationSettings;
+    ServerDeleted: NotificationSettings;
 };
 
 type NotificationSettings = {

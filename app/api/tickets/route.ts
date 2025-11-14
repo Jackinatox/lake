@@ -12,8 +12,8 @@ const MAX_SUBJECT_LENGTH = 120;
 export async function POST(req: NextRequest) {
     try {
         const session = await auth.api.getSession({
-            headers: await headers() // you need to pass the headers object.
-        })
+            headers: await headers(), // you need to pass the headers object.
+        });
 
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
         const data = await req.json();
         const rawDescription = typeof data.description === 'string' ? data.description.trim() : '';
         const rawSubject = typeof data.subject === 'string' ? data.subject.trim() : '';
-        const rawCategory = typeof data.category === 'string' ? data.category.toUpperCase() : undefined;
+        const rawCategory =
+            typeof data.category === 'string' ? data.category.toUpperCase() : undefined;
 
         if (!rawDescription) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -37,9 +38,10 @@ export async function POST(req: NextRequest) {
         }
 
         const availableCategories = new Set(Object.values(TicketCategory));
-        const category = rawCategory && availableCategories.has(rawCategory as TicketCategory)
-            ? (rawCategory as TicketCategory)
-            : TicketCategory.GENERAL;
+        const category =
+            rawCategory && availableCategories.has(rawCategory as TicketCategory)
+                ? (rawCategory as TicketCategory)
+                : TicketCategory.GENERAL;
 
         const ticket = await prisma.supportTicket.create({
             data: {
@@ -48,31 +50,33 @@ export async function POST(req: NextRequest) {
                 message: rawDescription,
                 category,
                 status: 'OPEN',
-            }
+            },
         });
 
         sendTicketCreatedEmail(session.user.email, ticket).catch((error) => {
-            logger.email(
-                "Failed to send support ticket created email",
-                "ERROR",
-                {
+            logger
+                .email('Failed to send support ticket created email', 'ERROR', {
                     userId: session.user.id,
                     details: {
                         ticketId: ticket.ticketId,
                         error: error instanceof Error ? error.message : String(error),
                     },
-                }
-            ).catch((logError) => {
-                console.error("Failed to record email send failure", logError);
-            });
+                })
+                .catch((logError) => {
+                    console.error('Failed to record email send failure', logError);
+                });
         });
 
         return NextResponse.json({ ticket: ticket }, { status: 201 });
     } catch (error) {
-        logger.logError(error as Error, "SUPPORT_TICKET", {
-            method: "POST",
-            path: "/api/tickets",
-        }).catch(() => { /* swallow logging errors */ });
+        logger
+            .logError(error as Error, 'SUPPORT_TICKET', {
+                method: 'POST',
+                path: '/api/tickets',
+            })
+            .catch(() => {
+                /* swallow logging errors */
+            });
         return NextResponse.json({ error: JSON.stringify(error) }, { status: 400 });
     }
 }

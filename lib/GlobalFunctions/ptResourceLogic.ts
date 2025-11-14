@@ -1,6 +1,6 @@
-import { HardwareConfig } from "@/models/config";
-import { PerformanceGroup } from "@/models/prisma";
-import { OrderType } from "@prisma/client";
+import { HardwareConfig } from '@/models/config';
+import { PerformanceGroup } from '@/models/prisma';
+import { OrderType } from '@prisma/client';
 
 // Config
 const minBackups = 2;
@@ -19,15 +19,13 @@ const maxDisk = 102400; // 100GiB in MiB
  * @returns The calculated disk size in MiB, constrained by the minimum and maximum disk size limits.
  */
 export function calcDiskSize(cpu: number, ramSize: number): number {
-  // Calculates Disk like this: threads*2 + ramGiB*2 min and Max Values set
-  return 81_920;
+    // Calculates Disk like this: threads*2 + ramGiB*2 min and Max Values set
+    return 81_920;
 
-  return Math.max(
-    Math.min(
-      maxDisk,
-      Math.ceil(cpu / 50 + ramSize / 512) * 1024), // threads*2 + ramGiB*2;
-    minDisk
-  );
+    return Math.max(
+        Math.min(maxDisk, Math.ceil(cpu / 50 + ramSize / 512) * 1024), // threads*2 + ramGiB*2;
+        minDisk,
+    );
 }
 
 /**
@@ -41,42 +39,41 @@ export function calcDiskSize(cpu: number, ramSize: number): number {
  * @returns The calculated number of backups, constrained by minimum and maximum values.
  */
 export function calcBackups(cpu: number, ramSize: number): number {
-  // Calculates Backups like this: cores + RamGB * 0.8 min and max Values set
-  return 10;
-  return Math.max(
-    Math.min(maxBackups, Math.ceil(cpu / 100 + (ramSize / 1024) * 0.8)),
-    minBackups
-  );
+    // Calculates Backups like this: cores + RamGB * 0.8 min and max Values set
+    return 10;
+    return Math.max(
+        Math.min(maxBackups, Math.ceil(cpu / 100 + (ramSize / 1024) * 0.8)),
+        minBackups,
+    );
 }
 
 export function getEggId(gameName: string): number {
-  switch (gameName.toLowerCase()) {
-    case "minecraft":
-      return 5;
-    // case 'satisfactory':
-    //     return 2;
-    // case 'terraria':
-    //     return 3;
-    // case 'ark':
-    //     return 4;
-    default:
-      return -1;
-  }
+    switch (gameName.toLowerCase()) {
+        case 'minecraft':
+            return 5;
+        // case 'satisfactory':
+        //     return 2;
+        // case 'terraria':
+        //     return 3;
+        // case 'ark':
+        //     return 4;
+        default:
+            return -1;
+    }
 }
 
-
 export function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
+    if (bytes === 0) return '0 B';
 
-  const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
-  const base = 1024;
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+    const base = 1024;
 
-  const unitIndex = Math.floor(Math.log(Math.abs(bytes)) / Math.log(base));
-  const clampedIndex = Math.min(unitIndex, units.length - 1);
+    const unitIndex = Math.floor(Math.log(Math.abs(bytes)) / Math.log(base));
+    const clampedIndex = Math.min(unitIndex, units.length - 1);
 
-  const value = bytes / Math.pow(base, clampedIndex);
+    const value = bytes / Math.pow(base, clampedIndex);
 
-  const formatted = parseFloat(value.toFixed(1));
+    const formatted = parseFloat(value.toFixed(1));
 
-  return `${formatted} ${units[clampedIndex]}`;
+    return `${formatted} ${units[clampedIndex]}`;
 }

@@ -1,7 +1,7 @@
-import nodemailer from "nodemailer";
-import { logger } from "../logger";
-import { prisma } from "@/prisma";
-import { EmailType } from "@prisma/client";
+import nodemailer from 'nodemailer';
+import { logger } from '../logger';
+import { prisma } from '@/prisma';
+import { EmailType } from '@prisma/client';
 
 const mailer = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -10,9 +10,8 @@ const mailer = nodemailer.createTransport({
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
-    }
+    },
 });
-
 
 export async function sendMail(to: string, subject: string, html: string, type: EmailType) {
     const email = await prisma.email.create({
@@ -21,8 +20,8 @@ export async function sendMail(to: string, subject: string, html: string, type: 
             subject: subject,
             html: html,
             type: type,
-            status: "SENT"
-        }
+            status: 'SENT',
+        },
     });
 
     try {
@@ -33,14 +32,17 @@ export async function sendMail(to: string, subject: string, html: string, type: 
             html,
         });
     } catch (error) {
-        await prisma.email.update({
-            where: { id: email.id },
-            data: { status: "FAILED" }
-        }).catch(() => { /* ignore */ });
+        await prisma.email
+            .update({
+                where: { id: email.id },
+                data: { status: 'FAILED' },
+            })
+            .catch(() => {
+                /* ignore */
+            });
         console.error(`Error sending: ${subject}`, error);
-        await logger.error(`Failed to send: ${subject}`, "EMAIL", {
+        await logger.error(`Failed to send: ${subject}`, 'EMAIL', {
             details: { error: (error as Error)?.message, to },
         });
     }
 }
-

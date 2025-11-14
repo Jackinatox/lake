@@ -1,14 +1,14 @@
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Clock } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Clock } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 interface ServerExpiredProps {
-    serverId: string
+    serverId: string;
 }
 
 export default async function ServerExpired({ serverId }: ServerExpiredProps) {
-    const t = await getTranslations("ServerExpired");
+    const t = await getTranslations('ServerExpired');
 
     return (
         <div className="flex justify-center items-center min-h-screen p-4">
@@ -17,21 +17,19 @@ export default async function ServerExpired({ serverId }: ServerExpiredProps) {
                     <div className="flex justify-center mb-2">
                         <Clock className="w-12 h-12 text-orange-500" />
                     </div>
-                    <h2 className="text-xl font-semibold">{t("title")}</h2>
+                    <h2 className="text-xl font-semibold">{t('title')}</h2>
                 </CardHeader>
 
                 <CardContent>
-                    <p className="text-muted-foreground text-sm sm:text-base">
-                        {t("description")}
-                    </p>
+                    <p className="text-muted-foreground text-sm sm:text-base">{t('description')}</p>
                 </CardContent>
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button asChild>
-                        <a href={`/gameserver/${serverId}/upgrade`}>{t("extendServer")}</a>
+                        <a href={`/gameserver/${serverId}/upgrade`}>{t('extendServer')}</a>
                     </Button>
                     <Button variant="outline" asChild>
-                        <a href="/">{t("home")}</a>
+                        <a href="/">{t('home')}</a>
                     </Button>
                 </CardFooter>
             </Card>

@@ -1,11 +1,11 @@
-"use server"
+'use server';
 
-import { ResetPasswordForm } from "@/components/auth/reset-password-form"
+import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
 export default async function ResetPasswordPage({
     searchParams,
 }: {
-    searchParams: Promise<{ [key: string]: string | undefined }>
+    searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
     const params = await searchParams;
 
@@ -18,5 +18,5 @@ export default async function ResetPasswordPage({
                 <ResetPasswordForm token={token} initialError={error} />
             </div>
         </div>
-    )
+    );
 }

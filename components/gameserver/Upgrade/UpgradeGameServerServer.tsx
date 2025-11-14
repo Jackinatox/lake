@@ -9,18 +9,26 @@ interface UpgradeGameServerServerProps {
     userId: string;
 }
 
-
-export default async function UpgradeGameServerServer({ serverId, apiKey, userId }: UpgradeGameServerServerProps) {
+export default async function UpgradeGameServerServer({
+    serverId,
+    apiKey,
+    userId,
+}: UpgradeGameServerServerProps) {
     const performanceOptions = await fetchPerformanceGroups();
     const minOptions = await getGameServerConfig(serverId, userId);
 
     if (!minOptions) {
-        return <NotAllowedMessage />
+        return <NotAllowedMessage />;
     }
 
     return (
-        <div className='w-full max-w-7xl mx-auto'>
-            <UpgradeGameServer serverId={serverId} apiKey={apiKey} performanceOptions={performanceOptions} minOptions={minOptions} />
+        <div className="w-full max-w-7xl mx-auto">
+            <UpgradeGameServer
+                serverId={serverId}
+                apiKey={apiKey}
+                performanceOptions={performanceOptions}
+                minOptions={minOptions}
+            />
         </div>
     );
 }

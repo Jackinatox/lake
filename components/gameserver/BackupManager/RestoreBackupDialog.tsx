@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useState, type ReactNode } from "react"
+import { useState, type ReactNode } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,63 +11,68 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Loader2 } from "lucide-react"
+} from '@/components/ui/alert-dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 
-import type { Backup } from "./types"
-import { formatBytes, formatDateTime, deriveStatusLabel } from "./utils"
-import { notifyRestoreStarted } from "../serverEvents"
-import { GameServer } from "@/models/gameServerModel"
+import type { Backup } from './types';
+import { formatBytes, formatDateTime, deriveStatusLabel } from './utils';
+import { notifyRestoreStarted } from '../serverEvents';
+import { GameServer } from '@/models/gameServerModel';
 
 interface RestoreBackupDialogProps {
-    server: GameServer
-    backup: Backup
-    trigger: ReactNode
-    onConfirm: (options: { truncate: boolean }) => Promise<boolean>
+    server: GameServer;
+    backup: Backup;
+    trigger: ReactNode;
+    onConfirm: (options: { truncate: boolean }) => Promise<boolean>;
 }
 
-export function RestoreBackupDialog({ backup, trigger, onConfirm, server }: RestoreBackupDialogProps) {
-    const [open, setOpen] = useState(false)
-    const [truncate, setTruncate] = useState(true)
-    const [isSubmitting, setIsSubmitting] = useState(false)
+export function RestoreBackupDialog({
+    backup,
+    trigger,
+    onConfirm,
+    server,
+}: RestoreBackupDialogProps) {
+    const [open, setOpen] = useState(false);
+    const [truncate, setTruncate] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleOpenChange = (nextOpen: boolean) => {
-        setOpen(nextOpen)
+        setOpen(nextOpen);
         if (!nextOpen) {
-            setTruncate(true)
-            setIsSubmitting(false)
+            setTruncate(true);
+            setIsSubmitting(false);
         }
-    }
+    };
 
     const handleConfirm = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-        if (isSubmitting) return
-        setIsSubmitting(true)
+        event.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
         notifyRestoreStarted(server.identifier);
-        const ok = await onConfirm({ truncate })
+        const ok = await onConfirm({ truncate });
         if (ok) {
-            handleOpenChange(false)
+            handleOpenChange(false);
         } else {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
-    const statusLabel = deriveStatusLabel(backup.status)
+    const statusLabel = deriveStatusLabel(backup.status);
 
     const formatSize = (bytes: number) => {
-        if (bytes === undefined || bytes === null) return "Unknown"
-        if (bytes === 0) return "0 B"
-        const units = ["B", "KB", "MB", "GB", "TB"]
-        let size = bytes
-        let unitIndex = 0
+        if (bytes === undefined || bytes === null) return 'Unknown';
+        if (bytes === 0) return '0 B';
+        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        let size = bytes;
+        let unitIndex = 0;
         while (size >= 1024 && unitIndex < units.length - 1) {
-            size /= 1024
-            unitIndex += 1
+            size /= 1024;
+            unitIndex += 1;
         }
-        return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`
-    }
+        return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+    };
 
     return (
         <AlertDialog open={open} onOpenChange={handleOpenChange}>
@@ -95,14 +100,11 @@ export function RestoreBackupDialog({ backup, trigger, onConfirm, server }: Rest
                     <Label htmlFor="truncate-switch" className="flex flex-col gap-1 text-sm">
                         <span>Delete existing files first</span>
                         <span className="text-xs text-muted-foreground">
-                            Keeps the backup clean by removing leftover files. Recommended for most restores.
+                            Keeps the backup clean by removing leftover files. Recommended for most
+                            restores.
                         </span>
                     </Label>
-                    <Switch
-                        id="truncate-switch"
-                        checked={truncate}
-                        onCheckedChange={setTruncate}
-                    />
+                    <Switch id="truncate-switch" checked={truncate} onCheckedChange={setTruncate} />
                 </div>
 
                 <AlertDialogFooter>
@@ -113,11 +115,11 @@ export function RestoreBackupDialog({ backup, trigger, onConfirm, server }: Rest
                                 <Loader2 className="h-4 w-4 animate-spin" /> Restoring
                             </span>
                         ) : (
-                            "Restore"
+                            'Restore'
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    )
+    );
 }

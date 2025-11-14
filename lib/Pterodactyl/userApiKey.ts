@@ -6,7 +6,7 @@ async function createUserApiKey(userId: number): Promise<any> {
     const url = `${pturl}/api/application/users/${userId}/api-keys`;
     const data = {
         description: 'API key for new user by lake',
-        allowed_ips: []
+        allowed_ips: [],
     };
 
     try {
@@ -14,9 +14,9 @@ async function createUserApiKey(userId: number): Promise<any> {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}` // Replace with your actual API key
+                Authorization: `Bearer ${apiKey}`, // Replace with your actual API key
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {
@@ -29,7 +29,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         const { secret_token } = responseData.meta;
 
         const key = identifier + secret_token;
-        
+
         return key;
     } catch (e) {
         console.error('PTUser API-Key Creation: ', e);

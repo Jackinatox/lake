@@ -1,27 +1,27 @@
-import { LogLevel } from "@prisma/client"
-import { ErrorBadge, JobTypeBadge, JobRunId } from "./ErrorBadges"
-import { ErrorContextInfo } from "./ErrorContextInfo"
+import { LogLevel } from '@prisma/client';
+import { ErrorBadge, JobTypeBadge, JobRunId } from './ErrorBadges';
+import { ErrorContextInfo } from './ErrorContextInfo';
 
 interface ErrorCardProps {
     error: {
-        id: number
-        level: LogLevel
-        jobType: string
-        jobRun: string | null
-        message: string
-        details: any
-        createdAt: Date
+        id: number;
+        level: LogLevel;
+        jobType: string;
+        jobRun: string | null;
+        message: string;
+        details: any;
+        createdAt: Date;
         gameServer?: {
-            id: string
-            name: string | null
-            status: string
-        } | null
+            id: string;
+            name: string | null;
+            status: string;
+        } | null;
         user?: {
-            id: string
-            name: string
-            email: string
-        } | null
-    }
+            id: string;
+            name: string;
+            email: string;
+        } | null;
+    };
 }
 
 export function ErrorCard({ error }: ErrorCardProps) {
@@ -35,28 +35,38 @@ export function ErrorCard({ error }: ErrorCardProps) {
                             <JobTypeBadge jobType={error.jobType} />
                             {error.jobRun && <JobRunId jobRun={error.jobRun} />}
                         </div>
-                        
+
                         {error.details && (
                             <span className="cursor-pointer text-muted-foreground hover:text-foreground select-none flex items-center gap-1 px-2 py-1 rounded border border-border hover:border-foreground/20 bg-background/50 hover:bg-background transition-colors">
                                 <span>Details</span>
-                                <svg className="w-3 h-3 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                <svg
+                                    className="w-3 h-3 transition-transform duration-200 group-open:rotate-180"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
                                 </svg>
                             </span>
                         )}
                     </div>
-                    
+
                     <p className="text-sm font-medium text-foreground mb-1 break-words">
                         {error.message}
                     </p>
-                    
-                    <ErrorContextInfo 
+
+                    <ErrorContextInfo
                         createdAt={error.createdAt}
                         gameServer={error.gameServer}
                         user={error.user}
                     />
                 </summary>
-                
+
                 {error.details && (
                     <div className="mt-2">
                         <pre className="p-2 bg-muted rounded text-xs overflow-x-auto w-full">
@@ -66,5 +76,5 @@ export function ErrorCard({ error }: ErrorCardProps) {
                 )}
             </details>
         </div>
-    )
+    );
 }

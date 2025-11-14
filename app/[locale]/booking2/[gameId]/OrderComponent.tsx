@@ -1,22 +1,18 @@
-"use client";
+'use client';
 
-import { checkoutAction, CheckoutParams } from "@/app/actions/checkout";
-import { GameConfigComponent } from "@/components/booking2/game-config";
-import { HardwareConfigComponent } from "@/components/booking2/hardware-config";
-import CustomServerPaymentElements from "@/components/payments/PaymentElements";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { authClient } from "@/lib/auth-client";
-import type {
-    Game,
-    GameConfig,
-    HardwareConfig
-} from "@/models/config";
-import { PerformanceGroup } from "@/models/prisma";
-import { ArrowLeft, ArrowRight, Info } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
+import { GameConfigComponent } from '@/components/booking2/game-config';
+import { HardwareConfigComponent } from '@/components/booking2/hardware-config';
+import CustomServerPaymentElements from '@/components/payments/PaymentElements';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { authClient } from '@/lib/auth-client';
+import type { Game, GameConfig, HardwareConfig } from '@/models/config';
+import { PerformanceGroup } from '@/models/prisma';
+import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useParams, useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 
 export type ServerConfig = {
     hardwareConfig: HardwareConfig;
@@ -25,21 +21,24 @@ export type ServerConfig = {
 
 interface GameServerConfigProps {
     performanceGroups: PerformanceGroup[];
-    game: Game
+    game: Game;
     gameId: number;
 }
 
-export default function GameServerConfig({ performanceGroups, game, gameId }: GameServerConfigProps) {
+export default function GameServerConfig({
+    performanceGroups,
+    game,
+    gameId,
+}: GameServerConfigProps) {
     const session = authClient.useSession().data;
-    const t = useTranslations("buyGameServer");
+    const t = useTranslations('buyGameServer');
 
-    const [clientSecret, setClientSecret] = useState("");
+    const [clientSecret, setClientSecret] = useState('');
     const [step, setStep] = useState(1);
     const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null);
     const { toast } = useToast();
     const hardwareConfigRef = useRef<any>(null);
     const gameConfigRef = useRef<any>(null);
-
 
     const handleHardwareConfigNext = (config: HardwareConfig) => {
         setHardwareConfig(config);
@@ -50,7 +49,7 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
         if (!hardwareConfig) return;
 
         const checkouParams: CheckoutParams = {
-            type: "NEW",
+            type: 'NEW',
             cpuPercent: hardwareConfig.cpuPercent,
             diskMB: hardwareConfig.diskMb,
             ramMB: hardwareConfig.ramMb,
@@ -64,22 +63,22 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
 
         try {
             const clientSecret = (await checkoutAction(checkouParams))?.client_secret;
-            if (!clientSecret) throw new Error("No client secret returned");
+            if (!clientSecret) throw new Error('No client secret returned');
             setClientSecret(clientSecret);
 
             setStep(3);
         } catch (error) {
-            console.error("Error submitting server configuration:", error);
+            console.error('Error submitting server configuration:', error);
             toast({
-                title: "Error",
+                title: 'Error',
                 description: JSON.stringify(error),
-                variant: "destructive",
+                variant: 'destructive',
             });
         }
     };
 
     const handleNextStep = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" })
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (step === 1 && hardwareConfigRef.current) {
             hardwareConfigRef.current.submit();
         } else if (step === 2 && gameConfigRef.current) {
@@ -93,11 +92,9 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
                 <div className="w-full px-4 py-4 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-xl sm:text-2xl font-bold">
-                            {t("header.title")}
-                        </h1>
+                        <h1 className="text-xl sm:text-2xl font-bold">{t('header.title')}</h1>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {t("header.step", { current: step, total: 3 })}
+                            {t('header.step', { current: step, total: 3 })}
                         </div>
                     </div>
 
@@ -106,12 +103,13 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
                         {[1, 2, 3].map((stepNumber) => (
                             <div
                                 key={stepNumber}
-                                className={`h-2 flex-1 rounded ${stepNumber === step
-                                    ? "bg-primary"
-                                    : stepNumber < step
-                                        ? "bg-primary/60"
-                                        : "bg-muted"
-                                    }`}
+                                className={`h-2 flex-1 rounded ${
+                                    stepNumber === step
+                                        ? 'bg-primary'
+                                        : stepNumber < step
+                                          ? 'bg-primary/60'
+                                          : 'bg-muted'
+                                }`}
                             />
                         ))}
                     </div>
@@ -144,7 +142,7 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
                 {step === 3 && (
                     <div className="max-w-4xl mx-auto">
                         <div className="bg-card border rounded-lg p-2 md:p-6">
-                            <h2 className="text-2xl font-bold mb-6">{t("payment.title")}</h2>
+                            <h2 className="text-2xl font-bold mb-6">{t('payment.title')}</h2>
                             <CustomServerPaymentElements clientSecret={clientSecret} />
                         </div>
                     </div>
@@ -159,13 +157,13 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
                             <Button
                                 variant="outline"
                                 onClick={() => {
-                                    window.scrollTo({ top: 0, behavior: "smooth" })
-                                    setStep(step - 1)
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    setStep(step - 1);
                                 }}
                                 className="w-full sm:w-auto"
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                {t("nav.back")}
+                                {t('nav.back')}
                             </Button>
                         )}
                         {step < 3 && (
@@ -175,7 +173,7 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
                                         <div className="flex items-center gap-2 w-full sm:w-auto mb-2 sm:mb-0">
                                             <Info className="shrink-0" />
                                             <span className="text-sm">
-                                                {t("auth.loginRequiredGameConfig")}
+                                                {t('auth.loginRequiredGameConfig')}
                                             </span>
                                         </div>
                                     )}
@@ -185,14 +183,14 @@ export default function GameServerConfig({ performanceGroups, game, gameId }: Ga
                                     className="w-full sm:w-auto sm:ml-auto"
                                     disabled={!session?.user}
                                 >
-                                    {t("nav.continue")}
+                                    {t('nav.continue')}
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </>
                         )}
                         {step === 3 && (
                             <div className="text-sm text-muted-foreground sm:ml-auto">
-                                {t("payment.footerHint")}
+                                {t('payment.footerHint')}
                             </div>
                         )}
                     </div>

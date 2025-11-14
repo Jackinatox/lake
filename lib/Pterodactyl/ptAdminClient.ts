@@ -1,4 +1,4 @@
-import { Builder } from "@avionrx/pterodactyl-js";
+import { Builder } from '@avionrx/pterodactyl-js';
 import { env } from 'next-runtime-env';
 
 export function createPtClient() {

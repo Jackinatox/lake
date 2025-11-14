@@ -1,222 +1,218 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import Link from 'next/link'
+import * as React from 'react';
+import Link from 'next/link';
+import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2 } from 'lucide-react';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 import {
-  ChevronDown,
-  Menu as MenuIcon,
-  LayoutDashboard,
-  Gamepad2,
-} from 'lucide-react'
-import Image from "next/image";
-import { cn } from '@/lib/utils'
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuList,
+} from '@/components/ui/navigation-menu';
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetTitle,
-  SheetHeader,
-} from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import { LanguageSwitcher } from './language-switcher'
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from './language-switcher';
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
-type SubItem = { label: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> }
+type SubItem = { label: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };
 type MenuItem = {
-  label: string
-  Icon: React.FC<React.SVGProps<SVGSVGElement>>
-  // If `subItems` is present, we render a dropdown; else it's a single link
-  subItems?: SubItem[]
-  href?: string
-}
+    label: string;
+    Icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    // If `subItems` is present, we render a dropdown; else it's a single link
+    subItems?: SubItem[];
+    href?: string;
+};
 
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
-  // {
-  //   label: "admin",
-  //   Icon: Settings,
-  //   subItems: [
-  //     { label: 'Users', href: '/admin/users', Icon: Users },
-  //     { label: 'GameServer', href: '/admin/gameservers', Icon: Settings },
-  //     { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
-  //   ],
-  // },
+    // {
+    //   label: "admin",
+    //   Icon: Settings,
+    //   subItems: [
+    //     { label: 'Users', href: '/admin/users', Icon: Users },
+    //     { label: 'GameServer', href: '/admin/gameservers', Icon: Settings },
+    //     { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
+    //   ],
+    // },
 
-  {
-    label: 'Games',
-    Icon: Gamepad2,
-    href: '/products/gameserver',
-  },
-  {
-    label: 'Dashboard',
-    Icon: LayoutDashboard,
-    href: '/gameserver',
-  },
-]
+    {
+        label: 'Games',
+        Icon: Gamepad2,
+        href: '/products/gameserver',
+    },
+    {
+        label: 'Dashboard',
+        Icon: LayoutDashboard,
+        href: '/gameserver',
+    },
+];
 
 interface MainMenuInterface {
-  locale: string
+    locale: string;
 }
 
 export default function MainMenu({ locale }: MainMenuInterface) {
-  const [open, setOpen] = React.useState(false)
-  return (
-    <header className="">
-      <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 justify-between items-center">
-
-
-          {/* — Desktop Menu — */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList className="flex space-x-4">
-              {MENU.map((item) =>
-                item.subItems ? (
-                  // Dropdown for items with subItems
-                  <NavigationMenuItem key={item.label}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center">
-                          <item.Icon className="h-4 w-4 mr-1.5" />
-                          {item.label}
-                          <ChevronDown className="ml-1 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        {item.subItems.map((sub) => (
-                          <DropdownMenuItem asChild key={sub.label}>
-                            <Link href={sub.href} className="flex items-center">
-                              <sub.Icon className="h-4 w-4 mr-2" />
-                              {sub.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </NavigationMenuItem>
-                ) : (
-                  // Simple link for items without subItems
-                  <NavigationMenuItem key={item.label}>
-                    <Link
-                      href={item.href!}
-                      className={cn(
-                        'flex items-center px-3 py-2 text-sm font-medium',
-                        'hover:text-primary rounded-md transition-colors'
-                      )}
-                    >
-                      <item.Icon className="h-4 w-4 mr-1.5" />
-                      {item.label}
-                    </Link>
-                  </NavigationMenuItem>
-                )
-              )}
-              {/* <NavigationMenuItem>
+    const [open, setOpen] = React.useState(false);
+    return (
+        <header className="">
+            <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
+                <div className="flex h-16 justify-between items-center">
+                    {/* — Desktop Menu — */}
+                    <NavigationMenu className="hidden md:flex">
+                        <NavigationMenuList className="flex space-x-4">
+                            {MENU.map((item) =>
+                                item.subItems ? (
+                                    // Dropdown for items with subItems
+                                    <NavigationMenuItem key={item.label}>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    className="flex items-center"
+                                                >
+                                                    <item.Icon className="h-4 w-4 mr-1.5" />
+                                                    {item.label}
+                                                    <ChevronDown className="ml-1 h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                {item.subItems.map((sub) => (
+                                                    <DropdownMenuItem asChild key={sub.label}>
+                                                        <Link
+                                                            href={sub.href}
+                                                            className="flex items-center"
+                                                        >
+                                                            <sub.Icon className="h-4 w-4 mr-2" />
+                                                            {sub.label}
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </NavigationMenuItem>
+                                ) : (
+                                    // Simple link for items without subItems
+                                    <NavigationMenuItem key={item.label}>
+                                        <Link
+                                            href={item.href!}
+                                            className={cn(
+                                                'flex items-center px-3 py-2 text-sm font-medium',
+                                                'hover:text-primary rounded-md transition-colors',
+                                            )}
+                                        >
+                                            <item.Icon className="h-4 w-4 mr-1.5" />
+                                            {item.label}
+                                        </Link>
+                                    </NavigationMenuItem>
+                                ),
+                            )}
+                            {/* <NavigationMenuItem>
                 <div className="flex flex-end">
                   <LanguageSwitcher currentLocale={locale} />
                 </div>
               </NavigationMenuItem> */}
-            </NavigationMenuList>
-          </NavigationMenu>
+                        </NavigationMenuList>
+                    </NavigationMenu>
 
-          {/* — Mobile Menu — */}
-          <div className="md:hidden">
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MenuIcon className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-64">
-                <SheetHeader>
-                  <SheetTitle>
-                    <Link href="/" onClick={() => setOpen(false)}>
-                      {/* Light mode logo */}
-                      <Image
-                        src="/images/light/logo/ScyedLogo.webp"
-                        alt="Scyed"
-                        fill={false}
-                        width={1084}
-                        height={482}
-                        sizes="64px"
-                        style={{ width: "auto", maxHeight: "100%" }}
-                        className="block dark:hidden"
-                        priority
-                      />
-                      <Image
-                        src="/images/dark/logo/ScyedLogo.webp"
-                        alt="Scyed"
-                        fill={false}
-                        width={1084}
-                        height={482}
-                        sizes="64px"
-                        style={{ width: "auto", maxHeight: "100%" }}
-                        className="hidden dark:block"
-                        priority
-                      />
-                    </Link>
-                  </SheetTitle>
-                </SheetHeader>
+                    {/* — Mobile Menu — */}
+                    <div className="md:hidden">
+                        <Sheet open={open} onOpenChange={setOpen}>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <MenuIcon className="h-6 w-6" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left" className="w-64">
+                                <SheetHeader>
+                                    <SheetTitle>
+                                        <Link href="/" onClick={() => setOpen(false)}>
+                                            {/* Light mode logo */}
+                                            <Image
+                                                src="/images/light/logo/ScyedLogo.webp"
+                                                alt="Scyed"
+                                                fill={false}
+                                                width={1084}
+                                                height={482}
+                                                sizes="64px"
+                                                style={{ width: 'auto', maxHeight: '100%' }}
+                                                className="block dark:hidden"
+                                                priority
+                                            />
+                                            <Image
+                                                src="/images/dark/logo/ScyedLogo.webp"
+                                                alt="Scyed"
+                                                fill={false}
+                                                width={1084}
+                                                height={482}
+                                                sizes="64px"
+                                                style={{ width: 'auto', maxHeight: '100%' }}
+                                                className="hidden dark:block"
+                                                priority
+                                            />
+                                        </Link>
+                                    </SheetTitle>
+                                </SheetHeader>
 
-                <nav className="flex flex-col space-y-2 mt-4">
-                  {MENU.map((item) =>
-                    item.subItems ? (
-                      <DropdownMenu key={item.label}>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="flex items-center w-full justify-between"
-                          >
-                            <span className="flex items-center">
-                              <item.Icon className="h-5 w-5 mr-2" />
-                              {item.label}
-                            </span>
-                            <ChevronDown className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-full">
-                          {item.subItems.map((sub) => (
-                            <DropdownMenuItem asChild key={sub.label}>
-                              <Link href={sub.href} className="flex items-center" onClick={() => setOpen(false)}>
-                                <sub.Icon className="h-5 w-5 mr-2" />
-                                {sub.label}
-                              </Link>
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : (
-                      <Link
-                        key={item.label}
-                        href={item.href!}
-                        onClick={() => setOpen(false)}
-                        className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
-                      >
-                        <item.Icon className="h-5 w-5 mr-3" />
-                        {item.label}
-                      </Link>
-                    )
-                  )}
+                                <nav className="flex flex-col space-y-2 mt-4">
+                                    {MENU.map((item) =>
+                                        item.subItems ? (
+                                            <DropdownMenu key={item.label}>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="flex items-center w-full justify-between"
+                                                    >
+                                                        <span className="flex items-center">
+                                                            <item.Icon className="h-5 w-5 mr-2" />
+                                                            {item.label}
+                                                        </span>
+                                                        <ChevronDown className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="w-full">
+                                                    {item.subItems.map((sub) => (
+                                                        <DropdownMenuItem asChild key={sub.label}>
+                                                            <Link
+                                                                href={sub.href}
+                                                                className="flex items-center"
+                                                                onClick={() => setOpen(false)}
+                                                            >
+                                                                <sub.Icon className="h-5 w-5 mr-2" />
+                                                                {sub.label}
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        ) : (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href!}
+                                                onClick={() => setOpen(false)}
+                                                className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
+                                            >
+                                                <item.Icon className="h-5 w-5 mr-3" />
+                                                {item.label}
+                                            </Link>
+                                        ),
+                                    )}
 
-                  <div className="absolute bottom-4 left-0 w-full flex justify-center">
-                    <LanguageSwitcher currentLocale={locale} />
-                  </div>
-
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-      </div>
-    </header>
-  )
+                                    <div className="absolute bottom-4 left-0 w-full flex justify-center">
+                                        <LanguageSwitcher currentLocale={locale} />
+                                    </div>
+                                </nav>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                </div>
+            </div>
+        </header>
+    );
 }

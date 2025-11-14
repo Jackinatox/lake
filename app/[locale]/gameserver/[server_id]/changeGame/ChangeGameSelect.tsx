@@ -1,11 +1,11 @@
-"use server"
+'use server';
 
 import GameCard from '@/components/order/game/gameCard';
-import { prisma } from '@/prisma'
-import React from 'react'
+import { prisma } from '@/prisma';
+import React from 'react';
 
 interface ChangeGameSelectProps {
-    serverId: string
+    serverId: string;
 }
 
 async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
@@ -13,37 +13,41 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
         select: {
             id: true,
             name: true,
-        }
+        },
     });
 
     if (!data || data.length === 0) {
         return <div>No Games.</div>;
     }
 
-    const games = data.map(game => {
+    const games = data.map((game) => {
         const imgName = `${game.name.toLowerCase()}.webp`;
 
         return {
             ...game,
             images: {
                 dark: `/images/dark/games/icons/${imgName}`,
-                light: `/images/light/games/icons/${imgName}`
+                light: `/images/light/games/icons/${imgName}`,
             },
-        }
-    })
+        };
+    });
 
     return (
         <>
-            <div className='flex justify-center'>
+            <div className="flex justify-center">
                 <h2 className="text-3xl font-bold">Choose a Game to Install</h2>
             </div>
             <div className="flex flex-wrap gap-4 justify-center">
                 {games.map((game) => {
                     return (
-                        <GameCard key={game.id} card={{
-                            link: `/gameserver/${serverId}/changeGame/${game.id.toString()}`,
-                            name: game.name ?? ''
-                        }} images={game.images} />
+                        <GameCard
+                            key={game.id}
+                            card={{
+                                link: `/gameserver/${serverId}/changeGame/${game.id.toString()}`,
+                                name: game.name ?? '',
+                            }}
+                            images={game.images}
+                        />
                     );
                 })}
             </div>
@@ -51,4 +55,4 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     );
 }
 
-export default ChangeGameSelect
+export default ChangeGameSelect;

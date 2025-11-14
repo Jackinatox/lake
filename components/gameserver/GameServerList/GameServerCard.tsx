@@ -1,10 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { ClientServer } from "@/models/prisma";
-import { Calendar, Cpu, HardDrive, MemoryStick } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import GameServerStatus from "./GameServerStatus";
-
+import { Card, CardContent } from '@/components/ui/card';
+import { ClientServer } from '@/models/prisma';
+import { Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import GameServerStatus from './GameServerStatus';
 
 function formatExpirationDate(date: Date) {
     const now = new Date();
@@ -15,33 +14,45 @@ function formatExpirationDate(date: Date) {
     const formattedDate = date.toLocaleDateString('de-DE', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
     });
     const formattedTime = date.toLocaleTimeString('de-DE', {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: false,
     });
 
     if (diffDays < 0) {
-        return { text: "Expired", color: "text-red-600 dark:text-red-400" };
+        return { text: 'Expired', color: 'text-red-600 dark:text-red-400' };
     } else if (diffDays <= 7) {
-        return { text: `${formattedDate} ${formattedTime}`, color: "text-orange-600 dark:text-orange-400" };
+        return {
+            text: `${formattedDate} ${formattedTime}`,
+            color: 'text-orange-600 dark:text-orange-400',
+        };
     } else if (diffDays <= 30) {
-        return { text: `${formattedDate} ${formattedTime}`, color: "text-yellow-600 dark:text-yellow-400" };
+        return {
+            text: `${formattedDate} ${formattedTime}`,
+            color: 'text-yellow-600 dark:text-yellow-400',
+        };
     } else {
-        return { text: `${formattedDate} ${formattedTime}`, color: "text-slate-600 dark:text-slate-400" };
+        return {
+            text: `${formattedDate} ${formattedTime}`,
+            color: 'text-slate-600 dark:text-slate-400',
+        };
     }
 }
 
-function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }) {
-    const expiration = server.status === "EXPIRED"
-        ? { text: "Expired", color: "text-red-600 dark:text-red-400" }
-        : formatExpirationDate(server.expires);
+function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }) {
+    const expiration =
+        server.status === 'EXPIRED'
+            ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
+            : formatExpirationDate(server.expires);
 
     return (
         <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md">
-            <Link href={`/gameserver/${server.ptServerId}${server.status === "EXPIRED" ? "/upgrade" : ""}`}>
+            <Link
+                href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' ? '/upgrade' : ''}`}
+            >
                 <CardContent className="p-4 sm:p-6">
                     {/* Mobile-first layout: stack vertically on small screens, horizontal on larger screens */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -85,15 +96,21 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
                                 <div className="flex gap-6 text-sm pt-2">
                                     <div className="flex items-center space-x-2">
                                         <Cpu className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                        <span className="text-slate-600 dark:text-slate-300">{server.cpuPercent / 100} VCores</span>
+                                        <span className="text-slate-600 dark:text-slate-300">
+                                            {server.cpuPercent / 100} VCores
+                                        </span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <MemoryStick className="w-4 h-4 text-purple-500 flex-shrink-0" />
-                                        <span className="text-slate-600 dark:text-slate-300">{server.ramMB / 1024} GB RAM</span>
+                                        <span className="text-slate-600 dark:text-slate-300">
+                                            {server.ramMB / 1024} GB RAM
+                                        </span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <HardDrive className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                        <span className="text-slate-600 dark:text-slate-300">{server.diskMB / 1024} GB Disk</span>
+                                        <span className="text-slate-600 dark:text-slate-300">
+                                            {server.diskMB / 1024} GB Disk
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -104,9 +121,13 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
                             <div className="sm:text-right">
                                 <div className="flex items-center space-x-2 mb-1">
                                     <Calendar className="w-4 h-4 text-slate-400" />
-                                    <span className="text-sm text-slate-500 dark:text-slate-400">Expires</span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                                        Expires
+                                    </span>
                                 </div>
-                                <p className={`text-sm font-medium ${expiration.color}`}>{expiration.text}</p>
+                                <p className={`text-sm font-medium ${expiration.color}`}>
+                                    {expiration.text}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -114,6 +135,6 @@ function ServerCard({ server, apiKey }: { server: ClientServer, apiKey: string }
             </Link>
         </Card>
     );
-};
+}
 
 export default ServerCard;

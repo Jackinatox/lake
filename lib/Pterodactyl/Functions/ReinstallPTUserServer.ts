@@ -1,7 +1,11 @@
 import { env } from 'next-runtime-env';
 import DeleteAllFilesUserServer from './DeleteAllFilesUser';
 
-export default async function ReinstallPTUserServer(server: string, apiKey: string, deleteAllFiles: boolean) {
+export default async function ReinstallPTUserServer(
+    server: string,
+    apiKey: string,
+    deleteAllFiles: boolean,
+) {
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
     if (deleteAllFiles) {
@@ -14,8 +18,8 @@ export default async function ReinstallPTUserServer(server: string, apiKey: stri
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-            'Accept': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+            Accept: 'application/json',
         },
     });
     return response;

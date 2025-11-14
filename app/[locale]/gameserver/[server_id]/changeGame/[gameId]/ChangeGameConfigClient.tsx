@@ -1,27 +1,35 @@
-"use client"
+'use client';
 
-import { useRef, useState } from "react"
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import type { Game, GameConfig } from "@/models/config"
-import { GameConfigComponent } from "@/components/booking2/game-config"
-import { AlertTriangle, ArrowRight, CheckCircle2, Gamepad2, Info, Loader2, Shield } from "lucide-react"
-import { changeGame } from "./changeGameAction"
-import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { useRef, useState } from 'react';
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import type { Game, GameConfig } from '@/models/config';
+import { GameConfigComponent } from '@/components/booking2/game-config';
+import {
+    AlertTriangle,
+    ArrowRight,
+    CheckCircle2,
+    Gamepad2,
+    Info,
+    Loader2,
+    Shield,
+} from 'lucide-react';
+import { changeGame } from './changeGameAction';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface ChangeGameConfigClientProps {
-    serverId: string
-    game: Game
-    currentGameName?: string | null
-    currentGameId?: number
-    defaultDeleteFiles?: boolean
+    serverId: string;
+    game: Game;
+    currentGameName?: string | null;
+    currentGameId?: number;
+    defaultDeleteFiles?: boolean;
 }
 
 export default function ChangeGameConfigClient({
@@ -29,43 +37,43 @@ export default function ChangeGameConfigClient({
     game,
     currentGameName,
     currentGameId,
-    defaultDeleteFiles = true
+    defaultDeleteFiles = true,
 }: ChangeGameConfigClientProps) {
-    const t = useTranslations('changeGame')
-    const { toast } = useToast()
-    const gameConfigRef = useRef<{ submit: () => void } | null>(null)
-    const [submittedConfig, setSubmittedConfig] = useState<GameConfig | null>(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles)
-    
-    const isFlavorChange = currentGameId === game.id
+    const t = useTranslations('changeGame');
+    const { toast } = useToast();
+    const gameConfigRef = useRef<{ submit: () => void } | null>(null);
+    const [submittedConfig, setSubmittedConfig] = useState<GameConfig | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles);
+
+    const isFlavorChange = currentGameId === game.id;
 
     const handleSubmit = async (config: GameConfig) => {
         try {
-            setIsSubmitting(true)
+            setIsSubmitting(true);
             await changeGame({
                 serverId,
                 gameId: game.id,
                 gameConfig: config,
                 deleteFiles,
-            })
-            setSubmittedConfig(config)
+            });
+            setSubmittedConfig(config);
             toast({
-                title: "Configuration captured",
-                description: "Your game has been updated and is installing.",
-            })
-            window.scrollTo({ top: 0, behavior: "smooth" })
+                title: 'Configuration captured',
+                description: 'Your game has been updated and is installing.',
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
-            console.error("Failed to record game change request", error)
+            console.error('Failed to record game change request', error);
             toast({
-                title: "Unable to save",
-                description: "Error while changing the game. Please try again.",
-                variant: "destructive",
-            })
+                title: 'Unable to save',
+                description: 'Error while changing the game. Please try again.',
+                variant: 'destructive',
+            });
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     if (!submittedConfig) {
         return (
@@ -73,7 +81,10 @@ export default function ChangeGameConfigClient({
                 <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="space-y-3">
-                            <Badge variant="secondary" className="w-fit uppercase tracking-widest text-[0.65rem]">
+                            <Badge
+                                variant="secondary"
+                                className="w-fit uppercase tracking-widest text-[0.65rem]"
+                            >
                                 Game switch
                             </Badge>
                             <div className="space-y-1 text-left">
@@ -96,20 +107,23 @@ export default function ChangeGameConfigClient({
                                 <div className="mt-3 flex items-center gap-3">
                                     <Image
                                         src={`/images/light/games/icons/${currentGameName?.toLowerCase()}.webp`}
-                                        alt={`Current game ${currentGameName ?? ""}`}
+                                        alt={`Current game ${currentGameName ?? ''}`}
                                         width={64}
                                         height={64}
                                         className="h-16 w-16 rounded-md object-cover block dark:hidden"
                                     />
                                     <Image
                                         src={`/images/dark/games/icons/${currentGameName?.toLowerCase()}.webp`}
-                                        alt={`Current game ${currentGameName ?? ""}`}
+                                        alt={`Current game ${currentGameName ?? ''}`}
                                         width={64}
                                         height={64}
                                         className="h-16 w-16 rounded-md object-cover hidden dark:block"
                                     />
                                     <p className="text-base font-semibold text-foreground">
-                                        {currentGameName ? currentGameName.charAt(0).toUpperCase() + currentGameName.slice(1) : "Not set"}
+                                        {currentGameName
+                                            ? currentGameName.charAt(0).toUpperCase() +
+                                              currentGameName.slice(1)
+                                            : 'Not set'}
                                     </p>
                                 </div>
                             </div>
@@ -132,37 +146,49 @@ export default function ChangeGameConfigClient({
                                         height={64}
                                         className="h-16 w-16 rounded-md object-cover hidden dark:block"
                                     />
-                                    <p className="text-base font-semibold text-foreground">{game.name}</p>
+                                    <p className="text-base font-semibold text-foreground">
+                                        {game.name}
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-3">
                             {/* Initial context - flavor change or game change */}
-                            <div className={`flex items-start gap-3 rounded-lg border p-4 shadow-sm ${
-                                isFlavorChange 
-                                    ? 'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/20'
-                                    : 'border-destructive/40 bg-destructive/10 dark:border-destructive/60 dark:bg-destructive/25 dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]'
-                            }`}>
+                            <div
+                                className={`flex items-start gap-3 rounded-lg border p-4 shadow-sm ${
+                                    isFlavorChange
+                                        ? 'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/20'
+                                        : 'border-destructive/40 bg-destructive/10 dark:border-destructive/60 dark:bg-destructive/25 dark:shadow-[0_0_24px_rgba(239,68,68,0.25)]'
+                                }`}
+                            >
                                 {isFlavorChange ? (
                                     <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
                                 ) : (
                                     <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive dark:text-destructive-foreground" />
                                 )}
                                 <div className="space-y-1">
-                                    <p className={`text-sm font-semibold ${
-                                        isFlavorChange 
-                                            ? 'text-blue-900 dark:text-blue-100'
-                                            : 'text-destructive dark:text-destructive-foreground uppercase tracking-wide'
-                                    }`}>
-                                        {isFlavorChange ? t('flavorChangeTitle') : t('gameChangeTitle')}
+                                    <p
+                                        className={`text-sm font-semibold ${
+                                            isFlavorChange
+                                                ? 'text-blue-900 dark:text-blue-100'
+                                                : 'text-destructive dark:text-destructive-foreground uppercase tracking-wide'
+                                        }`}
+                                    >
+                                        {isFlavorChange
+                                            ? t('flavorChangeTitle')
+                                            : t('gameChangeTitle')}
                                     </p>
-                                    <p className={`text-sm ${
-                                        isFlavorChange 
-                                            ? 'text-blue-800 dark:text-blue-200'
-                                            : 'text-destructive/80 dark:text-destructive-foreground/90'
-                                    }`}>
-                                        {isFlavorChange ? t('flavorChangeDesc') : t('gameChangeDesc')}
+                                    <p
+                                        className={`text-sm ${
+                                            isFlavorChange
+                                                ? 'text-blue-800 dark:text-blue-200'
+                                                : 'text-destructive/80 dark:text-destructive-foreground/90'
+                                        }`}
+                                    >
+                                        {isFlavorChange
+                                            ? t('flavorChangeDesc')
+                                            : t('gameChangeDesc')}
                                     </p>
                                 </div>
                             </div>
@@ -205,11 +231,12 @@ export default function ChangeGameConfigClient({
                                     htmlFor="delete-files"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                                 >
-                                    {isFlavorChange ? t('flavorChangeCheckbox') : t('gameChangeCheckbox')}
+                                    {isFlavorChange
+                                        ? t('flavorChangeCheckbox')
+                                        : t('gameChangeCheckbox')}
                                 </Label>
                             </div>
                         </div>
-
                     </CardContent>
                 </Card>
 
@@ -231,12 +258,11 @@ export default function ChangeGameConfigClient({
                         ) : (
                             <ArrowRight className="mr-2 h-4 w-4" />
                         )}
-                        {isSubmitting ? "Installing…" : "Install new game"}
+                        {isSubmitting ? 'Installing…' : 'Install new game'}
                     </Button>
                 </div>
-
             </div>
-        )
+        );
     }
 
     if (submittedConfig) {
@@ -247,7 +273,8 @@ export default function ChangeGameConfigClient({
                 </div>
                 <h2 className="text-2xl font-semibold">Game change in progress</h2>
                 <p className="max-w-md text-center text-sm text-muted-foreground">
-                    Your server is being updated to the new game. This process can take a few minutes. Once completed, you can start your server and enjoy your new game!
+                    Your server is being updated to the new game. This process can take a few
+                    minutes. Once completed, you can start your server and enjoy your new game!
                 </p>
                 <Separator className="my-6 w-24" />
                 <Button
@@ -255,11 +282,9 @@ export default function ChangeGameConfigClient({
                     className="w-full rounded-lg shadow-lg transition-all duration-200 sm:w-auto sm:hover:shadow-xl"
                     asChild
                 >
-                    <Link href={`/gameserver/${serverId}`}                    >
-                        Go to server dashboard
-                    </Link>
+                    <Link href={`/gameserver/${serverId}`}>Go to server dashboard</Link>
                 </Button>
             </div>
-        )
+        );
     }
 }

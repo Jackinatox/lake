@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useState, type ReactNode } from "react"
+import { useState, type ReactNode } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,39 +11,39 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Loader2 } from "lucide-react"
+} from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
 
-import type { Backup } from "./types"
+import type { Backup } from './types';
 
 interface DeleteBackupDialogProps {
-    backup: Backup
-    trigger: ReactNode
-    onConfirm: () => Promise<boolean>
+    backup: Backup;
+    trigger: ReactNode;
+    onConfirm: () => Promise<boolean>;
 }
 
 export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupDialogProps) {
-    const [open, setOpen] = useState(false)
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleOpenChange = (nextOpen: boolean) => {
-        setOpen(nextOpen)
+        setOpen(nextOpen);
         if (!nextOpen) {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-        if (isSubmitting) return
-        setIsSubmitting(true)
-        const ok = await onConfirm()
+        event.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+        const ok = await onConfirm();
         if (ok) {
-            handleOpenChange(false)
+            handleOpenChange(false);
         } else {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
 
     return (
         <AlertDialog open={open} onOpenChange={handleOpenChange}>
@@ -52,8 +52,9 @@ export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupD
                 <AlertDialogHeader>
                     <AlertDialogTitle>Delete this backup?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action permanently removes <span className="font-medium">{backup.name}</span>.
-                        Deleted backups cannot be recovered.
+                        This action permanently removes{' '}
+                        <span className="font-medium">{backup.name}</span>. Deleted backups cannot
+                        be recovered.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -68,11 +69,11 @@ export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupD
                                 <Loader2 className="h-4 w-4 animate-spin" /> Deleting
                             </span>
                         ) : (
-                            "Delete"
+                            'Delete'
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
-    )
+    );
 }

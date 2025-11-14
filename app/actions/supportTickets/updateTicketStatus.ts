@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { auth } from "@/auth";
-import { prisma } from "@/prisma";
-import { headers } from "next/headers";
-import { TicketStatus } from "@prisma/client";
+import { auth } from '@/auth';
+import { prisma } from '@/prisma';
+import { headers } from 'next/headers';
+import { TicketStatus } from '@prisma/client';
 
 export async function updateTicketStatusAction(params: { ticketId: number; status: TicketStatus }) {
     const { ticketId, status } = params;
@@ -12,8 +12,8 @@ export async function updateTicketStatusAction(params: { ticketId: number; statu
         headers: await headers(),
     });
 
-    if (session?.user.role !== "admin") {
-        throw new Error("Unauthorized");
+    if (session?.user.role !== 'admin') {
+        throw new Error('Unauthorized');
     }
 
     const updatedTicket = await prisma.supportTicket.update({

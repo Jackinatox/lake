@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 import WingsTable from './WingsTable';
-import { Builder } from "@avionrx/pterodactyl-js";
+import { Builder } from '@avionrx/pterodactyl-js';
 import { env } from 'next-runtime-env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
@@ -10,10 +10,10 @@ async function Wings() {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const apiKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
 
-    if (session?.user.role !== "admin") {
+    if (session?.user.role !== 'admin') {
         return <NoAdmin />;
     }
 
@@ -41,4 +41,4 @@ async function Wings() {
     }
 }
 
-export default Wings
+export default Wings;

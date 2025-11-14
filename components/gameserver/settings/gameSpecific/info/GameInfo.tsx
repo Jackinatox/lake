@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import { GameServer } from '@/models/gameServerModel'
-import React from 'react'
-import MinecraftInfo from './MinecraftInfo'
-import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants'
+import { GameServer } from '@/models/gameServerModel';
+import React from 'react';
+import MinecraftInfo from './MinecraftInfo';
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
 
 interface GameInfoProps {
-    server: GameServer
-    apiKey: string
+    server: GameServer;
+    apiKey: string;
 }
 
 function GameInfo({ server, apiKey }: GameInfoProps) {
@@ -18,7 +18,7 @@ function GameInfo({ server, apiKey }: GameInfoProps) {
             {server.egg_id === ForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === FabricEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
         </>
-    )
+    );
 }
 
-export default GameInfo
+export default GameInfo;

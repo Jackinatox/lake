@@ -1,18 +1,23 @@
-import { auth } from "@/auth";
-import NoAdmin from "@/components/admin/NoAdminMessage";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
-import { Card, CardContent } from "@/components/ui/card";
-import TicketsDashboard, { AdminTicket } from "./TicketsDashboard";
-import { prisma } from "@/prisma";
-import { headers } from "next/headers";
-import { InboxIcon } from "lucide-react";
+import { auth } from '@/auth';
+import NoAdmin from '@/components/admin/NoAdminMessage';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+} from '@/components/ui/breadcrumb';
+import { Card, CardContent } from '@/components/ui/card';
+import TicketsDashboard, { AdminTicket } from './TicketsDashboard';
+import { prisma } from '@/prisma';
+import { headers } from 'next/headers';
+import { InboxIcon } from 'lucide-react';
 
 export default async function TicketsPage() {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
-    if (session?.user.role !== "admin") {
+    if (session?.user.role !== 'admin') {
         return <NoAdmin />;
     }
 
@@ -26,7 +31,7 @@ export default async function TicketsPage() {
                 },
             },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
     });
 
     const serialised: AdminTicket[] = tickets.map((ticket) => ({
@@ -46,7 +51,10 @@ export default async function TicketsPage() {
                 <CardContent className="flex flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-3 text-muted-foreground">
                         <InboxIcon className="h-5 w-5" />
-                        <span className="text-sm font-medium">Ticket operations are email-only. Update the status here and follow up via email.</span>
+                        <span className="text-sm font-medium">
+                            Ticket operations are email-only. Update the status here and follow up
+                            via email.
+                        </span>
                     </div>
                     <Breadcrumb>
                         <BreadcrumbList>

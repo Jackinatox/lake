@@ -1,4 +1,4 @@
-import 'server-only'
+import 'server-only';
 
 import { prisma } from '@/prisma';
 import { ClientServer } from '@/models/prisma';
@@ -9,13 +9,13 @@ export async function getUserServer(userId: string): Promise<ClientServer[] | nu
         where: {
             userId: userId,
             status: {
-                notIn: ['CREATION_FAILED', 'DELETED']
-            }
+                notIn: ['CREATION_FAILED', 'DELETED'],
+            },
         },
         take: 100,
         include: {
-            gameData: true
+            gameData: true,
         },
-        orderBy: { expires: 'desc' }
+        orderBy: { expires: 'desc' },
     });
 }

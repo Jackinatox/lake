@@ -1,23 +1,23 @@
-"use server";
+'use server';
 
-import { Builder } from "@avionrx/pterodactyl-js";
+import { Builder } from '@avionrx/pterodactyl-js';
 import UsersTable from './usersTable';
 import { env } from 'next-runtime-env';
 import { SettingsIcon, UsersIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { auth } from "@/auth";
-import { headers } from "next/headers";
-import NoAdmin from "@/components/admin/NoAdminMessage";
-import { prisma } from "@/prisma";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/auth';
+import { headers } from 'next/headers';
+import NoAdmin from '@/components/admin/NoAdminMessage';
+import { prisma } from '@/prisma';
 
 export default async function AdminPage() {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const apiKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
 
-    if (session?.user.role !== "admin") {
+    if (session?.user.role !== 'admin') {
         return <NoAdmin />;
     }
 

@@ -1,14 +1,14 @@
-import { prisma } from "@/prisma";
-import { marked } from "marked";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTranslations } from "next-intl/server";
-import { cache } from "react";
-import { LEGAL_IMPRESSUM_DE, LEGAL_IMPRESSUM_EN } from "@/app/GlobalConstants";
+import { prisma } from '@/prisma';
+import { marked } from 'marked';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getTranslations } from 'next-intl/server';
+import { cache } from 'react';
+import { LEGAL_IMPRESSUM_DE, LEGAL_IMPRESSUM_EN } from '@/app/GlobalConstants';
 
 const getKeyValueString = cache(async (key: string): Promise<string | null> => {
     try {
         const keyValue = await prisma.keyValue.findUnique({
-            where: { key: key }
+            where: { key: key },
         });
         return keyValue?.string || null;
     } catch (error) {
@@ -17,29 +17,21 @@ const getKeyValueString = cache(async (key: string): Promise<string | null> => {
     }
 });
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: "legal" });
+    const t = await getTranslations({ locale, namespace: 'legal' });
 
     return {
-        title: t("impressum"),
+        title: t('impressum'),
     };
 }
 
-export default async function ImpressumPage({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
+export default async function ImpressumPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
-    const t = await getTranslations({ locale, namespace: "legal" });
+    const t = await getTranslations({ locale, namespace: 'legal' });
 
     // Fetch content from database using locale-specific key
-    const contentKey = locale === "de" ? LEGAL_IMPRESSUM_DE : LEGAL_IMPRESSUM_EN;
+    const contentKey = locale === 'de' ? LEGAL_IMPRESSUM_DE : LEGAL_IMPRESSUM_EN;
     const content = await getKeyValueString(contentKey);
 
     if (!content) {
@@ -47,11 +39,11 @@ export default async function ImpressumPage({
             <div className="w-full max-w-4xl mx-auto">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-3xl">{t("impressum")}</CardTitle>
+                        <CardTitle className="text-3xl">{t('impressum')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-muted-foreground">
-                            Failed to load {t("impressum")}. Content not available yet.
+                            Failed to load {t('impressum')}. Content not available yet.
                         </p>
                     </CardContent>
                 </Card>
@@ -66,7 +58,7 @@ export default async function ImpressumPage({
         <div className="w-full max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-3xl">{t("impressum")}</CardTitle>
+                    <CardTitle className="text-3xl">{t('impressum')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div

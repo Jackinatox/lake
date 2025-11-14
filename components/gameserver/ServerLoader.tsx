@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GameServer } from '@/models/gameServerModel';
@@ -19,7 +19,12 @@ interface ServerLoaderProps {
     };
 }
 
-export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServer }: ServerLoaderProps) {
+export default function ServerLoader({
+    serverId,
+    ptApiKey,
+    baseUrl,
+    initialServer,
+}: ServerLoaderProps) {
     const [server, setServer] = useState<GameServer | null>(null);
     const [isInstalling, setIsInstalling] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
@@ -29,17 +34,14 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
 
     const fetchServerData = async () => {
         try {
-            const response = await fetch(
-                `${baseUrl}/api/client/servers/${serverId}`,
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${ptApiKey}`,
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                    },
+            const response = await fetch(`${baseUrl}/api/client/servers/${serverId}`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${ptApiKey}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
                 },
-            );
+            });
 
             if (!response.ok) {
                 if (response.status === 403 || response.status === 404) {
@@ -58,7 +60,7 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
                 ...serverData,
                 egg_id: initialServer.egg_id,
                 gameDataId: initialServer.gameDataId,
-                gameData: initialServer.gameData
+                gameData: initialServer.gameData,
             };
 
             setServer(updatedServer);
@@ -166,7 +168,8 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
                         </CardTitle>
                         <CardDescription>
                             Your server <strong>{server.name}</strong> is currently being installed.
-                            This page will automatically refresh and redirect you to the dashboard once the installation is complete.
+                            This page will automatically refresh and redirect you to the dashboard
+                            once the installation is complete.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -191,8 +194,9 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
                             Restoring Server Backup
                         </CardTitle>
                         <CardDescription>
-                            Your server <strong>{server.name}</strong> is currently being restored from a backup.
-                            This page will automatically refresh when the restore finishes.
+                            Your server <strong>{server.name}</strong> is currently being restored
+                            from a backup. This page will automatically refresh when the restore
+                            finishes.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -206,8 +210,6 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
             </div>
         );
     }
-
-    
 
     if (!server) {
         return (
@@ -223,8 +225,8 @@ export default function ServerLoader({ serverId, ptApiKey, baseUrl, initialServe
     }
 
     return (
-        <div className='flex justify-center'>
-            <div className='max-w-screen-2xl'>
+        <div className="flex justify-center">
+            <div className="max-w-screen-2xl">
                 <GameDashboard server={server} ptApiKey={ptApiKey} />
             </div>
         </div>

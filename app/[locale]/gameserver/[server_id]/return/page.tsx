@@ -1,15 +1,11 @@
-"use server"
+'use server';
 
-import React from 'react'
+import React from 'react';
 
 async function page() {
     // fetch data
 
-  return (
-    <>
-    
-    </>
-  )
+    return <></>;
 }
 
-export default page
+export default page;

@@ -1,14 +1,14 @@
-import { prisma } from "../prisma";
+import { prisma } from '../prisma';
 import {
     sendInvoiceEmail,
     sendServerBookingConfirmationEmail,
-} from "../lib/email/sendEmailEmailsFromLake";
+} from '../lib/email/sendEmailEmailsFromLake';
 
 async function main() {
     const serverId = process.argv[2];
 
     if (!serverId) {
-        console.error("Usage: bun run scripts/send-server-emails.ts <gameServerId>");
+        console.error('Usage: bun run scripts/send-server-emails.ts <gameServerId>');
         process.exit(1);
     }
 
@@ -29,10 +29,10 @@ async function main() {
     const latestPaidOrder = await prisma.gameServerOrder.findFirst({
         where: {
             gameServerId: serverId,
-            status: "PAID",
+            status: 'PAID',
         },
         orderBy: {
-            createdAt: "desc",
+            createdAt: 'desc',
         },
         include: {
             user: true,
@@ -42,12 +42,14 @@ async function main() {
     });
 
     if (!latestPaidOrder) {
-        console.error(`No paid order found for game server ${serverId}. Cannot build invoice data.`);
+        console.error(
+            `No paid order found for game server ${serverId}. Cannot build invoice data.`,
+        );
         process.exit(1);
     }
 
     const user = latestPaidOrder.user ?? server.user;
-    const userName = user?.name || "Spieler";
+    const userName = user?.name || 'Spieler';
     const userEmail = user?.email;
 
     if (!userEmail) {
@@ -56,14 +58,10 @@ async function main() {
     }
 
     const appUrl =
-        process.env.NEXT_PUBLIC_APP_URL ||
-        process.env.LAKE_URL ||
-        "http://localhost:3000";
+        process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || 'http://localhost:3000';
 
     const gameName =
-        latestPaidOrder.creationGameData?.name ||
-        server.gameData?.name ||
-        "Gameserver";
+        latestPaidOrder.creationGameData?.name || server.gameData?.name || 'Gameserver';
 
     const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
 
@@ -73,20 +71,17 @@ async function main() {
     const ramMB = latestPaidOrder.ramMB ?? server.ramMB;
     const cpuPercent = latestPaidOrder.cpuPercent ?? server.cpuPercent;
     const diskMB = latestPaidOrder.diskMB ?? server.diskMB;
-    const location =
-        latestPaidOrder.creationLocation?.name ||
-        server.location?.name ||
-        "Unknown";
+    const location = latestPaidOrder.creationLocation?.name || server.location?.name || 'Unknown';
 
     const orderType =
-        latestPaidOrder.type === "DOWNGRADE"
-            ? "RENEW"
-            : (latestPaidOrder.type as "NEW" | "UPGRADE" | "RENEW");
+        latestPaidOrder.type === 'DOWNGRADE'
+            ? 'RENEW'
+            : (latestPaidOrder.type as 'NEW' | 'UPGRADE' | 'RENEW');
 
     const price = latestPaidOrder.price;
     const expiresAt = latestPaidOrder.expiresAt ?? server.expires;
     const receiptUrl = latestPaidOrder.receipt_url ?? undefined;
-    const invoiceNumber = `INV-${latestPaidOrder.id.toString().padStart(8, "0")}`;
+    const invoiceNumber = `INV-${latestPaidOrder.id.toString().padStart(8, '0')}`;
 
     console.log(
         `Sending booking confirmation and invoice emails for server ${serverId} to ${userEmail}`,
@@ -125,17 +120,16 @@ async function main() {
         receiptUrl,
     });
 
-    console.log("Emails sent successfully.");
+    console.log('Emails sent successfully.');
 }
 
 if (import.meta.main) {
     main()
         .catch((error) => {
-            console.error("Failed to send emails:", error);
+            console.error('Failed to send emails:', error);
             process.exitCode = 1;
         })
         .finally(async () => {
             await prisma.$disconnect();
         });
 }
-

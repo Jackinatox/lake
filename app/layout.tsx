@@ -1,89 +1,82 @@
 // app/layout.tsx
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
-import "./globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
-import { Toaster } from "@/components/ui/toaster";
-import { auth } from "@/auth";
-import { headers } from "next/headers";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { Geist } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
+import './globals.css';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale } from 'next-intl/server';
+import { Toaster } from '@/components/ui/toaster';
+import { auth } from '@/auth';
+import { headers } from 'next/headers';
 import { PublicEnvScript, env } from 'next-runtime-env';
 
-
-const defaultUrl = env('VERCEL_URL')
-  ? `https://${env('VERCEL_URL')}`
-  : "http://localhost:3000";
+const defaultUrl = env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : 'http://localhost:3000';
 
 export const metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Scyed Hosting",
-  description: "A little above average Gameserver hosting platform",
-  robots: {
-    index: false,
-    follow: false,
-  },
+    metadataBase: new URL(defaultUrl),
+    title: 'Scyed Hosting',
+    description: 'A little above average Gameserver hosting platform',
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
 };
 
 const geistSans = Geist({
-  display: "swap",
-  subsets: ["latin"],
+    display: 'swap',
+    subsets: ['latin'],
 });
 
 export default async function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const session = await auth.api.getSession({
-    headers: await headers()
-  })
+    const locale = await getLocale();
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
+    return (
+        <html lang={locale} className={geistSans.className} suppressHydrationWarning>
+            <head>
+                <PublicEnvScript />
+            </head>
+            <NextIntlClientProvider>
+                <body className="bg-background text-foreground">
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <main className="min-h-screen flex flex-col items-center">
+                            <div className="flex-1 w-full flex flex-col items-center">
+                                <Navbar locale={locale} />
+                                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
+                                    {children}
+                                    <Toaster />
+                                    {env('NODE_ENV') !== 'production' && (
+                                        <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
+                                            {JSON.stringify(session?.user, null, 2)}
+                                        </pre>
+                                    )}
+                                </div>
 
-  return (
-    <html lang={locale} className={geistSans.className} suppressHydrationWarning>
-      <head>
-        <PublicEnvScript />
-      </head>
-      <NextIntlClientProvider>
-        <body className="bg-background text-foreground">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <main className="min-h-screen flex flex-col items-center">
-              <div className="flex-1 w-full flex flex-col items-center">
-                <Navbar locale={locale} />
-                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-6 lg:px-8 py-5">
-
-                  {children}
-                  <Toaster />
-                  {env('NODE_ENV') !== "production" &&
-                    <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
-                      {JSON.stringify(session?.user, null, 2)}
-                    </pre>
-                  }
-
-                </div>
-
-                <Footer />
-
-              </div>
-            </main>
-          </ThemeProvider>
-        </body>
-      </NextIntlClientProvider>
-    </html>
-  );
+                                <Footer />
+                            </div>
+                        </main>
+                    </ThemeProvider>
+                </body>
+            </NextIntlClientProvider>
+        </html>
+    );
 }

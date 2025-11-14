@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useMemo, useState, useTransition } from "react";
-import type { TicketCategory, TicketStatus } from "@prisma/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useMemo, useState, useTransition } from 'react';
+import type { TicketCategory, TicketStatus } from '@prisma/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { updateTicketStatusAction } from "@/app/actions/supportTickets/updateTicketStatus";
-import { useToast } from "@/hooks/use-toast";
-import { ClipboardCopyIcon, MailIcon, Clock3Icon, FilterIcon } from "lucide-react";
+} from '@/components/ui/select';
+import { updateTicketStatusAction } from '@/app/actions/supportTickets/updateTicketStatus';
+import { useToast } from '@/hooks/use-toast';
+import { ClipboardCopyIcon, MailIcon, Clock3Icon, FilterIcon } from 'lucide-react';
 
 export type AdminTicket = {
     id: number;
@@ -32,28 +32,28 @@ export type AdminTicket = {
     };
 };
 
-const TICKET_STATUSES: TicketStatus[] = ["OPEN", "PENDING", "RESOLVED", "CLOSED"];
-const TICKET_CATEGORIES: TicketCategory[] = ["GENERAL", "TECHNICAL", "BILLING", "ACCOUNT"];
+const TICKET_STATUSES: TicketStatus[] = ['OPEN', 'PENDING', 'RESOLVED', 'CLOSED'];
+const TICKET_CATEGORIES: TicketCategory[] = ['GENERAL', 'TECHNICAL', 'BILLING', 'ACCOUNT'];
 
 const statusStyles: Record<TicketStatus, string> = {
-    OPEN: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
-    PENDING: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-    RESOLVED: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-    CLOSED: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
+    OPEN: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
+    PENDING: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+    RESOLVED: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+    CLOSED: 'bg-slate-500/15 text-slate-600 dark:text-slate-300',
 };
 
 const categoryStyles: Record<TicketCategory, string> = {
-    GENERAL: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
-    TECHNICAL: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400",
-    BILLING: "bg-rose-500/15 text-rose-600 dark:text-rose-400",
-    ACCOUNT: "bg-teal-500/15 text-teal-600 dark:text-teal-400",
+    GENERAL: 'bg-slate-500/15 text-slate-600 dark:text-slate-300',
+    TECHNICAL: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400',
+    BILLING: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+    ACCOUNT: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
 };
 
 const categoryLabels: Record<TicketCategory, string> = {
-    GENERAL: "General",
-    TECHNICAL: "Technical issue",
-    BILLING: "Billing & payments",
-    ACCOUNT: "Account & access",
+    GENERAL: 'General',
+    TECHNICAL: 'Technical issue',
+    BILLING: 'Billing & payments',
+    ACCOUNT: 'Account & access',
 };
 
 function formatRelative(dateIso: string) {
@@ -76,26 +76,34 @@ function normalise(str: string) {
 
 export default function TicketsDashboard({ tickets: initialTickets }: { tickets: AdminTicket[] }) {
     const [tickets, setTickets] = useState(initialTickets);
-    const [statusFilter, setStatusFilter] = useState<"ALL" | TicketStatus>("ALL");
-    const [categoryFilter, setCategoryFilter] = useState<"ALL" | TicketCategory>("ALL");
-    const [query, setQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState<'ALL' | TicketStatus>('ALL');
+    const [categoryFilter, setCategoryFilter] = useState<'ALL' | TicketCategory>('ALL');
+    const [query, setQuery] = useState('');
     const [pendingTicketId, setPendingTicketId] = useState<number | null>(null);
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
 
     const stats = useMemo(() => {
         const total = tickets.length;
-        const open = tickets.filter((t) => t.status === "OPEN").length;
-        const pending = tickets.filter((t) => t.status === "PENDING").length;
-        const resolved = tickets.filter((t) => t.status === "RESOLVED" || t.status === "CLOSED").length;
+        const open = tickets.filter((t) => t.status === 'OPEN').length;
+        const pending = tickets.filter((t) => t.status === 'PENDING').length;
+        const resolved = tickets.filter(
+            (t) => t.status === 'RESOLVED' || t.status === 'CLOSED',
+        ).length;
         const latestUpdate = tickets.reduce<string | null>((acc, ticket) => {
             if (!acc) return ticket.updatedAt;
             return new Date(ticket.updatedAt) > new Date(acc) ? ticket.updatedAt : acc;
         }, null);
-        const byCategory = tickets.reduce<Record<TicketCategory, number>>((acc, ticket) => {
-            acc[ticket.category] = (acc[ticket.category] ?? 0) + 1;
-            return acc;
-        }, Object.fromEntries(TICKET_CATEGORIES.map((category) => [category, 0])) as Record<TicketCategory, number>);
+        const byCategory = tickets.reduce<Record<TicketCategory, number>>(
+            (acc, ticket) => {
+                acc[ticket.category] = (acc[ticket.category] ?? 0) + 1;
+                return acc;
+            },
+            Object.fromEntries(TICKET_CATEGORIES.map((category) => [category, 0])) as Record<
+                TicketCategory,
+                number
+            >,
+        );
 
         return {
             total,
@@ -109,17 +117,17 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
 
     const visibleTickets = useMemo(() => {
         return tickets.filter((ticket) => {
-            const matchesStatus = statusFilter === "ALL" || ticket.status === statusFilter;
+            const matchesStatus = statusFilter === 'ALL' || ticket.status === statusFilter;
             if (!matchesStatus) return false;
-            const matchesCategory = categoryFilter === "ALL" || ticket.category === categoryFilter;
+            const matchesCategory = categoryFilter === 'ALL' || ticket.category === categoryFilter;
             if (!matchesCategory) return false;
             if (!query) return true;
             const search = normalise(query);
             return (
                 normalise(ticket.message).includes(search) ||
                 normalise(ticket.user.email).includes(search) ||
-                normalise(ticket.user.name ?? "").includes(search) ||
-                normalise(ticket.title ?? "").includes(search)
+                normalise(ticket.user.name ?? '').includes(search) ||
+                normalise(ticket.title ?? '').includes(search)
             );
         });
     }, [tickets, statusFilter, categoryFilter, query]);
@@ -132,19 +140,25 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                 setTickets((prev) =>
                     prev.map((item) =>
                         item.id === ticketId
-                            ? { ...item, status: ticket.status, category: ticket.category, updatedAt: ticket.updatedAt }
-                            : item
-                    )
+                            ? {
+                                  ...item,
+                                  status: ticket.status,
+                                  category: ticket.category,
+                                  updatedAt: ticket.updatedAt,
+                              }
+                            : item,
+                    ),
                 );
                 toast({
-                    title: "Status updated",
+                    title: 'Status updated',
                     description: `Ticket #${ticketId} set to ${nextStatus.toLowerCase()}.`,
                 });
             } catch (error) {
                 toast({
-                    title: "Update failed",
-                    description: error instanceof Error ? error.message : "Could not update ticket.",
-                    variant: "destructive",
+                    title: 'Update failed',
+                    description:
+                        error instanceof Error ? error.message : 'Could not update ticket.',
+                    variant: 'destructive',
                 });
             } finally {
                 setPendingTicketId(null);
@@ -155,9 +169,13 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
     const handleCopyEmail = async (email: string) => {
         try {
             await navigator.clipboard.writeText(email);
-            toast({ title: "Email copied", description: email });
+            toast({ title: 'Email copied', description: email });
         } catch (error) {
-            toast({ title: "Copy failed", description: "Could not copy email.", variant: "destructive" });
+            toast({
+                title: 'Copy failed',
+                description: 'Could not copy email.',
+                variant: 'destructive',
+            });
         }
     };
 
@@ -166,7 +184,9 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Total Tickets</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Total Tickets
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <span className="text-2xl font-semibold">{stats.total}</span>
@@ -174,36 +194,51 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                 </Card>
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Open</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Open
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <span className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{stats.open}</span>
+                        <span className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
+                            {stats.open}
+                        </span>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Pending
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <span className="text-2xl font-semibold text-amber-600 dark:text-amber-400">{stats.pending}</span>
+                        <span className="text-2xl font-semibold text-amber-600 dark:text-amber-400">
+                            {stats.pending}
+                        </span>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">Resolved / Closed</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Resolved / Closed
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col">
-                        <span className="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">{stats.resolved}</span>
+                        <span className="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
+                            {stats.resolved}
+                        </span>
                         {stats.latestUpdate && (
                             <span className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                                <Clock3Icon className="h-4 w-4" /> Updated {formatRelative(stats.latestUpdate)}
+                                <Clock3Icon className="h-4 w-4" /> Updated{' '}
+                                {formatRelative(stats.latestUpdate)}
                             </span>
                         )}
                     </CardContent>
                 </Card>
                 <Card className="sm:col-span-2 xl:col-span-4">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">By category</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            By category
+                        </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-wrap gap-2">
                         {TICKET_CATEGORIES.map((category) => (
@@ -237,7 +272,12 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                             placeholder="Search by email, name, or text"
                             className="h-9 w-full min-w-0 sm:w-56"
                         />
-                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as "ALL" | TicketStatus)}>
+                        <Select
+                            value={statusFilter}
+                            onValueChange={(value) =>
+                                setStatusFilter(value as 'ALL' | TicketStatus)
+                            }
+                        >
                             <SelectTrigger className="h-9 w-full sm:w-40">
                                 <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
@@ -250,7 +290,12 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value as "ALL" | TicketCategory)}>
+                        <Select
+                            value={categoryFilter}
+                            onValueChange={(value) =>
+                                setCategoryFilter(value as 'ALL' | TicketCategory)
+                            }
+                        >
                             <SelectTrigger className="h-9 w-full sm:w-44">
                                 <SelectValue placeholder="All categories" />
                             </SelectTrigger>
@@ -278,20 +323,27 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                             >
                                 <div className="flex flex-1 flex-col gap-3">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <Badge className={`px-2 py-1 text-xs font-semibold ${statusStyles[ticket.status]}`}>
-                                            {ticket.status.charAt(0) + ticket.status.slice(1).toLowerCase()}
+                                        <Badge
+                                            className={`px-2 py-1 text-xs font-semibold ${statusStyles[ticket.status]}`}
+                                        >
+                                            {ticket.status.charAt(0) +
+                                                ticket.status.slice(1).toLowerCase()}
                                         </Badge>
-                                        <Badge className={`px-2 py-1 text-xs font-semibold ${categoryStyles[ticket.category]}`}>
+                                        <Badge
+                                            className={`px-2 py-1 text-xs font-semibold ${categoryStyles[ticket.category]}`}
+                                        >
                                             {categoryLabels[ticket.category]}
                                         </Badge>
                                         <span className="text-xs uppercase tracking-wide text-muted-foreground">
                                             #{ticket.id}
                                         </span>
-                                        <span className="text-xs text-muted-foreground">{formatRelative(ticket.createdAt)}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {formatRelative(ticket.createdAt)}
+                                        </span>
                                     </div>
                                     <div>
                                         <p className="font-medium text-foreground">
-                                            {ticket.title || "Untitled ticket"}
+                                            {ticket.title || 'Untitled ticket'}
                                         </p>
                                         <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                                             {ticket.message}
@@ -316,8 +368,13 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                     </Button>
                                     <Select
                                         value={ticket.status}
-                                        onValueChange={(value) => handleStatusChange(ticket.id, value as TicketStatus)}
-                                        disabled={(isPending && pendingTicketId === ticket.id) || pendingTicketId === ticket.id}
+                                        onValueChange={(value) =>
+                                            handleStatusChange(ticket.id, value as TicketStatus)
+                                        }
+                                        disabled={
+                                            (isPending && pendingTicketId === ticket.id) ||
+                                            pendingTicketId === ticket.id
+                                        }
                                     >
                                         <SelectTrigger className="h-9">
                                             <SelectValue />
@@ -325,7 +382,8 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                         <SelectContent>
                                             {TICKET_STATUSES.map((status) => (
                                                 <SelectItem key={status} value={status}>
-                                                    {status.charAt(0) + status.slice(1).toLowerCase()}
+                                                    {status.charAt(0) +
+                                                        status.slice(1).toLowerCase()}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

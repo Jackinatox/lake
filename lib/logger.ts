@@ -1,5 +1,5 @@
-import { PrismaClient, LogLevel, LogType, Prisma } from "@prisma/client";
-import { prisma } from "@/prisma";
+import { PrismaClient, LogLevel, LogType, Prisma } from '@prisma/client';
+import { prisma } from '@/prisma';
 
 /**
  * Unified application logger that writes to ApplicationLog table.
@@ -47,7 +47,9 @@ class Logger {
                     level: entry.level,
                     type: entry.type,
                     message: entry.message,
-                    details: entry.details ? (entry.details as Prisma.InputJsonValue) : Prisma.JsonNull,
+                    details: entry.details
+                        ? (entry.details as Prisma.InputJsonValue)
+                        : Prisma.JsonNull,
                     method: entry.method || null,
                     path: entry.path || null,
                     userAgent: entry.userAgent || null,
@@ -57,22 +59,18 @@ class Logger {
                 },
             });
         } catch (error) {
-            console.error("Failed to write to ApplicationLog:", error);
-            console.error("Original log entry:", entry);
+            console.error('Failed to write to ApplicationLog:', error);
+            console.error('Original log entry:', entry);
         }
     }
 
     /**
      * Log an informational message
      */
-    async info(
-        message: string,
-        type: LogType = "SYSTEM",
-        context?: LogContext
-    ): Promise<void> {
+    async info(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {
         await this.log({
             message,
-            level: "INFO",
+            level: 'INFO',
             type,
             ...context,
         });
@@ -81,14 +79,10 @@ class Logger {
     /**
      * Log a warning
      */
-    async warn(
-        message: string,
-        type: LogType = "SYSTEM",
-        context?: LogContext
-    ): Promise<void> {
+    async warn(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {
         await this.log({
             message,
-            level: "WARN",
+            level: 'WARN',
             type,
             ...context,
         });
@@ -97,14 +91,10 @@ class Logger {
     /**
      * Log an error
      */
-    async error(
-        message: string,
-        type: LogType = "SYSTEM",
-        context?: LogContext
-    ): Promise<void> {
+    async error(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {
         await this.log({
             message,
-            level: "ERROR",
+            level: 'ERROR',
             type,
             ...context,
         });
@@ -113,14 +103,10 @@ class Logger {
     /**
      * Log a fatal error
      */
-    async fatal(
-        message: string,
-        type: LogType = "SYSTEM",
-        context?: LogContext
-    ): Promise<void> {
+    async fatal(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {
         await this.log({
             message,
-            level: "FATAL",
+            level: 'FATAL',
             type,
             ...context,
         });
@@ -129,15 +115,11 @@ class Logger {
     /**
      * Log system events
      */
-    async system(
-        message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
-    ): Promise<void> {
+    async system(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
         await this.log({
             message,
             level,
-            type: "SYSTEM",
+            type: 'SYSTEM',
             ...context,
         });
     }
@@ -145,15 +127,11 @@ class Logger {
     /**
      * Log authentication events
      */
-    async auth(
-        message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
-    ): Promise<void> {
+    async auth(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
         await this.log({
             message,
             level,
-            type: "AUTHENTICATION",
+            type: 'AUTHENTICATION',
             ...context,
         });
     }
@@ -161,15 +139,11 @@ class Logger {
     /**
      * Log payment events
      */
-    async payment(
-        message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
-    ): Promise<void> {
+    async payment(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
         await this.log({
             message,
             level,
-            type: "PAYMENT",
+            type: 'PAYMENT',
             ...context,
         });
     }
@@ -179,13 +153,13 @@ class Logger {
      */
     async gameServer(
         message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
+        level: LogLevel = 'INFO',
+        context?: LogContext,
     ): Promise<void> {
         await this.log({
             message,
             level,
-            type: "GAME_SERVER",
+            type: 'GAME_SERVER',
             ...context,
         });
     }
@@ -193,15 +167,11 @@ class Logger {
     /**
      * Log email events
      */
-    async email(
-        message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
-    ): Promise<void> {
+    async email(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
         await this.log({
             message,
             level,
-            type: "EMAIL",
+            type: 'EMAIL',
             ...context,
         });
     }
@@ -209,15 +179,11 @@ class Logger {
     /**
      * Log support ticket events
      */
-    async ticket(
-        message: string,
-        level: LogLevel = "INFO",
-        context?: LogContext
-    ): Promise<void> {
+    async ticket(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
         await this.log({
             message,
             level,
-            type: "SUPPORT_TICKET",
+            type: 'SUPPORT_TICKET',
             ...context,
         });
     }
@@ -229,10 +195,10 @@ class Logger {
         return {
             method: request.method,
             path: new URL(request.url).pathname,
-            userAgent: request.headers.get("user-agent") || undefined,
+            userAgent: request.headers.get('user-agent') || undefined,
             ipAddress:
-                request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-                request.headers.get("x-real-ip") ||
+                request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+                request.headers.get('x-real-ip') ||
                 undefined,
         };
     }
@@ -242,10 +208,10 @@ class Logger {
      */
     extractHeadersContext(headers: Headers): Partial<LogContext> {
         return {
-            userAgent: headers.get("user-agent") || undefined,
+            userAgent: headers.get('user-agent') || undefined,
             ipAddress:
-                headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-                headers.get("x-real-ip") ||
+                headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+                headers.get('x-real-ip') ||
                 undefined,
         };
     }
@@ -255,11 +221,10 @@ class Logger {
      */
     async logError(
         error: Error | unknown,
-        type: LogType = "SYSTEM",
-        context?: LogContext
+        type: LogType = 'SYSTEM',
+        context?: LogContext,
     ): Promise<void> {
-        const errorMessage =
-            error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
         const errorStack = error instanceof Error ? error.stack : undefined;
 
         await this.error(errorMessage, type, {
@@ -298,7 +263,7 @@ class Logger {
 
         return await this.prisma.applicationLog.findMany({
             where,
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: 'desc' },
             take: filters.limit || 100,
             include: {
                 user: {
@@ -324,7 +289,7 @@ class Logger {
      */
     async getRecentErrors(limit: number = 50) {
         return await this.query({
-            level: "ERROR",
+            level: 'ERROR',
             limit,
         });
     }

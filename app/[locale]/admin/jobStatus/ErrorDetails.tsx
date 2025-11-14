@@ -1,10 +1,10 @@
 interface ErrorDetailsProps {
-    details: any
+    details: any;
 }
 
 export function ErrorDetails({ details }: ErrorDetailsProps) {
-    if (!details) return null
-    
+    if (!details) return null;
+
     return (
         <details className="text-xs w-full mt-2">
             <summary className="cursor-pointer text-muted-foreground hover:text-foreground select-none">
@@ -14,5 +14,5 @@ export function ErrorDetails({ details }: ErrorDetailsProps) {
                 {JSON.stringify(details, null, 2)}
             </pre>
         </details>
-    )
+    );
 }

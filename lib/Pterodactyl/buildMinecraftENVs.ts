@@ -1,7 +1,6 @@
-import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from "@/app/GlobalConstants";
+import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
 
 export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
-
     let startAndVars;
 
     switch (id) {
@@ -9,7 +8,7 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
             startAndVars = {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
-                    SERVER_JARFILE: 'server.jar'
+                    SERVER_JARFILE: 'server.jar',
                 },
                 startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -jar {{SERVER_JARFILE}}',
             };
@@ -19,9 +18,10 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
                     SERVER_JARFILE: 'server.jar',
-                    BUILD_TYPE: 'latest'
+                    BUILD_TYPE: 'latest',
                 },
-                startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )'
+                startup:
+                    'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true $( [[  ! -f unix_args.txt ]] && printf %s "-jar {{SERVER_JARFILE}}" || printf %s "@unix_args.txt" )',
             };
             break;
         case PaperEggId: // Paper
@@ -29,9 +29,10 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
                     SERVER_JARFILE: 'server.jar',
-                    BUILD_NUMBER: 'latest'
+                    BUILD_NUMBER: 'latest',
                 },
-                startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}'
+                startup:
+                    'java -Xms128M -XX:MaxRAMPercentage=90.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}',
             };
             break;
         case FabricEggId: // Fabric
@@ -40,9 +41,9 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                     MINECRAFT_VERSION: minecraftVersion,
                     SERVER_JARFILE: 'server.jar',
                     FABRIC_VERSION: 'latest',
-                    LOADER_VERSION: 'latest'
+                    LOADER_VERSION: 'latest',
                 },
-                startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -jar {{SERVER_JARFILE}}'
+                startup: 'java -Xms128M -XX:MaxRAMPercentage=90.0 -jar {{SERVER_JARFILE}}',
             };
             break;
     }

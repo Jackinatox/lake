@@ -1,10 +1,10 @@
-"use server"
+'use server';
 
 import { getTranslations } from 'next-intl/server';
 import HelpComponent from './HelpComponent';
 
 async function page() {
-    const t = await getTranslations("getHelp");
+    const t = await getTranslations('getHelp');
     return (
         <section className="w-full">
             <div className="mx-auto max-w-6xl px-0 md:px-8 pt-6 md:pt-10">
@@ -18,7 +18,7 @@ async function page() {
                 <HelpComponent t={t} />
             </div>
         </section>
-    )
+    );
 }
 
-export default page
+export default page;
