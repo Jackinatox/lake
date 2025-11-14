@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2 } from 'lucide-react';
+import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2, HeadphonesIcon } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -52,6 +53,11 @@ const MENU: MenuItem[] = [
         Icon: LayoutDashboard,
         href: '/gameserver',
     },
+    {
+        label: 'Support',
+        Icon: HeadphonesIcon,
+        href: '/support',
+    },
 ];
 
 interface MainMenuInterface {
@@ -60,6 +66,15 @@ interface MainMenuInterface {
 
 export default function MainMenu({ locale }: MainMenuInterface) {
     const [open, setOpen] = React.useState(false);
+    const pathname = usePathname();
+
+    const isActive = (href: string) => {
+        // Remove locale prefix for comparison
+        const pathWithoutLocale = pathname?.replace(/^\/(de|en)/, '') || '';
+        const hrefWithoutLocale = href.replace(/^\/(de|en)/, '');
+        return pathWithoutLocale === hrefWithoutLocale || pathWithoutLocale.startsWith(hrefWithoutLocale + '/');
+    };
+
     return (
         <header className="">
             <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
@@ -105,6 +120,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             className={cn(
                                                 'flex items-center px-3 py-2 text-sm font-medium',
                                                 'hover:text-primary rounded-md transition-colors',
+                                                isActive(item.href!) && 'bg-primary/10 text-primary font-semibold',
                                             )}
                                         >
                                             <item.Icon className="h-4 w-4 mr-1.5" />
@@ -165,7 +181,12 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     <Link
                                         href="/gameserver"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center px-4 py-3 text-lg font-semibold bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                                        className={cn(
+                                            "flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors",
+                                            isActive('/gameserver') 
+                                                ? "bg-primary text-primary-foreground" 
+                                                : "bg-primary/10 hover:bg-primary/20"
+                                        )}
                                     >
                                         <LayoutDashboard className="h-6 w-6 mr-3" />
                                         Dashboard
@@ -214,7 +235,12 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                     key={item.label}
                                                     href={item.href!}
                                                     onClick={() => setOpen(false)}
-                                                    className="flex items-center px-3 py-2 text-base font-medium hover:text-primary rounded-md"
+                                                    className={cn(
+                                                        "flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors",
+                                                        isActive(item.href!)
+                                                            ? "bg-primary/20 text-primary font-semibold"
+                                                            : "hover:text-primary"
+                                                    )}
                                                 >
                                                     <item.Icon className="h-5 w-5 mr-3" />
                                                     {item.label}

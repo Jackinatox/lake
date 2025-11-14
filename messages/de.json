@@ -456,7 +456,13 @@
     "footer": {
         "impressum": "Impressum",
         "agb": "AGB",
-        "datenschutz": "Datenschutz"
+        "datenschutz": "Datenschutz",
+        "contact": "Kontakt",
+        "faq": "FAQ (Bald verfügbar)",
+        "documentation": "Dokumentation (Bald verfügbar)",
+        "about": "Über uns (Bald verfügbar)",
+        "blog": "Blog",
+        "company": "Unternehmen"
     },
     "gameserver": {
         "loading": "Server wird geladen...",

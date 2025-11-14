@@ -12,6 +12,7 @@ import {
     Tailwind,
     Text,
 } from '@react-email/components';
+import { env } from 'next-runtime-env';
 
 interface InvoiceTemplateProps {
     userName: string;
@@ -359,7 +360,7 @@ export default function InvoiceTemplate({
                         <Text className="mt-6 text-base font-medium text-slate-900">
                             Bei Fragen zu dieser Rechnung{' '}
                             <a
-                                href={`${process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || 'http://localhost:3000'}/support`}
+                                href={`${env('NEXT_PUBLIC_APP_URL') || 'http://localhost:3000'}/support`}
                                 style={{ color: '#0f172a', textDecoration: 'underline' }}
                             >
                                 kontaktiere uns gerne

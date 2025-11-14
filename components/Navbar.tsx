@@ -10,9 +10,11 @@ import { usePathname } from 'next/navigation';
 export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
     const isBookingPage = pathname?.includes('/booking');
-    
+
     return (
-        <nav className={`${!isBookingPage ? 'sticky top-0 z-50' : ''} w-full flex justify-center border-b border-b-foreground/10 h-16 bg-background`}>
+        <nav
+            className={`${!isBookingPage ? 'sticky top-0 z-50' : ''} w-full flex justify-center border-b border-b-foreground/10 h-16 bg-background`}
+        >
             <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
                 <div className="flex items-center font-semibold">
                     <Link href="/" className="mr-4 flex items-center" style={{ height: '100%' }}>

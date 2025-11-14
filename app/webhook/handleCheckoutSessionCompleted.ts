@@ -8,6 +8,7 @@ import {
     sendInvoiceEmail,
     sendServerBookingConfirmationEmail,
 } from '@/lib/email/sendEmailEmailsFromLake';
+import { env } from 'next-runtime-env';
 
 export default async function handleCheckoutSessionCompleted(
     checkoutSession: Stripe.Checkout.Session,
@@ -72,8 +73,7 @@ export default async function handleCheckoutSessionCompleted(
             updatedOrder.creationGameData &&
             updatedOrder.creationLocation
         ) {
-            const appUrl =
-                process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || 'http://localhost:3000';
+            const appUrl = env("NEXT_PUBLIC_APP_URL") || 'http://localhost:3000';
             const gameName = updatedOrder.creationGameData.name;
             const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
             const serverUrl = `${appUrl}/gameserver/${updatedOrder.gameServer.ptServerId}`;

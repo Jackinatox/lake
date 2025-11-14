@@ -11,6 +11,7 @@ import {
     Tailwind,
     Text,
 } from '@react-email/components';
+import { env } from 'next-runtime-env';
 
 interface SupportTicketCreatedTemplateProps {
     createdAt: Date;
@@ -125,7 +126,7 @@ export default function SupportTicketCreatedTemplate({
                             hast. Wenn du keine Benachrichtigungen mehr erhalten möchtest,
                             kontaktiere bitte den{' '}
                             <a
-                                href={`${process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || 'http://localhost:3000'}/support`}
+                                href={`${env("NEXT_PUBLIC_APP_URL") || 'http://localhost:3000'}/support`}
                                 style={{ color: '#94a3b8', textDecoration: 'underline' }}
                             >
                                 Support

@@ -13,7 +13,7 @@
 - **Booking Flow** `app/[locale]/booking2/[gameId]/page.tsx` guides users through hardware + game config, then calls `checkoutAction` in `app/actions/checkout.ts` which persists a `GameServerOrder` and returns a Stripe client secret.
 - **Payment UI** `components/payments/PaymentElements.tsx` renders Stripe Embedded Checkout once the client secret arrives; gating is handled with `authClient.useSession()`.
 - **Provisioning** Stripe webhook handler (`app/webhook/route.ts`) verifies signatures (`webhookSecret`), marks orders `PAID`, and delegates to `lib/Pterodactyl/createServers/provisionServer.ts` (for NEW) or `lib/Pterodactyl/upgradeServer/upgradeServer.ts`.
-- **Pterodactyl Admin Calls** Admin-facing actions (e.g. `app/actions/gameservers/deleteGameServers.ts`) use `process.env.PTERODACTYL_API_KEY` with `createPtClient()` to mutate servers.
+- **Pterodactyl Admin Calls** Admin-facing actions (e.g. `app/actions/gameservers/deleteGameServers.ts`) use `env("PTERODACTYL_API_KEY")` with `createPtClient()` to mutate servers.
 - **Pricing & Limits** `lib/GlobalFunctions/paymentLogic.ts` and `ptResourceLogic.ts` compute cents, discounts, and resource caps; keep any changes in sync with UI validators and Prisma constraints.
 
 ## Conventions & Integration

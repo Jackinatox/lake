@@ -51,28 +51,25 @@ export default async function RootLayout({
                 <PublicEnvScript />
             </head>
             <NextIntlClientProvider>
-                <body className="bg-background text-foreground">
+                <body className="bg-background text-foreground flex flex-col min-h-screen">
                     <ThemeProvider
                         attribute="class"
                         defaultTheme="system"
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <main className="min-h-screen flex flex-col items-center">
-                            <div className="flex-1 w-full flex flex-col items-center">
-                                <Navbar locale={locale} />
-                                <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4">
-                                    {children}
-                                    <Toaster />
-                                    {env('NODE_ENV') !== 'production' && (
-                                        <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
-                                            {JSON.stringify(session?.user, null, 2)}
-                                        </pre>
-                                    )}
-                                </div>
-
-                                <Footer />
+                        <main className="flex flex-col flex-1">
+                            <Navbar locale={locale} />
+                            <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4 flex-1">
+                                {children}
+                                <Toaster />
+                                {/* {env('NODE_ENV') !== 'production' && (
+                                    <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
+                                        {JSON.stringify(session?.user, null, 2)}
+                                    </pre>
+                                )} */}
                             </div>
+                            <Footer />
                         </main>
                     </ThemeProvider>
                 </body>

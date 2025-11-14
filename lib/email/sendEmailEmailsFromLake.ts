@@ -6,6 +6,7 @@ import { SupportTicket } from '@prisma/client';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
 import ServerBookingConfirmationTemplate from './templates/ServerBookingConfirmationTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
+import { env } from 'next-runtime-env';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(
@@ -36,7 +37,7 @@ export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) 
             category: ticket.category,
             message: ticket.message,
             ticketId: ticket.ticketId,
-            ticketUrl: `${process.env.LAKE_URL}/support/tickets/${ticket.ticketId}/notImplementedYet`,
+            ticketUrl: `${env("NEXT_PUBLIC_APP_URL")}/support/tickets/${ticket.ticketId}/notImplementedYet`,
         }),
     );
 

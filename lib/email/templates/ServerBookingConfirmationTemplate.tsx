@@ -12,6 +12,7 @@ import {
     Tailwind,
     Text,
 } from '@react-email/components';
+import { env } from 'next-runtime-env';
 
 interface ServerBookingConfirmationTemplateProps {
     userName: string;
@@ -273,7 +274,7 @@ export default function ServerBookingConfirmationTemplate({
                         <Text className="mt-4 text-base leading-6 text-slate-600">
                             Bei Fragen oder Problemen steht dir unser{' '}
                             <a
-                                href={`${process.env.NEXT_PUBLIC_APP_URL || process.env.LAKE_URL || 'http://localhost:3000'}/support`}
+                                href={`${env("NEXT_PUBLIC_APP_URL") || 'http://localhost:3000'}/support`}
                                 style={{ color: '#0f172a', textDecoration: 'underline' }}
                             >
                                 Support-Team

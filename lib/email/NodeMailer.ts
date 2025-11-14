@@ -2,14 +2,15 @@ import nodemailer from 'nodemailer';
 import { logger } from '../logger';
 import { prisma } from '@/prisma';
 import { EmailType } from '@prisma/client';
+import { env } from 'next-runtime-env';
 
 const mailer = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
+    host: env("SMTP_HOST"),
     port: 465,
     secure: true,
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: env("SMTP_USER"),
+        pass: env("SMTP_PASS"),
     },
 });
 
@@ -26,7 +27,7 @@ export async function sendMail(to: string, subject: string, html: string, type: 
 
     try {
         const res = await mailer.sendMail({
-            from: `"Scyed" <${process.env.SMTP_USER}>`,
+            from: `"Scyed" <${env("SMTP_USER")}>`,
             to,
             subject,
             html,
