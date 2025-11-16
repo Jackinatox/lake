@@ -1,23 +1,11 @@
-import { prisma } from '@/prisma';
 import { marked } from 'marked';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTranslations } from 'next-intl/server';
-import { cache } from 'react';
 import { LEGAL_IMPRESSUM_DE, LEGAL_IMPRESSUM_EN } from '@/app/GlobalConstants';
+import { getKeyValueString } from '@/lib/keyValue';
+import { Metadata } from 'next';
 
-const getKeyValueString = cache(async (key: string): Promise<string | null> => {
-    try {
-        const keyValue = await prisma.keyValue.findUnique({
-            where: { key: key },
-        });
-        return keyValue?.string || null;
-    } catch (error) {
-        console.error('Failed to fetch legal content:', error);
-        return null;
-    }
-});
-
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'legal' });
 

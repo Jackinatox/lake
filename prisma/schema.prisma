@@ -159,6 +159,7 @@ enum OrderType {
   UPGRADE
   DOWNGRADE // For later
   RENEW
+  TO_PAYED
 }
 
 enum TicketCategory {

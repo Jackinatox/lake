@@ -64,6 +64,23 @@
     },
     "notAdmin": "You are not an admin",
     "notAdminDescription": "You do not have admin rights to view this page.",
+    "freeServer": {
+        "buttonText": "Free Server",
+        "buttonDescription": "Create a free gameserver with limited hardware",
+        "pageTitle": "Free Server",
+        "featuresTitle": "Free Tier Features",
+        "featuresDescription": "Limited hardware, unlimited fun!",
+        "chooseGame": "Choose Your Game",
+        "cpuLabel": "{cores} {cores, plural, =1 {Core} other {Cores}}",
+        "cpuDescription": "Enough for small servers",
+        "ramLabel": "{amount} GB RAM",
+        "ramDescription": "Perfect for getting started",
+        "storageLabel": "{amount} GB Storage",
+        "storageDescription": "Sufficient for most game files",
+        "durationLabel": "{days} {days, plural, =1 {Day} other {Days}} Duration",
+        "durationDescription": "Renewable or upgrade anytime",
+        "noCreditCard": "No credit card required • No hidden fees • 100% Free"
+    },
     "hardware-config": {
         "duration": "Duration",
         "select-duration": "Select duration",
@@ -421,7 +438,8 @@
             "NEW": "New server",
             "UPGRADE": "Upgrade",
             "DOWNGRADE": "Downgrade",
-            "RENEW": "Renewal"
+            "RENEW": "Renewal",
+            "TO_PAYED": "From Free to Paid"
         },
         "serverExpired": "Server expired",
         "historyTitle": "Payment History",

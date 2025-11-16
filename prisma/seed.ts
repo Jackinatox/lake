@@ -1,4 +1,17 @@
 import { PrismaClient } from '@prisma/client';
+import {
+    LEGAL_IMPRESSUM_DE,
+    LEGAL_IMPRESSUM_EN,
+    LEGAL_AGB_DE,
+    LEGAL_AGB_EN,
+    LEGAL_DATENSCHUTZ_DE,
+    LEGAL_DATENSCHUTZ_EN,
+    FREE_TIER_CPU_PERCENT,
+    FREE_TIER_RAM_MB,
+    FREE_TIER_STORAGE_MB,
+    FREE_TIER_DURATION_DAYS,
+} from '../app/GlobalConstants';
+
 const prisma = new PrismaClient();
 async function main() {
     await prisma.gameData.create({
@@ -90,6 +103,88 @@ async function main() {
             ptLocationId: 1,
             cpu: { connect: { id: cpu2.id } },
             ram: { connect: { id: ram2.id } },
+        },
+    });
+
+    // Legal Content Keys
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_IMPRESSUM_DE,
+            string: '# Impressum\n\nBitte fügen Sie hier Ihre Impressum-Informationen ein.',
+            note: 'German Impressum (legal imprint) content',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_IMPRESSUM_EN,
+            string: '# Imprint\n\nPlease add your imprint information here.',
+            note: 'English Imprint (legal imprint) content',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_AGB_DE,
+            string: '# Allgemeine Geschäftsbedingungen\n\nBitte fügen Sie hier Ihre AGB ein.',
+            note: 'German Terms and Conditions (AGB) content',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_AGB_EN,
+            string: '# Terms and Conditions\n\nPlease add your terms and conditions here.',
+            note: 'English Terms and Conditions content',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_DATENSCHUTZ_DE,
+            string: '# Datenschutzerklärung\n\nBitte fügen Sie hier Ihre Datenschutzerklärung ein.',
+            note: 'German Privacy Policy (Datenschutz) content',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: LEGAL_DATENSCHUTZ_EN,
+            string: '# Privacy Policy\n\nPlease add your privacy policy here.',
+            note: 'English Privacy Policy content',
+        },
+    });
+
+    // Free Tier Configuration
+    await prisma.keyValue.create({
+        data: {
+            key: FREE_TIER_CPU_PERCENT,
+            number: 200,
+            note: 'CPU allocation for free tier servers',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: FREE_TIER_RAM_MB,
+            number: 2048,
+            note: 'RAM allocation for free tier servers',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: FREE_TIER_STORAGE_MB,
+            number: 10240,
+            note: 'Storage allocation for free tier servers',
+        },
+    });
+
+    await prisma.keyValue.create({
+        data: {
+            key: FREE_TIER_DURATION_DAYS,
+            number: 7,
+            note: 'Duration for free tier servers',
         },
     });
 }

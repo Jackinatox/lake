@@ -16,6 +16,12 @@ export const LEGAL_AGB_EN = 'legal_agb_en';
 export const LEGAL_DATENSCHUTZ_DE = 'legal_datenschutz_de';
 export const LEGAL_DATENSCHUTZ_EN = 'legal_datenschutz_en';
 
+// Free Tier Configuration Keys
+export const FREE_TIER_CPU_PERCENT = 'free_tier_cpu_percent';
+export const FREE_TIER_RAM_MB = 'free_tier_ram_mb';
+export const FREE_TIER_STORAGE_MB = 'free_tier_storage_mb';
+export const FREE_TIER_DURATION_DAYS = 'free_tier_duration_days';
+
 // FTP
 export const FTP_PASSWORD_MIN_LENGTH = 8;
 export const FTP_PASSWORD_MAX_LENGTH = 64;

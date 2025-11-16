@@ -62,6 +62,23 @@
         "ctaDesc": "Wähle ein Spiel und bring deinen Server in wenigen Minuten online.",
         "ctaButton": "Loslegen"
     },
+    "freeServer": {
+        "buttonText": "Kostenloser Server",
+        "buttonDescription": "Erstelle einen kostenlosen Gameserver mit begrenzter Hardware",
+        "pageTitle": "Kostenloser Server",
+        "featuresTitle": "Free-Tier Funktionen",
+        "featuresDescription": "Begrenzte Hardware, unbegrenzter Spaß!",
+        "chooseGame": "Wähle dein Spiel",
+        "cpuLabel": "{cores} {cores, plural, =1 {Kern} other {Kerne}}",
+        "cpuDescription": "Genug für kleine Server",
+        "ramLabel": "{amount} GB RAM",
+        "ramDescription": "Perfekt für den Einstieg",
+        "storageLabel": "{amount} GB Speicher",
+        "storageDescription": "Ausreichend für die meisten Spieldateien",
+        "durationLabel": "{days} {days, plural, =1 {Tag} other {Tage}} Laufzeit",
+        "durationDescription": "Verlängerbar oder jederzeit upgraden",
+        "noCreditCard": "Keine Kreditkarte erforderlich • Keine versteckten Gebühren • 100% kostenlos"
+    },
     "hardware-config": {
         "duration": "Laufzeit",
         "select-duration": "Laufzeit auswählen",
@@ -421,7 +438,8 @@
             "NEW": "Neuer Server",
             "UPGRADE": "Upgrade",
             "DOWNGRADE": "Downgrade",
-            "RENEW": "Verlängerung"
+            "RENEW": "Verlängerung",
+            "TO_PAYED": "Von Gratis zu Bezahlt"
         },
         "serverExpired": "Server abgelaufen",
         "historyTitle": "Zahlungshistorie",

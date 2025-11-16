@@ -1,11 +1,12 @@
-'use client';
+"use client"
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2, HeadphonesIcon } from 'lucide-react';
+import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2, HeadphonesIcon, Gift } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -67,6 +68,7 @@ interface MainMenuInterface {
 export default function MainMenu({ locale }: MainMenuInterface) {
     const [open, setOpen] = React.useState(false);
     const pathname = usePathname();
+    const t = useTranslations('freeServer');
 
     const isActive = (href: string) => {
         // Remove locale prefix for comparison
@@ -81,7 +83,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                 <div className="flex h-16 justify-between items-center">
                     {/* — Desktop Menu — */}
                     <NavigationMenu className="hidden md:flex">
-                        <NavigationMenuList className="flex space-x-4">
+                        <NavigationMenuList className="flex space-x-4 items-center">
                             {MENU.map((item) =>
                                 item.subItems ? (
                                     // Dropdown for items with subItems
@@ -129,6 +131,15 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     </NavigationMenuItem>
                                 ),
                             )}
+                            {/* Free Server Button */}
+                            <NavigationMenuItem>
+                                <Button asChild size="default" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg">
+                                    <Link href="/products/free-gameserver" className="flex items-center">
+                                        <Gift className="h-4 w-4 mr-1.5" />
+                                        {t('buttonText')}
+                                    </Link>
+                                </Button>
+                            </NavigationMenuItem>
                             {/* <NavigationMenuItem>
                 <div className="flex flex-end">
                   <LanguageSwitcher currentLocale={locale} />
@@ -190,6 +201,16 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     >
                                         <LayoutDashboard className="h-6 w-6 mr-3" />
                                         Dashboard
+                                    </Link>
+
+                                    {/* Free Server Button - Mobile */}
+                                    <Link
+                                        href="/products/free-gameserver"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center px-4 py-3 text-lg font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all"
+                                    >
+                                        <Gift className="h-6 w-6 mr-3" />
+                                        {t('buttonText')}
                                     </Link>
 
                                     {/* Divider */}

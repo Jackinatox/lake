@@ -262,24 +262,24 @@ export default async function LandingPage() {
             </div>
 
             {/* CTA Section */}
-            <div className="mt-4 mx-auto w-full max-w-screen-2xl">
-                <Card className="bg-primary/10 border border-primary/20 px-2 md:px-6 py-8 md:py-10 text-center">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                        {t('ctaHeader')}
-                    </h2>
+            <div className="mt-4 mx-auto w-full max-w-screen-2xl px-2 md:px-0 py-8 md:py-0">
+                <Card className="bg-primary/10 border border-primary/20 text-center px-2 md:px-6 py-2 md:py-10">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('ctaHeader')}</h2>
                     <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-sm md:text-base">
                         {t('ctaDesc')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/products/gameserver">
-                            <Button size="lg" className="px-8 group">
+                            <Button size="lg" className="px-8 group w-full">
                                 {t('ctaButton')}
                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="px-8">
-                            {t('buttonComparePlans')}
-                        </Button>
+                        <Link href="#">
+                            <Button size="lg" variant="outline" className="px-8 group w-full">
+                                {t('buttonComparePlans') + " (coming soon)"} 
+                            </Button>
+                        </Link>
                     </div>
                 </Card>
             </div>
