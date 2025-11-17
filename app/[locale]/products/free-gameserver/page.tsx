@@ -4,7 +4,7 @@ import React from 'react';
 import { prisma } from '@/prisma';
 import { getTranslations } from 'next-intl/server';
 import FreeGameSelect from './FreeGameSelect';
-import { getFreeTierConfig } from '@/lib/free-tier/config';
+import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 
 async function FreeGameServerPage() {
     const t = await getTranslations('freeServer');
@@ -13,7 +13,7 @@ async function FreeGameServerPage() {
         prisma.gameData.findMany({
             select: {id: true, name: true},
         }),
-        getFreeTierConfig(),
+        getFreeTierConfigCached(),
     ]);
 
     const games = data.map((game) => {

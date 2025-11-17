@@ -20,7 +20,7 @@ export async function provisionServer(order: GameServerOrder) {
     console.log('user id: ', serverOrder.user.ptUserId);
     const gameConfig = serverOrder.gameConfig as any;
     // console.log("GameConfig: ", gameConfig);
-
+ 
     let options: NewServerOptions;
     let preOptions = {
         user: serverOrder.user.ptUserId,

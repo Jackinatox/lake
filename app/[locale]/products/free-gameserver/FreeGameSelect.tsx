@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
 import GameCard from '@/components/order/game/gameCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Zap, Clock, HardDrive, Cpu } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import type { FreeTierConfig } from '@/lib/free-tier/config';
+import { CheckCircle, Clock, Cpu, HardDrive, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Game {
     id: number;
@@ -23,12 +22,12 @@ interface FreeGameSelectProps {
 
 export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelectProps) {
     const t = useTranslations('freeServer');
-    
+
     // Convert values for display
     const cpuCores = freeTierConfig.cpu / 100;
     const ramInGB = freeTierConfig.ram / 1024;
     const storageInGB = freeTierConfig.storage / 1024;
-    
+
     return (
         <>
             {/* Features Card */}
@@ -47,7 +46,9 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
                                 <p className="font-semibold">
                                     {t('cpuLabel', { cores: cpuCores })}
                                 </p>
-                                <p className="text-sm text-muted-foreground">{t('cpuDescription')}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('cpuDescription')}
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -58,7 +59,9 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
                                 <p className="font-semibold">
                                     {t('ramLabel', { amount: ramInGB })}
                                 </p>
-                                <p className="text-sm text-muted-foreground">{t('ramDescription')}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('ramDescription')}
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -69,7 +72,9 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
                                 <p className="font-semibold">
                                     {t('storageLabel', { amount: storageInGB })}
                                 </p>
-                                <p className="text-sm text-muted-foreground">{t('storageDescription')}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('storageDescription')}
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -80,7 +85,9 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
                                 <p className="font-semibold">
                                     {t('durationLabel', { days: freeTierConfig.duration })}
                                 </p>
-                                <p className="text-sm text-muted-foreground">{t('durationDescription')}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('durationDescription')}
+                                </p>
                             </div>
                         </div>
                     </div>

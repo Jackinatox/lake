@@ -12,7 +12,6 @@ import type { Game, GameConfig, HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 export type ServerConfig = {
@@ -31,7 +30,7 @@ export default function GameServerConfig({
     game,
     gameId,
 }: GameServerConfigProps) {
-    const session = authClient.useSession().data;
+    const session = authClient.useSession();
     const t = useTranslations('buyGameServer');
 
     const [clientSecret, setClientSecret] = useState('');
@@ -183,7 +182,7 @@ export default function GameServerConfig({
                         {step < 3 && (
                             <>
                                 <>
-                                    {!session?.user && (
+                                    {!session?.data?.user && (
                                         <div className="flex items-center gap-2 w-full sm:w-auto mb-2 sm:mb-0">
                                             <Info className="shrink-0" />
                                             <span className="text-sm">
@@ -195,7 +194,7 @@ export default function GameServerConfig({
                                 <Button
                                     onClick={handleNextStep}
                                     className="w-full sm:w-auto sm:ml-auto"
-                                    disabled={!session?.user}
+                                    disabled={(!session?.data?.user && step >= 2)}
                                 >
                                     {t('nav.continue')}
                                     <ArrowRight className="ml-2 h-4 w-4" />

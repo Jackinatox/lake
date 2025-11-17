@@ -439,6 +439,7 @@
             "UPGRADE": "Upgrade",
             "DOWNGRADE": "Downgrade",
             "RENEW": "Verlängerung",
+            "FREE_SERVER": "Kostenloser Server",
             "TO_PAYED": "Von Gratis zu Bezahlt"
         },
         "serverExpired": "Server abgelaufen",

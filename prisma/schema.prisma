@@ -85,10 +85,11 @@ model GameServer {
   backupCount Int
   expires     DateTime
   price       Float // To let the user extend his server at the original price in case we increase prices
+  freeServer  Boolean  @default(false)
 
   ptServerId String?
   ptAdminId  Int?
-  name       String // @default("GameServer")
+  name       String
 
   status    GameServerStatus @default(CREATED)
   errorText String?
@@ -159,6 +160,7 @@ enum OrderType {
   UPGRADE
   DOWNGRADE // For later
   RENEW
+  FREE_SERVER
   TO_PAYED
 }
 
