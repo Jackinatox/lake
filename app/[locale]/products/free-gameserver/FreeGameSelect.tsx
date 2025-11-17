@@ -31,7 +31,7 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
     return (
         <>
             {/* Features Card */}
-            <Card className="mb-8 max-w-4xl mx-auto">
+            <Card className="mb-8 max-w-4xl">
                 <CardHeader>
                     <CardTitle className="text-2xl">{t('featuresTitle')}</CardTitle>
                     <CardDescription>{t('featuresDescription')}</CardDescription>
@@ -108,7 +108,7 @@ export default function FreeGameSelect({ games, freeTierConfig }: FreeGameSelect
                         <GameCard
                             key={game.id}
                             card={{
-                                link: `/booking2/${game.id.toString()}?tier=free`,
+                                link: `/products/free-gameserver/${game.id.toString()}`,
                                 name: game.name,
                             }}
                             images={game.images}

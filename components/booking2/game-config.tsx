@@ -9,21 +9,18 @@ import { SatisfactoryConfigComponent } from './satisfactory-config';
 
 interface GameConfigProps {
     game: Game;
-    onAdditionalConfigChange?: (config: Record<string, any>) => void;
+    onAdditionalConfigChange?: () => void;
     onSubmit: (config: GameConfig) => void;
     fullWidth?: boolean;
 }
 
 export const GameConfigComponent = forwardRef(
-    (
-        { game, onAdditionalConfigChange = () => {}, onSubmit, fullWidth = false }: GameConfigProps,
-        ref,
-    ) => {
+    ({ game, onAdditionalConfigChange = () => {}, onSubmit, fullWidth = false }: GameConfigProps, ref ) => {
         const t = useTranslations('buyGameServer.gameConfig');
         const configRef = useRef<any>(null);
 
-        const handleConfigChange = (config: Record<string, any>) => {
-            onAdditionalConfigChange(config);
+        const handleConfigChange = () => {
+            onAdditionalConfigChange();
         };
 
         useImperativeHandle(ref, () => ({

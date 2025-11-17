@@ -7,8 +7,11 @@ import { prisma } from '@/prisma';
 import { OrderType } from '@prisma/client';
 import { stripe } from '@/lib/stripe';
 import { ServerConfig } from '../[locale]/booking2/[gameId]/page';
-import { HardwareConfig } from '@/models/config';
+import { GameConfig, HardwareConfig } from '@/models/config';
 import { headers } from 'next/headers';
+import { getFreeTierConfigCached } from '@/lib/free-tier/config';
+import { getKeyValueNumber } from '@/lib/keyValue';
+import { FREE_SERVERS_LOCATION_ID } from '../GlobalConstants';
 
 export type CheckoutParams = {
     type: OrderType;
@@ -169,7 +172,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
-                            duration * 24 * 60 * 60 * 1000,
+                        duration * 24 * 60 * 60 * 1000,
                     ),
                     status: 'PENDING',
                 },
@@ -213,4 +216,33 @@ export async function checkoutAction(params: CheckoutParams) {
             return { client_secret: stripeSession.client_secret };
         }
     }
+}
+
+export async function checkoutFreeGameServer(gameConfig: GameConfig) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session) throw new Error('Not authenticated');
+    const user = session.user;
+
+    const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    const freeServerStats = await getFreeTierConfigCached();
+    const locationId = await getKeyValueNumber(FREE_SERVERS_LOCATION_ID);
+    
+    const order = await prisma.gameServerOrder.create({
+        data: {
+            type: 'FREE_SERVER',
+            userId: dbUser.id,
+            ramMB: freeServerStats.ram,
+            cpuPercent: freeServerStats.cpu,
+            diskMB: freeServerStats.storage,
+            price: 0,
+            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
+            status: 'PAID',
+            creationGameDataId: gameConfig.gameId,
+            gameConfig: gameConfig as any,
+            creationLocationId: locationId
+        }
+    });
 }

@@ -11,6 +11,13 @@ import {
 } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
@@ -32,7 +39,6 @@ export const MinecraftConfigComponent = forwardRef(
         const [selectedEggId, setSelectedFlavorId] = useState<number | null>(null);
         const [selectedVersion, setSelectedVersion] = useState<GameVersion | null>(null);
         const [gameVersions, setGameVersions] = useState<GameVersion[]>([]);
-        const [flavorOpen, setFlavorOpen] = useState(false);
         const [versionOpen, setVersionOpen] = useState(false);
 
         const flavors = useMemo(() => (givenGame.data.flavors as GameFlavor[]) ?? [], [givenGame]);
@@ -124,59 +130,22 @@ export const MinecraftConfigComponent = forwardRef(
                 {/* Game Flavor Selection */}
                 <div className="space-y-2">
                     <Label className="text-sm font-medium">Game Flavor</Label>
-                    <Popover open={flavorOpen} onOpenChange={setFlavorOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={flavorOpen}
-                                className="w-full justify-between text-left"
-                                disabled={flavors.length === 0}
-                            >
-                                <span className="truncate">
-                                    {selectedEggId !== null
-                                        ? flavors.find((flavor) => flavor.egg_id === selectedEggId)
-                                              ?.name || 'Select a flavor'
-                                        : 'Select a flavor'}
-                                </span>
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                            className="w-[var(--radix-popover-trigger-width)] p-0"
-                            align="start"
-                        >
-                            <Command>
-                                <CommandInput placeholder="Search flavor..." className="h-9" />
-                                <CommandList>
-                                    <CommandEmpty>No flavor found.</CommandEmpty>
-                                    <CommandGroup>
-                                        {flavors.map((flavor) => (
-                                            <CommandItem
-                                                key={flavor.egg_id}
-                                                value={flavor.name}
-                                                onSelect={() => {
-                                                    setSelectedFlavorId(flavor.egg_id);
-                                                    setFlavorOpen(false);
-                                                }}
-                                                className="cursor-pointer"
-                                            >
-                                                <Check
-                                                    className={cn(
-                                                        'mr-2 h-4 w-4',
-                                                        selectedEggId === flavor.egg_id
-                                                            ? 'opacity-100'
-                                                            : 'opacity-0',
-                                                    )}
-                                                />
-                                                <span className="truncate">{flavor.name}</span>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
+                    <Select
+                        value={selectedEggId?.toString() ?? ''}
+                        onValueChange={(value) => setSelectedFlavorId(Number(value))}
+                        disabled={flavors.length === 0}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a flavor" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {flavors.map((flavor) => (
+                                <SelectItem key={flavor.egg_id} value={flavor.egg_id.toString()}>
+                                    {flavor.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 {/* Game Version Selection */}

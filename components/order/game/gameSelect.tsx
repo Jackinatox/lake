@@ -1,6 +1,5 @@
 'use server';
 
-import React from 'react';
 import GameCard from './gameCard';
 import { prisma } from '@/prisma';
 

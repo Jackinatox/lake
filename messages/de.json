@@ -253,6 +253,20 @@
         }
     },
     "buyGameServer": {
+        "errors": {
+            "gameNotFound": {
+                "title": "Spiel nicht gefunden",
+                "description": "Das gesuchte Spiel existiert nicht oder ist nicht mehr verfügbar. Bitte wähle aus unseren verfügbaren Spielen.",
+                "browseGames": "Spiele durchsuchen",
+                "home": "Zur Startseite"
+            },
+            "loadingError": {
+                "title": "Etwas ist schiefgelaufen",
+                "description": "Die Konfigurationsoptionen konnten nicht geladen werden. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem weiterhin besteht.",
+                "retry": "Erneut versuchen",
+                "home": "Zur Startseite"
+            }
+        },
         "header": {
             "title": "Konfiguriere deinen Server",
             "step": "Schritt {current} von {total}"

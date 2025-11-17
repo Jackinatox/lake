@@ -35,6 +35,6 @@ export async function fetchGames(gameId: number): Promise<Game | null> {
     return {
         data: game.data,
         id: game.id,
-        name: game.name || 'kein name',
+        name: game.name,
     };
 }

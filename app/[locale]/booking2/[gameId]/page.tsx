@@ -1,13 +1,11 @@
 'use server';
 
-import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { fetchGames as fetchGame, fetchPerformanceGroups } from '@/lib/actions';
-import { authClient } from '@/lib/auth-client';
 import type { GameConfig, HardwareConfig } from '@/models/config';
 import { getTranslations } from 'next-intl/server';
+import GameNotFound from '@/components/booking2/GameNotFound';
+import LoadingError from '@/components/booking2/LoadingError';
 import GameServerConfig from './OrderComponent';
-import { auth } from '@/auth';
-import { headers } from 'next/headers';
 
 export type ServerConfig = {
     hardwareConfig: HardwareConfig;
@@ -16,25 +14,26 @@ export type ServerConfig = {
 
 export default async function page({ params }: { params: Promise<{ gameId: string }> }) {
     const t = await getTranslations('buyGameServer');
-    const gameId = Number.parseInt((await params).gameId as string, 10);
-    console.log('Game id:' + gameId);
+    const rawGameId = (await params).gameId as string;
+    const gameId = Number.parseInt(rawGameId, 10);
+    const safeGameId = Number.isNaN(gameId) ? -1 : gameId;
 
     const [performanceGroupData, game] = await Promise.all([
         fetchPerformanceGroups(),
-        fetchGame(gameId),
+        fetchGame(safeGameId),
     ]);
 
-    if (!game || !performanceGroupData) {
-        return <div>error</div>;
+    if (!game) {
+        return <GameNotFound linkBackTo="/products/gameserver" />;
+    }
+
+    if (!performanceGroupData) {
+        return <LoadingError />;
     }
 
     return (
         <>
-            <GameServerConfig
-                performanceGroups={performanceGroupData}
-                game={game}
-                gameId={gameId}
-            />
+            <GameServerConfig performanceGroups={performanceGroupData} game={game} />
         </>
     );
 }

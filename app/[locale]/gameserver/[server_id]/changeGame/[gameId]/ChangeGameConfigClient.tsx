@@ -41,7 +41,7 @@ export default function ChangeGameConfigClient({
 }: ChangeGameConfigClientProps) {
     const t = useTranslations('changeGame');
     const { toast } = useToast();
-    const gameConfigRef = useRef<{ submit: () => void } | null>(null);
+    const gameConfigRef = useRef<{ submit: () => void }>(null);
     const [submittedConfig, setSubmittedConfig] = useState<GameConfig | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles);

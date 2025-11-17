@@ -29,7 +29,6 @@ export async function getFreeTierConfigCached(): Promise<FreeTierConfig> {
 }
 
 export async function getFreeTierConfig(): Promise<FreeTierConfig> {
-    "use cache"
     const data = await prisma.keyValue.findMany({
         where: {
             key: { in: keys }

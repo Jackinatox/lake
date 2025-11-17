@@ -22,14 +22,9 @@ export type ServerConfig = {
 interface GameServerConfigProps {
     performanceGroups: PerformanceGroup[];
     game: Game;
-    gameId: number;
 }
 
-export default function GameServerConfig({
-    performanceGroups,
-    game,
-    gameId,
-}: GameServerConfigProps) {
+export default function GameServerConfig({ performanceGroups, game }: GameServerConfigProps) {
     const session = authClient.useSession();
     const t = useTranslations('buyGameServer');
 
@@ -38,8 +33,8 @@ export default function GameServerConfig({
     const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const { toast } = useToast();
-    const hardwareConfigRef = useRef<any>(null);
-    const gameConfigRef = useRef<any>(null);
+    const hardwareConfigRef = useRef<{ submit: () => void }>(null);
+    const gameConfigRef = useRef<{ submit: () => void }>(null);
 
     const handleHardwareConfigNext = (config: HardwareConfig) => {
         setHardwareConfig(config);
@@ -194,7 +189,7 @@ export default function GameServerConfig({
                                 <Button
                                     onClick={handleNextStep}
                                     className="w-full sm:w-auto sm:ml-auto"
-                                    disabled={(!session?.data?.user && step >= 2)}
+                                    disabled={!session?.data?.user && step >= 2}
                                 >
                                     {t('nav.continue')}
                                     <ArrowRight className="ml-2 h-4 w-4" />
