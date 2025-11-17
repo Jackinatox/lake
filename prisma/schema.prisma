@@ -32,14 +32,15 @@ model GameData {
 }
 
 model Location {
-  id           Int      @id @default(autoincrement())
-  name         String?
-  diskPrice    Float?
-  portsLimit   Int?
-  backupsLimit Int?
-  enabled      Boolean? @default(true)
-  ptLocationId Int      @default(1)
-  cpuId        Int      @default(1)
+  id           Int     @id @default(autoincrement())
+  name         String
+  diskPrice    Float
+  portsLimit   Int
+  backupsLimit Int
+  enabled      Boolean @default(true)
+  freeServer   Boolean @default(false)
+  ptLocationId Int     @default(1)
+  cpuId        Int     @default(1)
   ramId        Int
 
   cpu CPU @relation(fields: [cpuId], references: [id], onDelete: Restrict)

@@ -1,9 +1,13 @@
+'use client';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientServer } from '@/models/prisma';
 import { Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
+import { Badge } from '@/components/ui/badge';
+import { useTranslations } from 'next-intl';
 
 function formatExpirationDate(date: Date) {
     const now = new Date();
@@ -43,6 +47,7 @@ function formatExpirationDate(date: Date) {
 }
 
 function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }) {
+    const t = useTranslations('gameserver');
     const expiration =
         server.status === 'EXPIRED'
             ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
@@ -85,10 +90,15 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                             <div className="min-w-0 flex-1">
                                 {/* Server name and status - responsive text size */}
                                 <div className="mb-2 sm:mb-2">
-                                    <div className="flex items-center space-x-2 mb-1">
-                                        <h3 className="font-semibold text-lg sm:text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                                    <div className="flex items-center flex-wrap gap-2 mb-1">
+                                        <h3 className="font-semibold text-lg sm:text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {server.name}
                                         </h3>
+                                        {server.freeServer && (
+                                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 px-3 py-0.5 text-sm font-bold shadow-md hover:from-green-600 hover:to-emerald-700">
+                                                ✨ {t('freeServer')}
+                                            </Badge>
+                                        )}
                                         <GameServerStatus apiKey={apiKey} server={server} />
                                     </div>
                                 </div>

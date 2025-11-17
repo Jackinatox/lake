@@ -77,7 +77,11 @@
         "storageDescription": "Ausreichend für die meisten Spieldateien",
         "durationLabel": "{days} {days, plural, =1 {Tag} other {Tage}} Laufzeit",
         "durationDescription": "Verlängerbar oder jederzeit upgraden",
-        "noCreditCard": "Keine Kreditkarte erforderlich • Keine versteckten Gebühren • 100% kostenlos"
+        "noCreditCard": "Keine Kreditkarte erforderlich • Keine versteckten Gebühren • 100% kostenlos",
+        "serverUsageTitle": "Kostenlose Server-Slots",
+        "serverUsageDescription": "Erstelle weitere kostenlose Server",
+        "limitReached": "Maximum an kostenlosen Servern erreicht",
+        "serversLabel": "Server"
     },
     "hardware-config": {
         "duration": "Laufzeit",
@@ -498,6 +502,7 @@
         "company": "Unternehmen"
     },
     "gameserver": {
+        "freeServer": "Kostenlos",
         "loading": "Server wird geladen...",
         "error": "Fehler",
         "serverNotFound": "Server nicht gefunden",

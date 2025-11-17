@@ -11,6 +11,7 @@ export async function fetchPerformanceGroups() {
         },
         where: {
             enabled: true,
+            freeServer: false,
         },
         orderBy: {
             id: 'asc',

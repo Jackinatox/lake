@@ -10,6 +10,7 @@ import {
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
     FREE_SERVERS_LOCATION_ID,
+    FREE_TIER_MAX_SERVERS,
 } from '@/app/GlobalConstants';
 import { prisma } from '@/prisma';
 
@@ -29,7 +30,8 @@ const REQUIRED_CONSTANTS = [
     FREE_TIER_RAM_MB,
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
-    FREE_SERVERS_LOCATION_ID
+    FREE_SERVERS_LOCATION_ID,
+    FREE_TIER_MAX_SERVERS
 ];
 
 /**

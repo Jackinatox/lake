@@ -6,6 +6,7 @@ import { prisma } from '@/prisma';
 import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
 import { GameServerOrder } from '@prisma/client';
 import { buildMC_ENVs_and_startup } from '../buildMinecraftENVs';
+import { logger } from '@/lib/logger';
 
 export async function provisionServer(order: GameServerOrder) {
     const serverOrder = await prisma.gameServerOrder.findUnique({
@@ -20,7 +21,7 @@ export async function provisionServer(order: GameServerOrder) {
     console.log('user id: ', serverOrder.user.ptUserId);
     const gameConfig = serverOrder.gameConfig as any;
     // console.log("GameConfig: ", gameConfig);
- 
+
     let options: NewServerOptions;
     let preOptions = {
         user: serverOrder.user.ptUserId,
@@ -97,6 +98,7 @@ export async function provisionServer(order: GameServerOrder) {
             locationId: serverOrder.creationLocation.ptLocationId,
             gameConfig: serverOrder.gameConfig || undefined,
             name: serverName,
+            freeServer: serverOrder.type === 'FREE_SERVER'
         },
     });
 
@@ -104,6 +106,24 @@ export async function provisionServer(order: GameServerOrder) {
     try {
         console.log(options);
         newServer = await pt.createServer(options);
+
+        const dbUpdatedServer = await prisma.gameServer.update({
+            where: { id: dbNewServer.id },
+            data: {
+                ptServerId: newServer.identifier,
+                ptAdminId: newServer.id,
+            },
+        });
+
+        await prisma.gameServerOrder.update({
+            where: {
+                id: serverOrder.id,
+            },
+            data: {
+                gameServerId: dbNewServer.id,
+
+            },
+        });
     } catch (err) {
         const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
         const updated = await prisma.gameServer.update({
@@ -114,23 +134,8 @@ export async function provisionServer(order: GameServerOrder) {
             },
         });
 
+        logger.error(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}. Error: ${errorText}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id });
         throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
     }
 
-    const dbUpdatedServer = await prisma.gameServer.update({
-        where: { id: dbNewServer.id },
-        data: {
-            ptServerId: newServer.identifier,
-            ptAdminId: newServer.id,
-        },
-    });
-
-    await prisma.gameServerOrder.update({
-        where: {
-            id: serverOrder.id,
-        },
-        data: {
-            gameServerId: dbNewServer.id,
-        },
-    });
 }

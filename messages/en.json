@@ -79,7 +79,11 @@
         "storageDescription": "Sufficient for most game files",
         "durationLabel": "{days} {days, plural, =1 {Day} other {Days}} Duration",
         "durationDescription": "Renewable or upgrade anytime",
-        "noCreditCard": "No credit card required • No hidden fees • 100% Free"
+        "noCreditCard": "No credit card required • No hidden fees • 100% Free",
+        "serverUsageTitle": "Free Server Slots",
+        "serverUsageDescription": "Create more free servers",
+        "limitReached": "Maximum free servers reached",
+        "serversLabel": "servers"
     },
     "hardware-config": {
         "duration": "Duration",
@@ -498,6 +502,7 @@
         "company": "Company"
     },
     "gameserver": {
+        "freeServer": "Free",
         "loading": "Loading Server...",
         "error": "Error",
         "serverNotFound": "Server Not Found",

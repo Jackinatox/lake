@@ -1,6 +1,6 @@
 'use client';
 
-import { checkoutAction, checkoutFreeGameServer, CheckoutParams } from '@/app/actions/checkout';
+import { checkoutFreeGameServer } from '@/app/actions/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,7 +25,7 @@ export default function FreeGameServerBooking({ game }: FreeGameServerBookingPro
 
     return (
         <Card className="p-6 space-y-4">
-            <CardContent className="flex flex-col gap-6">
+            <CardContent className="flex flex-col gap-6 items-center">
                 <GameConfigComponent game={game} onSubmit={onSubmit} ref={gameConfigRef} />
                 <Button onClick={handleCreateFreeServer}>Create Free Gameserver</Button>
             </CardContent>

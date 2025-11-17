@@ -12,6 +12,7 @@ import { headers } from 'next/headers';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { FREE_SERVERS_LOCATION_ID } from '../GlobalConstants';
+import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
 
 export type CheckoutParams = {
     type: OrderType;
@@ -245,4 +246,6 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig) {
             creationLocationId: locationId
         }
     });
+
+    await provisionServer(order);
 }
