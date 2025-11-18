@@ -6,6 +6,7 @@ import {
     Cog,
     Gamepad2Icon,
     MonitorX,
+    RefreshCw,
     SquarePlay,
     Ticket,
     UsersIcon,
@@ -51,6 +52,12 @@ const tiles: AdminTile[] = [
         link: '/admin/jobStatus',
         Icon: MonitorX,
         color: 'from-red-500 to-rose-600',
+    },
+    {
+        name: 'Cache Invalidation',
+        link: '/admin/cache-invalidation',
+        Icon: RefreshCw,
+        color: 'from-pink-500 to-rose-600',
     },
 ];
 
