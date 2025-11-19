@@ -9,7 +9,7 @@ import { authClient } from '@/lib/auth-client';
 import { Game, GameConfig } from '@/models/config';
 import Image from 'next/image';
 import { redirect, useRouter } from 'next/navigation';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export interface FreeServerStats {
     currentFreeServers: number;
@@ -26,6 +26,7 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
     const { toast } = useToast();
     const router = useRouter();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
+    const [loading, setLoading] = useState(false);
     const session = authClient.useSession();
 
     const isCreationDisabled = Boolean(stats?.creationNotAllowedReason) || !session.data;
@@ -52,8 +53,9 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
     const onSubmit = async (config: GameConfig) => {
         console.log(config);
         try {
+            setLoading(true);
             const serverId = await checkoutFreeGameServer(config);
-            router.push(`/gameservers/${serverId}`);
+            router.push(`/gameserver/${serverId}`);
         } catch (error) {
             toast({
                 title: 'Error',
@@ -61,6 +63,8 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
                 variant: 'destructive',
             });
             console.error('Error during checkout:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -114,12 +118,12 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
             <div className="fixed md:hidden bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border p-3 shadow-lg">
                 <Button
                     onClick={handleCreateFreeServer}
-                    disabled={isCreationDisabled}
+                    disabled={isCreationDisabled || loading}
                     title={isCreationDisabled ? getDisabledMessage() : undefined}
                     className="w-full"
                     size="lg"
                 >
-                    Create Free Gameserver
+                    {loading ? 'Creating...' : 'Create Free Gameserver'}
                 </Button>
                 {isCreationDisabled && (
                     <p className="text-xs text-muted-foreground mt-2 text-center">
@@ -135,12 +139,12 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
                 )}
                 <Button
                     onClick={handleCreateFreeServer}
-                    disabled={isCreationDisabled}
+                    disabled={isCreationDisabled || loading}
                     title={isCreationDisabled ? getDisabledMessage() : undefined}
                     className="px-8"
                     size="lg"
                 >
-                    Create Free Gameserver
+                    {loading ? 'Creating...' : 'Create Free Gameserver'}
                 </Button>
             </div>
         </Card>

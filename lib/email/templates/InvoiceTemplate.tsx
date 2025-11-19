@@ -13,6 +13,7 @@ import {
     Text,
 } from '@react-email/components';
 import { env } from 'next-runtime-env';
+import { formatDate } from '../../formatDate';
 
 interface InvoiceTemplateProps {
     userName: string;
@@ -31,13 +32,6 @@ interface InvoiceTemplateProps {
     receiptUrl?: string;
 }
 
-const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('de-DE', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-    }).format(date);
-};
 
 const formatPrice = (cents: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -360,7 +354,7 @@ export default function InvoiceTemplate({
                         <Text className="mt-6 text-base font-medium text-slate-900">
                             Bei Fragen zu dieser Rechnung{' '}
                             <a
-                                href={`${env('NEXT_PUBLIC_APP_URL') || 'http://localhost:3000'}/support`}
+                                href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
                                 style={{ color: '#0f172a', textDecoration: 'underline' }}
                             >
                                 kontaktiere uns gerne

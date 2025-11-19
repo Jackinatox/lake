@@ -15,7 +15,7 @@ import {
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 
-interface ServerBookingConfirmationTemplateProps {
+interface FreeServerCreatedTemplateProps {
     userName: string;
     gameName: string;
     gameImageUrl: string;
@@ -24,20 +24,14 @@ interface ServerBookingConfirmationTemplateProps {
     cpuPercent: number;
     diskMB: number;
     location: string;
-    price: number;
     expiresAt: Date;
     serverUrl: string;
+    extensionUrl?: string;
 }
 
+// shared formatDate imported from lib/formatDate
 
-const formatPrice = (cents: number) => {
-    return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(cents / 100);
-};
-
-export default function ServerBookingConfirmationTemplate({
+export default function FreeServerCreatedTemplate({
     userName,
     gameName,
     gameImageUrl,
@@ -46,14 +40,14 @@ export default function ServerBookingConfirmationTemplate({
     cpuPercent,
     diskMB,
     location,
-    price,
     expiresAt,
     serverUrl,
-}: ServerBookingConfirmationTemplateProps) {
+    extensionUrl,
+}: FreeServerCreatedTemplateProps) {
     return (
         <Html>
             <Head />
-            <Preview>Dein {gameName} Server wurde erfolgreich gebucht!</Preview>
+            <Preview>Dein kostenloser {gameName} Server wurde erstellt 🎉</Preview>
             <Tailwind>
                 <Body style={{ backgroundColor: '#f8f9fa', margin: 0, padding: 0 }}>
                     <Container
@@ -72,7 +66,7 @@ export default function ServerBookingConfirmationTemplate({
                                 color: '#0f172a',
                             }}
                         >
-                            Server erfolgreich gebucht! 🎉
+                            Kostenloser Server erstellt
                         </Heading>
 
                         <Text className="mt-6 text-base leading-6 text-slate-600">
@@ -80,13 +74,12 @@ export default function ServerBookingConfirmationTemplate({
                         </Text>
 
                         <Text className="mt-4 text-base leading-6 text-slate-600">
-                            Vielen Dank für deine Buchung! Dein {gameName} Gameserver wurde
-                            erfolgreich erstellt und wird gerade für dich eingerichtet.
+                            Wir haben erfolgreich einen kostenlosen {gameName} Gameserver für dich
+                            erstellt. Unten findest du die wichtigsten Informationen zum Server.
                         </Text>
 
                         <Hr className="my-6 border-slate-200" />
 
-                        {/* Game Image with Server Name */}
                         <Section className="mt-6 mb-6">
                             <div
                                 style={{
@@ -116,7 +109,7 @@ export default function ServerBookingConfirmationTemplate({
                                             lineHeight: '1.4',
                                         }}
                                     >
-                                        {gameName} Gameserver
+                                        {gameName} Gameserver (Kostenlos)
                                     </Text>
                                     <Text
                                         style={{
@@ -134,7 +127,6 @@ export default function ServerBookingConfirmationTemplate({
 
                         <Hr className="my-6 border-slate-200" />
 
-                        {/* Server Details */}
                         <Section className="mt-6">
                             <Heading className="m-0 mb-4 text-lg font-semibold text-slate-900">
                                 Server Details
@@ -192,50 +184,6 @@ export default function ServerBookingConfirmationTemplate({
 
                         <Hr className="my-6 border-slate-200" />
 
-                        {/* Pricing */}
-                        <Section className="mt-6">
-                            <table
-                                style={{
-                                    width: '100%',
-                                    backgroundColor: '#f1f5f9',
-                                    borderRadius: '8px',
-                                    padding: '16px',
-                                }}
-                                cellPadding="0"
-                                cellSpacing="0"
-                            >
-                                <tbody>
-                                    <tr>
-                                        <td
-                                            style={{
-                                                padding: '0',
-                                                fontSize: '16px',
-                                                fontWeight: '600',
-                                                color: '#0f172a',
-                                            }}
-                                        >
-                                            Gesamtbetrag:
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '0 0 0 16px',
-                                                textAlign: 'right',
-                                                fontSize: '24px',
-                                                fontWeight: 'bold',
-                                                color: '#0f172a',
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                        >
-                                            {formatPrice(price)}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </Section>
-
-                        <Hr className="my-6 border-slate-200" />
-
-                        {/* Call to Action */}
                         <Section className="mt-8" style={{ textAlign: 'center' }}>
                             <Button
                                 href={serverUrl}
@@ -258,20 +206,48 @@ export default function ServerBookingConfirmationTemplate({
                             </Button>
                         </Section>
 
-                        <Text className="mt-8 text-base leading-6 text-slate-600">
-                            Dein Server wird in den gerade eingerichtet, du kannst dich gleich
-                            verbinden.
-                        </Text>
+                        {/* Extension CTA: only show when extensionUrl present */}
+                        {extensionUrl && (
+                            <Section className="mt-4" style={{ textAlign: 'center' }}>
+                                <Text className="mt-4 text-sm leading-6 text-slate-600">
+                                    Du kannst deinen kostenlosen Server unbegrenzt kostenlos um bis zu
+                                    1 Monat in die Zukunft verlängern. Klicke auf den folgenden Link,
+                                    um deinen Server sofort zu verlängern.
+                                </Text>
 
-                        <Text className="mt-4 text-base leading-6 text-slate-600">
-                            Bei Fragen oder Problemen steht dir unser{' '}
+                                <div style={{ height: 12 }} />
+
+                                <Button
+                                    href={extensionUrl}
+                                    style={{
+                                        display: 'inline-block',
+                                        width: '100%',
+                                        maxWidth: '100%',
+                                        padding: '12px 24px',
+                                        backgroundColor: '#047857',
+                                        color: '#ffffff',
+                                        textDecoration: 'none',
+                                        borderRadius: '9999px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        textAlign: 'center',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    Kostenlos verlängern
+                                </Button>
+                            </Section>
+                        )}
+
+                        <Text className="mt-8 text-base leading-6 text-slate-600">
+                            Dein kostenloser Server ist jetzt aktiv. Bei Fragen erreichst du unser{' '}
                             <a
-                                href={`${env("NEXT_PUBLIC_APP_URL")}/support`}
+                                href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
                                 style={{ color: '#0f172a', textDecoration: 'underline' }}
                             >
                                 Support-Team
-                            </a>{' '}
-                            jederzeit zur Verfügung.
+                            </a>
+                            .
                         </Text>
 
                         <Text className="mt-6 text-base font-medium text-slate-900">
@@ -281,8 +257,7 @@ export default function ServerBookingConfirmationTemplate({
                         </Text>
 
                         <Text className="mt-8 text-sm leading-6 text-slate-400">
-                            Diese E-Mail wurde automatisch generiert, weil du einen Gameserver bei
-                            Scyed gebucht hast.
+                            Diese E-Mail wurde automatisch generiert.
                         </Text>
                     </Container>
                 </Body>

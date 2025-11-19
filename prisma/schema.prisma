@@ -131,7 +131,7 @@ model GameServerOrder {
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // TODO: what should happen on user delete 
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict) // Restrict deletion to preserve order history for compliance/auditing
 
   type       OrderType
   ramMB      Int
@@ -394,6 +394,7 @@ enum EmailType {
   GAME_SERVER_DELETION_1_DAY
   GAME_SERVER_DELETION_7_DAYS
   SERVER_BOOKING_CONFIRMATION
+  FREE_SERVER_CREATED
   INVOICE
 }
 

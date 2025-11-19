@@ -47,7 +47,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
             <Button
                 onClick={handleDelete}
                 disabled={selectedIds.length === 0}
-                variant='destructive'
+                variant="destructive"
             >
                 Delete Selected
             </Button>
@@ -97,7 +97,9 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                             </TableCell>
                             <TableCell>{gameserver.id}</TableCell>
                             <TableCell>
-                                {gameserver.freeServer ? 'Yes' : gameserver.price?.toFixed(2) || 'N/A'}
+                                {gameserver.freeServer
+                                    ? 'Yes'
+                                    : gameserver.price != null ? (gameserver.price / 100).toFixed(2) + '€' : 'N/A'}
                             </TableCell>
                             <TableCell>{gameserver.name}</TableCell>
                             <TableCell>{gameserver.user.email}</TableCell>

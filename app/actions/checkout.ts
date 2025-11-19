@@ -11,6 +11,10 @@ import { GameConfig, HardwareConfig } from '@/models/config';
 import { prisma } from '@/prisma';
 import { OrderType } from '@prisma/client';
 import { env } from 'next-runtime-env';
+import {
+    notifyFreeServerCreated,
+    checkFreeServerEligibility,
+} from '@/lib/freeServer';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../GlobalConstants';
 import { ServerConfig } from '../[locale]/booking2/[gameId]/page';
@@ -255,24 +259,17 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
 
     try {
         const ptId = await provisionServer(order);
+        // notify via lib helper (handles its own logging/errors)
+        try {
+            await notifyFreeServerCreated(order.id);
+        } catch (notifyErr) {
+            logger.error('Failed to run free server notification helper', 'EMAIL', {
+                details: { error: notifyErr, orderId: order.id },
+            });
+        }
         return ptId;
     } catch (error) {
-        logger.error("", 'GAME_SERVER', { details: { error: error instanceof Error ? error.message : String(error) }, userId: dbUser.id });
+        logger.error("Failed to provision free server", 'GAME_SERVER', { details: { error: error instanceof Error ? error.message : String(error) }, userId: dbUser.id });
         throw new Error("Interner Fehler - Server konnte nicht erstellt werden");
     }
-}
-
-
-export async function checkFreeServerEligibility(userId: string, maxFreeServers: number): Promise<{ allowed: boolean, count: number }> {
-    const currentFreeServers = await prisma.gameServer.count({
-        where: {
-            userId,
-            freeServer: true,
-            status: {
-                notIn: ['CREATION_FAILED', 'DELETED'],
-            },
-        },
-    });
-
-    return { allowed: currentFreeServers < maxFreeServers, count: currentFreeServers };
 }
