@@ -8,7 +8,7 @@ import { GameServerOrder } from '@prisma/client';
 import { buildMC_ENVs_and_startup } from '../buildMinecraftENVs';
 import { logger } from '@/lib/logger';
 
-export async function provisionServer(order: GameServerOrder) {
+export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({
         where: { id: order.id },
         include: { user: true, creationGameData: true, creationLocation: true },
@@ -124,6 +124,7 @@ export async function provisionServer(order: GameServerOrder) {
 
             },
         });
+        return newServer.identifier;
     } catch (err) {
         const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
         const updated = await prisma.gameServer.update({
@@ -134,7 +135,7 @@ export async function provisionServer(order: GameServerOrder) {
             },
         });
 
-        logger.error(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}. Error: ${errorText}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id });
+        logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}. Error: ${errorText}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id });
         throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
     }
 

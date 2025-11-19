@@ -1,6 +1,7 @@
 'use client';
 
 import { deleteGameServers } from '@/app/actions/gameservers/deleteGameServers';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -43,13 +44,13 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
 
     return (
         <div>
-            <button
+            <Button
                 onClick={handleDelete}
                 disabled={selectedIds.length === 0}
-                className="mb-2 px-4 py-2 bg-red-600 text-white rounded"
+                variant='destructive'
             >
                 Delete Selected
-            </button>
+            </Button>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -70,6 +71,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                             />
                         </TableHead>
                         <TableHead>ID</TableHead>
+                        <TableHead>Price</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>User</TableHead>
                         <TableHead>CPU Percent</TableHead>
@@ -94,6 +96,9 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                                 />
                             </TableCell>
                             <TableCell>{gameserver.id}</TableCell>
+                            <TableCell>
+                                {gameserver.freeServer ? 'Yes' : gameserver.price?.toFixed(2) || 'N/A'}
+                            </TableCell>
                             <TableCell>{gameserver.name}</TableCell>
                             <TableCell>{gameserver.user.email}</TableCell>
                             <TableCell>{gameserver.cpuPercent}</TableCell>

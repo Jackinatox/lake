@@ -84,6 +84,12 @@
         "serverUsageDescription": "Create more free servers",
         "limitReached": "Maximum free servers reached",
         "serversLabel": "servers"
+        ,
+        "disabledReasons": {
+            "tooMany": "You have reached the maximum number of free servers.",
+            "notLoggedIn": "You must be logged in to create a free server.",
+            "default": "Server creation is currently not allowed."
+        }
     },
     "hardware-config": {
         "duration": "Duration",

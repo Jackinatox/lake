@@ -48,6 +48,8 @@ model Location {
 
   GameServer  GameServer[]
   ServerOrder GameServerOrder[]
+
+  packages Package[]
 }
 
 model CPU {
@@ -408,4 +410,22 @@ model KeyValue {
   updatedAt DateTime @updatedAt
 
   @@index([key])
+}
+
+model Package {
+  id          Int      @id @default(autoincrement())
+  imageUrl    String
+  name        String
+  description String?
+  diskMB      Int
+  ramMB       Int
+  cpuPercent  Int
+  backups     Int
+  allocations Int
+  locationId  Int
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  enabled     Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

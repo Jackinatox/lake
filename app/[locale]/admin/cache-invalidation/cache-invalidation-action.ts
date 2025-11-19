@@ -2,7 +2,7 @@
 
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
-import { revalidateTag } from 'next/cache';
+import { updateTag } from 'next/cache';
 
 export async function invalidateCacheAction(keys: string[]) {
     const session = await auth.api.getSession({
@@ -15,7 +15,7 @@ export async function invalidateCacheAction(keys: string[]) {
 
     for (const key of keys) {
         try {
-            revalidateTag(key, 'max');
+            updateTag(key);
         } catch (error) {
             console.error(`Failed to invalidate cache tag: ${key}`, error);
         }

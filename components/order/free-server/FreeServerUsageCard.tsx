@@ -16,30 +16,30 @@ export default function FreeServerUsageCard({
     const t = useTranslations('freeServer');
     const limitReached = userFreeServers >= maxServers;
 
-    const cardClass = `mb-6 w-full max-w-lg md:max-w-3xl ${
-        limitReached ? 'border-red-300 dark:border-red-800' : 'border-blue-300 dark:border-blue-800'
+    const cardClass = `mb-6 w-full max-w-3xl ${
+        limitReached ? 'border-amber-300 dark:border-amber-800' : 'border-blue-300 dark:border-blue-800'
     }`;
 
     const innerClass = `flex items-center justify-between p-4 rounded-lg ${
-        limitReached ? 'bg-red-50 dark:bg-red-950/20' : 'bg-blue-100 dark:bg-blue-950/50'
+        limitReached ? 'bg-amber-50 dark:bg-amber-950/20' : 'bg-blue-100 dark:bg-blue-950/50'
     }`;
 
     const iconColor = limitReached
-        ? 'text-red-600 dark:text-red-400'
+        ? 'dark:text-amber-400'
         : 'text-blue-600 dark:text-blue-400';
 
     const textColor = limitReached
-        ? 'text-red-700 dark:text-red-400'
+        ? ''
         : 'text-blue-700 dark:text-blue-400';
 
     const countColor = limitReached
-        ? 'text-red-600 dark:text-red-400'
+        ? ''
         : 'text-blue-600 dark:text-blue-400';
 
     return (
         <div className="flex justify-center w-full">
             <Card className={cardClass}>
-                <CardContent className="p-0">
+                <div className="p-0">
                     <div className={innerClass}>
                         <div className="flex items-center gap-3">
                             {limitReached ? (
@@ -63,7 +63,7 @@ export default function FreeServerUsageCard({
                             <p className="text-xs text-muted-foreground">{t('serversLabel')}</p>
                         </div>
                     </div>
-                </CardContent>
+                </div>
             </Card>
         </div>
     );

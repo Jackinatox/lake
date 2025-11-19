@@ -1,18 +1,19 @@
 'use server';
 
 import { auth } from '@/auth';
-import { env } from 'next-runtime-env';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
-import { prisma } from '@/prisma';
-import { OrderType } from '@prisma/client';
-import { stripe } from '@/lib/stripe';
-import { ServerConfig } from '../[locale]/booking2/[gameId]/page';
-import { GameConfig, HardwareConfig } from '@/models/config';
-import { headers } from 'next/headers';
+import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { getKeyValueNumber } from '@/lib/keyValue';
+import { logger } from '@/lib/logger';
+import { stripe } from '@/lib/stripe';
+import { GameConfig, HardwareConfig } from '@/models/config';
+import { prisma } from '@/prisma';
+import { OrderType } from '@prisma/client';
+import { env } from 'next-runtime-env';
+import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../GlobalConstants';
-import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
+import { ServerConfig } from '../[locale]/booking2/[gameId]/page';
 
 export type CheckoutParams = {
     type: OrderType;
@@ -219,7 +220,7 @@ export async function checkoutAction(params: CheckoutParams) {
     }
 }
 
-export async function checkoutFreeGameServer(gameConfig: GameConfig) {
+export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<string> {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -230,7 +231,12 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig) {
     const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     const freeServerStats = await getFreeTierConfigCached();
     const locationId = await getKeyValueNumber(FREE_SERVERS_LOCATION_ID);
-    
+
+    const userAllowed = await checkFreeServerEligibility(dbUser.id, freeServerStats.maxServers);
+    if (!userAllowed) {
+        throw new Error('Maximale Anzahl kostenloser Server erreicht');
+    }
+
     const order = await prisma.gameServerOrder.create({
         data: {
             type: 'FREE_SERVER',
@@ -247,5 +253,26 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig) {
         }
     });
 
-    await provisionServer(order);
+    try {
+        const ptId = await provisionServer(order);
+        return ptId;
+    } catch (error) {
+        logger.error("", 'GAME_SERVER', { details: { error: error instanceof Error ? error.message : String(error) }, userId: dbUser.id });
+        throw new Error("Interner Fehler - Server konnte nicht erstellt werden");
+    }
+}
+
+
+export async function checkFreeServerEligibility(userId: string, maxFreeServers: number): Promise<{ allowed: boolean, count: number }> {
+    const currentFreeServers = await prisma.gameServer.count({
+        where: {
+            userId,
+            freeServer: true,
+            status: {
+                notIn: ['CREATION_FAILED', 'DELETED'],
+            },
+        },
+    });
+
+    return { allowed: currentFreeServers < maxFreeServers, count: currentFreeServers };
 }

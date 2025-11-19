@@ -82,6 +82,12 @@
         "serverUsageDescription": "Erstelle weitere kostenlose Server",
         "limitReached": "Maximum an kostenlosen Servern erreicht",
         "serversLabel": "Server"
+        ,
+        "disabledReasons": {
+            "tooMany": "Du hast die maximale Anzahl kostenloser Server erreicht.",
+            "notLoggedIn": "Du musst eingeloggt sein, um einen kostenlosen Server zu erstellen.",
+            "default": "Die Servererstellung ist derzeit nicht möglich."
+        }
     },
     "hardware-config": {
         "duration": "Laufzeit",

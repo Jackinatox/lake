@@ -260,14 +260,17 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 <Card>
                     <CardHeader className="pb-0 space-y-0">
                         <CardTitle className="flex items-center gap-2 text-lg">
-                            <Cpu className="h-5 w-5" /> {t('gameserver.dashboard.cpu.usage')} ({server.limits.cpu / 100} {t('gameserver.dashboard.cpu.cores')})
+                            <Cpu className="h-5 w-5" /> {t('gameserver.dashboard.cpu.usage')} (
+                            {server.limits.cpu / 100} {t('gameserver.dashboard.cpu.cores')})
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <CPUChart newData={serverStats} />
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">{t('gameserver.dashboard.memory.current')}</div>
+                            <div className="font-medium">
+                                {t('gameserver.dashboard.memory.current')}
+                            </div>
                             <div>{serverStats?.cpu_absolute + '% / ' + 100 + ' %'}</div>
                         </div>
                     </CardContent>
@@ -280,10 +283,17 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <RAMChart newData={serverStats} />
+                        <RAMChart
+                            newData={{
+                                ...serverStats,
+                                memory_limit_bytes: server.limits.memory / 1024,
+                            }}
+                        />
                         <Separator className="my-3" />
                         <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">{t('gameserver.dashboard.memory.current')}</div>
+                            <div className="font-medium">
+                                {t('gameserver.dashboard.memory.current')}
+                            </div>
                             <div>
                                 {' '}
                                 {serverStats?.memory_bytes + ' GiB'} /{' '}
@@ -306,7 +316,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
                             <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
                             <Button asChild variant="outline">
-                                <Link href={`${pathname}/upgrade`}>{t('gameserver.dashboard.header.upgrade')}</Link>
+                                <Link href={`${pathname}/upgrade`}>
+                                    {t('gameserver.dashboard.header.upgrade')}
+                                </Link>
                             </Button>
                         </div>
                     </CardHeader>
@@ -314,7 +326,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
                             <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
                                 <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="font-medium">{t('gameserver.dashboard.status')}</div>
+                                    <div className="font-medium">
+                                        {t('gameserver.dashboard.status')}
+                                    </div>
                                     <div>
                                         <Badge
                                             variant={
@@ -327,10 +341,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                             <Status state={serverStats?.state} />
                                         </Badge>
                                     </div>
-                                    <div className="font-medium">{t('gameserver.dashboard.serverIP')}</div>
+                                    <div className="font-medium">
+                                        {t('gameserver.dashboard.serverIP')}
+                                    </div>
                                     <div>
                                         <span className="flex items-center gap-2">
-                                            {ipPortCombo ? ipPortCombo : t('gameserver.dashboard.noAllocation')}
+                                            {ipPortCombo
+                                                ? ipPortCombo
+                                                : t('gameserver.dashboard.noAllocation')}
                                             {ipPortCombo && (
                                                 <button
                                                     type="button"
@@ -345,11 +363,15 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                             )}
                                         </span>
                                     </div>
-                                    <div className="font-medium">{t('gameserver.dashboard.info')}</div>
+                                    <div className="font-medium">
+                                        {t('gameserver.dashboard.info')}
+                                    </div>
                                     <div>
                                         <GameInfo server={server} apiKey={ptApiKey} />
                                     </div>
-                                    <div className="font-medium">{t('gameserver.dashboard.uptime')}</div>
+                                    <div className="font-medium">
+                                        {t('gameserver.dashboard.uptime')}
+                                    </div>
                                     <div>
                                         {serverStats?.uptime !== undefined
                                             ? `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${Math.floor(serverStats.uptime % 60)}s`
@@ -359,7 +381,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                             </div>
 
                             <div className="rounded-md border bg-card p-3 sm:col-span-1 lg:col-span-8">
-                                <h3 className="mb-2 font-semibold">{t('gameserver.dashboard.serverControls')}</h3>
+                                <h3 className="mb-2 font-semibold">
+                                    {t('gameserver.dashboard.serverControls')}
+                                </h3>
                                 <PowerBtns
                                     loading={loading}
                                     onStart={handleStart}

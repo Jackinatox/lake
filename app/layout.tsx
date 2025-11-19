@@ -1,19 +1,20 @@
 // app/layout.tsx
-import Navbar from '@/components/Navbar';
+import { auth } from '@/auth';
 import Footer from '@/components/Footer';
-import { Geist } from 'next/font/google';
-import { ThemeProvider } from 'next-themes';
-import './globals.css';
+import Navbar from '@/components/Navbar';
+import { Toaster } from '@/components/ui/toaster';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
-import { Toaster } from '@/components/ui/toaster';
-import { auth } from '@/auth';
-import { headers } from 'next/headers';
 import { PublicEnvScript, env } from 'next-runtime-env';
+import { ThemeProvider } from 'next-themes';
+import { Geist } from 'next/font/google';
+import { headers } from 'next/headers';
+import './globals.css';
+import { Metadata } from 'next';
 
 const defaultUrl = env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : 'http://localhost:3000';
 
-export const metadata = {
+export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
     title: 'Scyed Hosting',
     description: 'A little above average Gameserver hosting platform',

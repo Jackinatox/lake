@@ -19,7 +19,7 @@ interface Game {
 interface FreeGameSelectProps {
     games: Game[];
     freeTierConfig: FreeTierConfig;
-    userFreeServers: number;
+    userFreeServers?: number;
 }
 
 export default function FreeGameSelect({
@@ -33,7 +33,7 @@ export default function FreeGameSelect({
     const cpuCores = freeTierConfig.cpu / 100;
     const ramInGB = freeTierConfig.ram / 1024;
     const storageInGB = freeTierConfig.storage / 1024;
-    const limitReached = userFreeServers >= freeTierConfig.maxServers;
+    const limitReached = userFreeServers ? userFreeServers >= freeTierConfig.maxServers : false;
 
     return (
         <>
@@ -110,10 +110,12 @@ export default function FreeGameSelect({
             </div>
 
             {/* Free Server Usage Card */}
-            <FreeServerUsageCard
-                userFreeServers={userFreeServers}
-                maxServers={freeTierConfig.maxServers}
-            />
+            {userFreeServers !== undefined && (
+                <FreeServerUsageCard
+                    userFreeServers={userFreeServers}
+                    maxServers={freeTierConfig.maxServers}
+                />
+            )}
 
             {/* Game Selection */}
             <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">

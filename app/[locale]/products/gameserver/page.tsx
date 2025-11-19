@@ -1,4 +1,4 @@
-import GameSelect from '@/components/order/game/gameSelect';
+import GameSelect from '@/components/order/game/GameSelect';
 
 function gameserverOrder() {
     return (

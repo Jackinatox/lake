@@ -1,13 +1,11 @@
 'use server';
 
+import { auth } from '@/auth';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { prisma } from '@/prisma';
 import { getTranslations } from 'next-intl/server';
-import FreeGameSelect from './FreeGameSelect';
-import { getKeyValueNumber } from '@/lib/keyValue';
-import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
-import { auth } from '@/auth';
 import { headers } from 'next/headers';
+import FreeGameSelect from './FreeGameSelect';
 
 async function FreeGameServerPage() {
     const t = await getTranslations('freeServer');
@@ -16,21 +14,24 @@ async function FreeGameServerPage() {
         headers: await headers(),
     });
 
-    if (!session?.user) {
-        throw new Error('User not authenticated');
-    }
+    const promise = session?.user
+        ? prisma.gameServer.count({
+              where: {
+                  userId: session.user.id,
+                  freeServer: true,
+                  status: {
+                      notIn: ['CREATION_FAILED', 'DELETED'],
+                  },
+              },
+          })
+        : Promise.resolve(null);
 
     const [data, freeTierConfig, userFreeServers] = await Promise.all([
         prisma.gameData.findMany({
             select: { id: true, name: true },
         }),
         getFreeTierConfigCached(),
-        prisma.gameServer.count({
-            where: {
-                userId: session.user.id,
-                freeServer: true,
-            },
-        }),
+        promise,
     ]);
 
     const games = data.map((game) => {
@@ -59,7 +60,7 @@ async function FreeGameServerPage() {
             <FreeGameSelect
                 games={games}
                 freeTierConfig={freeTierConfig}
-                userFreeServers={userFreeServers}
+                userFreeServers={userFreeServers ?? undefined}
             />
         </div>
     );
