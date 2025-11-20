@@ -4,7 +4,9 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-
+import { Suspense } from 'react';
+import Loading from '../payedServer/loading';
+import FreeServerUpgrade from './FreeServerUpgrade';
 async function UpgradePage({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
     const awaitedParams = await params;
     const { server_id } = awaitedParams;
@@ -28,9 +30,15 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
         return <NotAllowedMessage />;
     }
 
-    const direction = server.freeServer ? 'freeServer' : 'payedServer';
+    if (!server.freeServer) {
+        redirect(`/gameserver/${server_id}/upgrade/payedServer`);
+    }
 
-    redirect(`/gameserver/${server_id}/upgrade/${direction}`);
+    return <div className="flex justify-center w-full">
+        <Suspense fallback={<Loading />}>
+            <FreeServerUpgrade serverId={server_id} userId={session.user.id} />
+        </Suspense>
+    </div>;
 }
 
 export default UpgradePage;

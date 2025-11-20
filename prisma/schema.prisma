@@ -89,6 +89,7 @@ model GameServer {
   expires     DateTime
   price       Float // To let the user extend his server at the original price in case we increase prices
   freeServer  Boolean  @default(false)
+  lastExtended DateTime @default(now())
 
   ptServerId String?
   ptAdminId  Int?
@@ -326,6 +327,7 @@ enum LogType {
   GAME_SERVER
   EMAIL
   SUPPORT_TICKET
+  FREE_SERVER_EXTEND
 }
 
 model ApplicationLog {
@@ -415,7 +417,7 @@ model KeyValue {
 
 model Package {
   id          Int      @id @default(autoincrement())
-  imageUrl    String
+  imageName    String
   name        String
   description String?
   diskMB      Int

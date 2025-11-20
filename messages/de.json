@@ -568,5 +568,56 @@
                 "current": "Aktuell:"
             }
         }
+    },
+    "freeServerUpgrade": {
+        "title": "Kostenlosen Server verlängern oder upgraden",
+        "description": "Wähle, wie du mit deinem kostenlosen Gameserver fortfahren möchtest",
+        "backToOptions": "Zurück zu Optionen",
+        "badge": {
+            "freeServer": "Kostenloser Server"
+        },
+        "serverInfo": {
+            "title": "Aktuelle Server-Informationen",
+            "expires": "Läuft ab am",
+            "daysLeft": "Verbleibende Tage",
+            "days": "Tage",
+            "cpu": "CPU",
+            "cores": "Kerne",
+            "ram": "RAM"
+        },
+        "extend": {
+            "badge": "GRATIS",
+            "title": "Kostenlos verlängern",
+            "description": "Halte deinen kostenlosen Server für weiter am Laufen",
+            "feature1": "100% kostenlos, keine Zahlung erforderlich",
+            "feature2": "Verlängere bis zu {days} Tage in die Zukunft",
+            "feature3": "Behalte deine aktuelle Hardware und Einstellungen",
+            "willExtendTo": "Neues Ablaufdatum: {date}",
+            "button": "Kostenlos verlängern",
+            "extending": "Verlängere...",
+            "success": {
+                "title": "Server verlängert!",
+                "description": "Dein kostenloser Server wurde erfolgreich verlängert."
+            },
+            "error": {
+                "title": "Verlängerung fehlgeschlagen",
+                "description": "Dein Server konnte nicht verlängert werden. Bitte versuche es später erneut."
+            }
+        },
+        "upgrade": {
+            "badge": "BELIEBT",
+            "title": "Auf Bezahlplan upgraden",
+            "description": "Schalte mehr Leistung frei und verlängere über die Grenzen des Free-Tiers hinaus",
+            "feature1": "Mehr CPU- und RAM-Optionen",
+            "feature2": "Längere Laufzeiten verfügbar",
+            "feature3": "Prioritäts-Support",
+            "feature4": "Bessere Performance und Zuverlässigkeit",
+            "button": "Upgrade konfigurieren",
+            "pricing": {
+                "title": "Flexible Preise",
+                "description": "Zahle nur für das, was du nutzt, ab 1,00 €"
+            }
+        },
+        "helpText": "Brauchst du Hilfe bei der Entscheidung? Kontaktiere unser Support-Team für persönliche Beratung."
     }
 }
