@@ -568,5 +568,57 @@
                 "current": "Current:"
             }
         }
+    },
+    "freeServerUpgrade": {
+        "title": "Extend or Upgrade Your Free Server",
+        "description": "Choose how you want to continue with your free game server",
+        "backToOptions": "Back to options",
+        "badge": {
+            "freeServer": "Free Server"
+        },
+        "serverInfo": {
+            "title": "Current Server Information",
+            "expires": "Expires on",
+            "daysLeft": "Days remaining",
+            "days": "days",
+            "cpu": "CPU",
+            "cores": "cores",
+            "ram": "RAM"
+        },
+        "extend": {
+            "badge": "FREE",
+            "title": "Extend for Free",
+            "description": "Keep your free server running for another month",
+            "maxReached": "You can only extend when less than 30 days remain",
+            "feature1": "100% free, no payment required",
+            "feature2": "Extend up to {days} days into the future",
+            "feature3": "Keep your current hardware and settings",
+            "willExtendTo": "New expiry date: {date}",
+            "button": "Extend for Free",
+            "extending": "Extending...",
+            "success": {
+                "title": "Server Extended!",
+                "description": "Your free server has been extended successfully."
+            },
+            "error": {
+                "title": "Extension Failed",
+                "description": "Could not extend your server. Please try again later."
+            }
+        },
+        "upgrade": {
+            "badge": "POPULAR",
+            "title": "Upgrade to Paid",
+            "description": "Unlock more power and extend beyond free tier limits",
+            "feature1": "More CPU and RAM options",
+            "feature2": "Longer durations available",
+            "feature3": "Priority support",
+            "feature4": "Better performance and reliability",
+            "button": "Configure Upgrade",
+            "pricing": {
+                "title": "Flexible Pricing",
+                "description": "Pay only for what you use, starting from €1.00"
+            }
+        },
+        "helpText": "Need help deciding? Contact our support team for personalized advice."
     }
 }

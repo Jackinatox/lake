@@ -1,6 +1,6 @@
 'use client';
 
-import Loading from '@/app/[locale]/gameserver/[server_id]/upgrade/loading';
+import Loading from '@/app/[locale]/gameserver/[server_id]/upgrade/payedServer/loading';
 import InfoButton from '@/components/InfoButton';
 import { Button } from '@/components/ui/button';
 import {
