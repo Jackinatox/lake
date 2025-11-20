@@ -15,7 +15,7 @@ async function page() {
                         {t('title3')}
                     </h1>
                 </div>
-                <HelpComponent t={t} />
+                <HelpComponent/>
             </div>
         </section>
     );

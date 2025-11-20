@@ -4,8 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import EmailAndCopyButton from './EmailAndCopyButton';
 import ContactForm from './ContactForm';
+import { getTranslations } from 'next-intl/server';
 
-export default async function HelpComponent({ t }: { t: any }) {
+export default async function HelpComponent() {
+    const t = await getTranslations('getHelp');
+
     return (
         <div className="w-full">
             <Card className="mx-auto mt-10 w-full max-w-6xl">

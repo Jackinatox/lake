@@ -83,8 +83,7 @@
         "serverUsageTitle": "Free Server Slots",
         "serverUsageDescription": "Create more free servers",
         "limitReached": "Maximum free servers reached",
-        "serversLabel": "servers"
-        ,
+        "serversLabel": "servers",
         "disabledReasons": {
             "tooMany": "You have reached the maximum number of free servers.",
             "notLoggedIn": "You must be logged in to create a free server.",
