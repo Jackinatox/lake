@@ -20,9 +20,9 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
         return <NotLoggedIn />;
     }
 
-    const server = await prisma.gameServer.findUnique({
+    const server = await prisma.gameServer.findFirst({
         where: {
-            id: server_id,
+            ptServerId: server_id,
             userId: session.user.id,
         },
     });

@@ -1,6 +1,7 @@
 'use client';
 
 import { extendFreeServer } from '@/app/actions/gameservers/extendFreeServer';
+import UpgradeGameServerFromFree from '@/components/gameserver/Upgrade/freeToPayed/UpgradeFreeToPayed';
 import UpgradeGameServer from '@/components/gameserver/Upgrade/UpgradeGameServer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,30 +17,20 @@ import { toast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/formatDate';
 import { FreeTierConfig } from '@/lib/free-tier/config';
 import { HardwareConfig } from '@/models/config';
-import { PerformanceGroup } from '@/models/prisma';
+import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface FreeServerUpgradeClientProps {
-    serverId: string;
-    server: {
-        id: string;
-        ptServerId: string | null;
-        expires: Date;
-        ramMB: number;
-        cpuPercent: number;
-        diskMB: number;
-        gameData: { name: string };
-    };
+    server: ClientServer;
     performanceOptions: PerformanceGroup[];
     minOptions: HardwareConfig;
     freeConfig: FreeTierConfig;
 }
 
 export default function FreeServerUpgradeClient({
-    serverId,
     server,
     performanceOptions,
     minOptions,
@@ -53,7 +44,7 @@ export default function FreeServerUpgradeClient({
     const handleExtendFree = async () => {
         try {
             setExtending(true);
-            const result = await extendFreeServer(serverId);
+            const result = await extendFreeServer(server.ptServerId!);
 
             if (result.success) {
                 toast({
@@ -92,12 +83,7 @@ export default function FreeServerUpgradeClient({
                 <Button variant="outline" onClick={() => setMode('choose')}>
                     ← {t('backToOptions')}
                 </Button>
-                <UpgradeGameServer
-                    serverId={serverId}
-                    apiKey=""
-                    performanceOptions={performanceOptions}
-                    minOptions={minOptions}
-                />
+                <UpgradeGameServerFromFree serverId={server.ptServerId!} performanceOptions={performanceOptions} minOptions={minOptions} />
             </div>
         );
     }

@@ -1,11 +1,9 @@
-import { fetchPerformanceGroups } from '@/lib/actions';
 import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameServerConfig';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import { prisma } from '@/prisma';
+import { fetchPerformanceGroups } from '@/lib/actions';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
+import { prisma } from '@/prisma';
 import FreeServerUpgradeClient from './FreeServerUpgradeClient';
-import { getKeyValueNumber } from '@/lib/keyValue';
-import { FREE_TIER_DURATION_DAYS } from '@/app/GlobalConstants';
 
 interface FreeServerUpgradeProps {
     serverId: string;
@@ -28,9 +26,8 @@ export default async function FreeServerUpgrade({ serverId, userId }: FreeServer
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-2 md:p-6">
+        <div className="w-full max-w-7xl mx-auto p-0 md:p-6">
             <FreeServerUpgradeClient
-                serverId={serverId}
                 server={server}
                 performanceOptions={performanceOptions}
                 minOptions={minOptions}
