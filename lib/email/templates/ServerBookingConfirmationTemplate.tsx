@@ -14,6 +14,7 @@ import {
 } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
+import { formatVCores } from '../../GlobalFunctions/formatVCores';
 
 interface ServerBookingConfirmationTemplateProps {
     userName: string;
@@ -21,14 +22,13 @@ interface ServerBookingConfirmationTemplateProps {
     gameImageUrl: string;
     serverName: string;
     ramMB: number;
-    cpuPercent: number;
+    cpuVCores: number;
     diskMB: number;
     location: string;
     price: number;
     expiresAt: Date;
     serverUrl: string;
 }
-
 
 const formatPrice = (cents: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -43,7 +43,7 @@ export default function ServerBookingConfirmationTemplate({
     gameImageUrl,
     serverName,
     ramMB,
-    cpuPercent,
+    cpuVCores,
     diskMB,
     location,
     price,
@@ -165,7 +165,7 @@ export default function ServerBookingConfirmationTemplate({
                                     <tr>
                                         <td className="py-2 text-sm text-slate-600">CPU:</td>
                                         <td className="py-2 text-right text-sm font-semibold text-slate-900">
-                                            {cpuPercent}%
+                                            {formatVCores(cpuVCores)}
                                         </td>
                                     </tr>
                                     <tr>
@@ -175,7 +175,9 @@ export default function ServerBookingConfirmationTemplate({
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="py-2 text-sm text-slate-600">Standort:</td>
+                                        <td className="py-2 text-sm text-slate-600">
+                                            Performance-Level:
+                                        </td>
                                         <td className="py-2 text-right text-sm font-semibold text-slate-900">
                                             {location}
                                         </td>
@@ -266,7 +268,7 @@ export default function ServerBookingConfirmationTemplate({
                         <Text className="mt-4 text-base leading-6 text-slate-600">
                             Bei Fragen oder Problemen steht dir unser{' '}
                             <a
-                                href={`${env("NEXT_PUBLIC_APP_URL")}/support`}
+                                href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
                                 style={{ color: '#0f172a', textDecoration: 'underline' }}
                             >
                                 Support-Team

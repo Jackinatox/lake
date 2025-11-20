@@ -8,6 +8,7 @@ import InvoiceTemplate from './templates/InvoiceTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
 import ServerBookingConfirmationTemplate from './templates/ServerBookingConfirmationTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
+import { percentToVCores } from '../GlobalFunctions/formatVCores';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(
@@ -73,7 +74,7 @@ export async function sendServerBookingConfirmationEmail(data: ServerBookingEmai
             gameImageUrl: data.gameImageUrl,
             serverName: data.serverName,
             ramMB: data.ramMB,
-            cpuPercent: data.cpuPercent,
+            cpuVCores: percentToVCores(data.cpuPercent),
             diskMB: data.diskMB,
             location: data.location,
             price: data.price,
@@ -119,7 +120,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
             serverName: data.serverName,
             orderType: data.orderType,
             ramMB: data.ramMB,
-            cpuPercent: data.cpuPercent,
+            cpuVCores: percentToVCores(data.cpuPercent),
             diskMB: data.diskMB,
             location: data.location,
             price: data.price,
@@ -154,7 +155,7 @@ export async function sendFreeServerCreatedEmail(data: FreeServerCreatedEmailDat
             gameImageUrl: data.gameImageUrl,
             serverName: data.serverName,
             ramMB: data.ramMB,
-            cpuPercent: data.cpuPercent,
+            cpuVCores: percentToVCores(data.cpuPercent),
             diskMB: data.diskMB,
             location: data.location,
             expiresAt: data.expiresAt,

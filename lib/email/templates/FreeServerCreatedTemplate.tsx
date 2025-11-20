@@ -14,6 +14,7 @@ import {
 } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
+import { formatVCores } from '../../GlobalFunctions/formatVCores';
 
 interface FreeServerCreatedTemplateProps {
     userName: string;
@@ -21,7 +22,7 @@ interface FreeServerCreatedTemplateProps {
     gameImageUrl: string;
     serverName: string;
     ramMB: number;
-    cpuPercent: number;
+    cpuVCores: number;
     diskMB: number;
     location: string;
     expiresAt: Date;
@@ -37,7 +38,7 @@ export default function FreeServerCreatedTemplate({
     gameImageUrl,
     serverName,
     ramMB,
-    cpuPercent,
+    cpuVCores,
     diskMB,
     location,
     expiresAt,
@@ -157,7 +158,7 @@ export default function FreeServerCreatedTemplate({
                                     <tr>
                                         <td className="py-2 text-sm text-slate-600">CPU:</td>
                                         <td className="py-2 text-right text-sm font-semibold text-slate-900">
-                                            {cpuPercent}%
+                                            {formatVCores(cpuVCores)}
                                         </td>
                                     </tr>
                                     <tr>
@@ -167,7 +168,9 @@ export default function FreeServerCreatedTemplate({
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td className="py-2 text-sm text-slate-600">Standort:</td>
+                                        <td className="py-2 text-sm text-slate-600">
+                                            Performance-Level:
+                                        </td>
                                         <td className="py-2 text-right text-sm font-semibold text-slate-900">
                                             {location}
                                         </td>
@@ -210,9 +213,9 @@ export default function FreeServerCreatedTemplate({
                         {extensionUrl && (
                             <Section className="mt-4" style={{ textAlign: 'center' }}>
                                 <Text className="mt-4 text-sm leading-6 text-slate-600">
-                                    Du kannst deinen kostenlosen Server unbegrenzt kostenlos um bis zu
-                                    1 Monat in die Zukunft verlängern. Klicke auf den folgenden Link,
-                                    um deinen Server sofort zu verlängern.
+                                    Du kannst deinen kostenlosen Server unbegrenzt kostenlos um bis
+                                    zu 1 Monat in die Zukunft verlängern. Klicke auf den folgenden
+                                    Link, um deinen Server sofort zu verlängern.
                                 </Text>
 
                                 <div style={{ height: 12 }} />

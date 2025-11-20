@@ -14,6 +14,7 @@ import {
 } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
+import { formatVCores } from '../../GlobalFunctions/formatVCores';
 
 interface InvoiceTemplateProps {
     userName: string;
@@ -24,14 +25,13 @@ interface InvoiceTemplateProps {
     serverName: string;
     orderType: 'NEW' | 'UPGRADE' | 'RENEW';
     ramMB: number;
-    cpuPercent: number;
+    cpuVCores: number;
     diskMB: number;
     location: string;
     price: number;
     expiresAt: Date;
     receiptUrl?: string;
 }
-
 
 const formatPrice = (cents: number) => {
     return new Intl.NumberFormat('de-DE', {
@@ -62,7 +62,7 @@ export default function InvoiceTemplate({
     serverName,
     orderType,
     ramMB,
-    cpuPercent,
+    cpuVCores,
     diskMB,
     location,
     price,
@@ -210,13 +210,14 @@ export default function InvoiceTemplate({
                                                 Konfiguration:
                                             </td>
                                             <td className="py-1 text-right text-xs text-slate-900">
-                                                {(ramMB / 1024).toFixed(1)} GB RAM, {cpuPercent}%
-                                                CPU, {(diskMB / 1024).toFixed(1)} GB Speicher
+                                                {(ramMB / 1024).toFixed(1)} GB RAM,{' '}
+                                                {formatVCores(cpuVCores)},{' '}
+                                                {(diskMB / 1024).toFixed(1)} GB Speicher
                                             </td>
                                         </tr>
                                         <tr>
                                             <td className="py-1 text-xs text-slate-600">
-                                                Standort:
+                                                Performance-Level:
                                             </td>
                                             <td className="py-1 text-right text-xs text-slate-900">
                                                 {location}
