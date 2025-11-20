@@ -588,8 +588,7 @@
         "extend": {
             "badge": "GRATIS",
             "title": "Kostenlos verlängern",
-            "description": "Halte deinen kostenlosen Server für einen weiteren Monat am Laufen",
-            "maxReached": "Du kannst nur verlängern, wenn weniger als 30 Tage verbleiben",
+            "description": "Halte deinen kostenlosen Server für weiter am Laufen",
             "feature1": "100% kostenlos, keine Zahlung erforderlich",
             "feature2": "Verlängere bis zu {days} Tage in die Zukunft",
             "feature3": "Behalte deine aktuelle Hardware und Einstellungen",

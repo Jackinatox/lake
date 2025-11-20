@@ -4,6 +4,8 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { prisma } from '@/prisma';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import FreeServerUpgradeClient from './FreeServerUpgradeClient';
+import { getKeyValueNumber } from '@/lib/keyValue';
+import { FREE_TIER_DURATION_DAYS } from '@/app/GlobalConstants';
 
 interface FreeServerUpgradeProps {
     serverId: string;
@@ -18,7 +20,7 @@ export default async function FreeServerUpgrade({ serverId, userId }: FreeServer
             where: { ptServerId: serverId, userId },
             include: { gameData: true },
         }),
-        getFreeTierConfigCached(),
+        getFreeTierConfigCached()
     ]);
 
     if (!minOptions || !server) {

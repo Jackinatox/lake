@@ -5,14 +5,18 @@ import { prisma } from '@/prisma';
 import { headers } from 'next/headers';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { logger } from '@/lib/logger';
+import { FREE_TIER_EXTEND_COOLDOWN_HOURS } from '@/app/GlobalConstants';
 
-export async function extendFreeServer(serverId: string): Promise<{ success: boolean; newExpiry?: Date; error?: string }> {
+export async function extendFreeServer(serverId: string): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
+            logger.warn('Unauthenticated free server extension attempt', 'AUTHENTICATION', {
+                details: { serverId },
+            });
             return { success: false, error: 'Not authenticated' };
         }
 
@@ -28,42 +32,62 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
         });
 
         if (!server) {
+            logger.error('Free server extension failed - server not found', 'FREE_SERVER_EXTEND', {
+                details: { serverId },
+                userId: session.user.id,
+            });
             return { success: false, error: 'Server not found or not eligible for free extension' };
         }
 
-        const freeConfig = await getFreeTierConfigCached();
-        const daysRemaining = Math.max(
-            0,
-            Math.ceil((server.expires.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-        );
+        // Check cooldown period
+        const now = new Date();
+        if (server.lastExtended) {
+            const cooldownMs = FREE_TIER_EXTEND_COOLDOWN_HOURS * 60 * 60 * 1000;
+            const timeSinceLastExtend = now.getTime() - server.lastExtended.getTime();
 
-        // Check if user can extend (must have less than 30 days remaining)
-        const maxExtendDays = 30;
-        if (daysRemaining >= maxExtendDays) {
-            return { 
-                success: false, 
-                error: `You can only extend when less than ${maxExtendDays} days remain. Current days: ${daysRemaining}` 
-            };
+            if (timeSinceLastExtend < cooldownMs) {
+                const canExtendAt = new Date(server.lastExtended.getTime() + cooldownMs);
+                const hoursRemaining = Math.ceil((cooldownMs - timeSinceLastExtend) / (1000 * 60 * 60));
+
+                logger.info('Free server extension blocked - cooldown active', 'GAME_SERVER', {
+                    details: {
+                        serverId: server.id,
+                        lastExtended: server.lastExtended,
+                        canExtendAt,
+                        hoursRemaining,
+                    },
+                    userId: session.user.id,
+                    gameServerId: server.id,
+                });
+
+                return {
+                    success: false,
+                    error: `Please wait ${hoursRemaining} more hour(s) before extending again`,
+                    canExtendAt
+                };
+            }
         }
 
-        // Calculate new expiry date: max(current expiry, now) + free tier duration
-        const baseDate = Math.max(server.expires.getTime(), new Date().getTime());
-        const newExpiry = new Date(baseDate + freeConfig.duration * 24 * 60 * 60 * 1000);
+        const freeConfig = await getFreeTierConfigCached();
+        const newExpiry = new Date(now.getTime() + freeConfig.duration * 24 * 60 * 60 * 1000);
 
-        // Update the server
         const updatedServer = await prisma.gameServer.update({
             where: { id: server.id },
             data: {
                 expires: newExpiry,
+                lastExtended: now,
             },
         });
 
-        logger.info('Free server extended', 'GAME_SERVER', {
+        logger.info('Free server extended successfully', 'FREE_SERVER_EXTEND', {
             details: {
                 serverId: server.id,
+                serverName: server.name,
                 oldExpiry: server.expires,
                 newExpiry: newExpiry,
                 daysAdded: freeConfig.duration,
+                lastExtended: server.lastExtended,
+                currentExtension: now,
             },
             userId: session.user.id,
             gameServerId: server.id,
@@ -71,8 +95,12 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
 
         return { success: true, newExpiry: updatedServer.expires };
     } catch (error) {
-        logger.error('Failed to extend free server', 'GAME_SERVER', {
-            details: { error: error instanceof Error ? error.message : String(error) },
+        logger.error('Failed to extend free server', 'FREE_SERVER_EXTEND', {
+            details: {
+                serverId,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            },
         });
         return { success: false, error: 'Internal error occurred while extending server' };
     }

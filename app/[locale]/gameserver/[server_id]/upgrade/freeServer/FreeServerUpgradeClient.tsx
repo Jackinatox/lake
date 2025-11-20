@@ -1,19 +1,26 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { extendFreeServer } from '@/app/actions/gameservers/extendFreeServer';
+import UpgradeGameServer from '@/components/gameserver/Upgrade/UpgradeGameServer';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Zap, ArrowRight, Clock, Check, Sparkles, TrendingUp } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
+import { formatDate } from '@/lib/formatDate';
 import { FreeTierConfig } from '@/lib/free-tier/config';
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
-import { formatDate } from '@/lib/formatDate';
-import UpgradeGameServer from '@/components/gameserver/Upgrade/UpgradeGameServer';
-import { toast } from '@/hooks/use-toast';
+import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { extendFreeServer } from '@/app/actions/gameservers/extendFreeServer';
+import { useState } from 'react';
 
 interface FreeServerUpgradeClientProps {
     serverId: string;
@@ -47,7 +54,7 @@ export default function FreeServerUpgradeClient({
         try {
             setExtending(true);
             const result = await extendFreeServer(serverId);
-            
+
             if (result.success) {
                 toast({
                     title: t('extend.success.title'),
@@ -74,11 +81,10 @@ export default function FreeServerUpgradeClient({
 
     const daysRemaining = Math.max(
         0,
-        Math.ceil((new Date(server.expires).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+        Math.ceil(
+            (new Date(server.expires).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
+        ),
     );
-
-    const maxExtendDays = 30;
-    const canExtend = daysRemaining < maxExtendDays;
 
     if (mode === 'upgrade') {
         return (
@@ -124,15 +130,21 @@ export default function FreeServerUpgradeClient({
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.expires')}</p>
-                            <p className="font-semibold">{formatDate(new Date(server.expires), true)}</p>
+                            <p className="font-semibold">
+                                {formatDate(new Date(server.expires), true)}
+                            </p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.daysLeft')}</p>
-                            <p className="font-semibold">{daysRemaining} {t('serverInfo.days')}</p>
+                            <p className="font-semibold">
+                                {daysRemaining} {t('serverInfo.days')}
+                            </p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.cpu')}</p>
-                            <p className="font-semibold">{server.cpuPercent / 100} {t('serverInfo.cores')}</p>
+                            <p className="font-semibold">
+                                {server.cpuPercent / 100} {t('serverInfo.cores')}
+                            </p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.ram')}</p>
@@ -145,21 +157,18 @@ export default function FreeServerUpgradeClient({
             {/* Options Grid */}
             <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Extend Free Option */}
-                <Card className={`relative overflow-hidden transition-all ${canExtend ? 'border-green-500/50 shadow-lg' : 'opacity-60'}`}>
-                    {canExtend && (
-                        <div className="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                            {t('extend.badge')}
-                        </div>
-                    )}
+                <Card className="relative overflow-hidden transition-all border-green-500/50 shadow-lg">
                     <CardHeader>
                         <div className="flex items-center gap-3 mb-2">
                             <div className="p-2 rounded-lg bg-green-500/10">
                                 <Calendar className="w-6 h-6 text-green-600" />
                             </div>
-                            <CardTitle className="text-lg sm:text-xl">{t('extend.title')}</CardTitle>
+                            <CardTitle className="text-lg sm:text-xl">
+                                {t('extend.title')}
+                            </CardTitle>
                         </div>
                         <CardDescription className="text-sm">
-                            {canExtend ? t('extend.description') : t('extend.maxReached')}
+                            {t('extend.description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -170,7 +179,7 @@ export default function FreeServerUpgradeClient({
                             </div>
                             <div className="flex items-start gap-2 text-sm">
                                 <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                <span>{t('extend.feature2', { days: maxExtendDays })}</span>
+                                <span>{t('extend.feature2', { days: freeConfig.duration })}</span>
                             </div>
                             <div className="flex items-start gap-2 text-sm">
                                 <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -178,30 +187,28 @@ export default function FreeServerUpgradeClient({
                             </div>
                         </div>
 
-                        {canExtend && (
-                            <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20">
-                                <p className="text-sm font-medium text-green-700 dark:text-green-400">
-                                    {t('extend.willExtendTo', {
-                                        date: formatDate(
-                                            new Date(
-                                                Math.max(
-                                                    new Date(server.expires).getTime(),
-                                                    new Date().getTime()
-                                                ) + freeConfig.duration * 24 * 60 * 60 * 1000
-                                            ),
-                                            true
+                        <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/20">
+                            <p className="text-sm font-medium text-green-700 dark:text-green-400">
+                                {t('extend.willExtendTo', {
+                                    date: formatDate(
+                                        new Date(
+                                            Math.max(
+                                                new Date(server.expires).getTime(),
+                                                new Date().getTime(),
+                                            ) +
+                                                freeConfig.duration * 24 * 60 * 60 * 1000,
                                         ),
-                                    })}
-                                </p>
-                            </div>
-                        )}
+                                        true,
+                                    ),
+                                })}
+                            </p>
+                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button
                             className="w-full"
                             size="lg"
-                            variant={canExtend ? 'default' : 'secondary'}
-                            disabled={!canExtend || extending}
+                            disabled={extending}
                             onClick={handleExtendFree}
                         >
                             {extending ? t('extend.extending') : t('extend.button')}
@@ -221,9 +228,13 @@ export default function FreeServerUpgradeClient({
                             <div className="p-2 rounded-lg bg-primary/10">
                                 <Zap className="w-6 h-6 text-primary" />
                             </div>
-                            <CardTitle className="text-lg sm:text-xl">{t('upgrade.title')}</CardTitle>
+                            <CardTitle className="text-lg sm:text-xl">
+                                {t('upgrade.title')}
+                            </CardTitle>
                         </div>
-                        <CardDescription className="text-sm">{t('upgrade.description')}</CardDescription>
+                        <CardDescription className="text-sm">
+                            {t('upgrade.description')}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
@@ -248,17 +259,17 @@ export default function FreeServerUpgradeClient({
                         <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                             <div className="flex items-center gap-2 mb-1">
                                 <TrendingUp className="w-4 h-4 text-primary" />
-                                <p className="text-sm font-semibold">{t('upgrade.pricing.title')}</p>
+                                <p className="text-sm font-semibold">
+                                    {t('upgrade.pricing.title')}
+                                </p>
                             </div>
-                            <p className="text-xs text-muted-foreground">{t('upgrade.pricing.description')}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {t('upgrade.pricing.description')}
+                            </p>
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button
-                            className="w-full"
-                            size="lg"
-                            onClick={() => setMode('upgrade')}
-                        >
+                        <Button className="w-full" size="lg" onClick={() => setMode('upgrade')}>
                             {t('upgrade.button')}
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
@@ -269,9 +280,7 @@ export default function FreeServerUpgradeClient({
             {/* Help Text */}
             <Card className="bg-muted/50">
                 <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground text-center">
-                        {t('helpText')}
-                    </p>
+                    <p className="text-sm text-muted-foreground text-center">{t('helpText')}</p>
                 </CardContent>
             </Card>
         </div>

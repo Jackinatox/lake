@@ -588,8 +588,7 @@
         "extend": {
             "badge": "FREE",
             "title": "Extend for Free",
-            "description": "Keep your free server running for another month",
-            "maxReached": "You can only extend when less than 30 days remain",
+            "description": "Keep your free server running",
             "feature1": "100% free, no payment required",
             "feature2": "Extend up to {days} days into the future",
             "feature3": "Keep your current hardware and settings",

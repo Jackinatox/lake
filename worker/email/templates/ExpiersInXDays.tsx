@@ -35,12 +35,8 @@ export default function ExpiredServerTemplate({
         minute: '2-digit',
     }).format(deleteDate);
 
-    // Calculate actual days remaining until expiration
-    const now = new Date();
-    const msRemaining = expirationDate.getTime() - now.getTime();
-    const daysRemaining = Math.ceil(msRemaining / (24 * 60 * 60 * 1000));
-
-    const daysText = daysRemaining === 1 ? '1 Tag' : `${daysRemaining} Tagen`;
+    // Use the configured notification window (1 or 7 days) for the message
+    const daysText = expirationDays === 1 ? '1 Tag' : `${expirationDays} Tagen`;
     const previewText = `Dein Server ${serverName} läuft in ${daysText} ab.`;
 
     return (

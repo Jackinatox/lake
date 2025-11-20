@@ -24,6 +24,9 @@ export const FREE_TIER_DURATION_DAYS = 'free_tier_duration_days';
 export const FREE_SERVERS_LOCATION_ID = 'free_servers_location_id';
 export const FREE_TIER_MAX_SERVERS = 'free_tier_max_servers';
 
+// Free tier extension cooldown (in hours) - how often users can extend their server
+export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
+
 // FTP
 export const FTP_PASSWORD_MIN_LENGTH = 8;
 export const FTP_PASSWORD_MAX_LENGTH = 64;
