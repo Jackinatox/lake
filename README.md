@@ -30,3 +30,27 @@ Here is the plan to complete the server booking feature:
         - Mark the order as `PAID`.
         - Use the saved configuration from the order to create the game server via the Pterodactyl API.
         - Update the order status to `CREATED`.
+
+## License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License** (CC BY-NC-SA 4.0).
+
+### What this means:
+
+✅ **You CAN:**
+- Use, modify, and distribute this software
+- Contribute improvements and modifications
+- Fork and create derivative works
+- Share your modifications with others
+
+❌ **You CANNOT:**
+- Use this software for commercial purposes
+- Earn money from this software or its derivatives
+- Sell services based on this software
+
+📋 **Requirements:**
+- Give appropriate credit to the original authors
+- Indicate if changes were made
+- Distribute your modifications under the same license (CC BY-NC-SA 4.0)
+
+For the full license text, see the [LICENSE](LICENSE) file.
