@@ -9,6 +9,7 @@ import {
     sendServerBookingConfirmationEmail,
 } from '@/lib/email/sendEmailEmailsFromLake';
 import { env } from 'next-runtime-env';
+import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
 export default async function handleCheckoutSessionCompleted(
     checkoutSession: Stripe.Checkout.Session,
@@ -52,6 +53,9 @@ export default async function handleCheckoutSessionCompleted(
             case 'UPGRADE':
                 await upgradeGameServer(serverOrder);
                 break;
+            case 'TO_PAYED':
+                await upgradeFromFreeGameServer(serverOrder);
+                break;
             default:
                 console.error(`Unhandled server order type: ${serverOrder.type}`);
         }
@@ -73,7 +77,7 @@ export default async function handleCheckoutSessionCompleted(
             updatedOrder.creationGameData &&
             updatedOrder.creationLocation
         ) {
-            const appUrl = env("NEXT_PUBLIC_APP_URL") || 'http://localhost:3000';
+            const appUrl = env("NEXT_PUBLIC_APP_URL");
             const gameName = updatedOrder.creationGameData.name;
             const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
             const serverUrl = `${appUrl}/gameserver/${updatedOrder.gameServer.ptServerId}`;
@@ -104,7 +108,7 @@ export default async function handleCheckoutSessionCompleted(
                     gameName: gameName,
                     gameImageUrl: gameImageUrl,
                     serverName: updatedOrder.gameServer.name,
-                    orderType: updatedOrder.type as 'NEW' | 'UPGRADE' | 'RENEW',
+                    orderType: updatedOrder.type,
                     ramMB: updatedOrder.ramMB,
                     cpuPercent: updatedOrder.cpuPercent,
                     diskMB: updatedOrder.diskMB,

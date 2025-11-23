@@ -1,6 +1,6 @@
 'use client';
 
-import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
+import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -34,10 +34,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
         const params: CheckoutParams = {
             type: 'UPGRADE',
             ptServerId: serverId,
-            cpuPercent: newHardwareConfig.cpuPercent,
-            diskMB: newHardwareConfig.diskMb,
-            duration: newHardwareConfig.durationsDays,
-            ramMB: newHardwareConfig.ramMb,
+            upgradeConfig: newHardwareConfig,
         };
 
         try {

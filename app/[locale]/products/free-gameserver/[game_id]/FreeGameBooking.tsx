@@ -1,6 +1,6 @@
 'use client';
 
-import { checkoutFreeGameServer } from '@/app/actions/checkout';
+import { checkoutFreeGameServer } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';

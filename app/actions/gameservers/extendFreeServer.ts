@@ -6,6 +6,8 @@ import { headers } from 'next/headers';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { logger } from '@/lib/logger';
 import { FREE_TIER_EXTEND_COOLDOWN_HOURS } from '@/app/GlobalConstants';
+import { GameServer } from '@prisma/client';
+import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
 
 export async function extendFreeServer(serverId: string): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
     try {
@@ -42,6 +44,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
         // Check cooldown period
         const now = new Date();
         if (server.lastExtended) {
+            await resumeIfSuspended(server);
             const cooldownMs = FREE_TIER_EXTEND_COOLDOWN_HOURS * 60 * 60 * 1000;
             const timeSinceLastExtend = now.getTime() - server.lastExtended.getTime();
 
@@ -76,6 +79,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
             data: {
                 expires: newExpiry,
                 lastExtended: now,
+                status: 'ACTIVE',
             },
         });
 
@@ -103,5 +107,12 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
             },
         });
         return { success: false, error: 'Internal error occurred while extending server' };
+    }
+}
+
+
+async function resumeIfSuspended(server: GameServer) {
+    if (server.status === 'EXPIRED') { 
+        await toggleSuspendGameServer(server.id, 'unsuspend');
     }
 }

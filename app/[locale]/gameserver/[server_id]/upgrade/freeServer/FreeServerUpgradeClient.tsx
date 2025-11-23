@@ -83,7 +83,11 @@ export default function FreeServerUpgradeClient({
                 <Button variant="outline" onClick={() => setMode('choose')}>
                     ← {t('backToOptions')}
                 </Button>
-                <UpgradeGameServerFromFree serverId={server.ptServerId!} performanceOptions={performanceOptions} minOptions={minOptions} />
+                <UpgradeGameServerFromFree
+                    serverId={server.ptServerId!}
+                    performanceOptions={performanceOptions}
+                    minOptions={minOptions}
+                />
             </div>
         );
     }
@@ -143,7 +147,7 @@ export default function FreeServerUpgradeClient({
             {/* Options Grid */}
             <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
                 {/* Extend Free Option */}
-                <Card className="relative overflow-hidden transition-all border-green-500/50 shadow-lg">
+                <Card className="relative overflow-hidden transition-all border-green-500/50 shadow-lg flex flex-col h-full">
                     <CardHeader>
                         <div className="flex items-center gap-3 mb-2">
                             <div className="p-2 rounded-lg bg-green-500/10">
@@ -157,7 +161,7 @@ export default function FreeServerUpgradeClient({
                             {t('extend.description')}
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 flex-1">
                         <div className="space-y-2">
                             <div className="flex items-start gap-2 text-sm">
                                 <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -192,7 +196,7 @@ export default function FreeServerUpgradeClient({
                     </CardContent>
                     <CardFooter>
                         <Button
-                            className="w-full"
+                            className="w-full "
                             size="lg"
                             disabled={extending}
                             onClick={handleExtendFree}
@@ -204,7 +208,7 @@ export default function FreeServerUpgradeClient({
                 </Card>
 
                 {/* Upgrade to Paid Option */}
-                <Card className="relative overflow-hidden border-primary/50 shadow-lg">
+                <Card className="relative overflow-hidden border-primary/50 shadow-lg flex flex-col h-full">
                     <div className="absolute top-0 right-0 bg-gradient-to-l from-primary to-primary/80 text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
                         {t('upgrade.badge')}
@@ -222,7 +226,7 @@ export default function FreeServerUpgradeClient({
                             {t('upgrade.description')}
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 flex-1">
                         <div className="space-y-2">
                             <div className="flex items-start gap-2 text-sm">
                                 <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />

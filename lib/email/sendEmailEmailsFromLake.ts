@@ -1,4 +1,4 @@
-import { SupportTicket } from '@prisma/client';
+import { OrderType, SupportTicket } from '@prisma/client';
 import { render } from '@react-email/render';
 import { env } from 'next-runtime-env';
 import { sendMail } from './NodeMailer';
@@ -99,7 +99,7 @@ interface InvoiceEmailData {
     gameName: string;
     gameImageUrl: string;
     serverName: string;
-    orderType: 'NEW' | 'UPGRADE' | 'RENEW';
+    orderType: OrderType;
     ramMB: number;
     cpuPercent: number;
     diskMB: number;

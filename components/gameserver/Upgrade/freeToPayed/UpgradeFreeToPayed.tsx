@@ -1,6 +1,6 @@
 'use client';
 
-import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
+import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -30,19 +30,16 @@ function UpgradeGameServerFromFree({ serverId, performanceOptions, minOptions }:
         setStep('configure');
     }, []);
 
-    const handleNext = async (newHardwareConfig: HardwareConfig) => {
+    const handleNext = async (hardwareConfig: HardwareConfig) => {
         const params: CheckoutParams = {
             type: 'TO_PAYED',
+            hardwareConfig: hardwareConfig,
             ptServerId: serverId,
-            cpuPercent: newHardwareConfig.cpuPercent,
-            diskMB: newHardwareConfig.diskMb,
-            duration: newHardwareConfig.durationsDays,
-            ramMB: newHardwareConfig.ramMb,
         };
 
         try {
             setLoading(true);
-            setSelectedConfig(newHardwareConfig);
+            setSelectedConfig(hardwareConfig);
             const secret = await checkoutAction(params);
 
             setClientSecret((secret as { client_secret: string }).client_secret);

@@ -1,6 +1,6 @@
 'use client';
 
-import { checkoutAction, CheckoutParams } from '@/app/actions/checkout';
+import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { HardwareConfigComponent } from '@/components/booking2/hardware-config';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
@@ -14,10 +14,6 @@ import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
-export type ServerConfig = {
-    hardwareConfig: HardwareConfig;
-    gameConfig: GameConfig;
-};
 
 interface GameServerConfigProps {
     performanceGroups: PerformanceGroup[];
@@ -50,11 +46,6 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
 
         const checkouParams: CheckoutParams = {
             type: 'NEW',
-            cpuPercent: hardwareConfig.cpuPercent,
-            diskMB: hardwareConfig.diskMb,
-            ramMB: hardwareConfig.ramMb,
-            duration: hardwareConfig.durationsDays,
-            ptServerId: null,
             creationServerConfig: {
                 gameConfig: gameSpecificConfig,
                 hardwareConfig: hardwareConfig,

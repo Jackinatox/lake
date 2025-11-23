@@ -81,8 +81,7 @@
         "serverUsageTitle": "Kostenlose Server-Slots",
         "serverUsageDescription": "Erstelle weitere kostenlose Server",
         "limitReached": "Maximum an kostenlosen Servern erreicht",
-        "serversLabel": "Server"
-        ,
+        "serversLabel": "Server",
         "disabledReasons": {
             "tooMany": "Du hast die maximale Anzahl kostenloser Server erreicht.",
             "notLoggedIn": "Du musst eingeloggt sein, um einen kostenlosen Server zu erstellen.",
@@ -329,6 +328,48 @@
             "title": "{game}-Konfiguration",
             "description": "Wähle deine bevorzugten Spieleinstellungen",
             "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
+        }
+    },
+    "extendServer": {
+        "config": {
+            "title": "Performance-Konfiguration",
+            "description": "Passe die Hardware deines Servers an.",
+            "performance-tier": "Performance-Stufe",
+            "extend-title": "Upgraden für",
+            "duration": {
+                "none": "Keine",
+                "week": "1 Woche",
+                "month": "1 Monat",
+                "three-months": "3 Monate",
+                "discount-10": "-10%"
+            },
+            "little-info": "Info",
+            "cpu": {
+                "label-suffix": "vCore(s)",
+                "price-suffix": "€ / vCore"
+            },
+            "ram": {
+                "label-suffix": "GiB RAM",
+                "price-suffix": "€ / GiB"
+            }
+        },
+        "pricing": {
+            "title": "Preisübersicht",
+            "description": "Zusammenfassung deiner Konfiguration.",
+            "headers": {
+                "vcpu": "vCPU",
+                "ram": "RAM"
+            },
+            "rows": {
+                "upgrade-for-days": "Upgrade für {days} Tage",
+                "extend-for-days": "Verlängerung für {days} Tage"
+            },
+            "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+        },
+        "footer": {
+            "total": "Gesamt",
+            "min-price-hint": "Mindestpreis 1 €",
+            "continue": "Weiter zur Zahlung"
         }
     },
     "RegisterLogin": {

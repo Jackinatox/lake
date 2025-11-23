@@ -20,7 +20,6 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
 
     console.log('user id: ', serverOrder.user.ptUserId);
     const gameConfig = serverOrder.gameConfig as any;
-    // console.log("GameConfig: ", gameConfig);
 
     let options: NewServerOptions;
     let preOptions = {
@@ -135,7 +134,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             },
         });
 
-        logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}. Error: ${errorText}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id });
+        logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id, details: { errorText } });
         throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
     }
 

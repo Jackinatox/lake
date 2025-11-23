@@ -16,21 +16,28 @@ import {
     checkFreeServerEligibility,
 } from '@/lib/freeServer';
 import { headers } from 'next/headers';
-import { FREE_SERVERS_LOCATION_ID } from '../GlobalConstants';
-import { ServerConfig } from '../[locale]/booking2/[gameId]/page';
+import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
+import { ServerConfig } from '../../[locale]/booking2/[gameId]/page';
+import upgradeToPayed from './createOrder';
 
-export type CheckoutParams = {
-    type: OrderType;
-    creationServerConfig?: ServerConfig; // Needed for Server Creation!!!
-    ptServerId: string | null;
-    ramMB: number;
-    cpuPercent: number;
-    diskMB: number;
-    duration: number;
-};
+export type CheckoutParams =
+    | {
+        type: 'NEW';
+        creationServerConfig: ServerConfig; // Needed for Server Creation!!!
+    }
+    | {
+        type: 'UPGRADE';
+        upgradeConfig: HardwareConfig;
+        ptServerId: string; 
+    }
+    | {
+        type: 'TO_PAYED';
+        ptServerId: string;
+        hardwareConfig: HardwareConfig;
+    };
 
 export async function checkoutAction(params: CheckoutParams) {
-    const { type, ptServerId, ramMB, cpuPercent, diskMB, duration, creationServerConfig } = params;
+    // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -39,7 +46,7 @@ export async function checkoutAction(params: CheckoutParams) {
     if (!session) throw new Error('Not authenticated');
     const user = session.user;
 
-    const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+    const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     let stripeUserId = dbUser?.stripeUserId ?? null;
 
     if (!stripeUserId) {
@@ -59,13 +66,19 @@ export async function checkoutAction(params: CheckoutParams) {
         stripeUserId = newCustomer.id;
     }
 
-    switch (type) {
+    switch (params.type) {
         case 'NEW': {
+            const { creationServerConfig } = params;
             if (!creationServerConfig) throw new Error('No Serverconfigration given');
             const location = await prisma.location.findFirstOrThrow({
                 where: { id: creationServerConfig.hardwareConfig.pfGroupId },
                 include: { cpu: true, ram: true },
             });
+            const hardwareConfig = creationServerConfig.hardwareConfig;
+            const cpuPercent = hardwareConfig.cpuPercent;
+            const ramMB = hardwareConfig.ramMb;
+            const diskMB = hardwareConfig.diskMb;
+            const duration = hardwareConfig.durationsDays;
 
             const price = calculateNew(location, cpuPercent, ramMB, duration);
 
@@ -73,8 +86,8 @@ export async function checkoutAction(params: CheckoutParams) {
 
             const order = await prisma.gameServerOrder.create({
                 data: {
-                    type,
-                    gameServerId: ptServerId,
+                    type: params.type,
+                    gameServerId: null,
                     userId: user.id,
                     ramMB,
                     cpuPercent,
@@ -100,7 +113,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     {
                         price_data: {
                             currency: 'eur',
-                            product_data: { name: `${type} Game Server` },
+                            product_data: { name: `${params.type} Game Server` },
                             unit_amount: Math.round(price.totalCents),
                         },
                         quantity: 1,
@@ -125,6 +138,9 @@ export async function checkoutAction(params: CheckoutParams) {
             return { client_secret: stripeSession.client_secret };
         }
         case 'UPGRADE': {
+            const { ptServerId, upgradeConfig } = params;
+            const {cpuPercent, ramMb, diskMb, durationsDays} = upgradeConfig;
+
             const server = await prisma.gameServer.findFirst({
                 where: { ptServerId: ptServerId, userId: user.id },
             });
@@ -159,9 +175,9 @@ export async function checkoutAction(params: CheckoutParams) {
 
             const newConfig: HardwareConfig = {
                 cpuPercent: cpuPercent - oldConfig.cpuPercent,
-                ramMb: ramMB - oldConfig.ramMb,
-                diskMb: diskMB - oldConfig.diskMb,
-                durationsDays: duration,
+                ramMb: ramMb - oldConfig.ramMb,
+                diskMb: diskMb - oldConfig.diskMb,
+                durationsDays: durationsDays,
                 pfGroupId: server.locationId,
             };
 
@@ -169,16 +185,16 @@ export async function checkoutAction(params: CheckoutParams) {
 
             const order = await prisma.gameServerOrder.create({
                 data: {
-                    type,
+                    type: params.type,
                     gameServerId: server.id,
                     userId: user.id,
-                    ramMB,
-                    cpuPercent,
-                    diskMB,
+                    ramMB: ramMb,
+                    cpuPercent: cpuPercent,
+                    diskMB: diskMb,
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
-                        duration * 24 * 60 * 60 * 1000,
+                        durationsDays * 24 * 60 * 60 * 1000,
                     ),
                     status: 'PENDING',
                 },
@@ -197,7 +213,7 @@ export async function checkoutAction(params: CheckoutParams) {
                         price_data: {
                             currency: 'eur',
                             product_data: {
-                                name: `Upgrade Game Server to ${cpuPercent}% CPU, ${ramMB}MB RAM`,
+                                name: `Upgrade Game Server to ${cpuPercent}% CPU, ${ramMb}MB RAM`,
                             },
                             unit_amount: Math.round(price.totalCents),
                         },
@@ -208,7 +224,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     orderId: String(order.id),
                 },
                 customer: stripeUserId,
-                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`, // TODO: new return url
+                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`, // TODO: new return url and cancel
                 // success_url: `${env('NEXT_PUBLIC_APP_URL')}/success`,
                 // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
             });
@@ -221,9 +237,14 @@ export async function checkoutAction(params: CheckoutParams) {
 
             return { client_secret: stripeSession.client_secret };
         }
+        case 'TO_PAYED': {
+            const { ptServerId, hardwareConfig } = params;
+            upgradeToPayed(params, dbUser);
+        }
     }
 }
 
+// Create a free GameServer
 export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<string> {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -269,7 +290,13 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
         }
         return ptId;
     } catch (error) {
-        logger.error("Failed to provision free server", 'GAME_SERVER', { details: { error: error instanceof Error ? error.message : String(error) }, userId: dbUser.id });
+        logger.error("Failed to provision free server", 'GAME_SERVER', { 
+            userId: dbUser.id,
+            details: { 
+                error: error instanceof Error ? error.message : JSON.stringify(error),
+                orderId: order.id 
+            }
+        });
         throw new Error("Interner Fehler - Server konnte nicht erstellt werden");
     }
 }

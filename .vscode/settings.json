@@ -12,5 +12,6 @@
     "i18n-ally.keystyle": "nested",
     "i18n-ally.localesPaths": ["./messages"],
     "i18n-ally.enabledFrameworks": ["next-intl"],
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "prisma.pinToPrisma6": true
 }

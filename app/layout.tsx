@@ -12,10 +12,8 @@ import { headers } from 'next/headers';
 import './globals.css';
 import { Metadata } from 'next';
 
-const defaultUrl = env('VERCEL_URL') ? `https://${env('VERCEL_URL')}` : 'http://localhost:3000';
-
 export const metadata: Metadata = {
-    metadataBase: new URL(defaultUrl),
+    metadataBase: new URL(env("NEXT_PUBLIC_APP_URL")!),
     title: 'Scyed Hosting',
     description: 'A little above average Gameserver hosting platform',
     robots: {

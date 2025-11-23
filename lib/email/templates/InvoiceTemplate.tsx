@@ -15,6 +15,7 @@ import {
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
+import { OrderType } from '@prisma/client';
 
 interface InvoiceTemplateProps {
     userName: string;
@@ -23,7 +24,7 @@ interface InvoiceTemplateProps {
     gameName: string;
     gameImageUrl: string;
     serverName: string;
-    orderType: 'NEW' | 'UPGRADE' | 'RENEW';
+    orderType: OrderType;
     ramMB: number;
     cpuVCores: number;
     diskMB: number;

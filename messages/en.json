@@ -330,6 +330,48 @@
             "noSpecific": "No specific configuration options available for this game."
         }
     },
+    "extendServer": {
+        "config": {
+            "title": "Performance Configuration",
+            "description": "Customize your server hardware.",
+            "performance-tier": "Performance Tier",
+            "extend-title": "Extend for",
+            "duration": {
+                "none": "None",
+                "week": "1 Week",
+                "month": "1 Month",
+                "three-months": "3 Months",
+                "discount-10": "-10%"
+            },
+            "little-info": "Info",
+            "cpu": {
+                "label-suffix": "vCore(s)",
+                "price-suffix": "€ / vCore"
+            },
+            "ram": {
+                "label-suffix": "GiB RAM",
+                "price-suffix": "€ / GiB"
+            }
+        },
+        "pricing": {
+            "title": "Price Overview",
+            "description": "Summary of your configuration.",
+            "headers": {
+                "vcpu": "vCPU",
+                "ram": "RAM"
+            },
+            "rows": {
+                "upgrade-for-days": "Upgrade for {days} days",
+                "extend-for-days": "Extend for {days} days"
+            },
+            "discount-with-amount": "(plus {amount} € discount)"
+        },
+        "footer": {
+            "total": "Total",
+            "min-price-hint": "Minimum price €1",
+            "continue": "Continue to Payment"
+        }
+    },
     "RegisterLogin": {
         "title": "Welcome",
         "subtitle": "Register with your Discord or Google account",
