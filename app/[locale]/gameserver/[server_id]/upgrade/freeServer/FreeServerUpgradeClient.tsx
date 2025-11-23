@@ -20,6 +20,7 @@ import { HardwareConfig } from '@/models/config';
 import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -37,7 +38,7 @@ export default function FreeServerUpgradeClient({
     freeConfig,
 }: FreeServerUpgradeClientProps) {
     const t = useTranslations('freeServerUpgrade');
-    const [mode, setMode] = useState<'choose' | 'extend' | 'upgrade'>('choose');
+    const [mode, setMode] = useState<'choose' | 'extend'>('choose');
     const [extending, setExtending] = useState(false);
     const router = useRouter();
 
@@ -76,21 +77,6 @@ export default function FreeServerUpgradeClient({
             (new Date(server.expires).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
         ),
     );
-
-    if (mode === 'upgrade') {
-        return (
-            <div className="space-y-4">
-                <Button variant="outline" onClick={() => setMode('choose')}>
-                    ← {t('backToOptions')}
-                </Button>
-                <UpgradeGameServerFromFree
-                    serverId={server.ptServerId!}
-                    performanceOptions={performanceOptions}
-                    minOptions={minOptions}
-                />
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-6">
@@ -259,9 +245,11 @@ export default function FreeServerUpgradeClient({
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button className="w-full" size="lg" onClick={() => setMode('upgrade')}>
-                            {t('upgrade.button')}
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                        <Button className="w-full" size="lg" asChild>
+                            <Link href={`/gameserver/${server.ptServerId}/upgrade/freeServer/pay`}>
+                                {t('upgrade.button')}
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                            </Link>
                         </Button>
                     </CardFooter>
                 </Card>

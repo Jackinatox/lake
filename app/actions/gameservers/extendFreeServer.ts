@@ -112,7 +112,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
 
 
 async function resumeIfSuspended(server: GameServer) {
-    if (server.status === 'EXPIRED') { 
+    if (server.status === 'EXPIRED') {
         await toggleSuspendGameServer(server.id, 'unsuspend');
     }
 }

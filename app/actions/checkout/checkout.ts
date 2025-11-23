@@ -28,7 +28,7 @@ export type CheckoutParams =
     | {
         type: 'UPGRADE';
         upgradeConfig: HardwareConfig;
-        ptServerId: string; 
+        ptServerId: string;
     }
     | {
         type: 'TO_PAYED';
@@ -139,7 +139,7 @@ export async function checkoutAction(params: CheckoutParams) {
         }
         case 'UPGRADE': {
             const { ptServerId, upgradeConfig } = params;
-            const {cpuPercent, ramMb, diskMb, durationsDays} = upgradeConfig;
+            const { cpuPercent, ramMb, diskMb, durationsDays } = upgradeConfig;
 
             const server = await prisma.gameServer.findFirst({
                 where: { ptServerId: ptServerId, userId: user.id },
@@ -238,8 +238,8 @@ export async function checkoutAction(params: CheckoutParams) {
             return { client_secret: stripeSession.client_secret };
         }
         case 'TO_PAYED': {
-            const { ptServerId, hardwareConfig } = params;
-            upgradeToPayed(params, dbUser);
+            const client_secret = await upgradeToPayed(params, dbUser);
+            return { client_secret: client_secret };
         }
     }
 }
@@ -290,11 +290,11 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
         }
         return ptId;
     } catch (error) {
-        logger.error("Failed to provision free server", 'GAME_SERVER', { 
+        logger.error("Failed to provision free server", 'GAME_SERVER', {
             userId: dbUser.id,
-            details: { 
+            details: {
                 error: error instanceof Error ? error.message : JSON.stringify(error),
-                orderId: order.id 
+                orderId: order.id
             }
         });
         throw new Error("Interner Fehler - Server konnte nicht erstellt werden");

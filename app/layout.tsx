@@ -40,9 +40,6 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const locale = await getLocale();
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
 
     return (
         <html lang={locale} className={geistSans.className} suppressHydrationWarning>

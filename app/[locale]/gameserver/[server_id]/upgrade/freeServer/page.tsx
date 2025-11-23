@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import Loading from '../payedServer/loading';
 import FreeServerUpgrade from './FreeServerUpgrade';
+
 async function UpgradePage({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
     const awaitedParams = await params;
     const { server_id } = awaitedParams;

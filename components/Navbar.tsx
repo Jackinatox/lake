@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 
 export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
-    const bookingPages = ['/booking', '/upgrade/freeServer'];
+    const bookingPages = ['/booking', '/upgrade/freeServer/pay'];
     const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
     return (
         <nav

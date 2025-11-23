@@ -14,19 +14,26 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
     const { ptServerId, hardwareConfig } = params;
     const { ramMb, cpuPercent, diskMb, durationsDays } = hardwareConfig;
 
-    // if (!creationServerConfig) throw new Error('No Serverconfigration given');
     const location = await prisma.location.findFirstOrThrow({
         where: { id: hardwareConfig.pfGroupId },
         include: { cpu: true, ram: true },
     });
 
+    const server = await prisma.gameServer.findFirstOrThrow({
+        where: {
+            ptServerId: ptServerId,
+            userId: user.id,
+        },
+    });
+
     const price = calculateNew(location, cpuPercent, ramMb, durationsDays);
 
+    console.log(JSON.stringify(params))
     // 1. Create the ServerOrder
     const order = await prisma.gameServerOrder.create({
         data: {
             type: params.type,
-            gameServerId: ptServerId,
+            gameServerId: server.id,
             userId: user.id,
             ramMB: ramMb,
             cpuPercent,
