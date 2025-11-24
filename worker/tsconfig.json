@@ -10,7 +10,7 @@
 
         // Bundler mode
         "moduleResolution": "bundler",
-        "types": ["bun", "node"],
+        "types": ["node"],
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "noEmit": true,

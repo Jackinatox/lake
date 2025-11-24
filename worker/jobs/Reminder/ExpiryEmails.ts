@@ -49,7 +49,6 @@ parentPort?.on('message', (msg) => {
                 },
             },
             orderBy: { expires: 'asc' },
-            include: { Email: true },
         });
 
         for (const server of expiring1day) {
@@ -70,7 +69,6 @@ parentPort?.on('message', (msg) => {
                 },
             },
             orderBy: { expires: 'asc' },
-            include: { Email: true },
         });
 
         for (const server of expiring7days) {

@@ -55,8 +55,9 @@ export async function deleteGameServers(ids: string[]) {
 
     try {
         for (const id of deletedIds) {
-            await prisma.gameServer.delete({
+            await prisma.gameServer.update({
                 where: { id: id },
+                data: { status: 'DELETED' },
             });
         }
         if (errors.length > 0) {

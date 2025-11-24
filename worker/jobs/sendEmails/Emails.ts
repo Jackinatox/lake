@@ -2,7 +2,7 @@ import { parentPort } from 'worker_threads';
 import { prisma } from '../../prisma';
 import { logInfo, logWarn, logError, logFatal, generateJobRunId } from '../../lib/logger';
 import { WorkerJobType } from '../../generated/client';
-import SendEmail from './sendEmail';
+import SendEmail from './sendEmail.ts';
 
 const JobName = 'SendEmails';
 

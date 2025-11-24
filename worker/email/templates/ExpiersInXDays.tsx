@@ -9,6 +9,7 @@ interface ExpiredServerTemplateProps {
     expirationDays: 7 | 1;
     deleteDate: Date;
     serverId: string;
+    isFreeServer: boolean;
 }
 
 export default function ExpiredServerTemplate({
@@ -18,6 +19,7 @@ export default function ExpiredServerTemplate({
     expirationDays,
     deleteDate,
     serverId,
+    isFreeServer,
 }: ExpiredServerTemplateProps) {
     const formattedExpirationDate = new Intl.DateTimeFormat('de-DE', {
         day: '2-digit',
@@ -64,10 +66,10 @@ export default function ExpiredServerTemplate({
             </Section>
             <Section className="mt-6">
                 <Button
-                    href={`${APP_URL}/de/gameserver/${serverId}/upgrade`}
+                    href={`${APP_URL}/gameserver/${serverId}/upgrade`}
                     className="inline-block rounded-full bg-slate-900 px-6 py-3 text-base font-semibold text-white no-underline"
                 >
-                    Server jetzt erneuern
+                    Server jetzt {isFreeServer ? 'kostenlos ' : ''}erneuern
                 </Button>
             </Section>
         </EmailLayout>
