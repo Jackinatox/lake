@@ -42,6 +42,13 @@ export default async function toggleSuspendGameServer(
             throw new Error('PT API Error: ' + JSON.stringify(errorData));
         }
 
+        await prisma.gameServer.update({
+            where: { id: gameServer.id },
+            data: {
+                status: 'ACTIVE',
+            },
+        });
+
         logger.info(`Game server ${action}ed successfully`, 'GAME_SERVER', {
             gameServerId: gameServer.id,
             userId: gameServer.userId,

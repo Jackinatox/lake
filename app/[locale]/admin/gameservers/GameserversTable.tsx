@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import { formatDate } from '@/lib/Pterodactyl/file-utils';
+import { formatDate } from '@/lib/formatDate';
 import { GameServerAdmin } from '@/models/prisma';
 import React from 'react';
 
@@ -70,13 +70,13 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                                 }}
                             />
                         </TableHead>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Name</TableHead>
                         <TableHead>User</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Expieres</TableHead>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
                         <TableHead>CPU Percent</TableHead>
                         <TableHead>RamMB</TableHead>
-                        <TableHead>Expieres</TableHead>
                         <TableHead>Node/Location</TableHead>
                         <TableHead>PT Server ID</TableHead>
                         <TableHead>PT Internal ID</TableHead>
@@ -95,17 +95,19 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                                     }
                                 />
                             </TableCell>
-                            <TableCell>{gameserver.id}</TableCell>
+                            <TableCell>{gameserver.user.email}</TableCell>
                             <TableCell>
                                 {gameserver.freeServer
-                                    ? 'Yes'
-                                    : gameserver.price != null ? (gameserver.price / 100).toFixed(2) + '€' : 'N/A'}
+                                    ? 'Free'
+                                    : gameserver.price != null
+                                      ? (gameserver.price / 100).toFixed(2) + '€'
+                                      : 'N/A'}
                             </TableCell>
+                            <TableCell>{formatDate(gameserver.expires)}</TableCell>
+                            <TableCell>{gameserver.id}</TableCell>
                             <TableCell>{gameserver.name}</TableCell>
-                            <TableCell>{gameserver.user.email}</TableCell>
                             <TableCell>{gameserver.cpuPercent}</TableCell>
                             <TableCell>{gameserver.ramMB}</TableCell>
-                            <TableCell>{formatDate(gameserver.expires.toString())}</TableCell>
                             <TableCell>{gameserver.location.name}</TableCell>
                             <TableCell>{gameserver.ptServerId}</TableCell>
                             <TableCell>{gameserver.ptAdminId}</TableCell>

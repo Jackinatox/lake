@@ -44,7 +44,6 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
         // Check cooldown period
         const now = new Date();
         if (server.lastExtended) {
-            await resumeIfSuspended(server);
             const cooldownMs = FREE_TIER_EXTEND_COOLDOWN_HOURS * 60 * 60 * 1000;
             const timeSinceLastExtend = now.getTime() - server.lastExtended.getTime();
 
@@ -71,6 +70,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
             }
         }
 
+        await resumeIfSuspended(server);
         const freeConfig = await getFreeTierConfigCached();
         const newExpiry = new Date(now.getTime() + freeConfig.duration * 24 * 60 * 60 * 1000);
 

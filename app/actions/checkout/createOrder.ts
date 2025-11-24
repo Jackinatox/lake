@@ -10,7 +10,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
     if (params.type !== 'TO_PAYED') {
         throw new Error('Invalid checkout type for upgradeToPayed');
     }
-
+    
     const { ptServerId, hardwareConfig } = params;
     const { ramMb, cpuPercent, diskMb, durationsDays } = hardwareConfig;
 

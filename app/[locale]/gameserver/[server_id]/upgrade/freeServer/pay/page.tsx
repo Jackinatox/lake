@@ -60,11 +60,15 @@ async function page({ params }: { params: Promise<{ locale: string; server_id: s
                         ← {t('backToOptions')}
                     </Link>
                 </Button>
-                <UpgradeGameServerFromFree
+
+                <h1 className="text-2xl md:text-3xl font-bold text-center mt-8 text-red-500">
+                    This upgrade option will be available later.
+                </h1>
+                {/* <UpgradeGameServerFromFree
                     serverId={server.ptServerId}
                     performanceOptions={performanceOptions}
                     minOptions={minOptions}
-                />
+                /> */}
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import { env } from 'next-runtime-env';
 import { createPtClient } from '../ptAdminClient';
 import { logger } from '@/lib/logger';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 /**
  * Upgrades a game server's resources (CPU and RAM) based on a server order.
@@ -25,6 +26,9 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
 
     try {
         await toggleSuspendGameServer(gameServer.id, 'unsuspend');
+        const diskMb = calcDiskSize(serverOrder.cpuPercent, serverOrder.ramMB);
+        const backups = calcBackups(serverOrder.cpuPercent, serverOrder.ramMB);
+
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
             {
@@ -37,23 +41,19 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                     allocation: ptServer.allocation,
                     memory: serverOrder.ramMB,
                     swap: ptServer.limits.swap,
-                    disk: ptServer.limits.disk,
+                    disk: diskMb,
                     io: ptServer.limits.io,
                     cpu: serverOrder.cpuPercent,
                     feature_limits: {
                         allocations: ptServer.featureLimits.allocations,
                         databases: ptServer.featureLimits.databases,
-                        backups: ptServer.featureLimits.backups,
+                        backups: backups,
                     },
                 }),
             },
         );
 
         if (!response.ok) {
-            logger.error('PT API Error: ', 'GAME_SERVER', {
-                details: await response.json(),
-                gameServerId: gameServer.id,
-            });
             throw new Error('PT API Error: ' + (await response.json()));
         }
         await prisma.gameServer.update({
@@ -61,12 +61,13 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             data: {
                 cpuPercent: serverOrder.cpuPercent,
                 ramMB: serverOrder.ramMB,
+                diskMB: diskMb,
+                backupCount: backups,
                 expires: serverOrder.expiresAt,
                 status: 'ACTIVE',
             },
         });
     } catch (error) {
-        console.error('Error upgrading game server:', error);
         logger.fatal('Error upgrading game server', 'GAME_SERVER', {
             details: { error, gameServerId: gameServer.id },
             gameServerId: gameServer.id,

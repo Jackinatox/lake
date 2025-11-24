@@ -29,7 +29,6 @@ export default async function handleCheckoutSessionCompleted(
             typeof session.payment_intent.latest_charge !== 'string'
         ) {
             receiptUrl = session.payment_intent.latest_charge.receipt_url;
-            console.log('Receipt URL:', receiptUrl);
         }
 
         await prisma.gameServerOrder.update({
@@ -54,6 +53,7 @@ export default async function handleCheckoutSessionCompleted(
                 await upgradeGameServer(serverOrder);
                 break;
             case 'TO_PAYED':
+                throw new Error('Feature not implemented yet.');
                 await upgradeFromFreeGameServer(serverOrder);
                 break;
             default:

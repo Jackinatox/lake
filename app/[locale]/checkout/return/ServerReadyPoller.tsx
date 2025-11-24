@@ -226,7 +226,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     };
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-background via-background to-muted/70 px-4 py-16">
+        <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-b from-background via-background to-muted/70 md:px-4 py-16">
             <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.12),_transparent_45%)]" />
             <div className="relative z-10 w-full max-w-3xl space-y-8">
                 <div
@@ -331,7 +331,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                                 </p>
                                 <div className="flex flex-col gap-2 sm:flex-row">
                                     <Button asChild>
-                                        <Link
+                                        <Link prefetch={false}
                                             href={encodeURI(`/gameserver/${serverId}?start=true`)}
                                         >
                                             {pollerT('successButton')}

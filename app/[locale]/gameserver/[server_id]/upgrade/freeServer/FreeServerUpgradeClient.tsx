@@ -194,7 +194,15 @@ export default function FreeServerUpgradeClient({
                 </Card>
 
                 {/* Upgrade to Paid Option */}
-                <Card className="relative overflow-hidden border-primary/50 shadow-lg flex flex-col h-full">
+                {/* TODO: implement Server Upgrade from free */}
+                <Card className="relative overflow-hidden border-muted shadow-lg flex flex-col h-full opacity-60">
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-[1px] z-10 flex items-center justify-center">
+                        <div className="text-center p-4">
+                            <p className="text-sm font-semibold text-muted-foreground">
+                                Available later
+                            </p>
+                        </div>
+                    </div>
                     <div className="absolute top-0 right-0 bg-gradient-to-l from-primary to-primary/80 text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
                         {t('upgrade.badge')}
@@ -245,11 +253,9 @@ export default function FreeServerUpgradeClient({
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button className="w-full" size="lg" asChild>
-                            <Link href={`/gameserver/${server.ptServerId}/upgrade/freeServer/pay`}>
-                                {t('upgrade.button')}
-                                <ArrowRight className="w-4 h-4 ml-2" />
-                            </Link>
+                        <Button className="w-full" size="lg" disabled>
+                            {t('upgrade.button')}
+                            <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </CardFooter>
                 </Card>

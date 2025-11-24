@@ -238,6 +238,7 @@ export async function checkoutAction(params: CheckoutParams) {
             return { client_secret: stripeSession.client_secret };
         }
         case 'TO_PAYED': {
+            throw new Error('Feature not implemented yet.');
             const client_secret = await upgradeToPayed(params, dbUser);
             return { client_secret: client_secret };
         }
