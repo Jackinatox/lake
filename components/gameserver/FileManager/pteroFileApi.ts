@@ -180,12 +180,20 @@ export async function uploadFiles(
 ): Promise<void> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
-    const targetDirectory = encodeURIComponent(directory || '/');
+
+    // Normalize directory: ensure leading slash, remove trailing slash (except for root)
+    let normalizedDir = directory || '/';
+    if (!normalizedDir.startsWith('/')) {
+        normalizedDir = '/' + normalizedDir;
+    }
+    if (normalizedDir !== '/' && normalizedDir.endsWith('/')) {
+        normalizedDir = normalizedDir.slice(0, -1);
+    }
+
+    // Get signed upload URL from the Panel
     const signedResponse = await fetch(
-        `${PANEL_URL}/api/client/servers/${serverId}/files/upload?directory=${targetDirectory}`,
-        {
-            headers: buildHeaders(apiKey!),
-        },
+        `${PANEL_URL}/api/client/servers/${serverId}/files/upload`,
+        { headers: buildHeaders(apiKey!) },
     );
 
     if (!signedResponse.ok) {
@@ -202,11 +210,14 @@ export async function uploadFiles(
     const list = Array.isArray(files) ? files : Array.from(files);
     const formData = new FormData();
     list.forEach((file) => formData.append('files', file));
-    formData.append('directory', directory || '/');
+
+    // Directory is passed as a query parameter to Wings
+    const uploadUrl = new URL(signedUrl);
+    uploadUrl.searchParams.set('directory', normalizedDir);
 
     await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', signedUrl);
+        xhr.open('POST', uploadUrl.toString());
 
         xhr.upload.onprogress = (event) => {
             if (event.lengthComputable && onProgress) {
