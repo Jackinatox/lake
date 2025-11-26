@@ -167,7 +167,7 @@ export default function ServerLoader({
                             {t('gameserver.installation.title')}
                         </CardTitle>
                         <CardDescription>
-                            {t('gameserver.installation.description', { serverName: server.name })}
+                            {t.rich('gameserver.installation.description', { serverName: server.name, strong: (children) => <strong>{children}</strong> })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -192,7 +192,7 @@ export default function ServerLoader({
                             {t('gameserver.restore.title')}
                         </CardTitle>
                         <CardDescription>
-                            {t('gameserver.restore.description', { serverName: server.name })}
+                            {t.rich('gameserver.restore.description', { serverName: server.name, strong: (children) => <strong>{children}</strong> })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

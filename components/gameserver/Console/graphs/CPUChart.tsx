@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/chart';
-import { Cpu } from 'lucide-react';
 
 interface CPUData {
     time: number;

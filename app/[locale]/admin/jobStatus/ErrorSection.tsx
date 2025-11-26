@@ -1,7 +1,7 @@
 import { ErrorStatusHeader } from './ErrorStatusHeader';
 import { ErrorCard } from './ErrorCard';
 import { ErrorEmptyState } from './ErrorEmptyState';
-import { LogLevel } from '@prisma/client';
+import { LogLevel } from '@/app/client/generated/browser';
 
 interface ErrorSectionProps {
     errorCount: number;

@@ -12,7 +12,8 @@ import {
     FREE_SERVERS_LOCATION_ID,
     FREE_TIER_MAX_SERVERS,
 } from '@/app/GlobalConstants';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 
 /**
  * List of all required KeyValue constants that must exist in the database

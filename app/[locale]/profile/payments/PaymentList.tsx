@@ -3,7 +3,8 @@
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { CreditCard, Badge } from 'lucide-react';
 import { PaymentItem } from './paymentItem';
 import { headers } from 'next/headers';

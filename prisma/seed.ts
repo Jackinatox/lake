@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import {
     LEGAL_IMPRESSUM_DE,
     LEGAL_IMPRESSUM_EN,
@@ -12,7 +12,6 @@ import {
     FREE_TIER_DURATION_DAYS,
 } from '../app/GlobalConstants';
 
-const prisma = new PrismaClient();
 async function main() {
     await prisma.gameData.create({
         data: {

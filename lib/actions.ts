@@ -1,7 +1,8 @@
 'use server';
 
 import { Game } from '@/models/config';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 
 export async function fetchPerformanceGroups() {
     const data = await prisma.location.findMany({

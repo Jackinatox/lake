@@ -1,4 +1,5 @@
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { env } from 'next-runtime-env';
 import { logger } from '@/lib/logger';
 

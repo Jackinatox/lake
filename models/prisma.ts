@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@/app/client/generated/browser";
 
 export type PerformanceGroup = Prisma.LocationGetPayload<{
     include: { cpu: true; ram: true };

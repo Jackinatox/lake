@@ -1,9 +1,11 @@
 'use server';
 
+import { TicketStatus } from '@/app/client/generated/browser';
 import { auth } from '@/auth';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
-import { TicketStatus } from '@prisma/client';
+
 
 export async function updateTicketStatusAction(params: { ticketId: number; status: TicketStatus }) {
     const { ticketId, status } = params;

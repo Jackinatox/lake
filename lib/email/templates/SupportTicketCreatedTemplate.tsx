@@ -1,4 +1,4 @@
-import { TicketCategory, TicketStatus } from '@prisma/client';
+import { TicketCategory, TicketStatus } from '@/app/client/generated/enums';
 import {
     Body,
     Button,

@@ -1,10 +1,11 @@
-import { TicketCategory } from '@prisma/client';
 import { auth } from '@/auth';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendTicketCreatedEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
+import { TicketCategory } from '@/app/client/generated/enums';
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_SUBJECT_LENGTH = 120;

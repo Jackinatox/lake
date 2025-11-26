@@ -1,7 +1,8 @@
 'use server';
 
 import GameCard from '@/components/order/game/gameCard';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import React from 'react';
 
 interface ChangeGameSelectProps {

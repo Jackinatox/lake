@@ -1,6 +1,5 @@
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
-import { OrderType } from '@prisma/client';
 
 // Config
 const minBackups = 2;

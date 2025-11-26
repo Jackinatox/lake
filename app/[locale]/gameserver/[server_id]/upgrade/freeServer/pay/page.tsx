@@ -5,7 +5,8 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import UpgradeGameServerFromFree from '@/components/gameserver/Upgrade/freeToPayed/UpgradeFreeToPayed';
 import { Button } from '@/components/ui/button';
 import { fetchPerformanceGroups } from '@/lib/actions';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import Link from 'next/link';

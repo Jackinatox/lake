@@ -1,7 +1,8 @@
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 

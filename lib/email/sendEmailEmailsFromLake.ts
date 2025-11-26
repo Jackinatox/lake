@@ -1,4 +1,3 @@
-import { OrderType, SupportTicket } from '@prisma/client';
 import { render } from '@react-email/render';
 import { env } from 'next-runtime-env';
 import { sendMail } from './NodeMailer';
@@ -9,6 +8,7 @@ import ResetPasswordTemplate from './templates/ResetPassword';
 import ServerBookingConfirmationTemplate from './templates/ServerBookingConfirmationTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
 import { percentToVCores } from '../GlobalFunctions/formatVCores';
+import { OrderType, SupportTicket } from '@/app/client/generated/browser';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(

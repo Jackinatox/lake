@@ -1,4 +1,4 @@
-import { LogLevel } from '@prisma/client';
+import { LogLevel } from '@/app/client/generated/browser';
 import { ErrorBadge, JobTypeBadge, JobRunId } from './ErrorBadges';
 import { ErrorContextInfo } from './ErrorContextInfo';
 

@@ -2,7 +2,8 @@ import { fetchPerformanceGroups } from '@/lib/actions';
 import UpgradeGameServer from './UpgradeGameServer';
 import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameServerConfig';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { redirect } from 'next/navigation';
 
 interface UpgradeGameServerServerProps {

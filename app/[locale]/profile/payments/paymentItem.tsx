@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { OrderType } from '@prisma/client';
 import { Receipt, Server, AlertCircle, Cog } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { OrderType } from '@/app/client/generated/browser';
 
 interface PaymentItemProps {
     amount: number;

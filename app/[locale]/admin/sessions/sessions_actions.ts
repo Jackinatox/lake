@@ -1,7 +1,8 @@
 'use server';
 
 import { stripe } from '@/lib/stripe';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 

@@ -1,7 +1,8 @@
 'use server';
 import { auth } from '@/auth';
 import { env } from 'next-runtime-env';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 
 export async function deleteGameServers(ids: string[]) {

@@ -2,10 +2,10 @@
 
 import { auth } from '@/auth';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
-import { prisma } from '@/prisma';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import FreeGameSelect from './FreeGameSelect';
+import prisma from '@/lib/prisma';
 
 async function FreeGameServerPage() {
     const t = await getTranslations('freeServer');

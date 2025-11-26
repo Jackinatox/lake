@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
-import type { TicketCategory, TicketStatus } from '@prisma/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,7 @@ import {
 import { updateTicketStatusAction } from '@/app/actions/supportTickets/updateTicketStatus';
 import { useToast } from '@/hooks/use-toast';
 import { ClipboardCopyIcon, MailIcon, Clock3Icon, FilterIcon } from 'lucide-react';
+import { TicketCategory, TicketStatus } from '@/app/client/generated/enums';
 
 export type AdminTicket = {
     id: number;

@@ -1,4 +1,5 @@
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { generateFromEmail, generateUsername } from 'unique-username-generator';
 
 const MAX_ATTEMPTS = 100;

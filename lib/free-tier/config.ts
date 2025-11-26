@@ -5,7 +5,8 @@ import {
     FREE_TIER_DURATION_DAYS,
     FREE_TIER_MAX_SERVERS,
 } from '@/app/GlobalConstants';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { unstable_cache } from 'next/cache';
 
 export interface FreeTierConfig {

@@ -2,11 +2,12 @@ import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConfig';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
-import { GameServerOrder } from '@prisma/client';
 import { buildMC_ENVs_and_startup } from '../buildMinecraftENVs';
 import { logger } from '@/lib/logger';
+import { GameServerOrder } from '@/app/client/generated/browser';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({

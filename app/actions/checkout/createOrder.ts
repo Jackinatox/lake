@@ -1,10 +1,10 @@
-import { prisma } from "@/prisma";
 import { CheckoutParams } from "./checkout";
 import { env } from "next-runtime-env";
 import { calculateNew } from "@/lib/GlobalFunctions/paymentLogic";
-import { User } from "@prisma/client";
 import { stripe } from "@/lib/stripe";
 import { logger } from "@/lib/logger";
+import prisma from "@/lib/prisma";
+import { User } from "@/app/client/generated/client";
 
 export default async function upgradeToPayed(params: CheckoutParams, user: User): Promise<string> {
     if (params.type !== 'TO_PAYED') {

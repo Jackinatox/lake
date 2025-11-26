@@ -1,5 +1,7 @@
-import { PrismaClient, LogLevel, LogType, Prisma } from '@prisma/client';
-import { prisma } from '@/prisma';
+import { Prisma, PrismaClient } from '@/app/client/generated/client';
+import { LogLevel, LogType } from '@/app/client/generated/enums';
+import prisma from '@/lib/prisma';
+
 
 /**
  * Unified application logger that writes to ApplicationLog table.

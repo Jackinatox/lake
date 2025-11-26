@@ -4,7 +4,8 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import ChangeGameConfigClient from './ChangeGameConfigClient';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 import type { Game } from '@/models/config';
 

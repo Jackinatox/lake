@@ -8,7 +8,8 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import TicketsDashboard, { AdminTicket } from './TicketsDashboard';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 import { InboxIcon } from 'lucide-react';
 

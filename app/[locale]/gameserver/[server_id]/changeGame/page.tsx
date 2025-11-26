@@ -4,7 +4,8 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { headers } from 'next/headers';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import ChangeGameSelect from './ChangeGameSelect';
 
 async function page({ params }: { params: Promise<{ server_id: string }> }) {

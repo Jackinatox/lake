@@ -2,7 +2,8 @@ import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameS
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import FreeServerUpgradeClient from './FreeServerUpgradeClient';
 
 interface FreeServerUpgradeProps {

@@ -4,7 +4,8 @@ import UpgradeGameServerServer from '@/components/gameserver/Upgrade/UpgradeGame
 import Loading from './loading';
 import { headers } from 'next/headers';
 import { Suspense } from 'react';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { redirect } from 'next/navigation';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 

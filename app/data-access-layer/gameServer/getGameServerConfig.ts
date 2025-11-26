@@ -1,6 +1,7 @@
 import 'server-only';
 
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { HardwareConfig } from '@/models/config';
 
 export async function getGameServerConfig(

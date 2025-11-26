@@ -14,7 +14,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { expireSessions, deleteOrders } from '@/app/[locale]/admin/sessions/sessions_actions';
 import { useToast } from '@/hooks/use-toast';
 import { DbSession } from '@/models/prisma';
-import { sso } from 'better-auth/plugins/sso';
 
 type Props = { sessions: DbSession[] };
 

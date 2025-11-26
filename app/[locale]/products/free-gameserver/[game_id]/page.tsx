@@ -6,7 +6,8 @@ import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 
 export default async function FreeGameServerPage(
     props: PageProps<'/[locale]/products/free-gameserver/[game_id]'>,

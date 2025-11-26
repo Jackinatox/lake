@@ -15,7 +15,7 @@ import {
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
-import { OrderType } from '@prisma/client';
+import { OrderType } from '@/app/client/generated/enums';
 
 interface InvoiceTemplateProps {
     userName: string;

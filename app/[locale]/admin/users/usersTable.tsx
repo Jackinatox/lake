@@ -13,8 +13,8 @@ import {
     TableBody,
     TableCell,
 } from '@/components/ui/table';
-import { User } from '@prisma/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User } from '@/app/client/generated/browser';
 
 interface UsersTableProps {
     users: User[];

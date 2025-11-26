@@ -1,7 +1,8 @@
 'use server';
 import { auth } from '@/auth';
 import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 
 export async function testProvisionServer(orderId: string) {

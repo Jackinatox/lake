@@ -1,13 +1,14 @@
 'use server';
 
 import { auth } from '@/auth';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { headers } from 'next/headers';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { logger } from '@/lib/logger';
 import { FREE_TIER_EXTEND_COOLDOWN_HOURS } from '@/app/GlobalConstants';
-import { GameServer } from '@prisma/client';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
+import { GameServer } from '@/app/client/generated/browser';
 
 export async function extendFreeServer(serverId: string): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
     try {

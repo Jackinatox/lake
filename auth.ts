@@ -6,7 +6,7 @@ import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
 import { sendConfirmEmail, sendResetPasswordEmail } from './lib/email/sendEmailEmailsFromLake';
-import { prisma } from '@/prisma';
+import prisma from './lib/prisma';
 
 function generateRandomPassword(length: number = 32): string {
     return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');

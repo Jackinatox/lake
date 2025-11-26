@@ -2,7 +2,8 @@
 
 import { auth } from '@/auth';
 import { env } from 'next-runtime-env';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { GameServerStatus } from '@/types/gameData';
 import { headers } from 'next/headers';
 

@@ -7,7 +7,8 @@ import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader from '@/components/gameserver/ServerLoader';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 

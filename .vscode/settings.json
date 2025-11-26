@@ -10,8 +10,12 @@
     },
     "i18n-ally.namespace": true,
     "i18n-ally.keystyle": "nested",
-    "i18n-ally.localesPaths": ["./messages"],
+    "i18n-ally.localesPaths": [
+        "i18n",
+        "messages",
+        "public/locales"
+    ],
     "i18n-ally.enabledFrameworks": ["next-intl"],
     "typescript.tsdk": "node_modules/typescript/lib",
-    "prisma.pinToPrisma6": true
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 }

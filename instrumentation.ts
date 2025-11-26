@@ -5,7 +5,7 @@
  */
 
 export async function register() {
-    const { performVerification } = await import('@/lib/startup');
-    console.log('Running startup database constant verification...');
-    await performVerification();
+    // const { performVerification } = await import('@/lib/startup');
+    // console.log('Running startup database constant verification...');
+    // await performVerification();
 }

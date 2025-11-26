@@ -1,8 +1,8 @@
+import { EmailType } from '@/app/client/generated/enums';
+import prisma from '@/lib/prisma';
+import { env } from 'next-runtime-env';
 import nodemailer from 'nodemailer';
 import { logger } from '../logger';
-import { prisma } from '@/prisma';
-import { EmailType } from '@prisma/client';
-import { env } from 'next-runtime-env';
 
 const mailer = nodemailer.createTransport({
     host: env("SMTP_HOST"),

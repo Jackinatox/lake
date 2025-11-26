@@ -2,7 +2,8 @@
 
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { Builder } from '@avionrx/pterodactyl-js';
 import GameserversTable from './GameserversTable';
 import { headers } from 'next/headers';

@@ -2,7 +2,8 @@ import { logger } from '@/lib/logger';
 import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
 import upgradeGameServer from '@/lib/Pterodactyl/upgradeServer/upgradeServer';
 import { stripe } from '@/lib/stripe';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { Stripe } from 'stripe';
 import {
     sendInvoiceEmail,

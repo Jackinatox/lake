@@ -1,7 +1,8 @@
 'use server';
 
 import GameCard from './gameCard';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 
 async function GameSelect() {
     const data = await prisma.gameData.findMany();

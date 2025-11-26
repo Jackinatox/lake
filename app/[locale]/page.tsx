@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';

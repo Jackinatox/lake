@@ -2,7 +2,8 @@
 
 import { auth } from '@/auth';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 

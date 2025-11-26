@@ -6,10 +6,10 @@ import { buildMC_ENVs_and_startup } from '@/lib/Pterodactyl/buildMinecraftENVs';
 import ReinstallPTUserServer from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import PTUserServerPowerAction from '@/lib/Pterodactyl/Functions/StopPTUserServer';
 import type { GameConfig } from '@/models/config';
-import { prisma } from '@/prisma';
-import type { GameData } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
+import { GameData } from '@/app/client/generated/browser';
 
 const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 const ptAdminKey = env('PTERODACTYL_API_KEY');

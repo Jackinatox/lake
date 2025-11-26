@@ -8,8 +8,7 @@ import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig } from '@/models/config';
-import { prisma } from '@/prisma';
-import { OrderType } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import {
     notifyFreeServerCreated,

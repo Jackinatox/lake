@@ -2,7 +2,8 @@
 
 import { Logger, logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { env } from 'next-runtime-env';
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';

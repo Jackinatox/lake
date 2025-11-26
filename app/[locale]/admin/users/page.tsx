@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 
 export default async function AdminPage() {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');

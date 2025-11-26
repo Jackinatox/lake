@@ -1,6 +1,7 @@
 import 'server-only';
 
-import { prisma } from '@/prisma';
+import prisma from '@/lib/prisma';
+
 import { ClientServer } from '@/models/prisma';
 
 /** This function doesnt auth the request, should only be called from inside a server component */
