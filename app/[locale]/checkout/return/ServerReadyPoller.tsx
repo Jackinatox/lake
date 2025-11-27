@@ -120,7 +120,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     }, [countdown, isCountdownActive, router, serverId]);
 
     const isError = status != null && ERROR_STATES.has(status);
-    const isSuccess = !!serverId;
+    const isSuccess = !!serverId && !isError;
 
     const mainTitle = useMemo(() => {
         if (networkError) return pollerT('networkHeadline');

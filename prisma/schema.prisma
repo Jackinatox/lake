@@ -1,6 +1,5 @@
 datasource db {
   provider = "postgresql"
-
 }
 
 enum OrderStatus {
@@ -77,13 +76,13 @@ model GameServer {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  ramMB       Int
-  cpuPercent  Int
-  diskMB      Int
-  backupCount Int
-  expires     DateTime
-  price       Float // To let the user extend his server at the original price in case we increase prices
-  freeServer  Boolean  @default(false)
+  ramMB        Int
+  cpuPercent   Int
+  diskMB       Int
+  backupCount  Int
+  expires      DateTime
+  price        Float // To let the user extend his server at the original price in case we increase prices
+  freeServer   Boolean  @default(false)
   lastExtended DateTime @default(now())
 
   ptServerId String?
@@ -412,7 +411,7 @@ model KeyValue {
 
 model Package {
   id          Int      @id @default(autoincrement())
-  imageName    String
+  imageName   String
   name        String
   description String?
   diskMB      Int

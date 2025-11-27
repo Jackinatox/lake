@@ -115,15 +115,6 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             },
         });
 
-        await prisma.gameServerOrder.update({
-            where: {
-                id: serverOrder.id,
-            },
-            data: {
-                gameServerId: dbNewServer.id,
-
-            },
-        });
         return newServer.identifier;
     } catch (err) {
         const errorText = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
@@ -137,6 +128,16 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
 
         logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id, details: { errorText } });
         throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
+    } finally {
+        await prisma.gameServerOrder.update({
+            where: {
+                id: serverOrder.id,
+            },
+            data: {
+                gameServerId: dbNewServer.id,
+
+            },
+        });
     }
 
 }
