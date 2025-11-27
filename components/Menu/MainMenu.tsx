@@ -34,16 +34,6 @@ type MenuItem = {
 
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
-    // {
-    //   label: "admin",
-    //   Icon: Settings,
-    //   subItems: [
-    //     { label: 'Users', href: '/admin/users', Icon: Users },
-    //     { label: 'GameServer', href: '/admin/gameservers', Icon: Settings },
-    //     { label: 'Wings', href: '/admin/wings', Icon: HardDrive },
-    //   ],
-    // },
-
     {
         label: 'Games',
         Icon: Gamepad2,
