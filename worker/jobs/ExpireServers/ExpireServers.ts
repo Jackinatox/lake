@@ -1,8 +1,8 @@
 import { parentPort } from 'worker_threads';
-import { WorkerJobType } from '../../generated/client';
 import { generateJobRunId, logError, logFatal, logInfo, logWarn } from '../../lib/logger';
 import { prisma } from '../../prisma';
 import { handleExpired } from './handleExpired';
+import { WorkerJobType } from '../../generated/client/enums';
 
 const JobName = 'ExpireServers';
 

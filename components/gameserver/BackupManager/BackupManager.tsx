@@ -19,8 +19,6 @@ interface BackupManagerProps {
     server: GameServer;
 }
 
-const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-
 function mapStatus(attributes: any): BackupStatus {
     if (!attributes?.completed_at) return 'creating';
     if (attributes?.is_successful === false) return 'failed';
@@ -45,6 +43,7 @@ function mapBackup(raw: any): Backup {
 }
 
 function BackupManager({ apiKey, server }: BackupManagerProps) {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const { toast } = useToast();
     const [backups, setBackups] = useState<Backup[]>([]);
     const [isLoading, setIsLoading] = useState(true);

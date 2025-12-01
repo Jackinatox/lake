@@ -1,8 +1,8 @@
 import { render } from '@react-email/render';
 import ExpiredServerTemplate from '../../email/templates/ExpiersInXDays';
-import { EmailType } from '../../generated/client';
 import { prisma } from '../../prisma';
 import { DELETE_GAMESERVER_AFTER_DAYS } from '../../WorkerConstants';
+import { EmailType } from '../../generated/client/enums';
 
 export const handleServer = async (
     serverId: string,

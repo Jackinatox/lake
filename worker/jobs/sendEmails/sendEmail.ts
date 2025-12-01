@@ -1,4 +1,5 @@
-import { WorkerJobType, type Email } from '../../generated/client';
+import { WorkerJobType } from '../../client/generated/enums';
+import type { Email } from '../../generated/client/client';
 import { logError, logInfo } from '../../lib/logger';
 import { prisma } from '../../prisma';
 import nodemailer from 'nodemailer';

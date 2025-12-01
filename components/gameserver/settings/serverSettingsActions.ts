@@ -7,10 +7,8 @@ import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 
-const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-const ptAdminKey = env('PTERODACTYL_API_KEY');
-
 export async function renameClientServer(ptServerId: string, newName: string): Promise<boolean> {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -49,6 +47,7 @@ export async function renameClientServer(ptServerId: string, newName: string): P
 }
 
 export async function reinstallServer(server: string): Promise<boolean> {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -73,6 +72,8 @@ export async function reinstallServer(server: string): Promise<boolean> {
 }
 
 export async function changeServerStartup(server: string, docker_image: string): Promise<boolean> {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptAdminKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
         headers: await headers(),
     });

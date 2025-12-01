@@ -1,26 +1,26 @@
-// app/layout.tsx
-import { auth } from '@/auth';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
+import { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { PublicEnvScript, env } from 'next-runtime-env';
 import { ThemeProvider } from 'next-themes';
 import { Geist } from 'next/font/google';
-import { headers } from 'next/headers';
 import './globals.css';
-import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    metadataBase: new URL(env("NEXT_PUBLIC_APP_URL")!),
-    title: 'Scyed Hosting',
-    description: 'A little above average Gameserver hosting platform',
-    robots: {
-        index: false,
-        follow: false,
-    },
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    return {
+        metadataBase: appUrl ? new URL(appUrl) : undefined,
+        title: 'Scyed Hosting',
+        description: 'A little above average Gameserver hosting platform',
+        robots: {
+            index: false,
+            follow: false,
+        },
+    };
+}
 
 export const viewport = {
     width: 'device-width',

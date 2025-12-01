@@ -1,8 +1,8 @@
 import { env } from 'bun';
-import type { GameServer } from '../../generated/client';
 import { prisma } from '../../prisma';
 import { logInfo, logError } from '../../lib/logger';
-import { WorkerJobType } from '../../generated/client';
+import { WorkerJobType } from '../../generated/client/enums';
+import type { GameServer } from '../../generated/client/client';
 
 export async function handleExpired(server: GameServer, jobRun: string) {
     try {

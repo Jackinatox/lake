@@ -22,10 +22,9 @@ function getStore(server: string): EnvStore {
     return stores[server];
 }
 
-const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-
 async function fetchEnvVars(server: string, apiKey: string) {
     const store = getStore(server);
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
 
     // Validation
     if (!server) {
@@ -119,6 +118,7 @@ export function usePTEnv(key: string, server: string, apiKey: string) {
     }, [server, apiKey, key]);
 
     const setValue = async (value: string) => {
+        const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
         if (!ptUrl) {
             throw new Error('NEXT_PUBLIC_PT_URL environment variable is not set');
         }

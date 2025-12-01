@@ -1,9 +1,9 @@
 import { parentPort } from 'worker_threads';
-import { WorkerJobType } from '../../generated/client';
 import { generateJobRunId, logError, logFatal, logInfo, logWarn } from '../../lib/logger';
 import { prisma } from '../../prisma';
 import { DELETE_GAMESERVER_AFTER_DAYS } from '../../WorkerConstants';
 import { handleDeleted } from './handleDeleted';
+import { WorkerJobType } from '../../generated/client/enums';
 
 const JobName = 'DeleteServers';
 

@@ -1,8 +1,8 @@
 import { env } from 'bun';
-import type { GameServer } from '../../generated/client';
 import { prisma } from '../../prisma';
 import { logInfo, logError } from '../../lib/logger';
-import { WorkerJobType } from '../../generated/client';
+import type { GameServer } from '../../generated/client/client';
+import { WorkerJobType } from '../../client/generated/enums';
 
 export async function handleDeleted(server: GameServer, jobRun: string) {
     try {

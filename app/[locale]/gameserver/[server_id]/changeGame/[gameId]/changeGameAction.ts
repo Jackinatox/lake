@@ -11,9 +11,6 @@ import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { GameData } from '@/app/client/generated/browser';
 
-const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-const ptAdminKey = env('PTERODACTYL_API_KEY');
-
 interface SubmitGameChangeInput {
     serverId: string;
     gameId: number;
@@ -27,6 +24,8 @@ export async function changeGame({
     gameConfig,
     deleteFiles = true,
 }: SubmitGameChangeInput) {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptAdminKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
