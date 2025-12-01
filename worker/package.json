@@ -17,6 +17,7 @@
         "typescript": "^5"
     },
     "dependencies": {
+        "@prisma/adapter-pg": "^7.0.1",
         "@prisma/client": "^6.17.1",
         "@react-email/components": "^0.5.7",
         "@react-email/render": "^1.4.0",

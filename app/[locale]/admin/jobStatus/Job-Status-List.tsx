@@ -1,9 +1,8 @@
-import { JobStatusCard } from './Job-Status-Card';
-import { ErrorSection } from './ErrorSection';
-import { JobStatus } from '../../../../worker/workerTypes';
 import prisma from '@/lib/prisma';
-
 import { env } from 'next-runtime-env';
+import { ErrorSection } from './ErrorSection';
+import { JobStatusCard } from './Job-Status-Card';
+
 
 // Async function to fetch job statuses
 async function getJobStatuses(): Promise<any[]> {
