@@ -3,7 +3,8 @@ import { generateJobRunId, logError, logFatal, logInfo, logWarn } from '../../li
 import { prisma } from '../../prisma';
 import { DELETE_GAMESERVER_AFTER_DAYS } from '../../WorkerConstants';
 import { handleDeleted } from './handleDeleted';
-import { WorkerJobType } from '../../generated/client/enums';
+import { WorkerJobType } from '../../client/generated/enums';
+
 
 const JobName = 'DeleteServers';
 

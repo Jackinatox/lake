@@ -3,8 +3,8 @@ import { prisma } from '../../prisma';
 import { logInfo, logWarn, logError, logFatal, generateJobRunId } from '../../lib/logger';
 import { handleServer as generateEmail } from './handleDeletionReminder';
 import { DELETE_GAMESERVER_AFTER_DAYS } from '../../WorkerConstants';
-import { WorkerJobType } from '../../generated/client/enums';
-import type { GameServer } from '../../generated/client/client';
+import { WorkerJobType } from '../../client/generated/enums';
+import type { GameServer } from '../../client/generated/client';
 
 const JobName = 'GenerateDeletionEmails';
 

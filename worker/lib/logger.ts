@@ -1,4 +1,4 @@
-import { LogLevel, type WorkerJobType } from '../generated/client/enums';
+import { LogLevel, type WorkerJobType } from '../client/generated/enums';
 import { prisma } from '../prisma';
 
 // Simple logging functions

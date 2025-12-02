@@ -1,7 +1,9 @@
 import { render } from '@react-email/render';
 import DeleteServerTemplate from '../../email/templates/DeleteInXDays';
 import { prisma } from '../../prisma';
-import { EmailType } from '../../generated/client/enums';
+import { EmailType } from '../../client/generated/enums';
+
+
 
 export const handleServer = async (
     serverId: string,
