@@ -92,7 +92,7 @@ jobs:
             - name: Build and push worker image
               uses: docker/build-push-action@v5
               with:
-                  context: ./worker
+                  context: .
                   file: ./worker/Dockerfile
                   push: ${{ github.event_name != 'pull_request' }}
                   tags: ${{ steps.meta-worker.outputs.tags }}

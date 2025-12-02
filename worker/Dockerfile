@@ -10,19 +10,23 @@ RUN apt-get update -y \
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
+COPY worker/package.json worker/bun.lock /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
+COPY worker/package.json worker/bun.lock /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
+COPY worker/ .
+
+# Copy the prisma schema and generate the client
+COPY prisma/schema.prisma ./prisma/schema.prisma
+RUN bunx prisma generate --schema=./prisma/schema.prisma --generator=worker
 
 # [optional] tests & build
 ENV NODE_ENV=production
