@@ -1,84 +1,89 @@
-import Bree from 'bree';
 import express from 'express';
-import type { JobStatusMap } from './workerTypes';
+import { runExpireServers } from './jobs/ExpireServers';
+import { runDeleteServers } from './jobs/DeleteServers';
+import { runGenerateExpiryEmails } from './jobs/Reminder';
+import { runGenerateDeletionEmails } from './jobs/DeletionReminder';
+import { runSendEmails } from './jobs/sendEmails';
 
 const app = express();
 const port = 8080;
 
 console.log('Worker starting...');
 console.log(`Environment: ${process.env.NODE_ENV || 'Node env nicht gefunden'}`);
-console.log(`Starting Bree`);
 
-const jobStatus: JobStatusMap = {};
+// Job status tracking
+interface JobStatus {
+    running: boolean;
+    lastRun?: string;
+    lastError?: string;
+    runCount: number;
+}
 
-const bree = new Bree({
-    root: false, // Disable default job directory scanning
-    jobs: [
-        {
-            name: 'ExpireServers',
-            interval: '1m',
-            timeout: 0,
-            path: './jobs/ExpireServers/ExpireServers.ts',
-        },
-        {
-            name: 'GenerateExpiryEmails',
-            interval: '5m',
-            timeout: 0,
-            path: './jobs/Reminder/ExpiryEmails.ts',
-        },
-        {
-            name: 'DeleteServers',
-            interval: '1m',
-            timeout: 0,
-            path: './jobs/DeleteServers/DeleteServers.ts',
-        },
-        {
-            name: 'GenerateDeletionEmails',
-            interval: '5m',
-            timeout: 0,
-            path: './jobs/DeletionReminder/DeletionEmails.ts',
-        },
-        {
-            name: 'SendEmails',
-            interval: '1m',
-            timeout: 0,
-            path: './jobs/sendEmails/Emails.ts',
-        },
-    ],
-    logger: {
-        info: () => {},
-        warn: console.warn,
-        error: console.error,
-    },
-});
+const jobStatus: Record<string, JobStatus> = {
+    ExpireServers: { running: false, runCount: 0 },
+    DeleteServers: { running: false, runCount: 0 },
+    GenerateExpiryEmails: { running: false, runCount: 0 },
+    GenerateDeletionEmails: { running: false, runCount: 0 },
+    SendEmails: { running: false, runCount: 0 },
+};
 
-bree.on('worker created', (name: string) => {
-    jobStatus[name] = jobStatus[name] || { running: false, processed: 0, total: 0 };
-    jobStatus[name].running = true;
-});
-
-bree.on('worker message', (name: string, message: any) => {
-    if (!jobStatus[name]) jobStatus[name] = { running: false, processed: 0, total: 0 };
-
-    if (typeof message.processed === 'number') {
-        jobStatus[name].processed += message.processed;
-        jobStatus[name].total = message.total;
+// Helper to run a job safely
+async function runJob(name: string, jobFn: () => Promise<any>) {
+    if (jobStatus[name]?.running) {
+        console.log(`${name} is already running, skipping...`);
+        return;
     }
 
-    console.log(`Job ${name} processed count: ${jobStatus[name].processed}`);
-});
+    jobStatus[name] = jobStatus[name] || { running: false, runCount: 0 };
+    jobStatus[name].running = true;
 
-bree.on('worker deleted', (name: string) => {
-    if (!jobStatus[name]) return;
-    jobStatus[name].running = false;
-    jobStatus[name].lastRun = new Date().toISOString();
-});
+    try {
+        console.log(`[${new Date().toISOString()}] Starting ${name}...`);
+        await jobFn();
+        jobStatus[name].lastRun = new Date().toISOString();
+        jobStatus[name].runCount += 1;
+        jobStatus[name].lastError = undefined;
+        console.log(`[${new Date().toISOString()}] ${name} completed`);
+    } catch (error) {
+        jobStatus[name].lastError = error instanceof Error ? error.message : String(error);
+        console.error(`[${new Date().toISOString()}] ${name} failed:`, error);
+    } finally {
+        jobStatus[name].running = false;
+    }
+}
 
-bree.start();
-console.log('Bree started');
+// Schedule jobs
+const ONE_MINUTE = 60 * 1000;
+const FIVE_MINUTES = 5 * 60 * 1000;
 
-console.log('Starting API');
+// Run all jobs once on startup (after a short delay)
+setTimeout(async () => {
+    console.log('Running initial job execution...');
+    await Promise.all([
+        runJob('ExpireServers', runExpireServers),
+        runJob('DeleteServers', runDeleteServers),
+        runJob('GenerateExpiryEmails', runGenerateExpiryEmails),
+        runJob('GenerateDeletionEmails', runGenerateDeletionEmails),
+        runJob('SendEmails', runSendEmails),
+    ]);
+    console.log('Initial job execution complete');
+}, 5000);
 
+// Schedule recurring jobs
+const intervals: NodeJS.Timeout[] = [];
+
+// Every 1 minute
+intervals.push(setInterval(() => runJob('ExpireServers', runExpireServers), ONE_MINUTE));
+intervals.push(setInterval(() => runJob('DeleteServers', runDeleteServers), ONE_MINUTE));
+intervals.push(setInterval(() => runJob('SendEmails', runSendEmails), ONE_MINUTE));
+
+// Every 5 minutes
+intervals.push(setInterval(() => runJob('GenerateExpiryEmails', runGenerateExpiryEmails), FIVE_MINUTES));
+intervals.push(setInterval(() => runJob('GenerateDeletionEmails', runGenerateDeletionEmails), FIVE_MINUTES));
+
+console.log('Jobs scheduled');
+
+// API endpoints
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
@@ -97,9 +102,10 @@ app.get('/status', (_, res) => {
 
 const server = app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
-    console.log('API starated');
+    console.log('API started');
 });
 
+// Graceful shutdown
 let isShuttingDown = false;
 
 const gracefulShutdown = async (signal: NodeJS.Signals) => {
@@ -107,15 +113,16 @@ const gracefulShutdown = async (signal: NodeJS.Signals) => {
     isShuttingDown = true;
     console.log(`Received ${signal}. Closing server...`);
 
-    for (const [name, worker] of bree.workers) {
-        worker.postMessage({ type: 'stop' });
+    // Clear all intervals
+    for (const interval of intervals) {
+        clearInterval(interval);
     }
 
-    await bree.stop();
     server.close(() => {
         console.log('Server closed. Bye!');
         process.exit(0);
     });
+
     // Force exit if shutdown hangs
     setTimeout(() => {
         console.warn('Shutdown timed out. Forcing exit.');

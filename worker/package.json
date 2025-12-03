@@ -5,7 +5,8 @@
     "private": true,
     "scripts": {
         "generate": "prisma generate --schema=../prisma/schema.prisma",
-        "build": "bun build index.ts --outdir dist --target bun"
+        "dev": "bun run index.ts",
+        "start": "bun run index.ts"
     },
     "devDependencies": {
         "@types/bun": "latest",
@@ -21,7 +22,6 @@
         "@prisma/client": "^7.0.1",
         "@react-email/components": "^0.5.7",
         "@react-email/render": "^1.4.0",
-        "bree": "^9.2.4",
         "express": "^5.1.0",
         "nodemailer": "^7.0.10",
         "prisma": "^7.0.1",
