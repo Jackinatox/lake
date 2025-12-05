@@ -58,7 +58,7 @@ export async function checkFreeServerEligibility(
     const currentFreeServers = await prisma.gameServer.count({
         where: {
             userId,
-            freeServer: true,
+            type: 'FREE',
             status: {
                 notIn: ['CREATION_FAILED', 'DELETED'],
             },

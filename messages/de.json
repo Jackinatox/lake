@@ -505,7 +505,8 @@
             "DOWNGRADE": "Downgrade",
             "RENEW": "Verlängerung",
             "FREE_SERVER": "Kostenloser Server",
-            "TO_PAYED": "Von Gratis zu Bezahlt"
+            "TO_PAYED": "Von Gratis zu Bezahlt",
+            "PACKAGE": "Paket"
         },
         "serverExpired": "Server abgelaufen",
         "historyTitle": "Zahlungshistorie",

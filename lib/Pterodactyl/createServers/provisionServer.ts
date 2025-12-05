@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
 import { buildMC_ENVs_and_startup } from '../buildMinecraftENVs';
 import { logger } from '@/lib/logger';
-import { GameServerOrder } from '@/app/client/generated/browser';
+import { GameServerOrder, GameServerType, OrderType } from '@/app/client/generated/browser';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({
@@ -84,6 +84,16 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         ...startAndVars,
     } as NewServerOptions;
 
+    const enumMap: Record<OrderType, GameServerType> = {
+        [OrderType.DOWNGRADE]: GameServerType.CUSTOM,
+        [OrderType.FREE_SERVER]: GameServerType.FREE,
+        [OrderType.NEW]: GameServerType.CUSTOM,
+        [OrderType.RENEW]: GameServerType.CUSTOM,
+        [OrderType.TO_PAYED]: GameServerType.CUSTOM,
+        [OrderType.UPGRADE]: GameServerType.CUSTOM,
+        [OrderType.PACKAGE]: GameServerType.PACKAGE,
+    };
+
     const dbNewServer = await prisma.gameServer.create({
         data: {
             status: 'CREATED',
@@ -98,7 +108,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             locationId: serverOrder.creationLocation.ptLocationId,
             gameConfig: serverOrder.gameConfig || undefined,
             name: serverName,
-            freeServer: serverOrder.type === 'FREE_SERVER'
+            type: enumMap[serverOrder.type]
         },
     });
 

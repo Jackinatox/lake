@@ -36,7 +36,7 @@ async function page({ params }: { params: Promise<{ locale: string; server_id: s
         return <NotAllowedMessage />;
     }
 
-    if (!server.freeServer) {
+    if (server.type !== 'FREE') {
         redirect(`/gameserver/${server_id}/upgrade/payedServer`);
     }
 

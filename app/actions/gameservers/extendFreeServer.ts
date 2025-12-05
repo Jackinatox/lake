@@ -27,7 +27,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
             where: {
                 ptServerId: serverId,
                 userId: session.user.id,
-                freeServer: true,
+                type: 'FREE',
                 status: {
                     notIn: ['DELETED', 'CREATION_FAILED'],
                 },

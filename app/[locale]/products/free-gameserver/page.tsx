@@ -18,7 +18,7 @@ async function FreeGameServerPage() {
         ? prisma.gameServer.count({
               where: {
                   userId: session.user.id,
-                  freeServer: true,
+                  type: 'FREE',
                   status: {
                       notIn: ['CREATION_FAILED', 'DELETED'],
                   },

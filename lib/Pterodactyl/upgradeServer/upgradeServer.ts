@@ -66,6 +66,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                 backupCount: backups,
                 expires: serverOrder.expiresAt,
                 status: 'ACTIVE',
+                lastExtended: new Date(),
             },
         });
     } catch (error) {

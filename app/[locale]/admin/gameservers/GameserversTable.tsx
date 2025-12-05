@@ -97,7 +97,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({ servers: gameservers })
                             </TableCell>
                             <TableCell>{gameserver.user.email}</TableCell>
                             <TableCell>
-                                {gameserver.freeServer
+                                {gameserver.type === 'FREE'
                                     ? 'Free'
                                     : gameserver.price != null
                                       ? (gameserver.price / 100).toFixed(2) + '€'

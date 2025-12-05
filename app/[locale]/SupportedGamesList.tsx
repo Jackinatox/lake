@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import React from 'react';
 import { getTranslations } from 'next-intl/server';
 
 export type Game = {

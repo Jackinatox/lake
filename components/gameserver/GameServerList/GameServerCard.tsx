@@ -94,7 +94,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                                         <h3 className="font-semibold text-lg sm:text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {server.name}
                                         </h3>
-                                        {server.freeServer && (
+                                        {server.type === 'FREE' && (
                                             <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 px-3 py-0.5 text-sm font-bold shadow-md hover:from-green-600 hover:to-emerald-700">
                                                 ✨ {t('freeServer')}
                                             </Badge>

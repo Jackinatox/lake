@@ -151,7 +151,7 @@ export default async function LandingPage() {
             {/* Hero Section - Completely Redesigned */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Animated Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5 dark:from-primary/5 dark:via-background dark:to-primary/10" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-primary/5 dark:from-primary/5 dark:via-background dark:to-primary/10" />
 
                 {/* Background Image with Overlay */}
                 <div className="absolute inset-0 z-0">
@@ -169,11 +169,11 @@ export default async function LandingPage() {
                         className="object-cover opacity-20 hidden dark:block"
                         priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+                    <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/50 to-background" />
                 </div>
 
                 {/* Grid Pattern Overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
 
                 <div className="mx-auto px-2 md:px-6 relative z-10 py-12 md:py-20">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -190,7 +190,7 @@ export default async function LandingPage() {
                                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
                                     {t('header1')}
                                     <br />
-                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
+                                    <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-primary/60">
                                         {t('header2')}
                                     </span>
                                 </h1>
@@ -201,21 +201,23 @@ export default async function LandingPage() {
 
                             {/* CTA Buttons */}
                             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                                <Link href="/products/gameserver" className="w-full sm:w-auto">
-                                    <Button
-                                        size="lg"
-                                        className="w-full sm:w-auto px-8 text-base group"
-                                    >
+                                <Button
+                                    size="lg"
+                                    className="w-full sm:w-auto px-8 text-base group"
+                                    asChild
+                                >
+                                    <Link href="/products/gameserver" className="w-full sm:w-auto">
                                         {t('buttonStartNow')}
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                    </Button>
-                                </Link>
+                                    </Link>
+                                </Button>
                                 <Button
                                     size="lg"
                                     variant="outline"
                                     className="w-full sm:w-auto px-8 text-base"
+                                    asChild
                                 >
-                                    {t('buttonComparePlans')}
+                                    <Link href="/products/packages">{t('buttonComparePlans')}</Link>
                                 </Button>
                             </div>
 
@@ -277,7 +279,7 @@ export default async function LandingPage() {
                         </Link>
                         <Link href="#">
                             <Button size="lg" variant="outline" className="px-8 group w-full">
-                                {t('buttonComparePlans') + " (coming soon)"} 
+                                {t('buttonComparePlans') + ' (coming soon)'}
                             </Button>
                         </Link>
                     </div>

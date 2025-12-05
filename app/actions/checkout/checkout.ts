@@ -33,6 +33,10 @@ export type CheckoutParams =
         type: 'TO_PAYED';
         ptServerId: string;
         hardwareConfig: HardwareConfig;
+    } | {
+        type: 'PACKAGE';
+        gameConfig: GameConfig;
+        packageId: number;
     };
 
 export async function checkoutAction(params: CheckoutParams) {
@@ -240,6 +244,16 @@ export async function checkoutAction(params: CheckoutParams) {
             throw new Error('Feature not implemented yet.');
             const client_secret = await upgradeToPayed(params, dbUser);
             return { client_secret: client_secret };
+        }
+        case 'PACKAGE': {
+            const { gameConfig, packageId } = params;
+        
+            throw new Error('Feature not implemented yet.');
+            // const order = await prisma.gameServerOrder.create({
+            // data: {
+            //     type: 
+            // }
+            // });
         }
     }
 }

@@ -32,7 +32,7 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
         return <NotAllowedMessage />;
     }
 
-    if (server.freeServer) {
+    if (server.type === 'FREE') {
         redirect(`/gameserver/${server_id}/upgrade/freeServer`);
     }
 
