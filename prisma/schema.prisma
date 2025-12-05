@@ -87,14 +87,14 @@ model GameServer {
   backupCount  Int
   expires      DateTime
   price        Float // To let the user extend his server at the original price in case we increase prices
-  type         GameServerType
+  type         GameServerType @default(CUSTOM)
   lastExtended DateTime       @default(now())
 
   ptServerId String?
   ptAdminId  Int?
   name       String
 
-  status    GameServerStatus @default(CREATED)
+  status    GameServerStatus
   errorText String?
 
   gameConfig Json?

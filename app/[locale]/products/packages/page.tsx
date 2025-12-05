@@ -1,19 +1,26 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import prisma from '@/lib/prisma';
 import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Package } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const PACKAGE_DURATION_DAYS = 30;
+
 export default async function PackagesPage() {
     const packages = await prisma.package.findMany({
         where: { enabled: true },
-        include: { location: true },
+        include: {
+            location: {
+                include: { cpu: true, ram: true },
+            },
+        },
         orderBy: { name: 'asc' },
     });
 
     return (
-        <div className="min-h-screen -mx-4 md:-mx-6 lg:-mx-8 -my-5">
+        <div className="min-h-screen -mx-2 md:-mx-6">
             {/* Hero Section */}
             <section className="relative pt-16 pb-32 md:pt-24 md:pb-44 overflow-hidden">
                 {/* Background effects */}
@@ -60,6 +67,12 @@ export default async function PackagesPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {packages.map((pkg) => {
                                 const imageBase = pkg.imageName.toLowerCase();
+                                const price = calculateNew(
+                                    pkg.location,
+                                    pkg.cpuPercent,
+                                    pkg.ramMB,
+                                    PACKAGE_DURATION_DAYS,
+                                );
 
                                 return (
                                     <Link
@@ -161,14 +174,27 @@ export default async function PackagesPage() {
                                                         <MapPin className="h-4 w-4" />
                                                         <span>{pkg.location.name}</span>
                                                     </div>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                                                    >
-                                                        Select
-                                                        <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                                                    </Button>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="text-right">
+                                                            <div className="text-lg font-bold text-primary">
+                                                                €
+                                                                {(price.totalCents / 100).toFixed(
+                                                                    2,
+                                                                )}
+                                                            </div>
+                                                            <div className="text-xs text-muted-foreground">
+                                                                /month
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                                                        >
+                                                            Select
+                                                            <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

@@ -34,7 +34,7 @@ export default UserServer;
 
 function GameServersSkeleton() {
     return (
-        <div className="space-y-4 p-2 md:p-6">
+        <div className="space-y-4 p-0 md:p-4">
             <Skeleton className="h-6 w-1/3" />
             <div className="space-y-2">
                 {Array.from({ length: 3 }).map((_, index) => (

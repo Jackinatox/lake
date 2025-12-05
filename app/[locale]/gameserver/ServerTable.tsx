@@ -60,7 +60,7 @@ export default async function GameServersPage() {
 
     return (
         <div className="min-h-screen">
-            <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <div className="container mx-auto px-0 py-8 max-w-4xl">
                 <PageHeader />
                 {clientServers.length > 0 ? (
                     <ServerList servers={clientServers} apiKey={session?.user?.ptKey} />

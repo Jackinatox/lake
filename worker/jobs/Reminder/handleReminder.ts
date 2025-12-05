@@ -37,7 +37,7 @@ export const handleServer = async (
             deleteDate: deleteDate,
             expirationDays: days,
             serverId: server.ptServerId!,
-            isFreeServer: server.freeServer,
+            isFreeServer: server.type === 'FREE',
         }),
     );
     await createEmailJob(

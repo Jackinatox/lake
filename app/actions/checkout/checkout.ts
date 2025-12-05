@@ -247,13 +247,90 @@ export async function checkoutAction(params: CheckoutParams) {
         }
         case 'PACKAGE': {
             const { gameConfig, packageId } = params;
-        
-            throw new Error('Feature not implemented yet.');
-            // const order = await prisma.gameServerOrder.create({
-            // data: {
-            //     type: 
-            // }
-            // });
+
+            // Fetch the package with location details for pricing
+            const packageData = await prisma.package.findUnique({
+                where: { id: packageId, enabled: true },
+                include: { 
+                    location: {
+                        include: { cpu: true, ram: true }
+                    }
+                },
+            });
+
+            if (!packageData) {
+                throw new Error('Package not found or not available');
+            }
+
+            // Validate gameConfig has required fields
+            if (!gameConfig.gameId) {
+                throw new Error('Game configuration is required');
+            }
+
+            // Default duration for packages (30 days)
+            const durationDays = 30;
+
+            // Calculate price based on package specs
+            const price = calculateNew(
+                packageData.location,
+                packageData.cpuPercent,
+                packageData.ramMB,
+                durationDays
+            );
+
+            // Create the order
+            const order = await prisma.gameServerOrder.create({
+                data: {
+                    type: 'PACKAGE',
+                    gameServerId: null,
+                    userId: user.id,
+                    ramMB: packageData.ramMB,
+                    cpuPercent: packageData.cpuPercent,
+                    diskMB: packageData.diskMB,
+                    price: price.totalCents,
+                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
+                    status: 'PENDING',
+                    creationGameDataId: gameConfig.gameId,
+                    creationLocationId: packageData.locationId,
+                    gameConfig: gameConfig as any,
+                },
+            });
+
+            // Create Stripe Checkout Session
+            const stripeSession = await stripe.checkout.sessions.create({
+                locale: 'auto',
+                mode: 'payment',
+                ui_mode: 'embedded',
+                invoice_creation: {
+                    enabled: true,
+                },
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'eur',
+                            product_data: { 
+                                name: `${packageData.name} - Game Server Package`,
+                                description: `${packageData.cpuPercent / 100} vCPU, ${packageData.ramMB / 1024}GB RAM, ${packageData.diskMB / 1024}GB Storage`,
+                            },
+                            unit_amount: Math.round(price.totalCents),
+                        },
+                        quantity: 1,
+                    },
+                ],
+                metadata: {
+                    orderId: String(order.id),
+                },
+                customer: stripeUserId,
+                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+            });
+
+            // Save Stripe Session ID
+            await prisma.gameServerOrder.update({
+                where: { id: order.id },
+                data: { stripeSessionId: stripeSession.id },
+            });
+
+            return { client_secret: stripeSession.client_secret };
         }
     }
 }
