@@ -3,6 +3,7 @@
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
+import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader from '@/components/gameserver/ServerLoader';
@@ -28,9 +29,6 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         where: {
             ptServerId: serverId,
             userId: session.user.id,
-            status: {
-                notIn: ['CREATION_FAILED', 'DELETED'],
-            },
         },
     });
 
@@ -44,6 +42,10 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     if (isServerValid.status === 'DELETED') {
         return <ServerDeleted />;
+    }
+
+    if (isServerValid.status === 'CREATION_FAILED') {
+        return <ServerCreationFailed serverId={serverId} />;
     }
 
     const ptApiKey = session.user.ptKey;

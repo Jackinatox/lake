@@ -21,6 +21,12 @@
         "extendServer": "Extend Server",
         "home": "Go to Home"
     },
+    "ServerCreationFailed": {
+        "title": "Server creation failed",
+        "description": "We're sorry — creating your server failed. Our team has been notified and will resolve this as soon as possible. If you'd like immediate help, please contact support.",
+        "contactSupport": "Contact Support",
+        "home": "Home"
+    },
     "landingpage": {
         "heroBadge": "Simple Game Hosting",
         "header1": "Game Server Hosting",
@@ -551,6 +557,8 @@
     },
     "gameserver": {
         "freeServer": "Free",
+        "creationFailed": "Creation Failed",
+        "creationFailedMessage": "Our team will resolve this soon",
         "loading": "Loading Server...",
         "error": "Error",
         "serverNotFound": "Server Not Found",

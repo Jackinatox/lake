@@ -21,6 +21,12 @@
         "extendServer": "Server verlängern",
         "home": "Zur Startseite"
     },
+    "ServerCreationFailed": {
+        "title": "Servererstellung fehlgeschlagen",
+        "description": "Es tut uns leid — die Erstellung deines Servers ist fehlgeschlagen. Unser Team wurde benachrichtigt und kümmert sich so schnell wie möglich darum. Wenn du sofort Hilfe möchtest, wende dich bitte an den Support.",
+        "contactSupport": "Support kontaktieren",
+        "home": "Startseite"
+    },
     "landingpage": {
         "heroBadge": "Einfaches Game-Hosting",
         "header1": "Gameserver-Hosting",
@@ -551,6 +557,8 @@
     },
     "gameserver": {
         "freeServer": "Kostenlos",
+        "creationFailed": "Erstellung fehlgeschlagen",
+        "creationFailedMessage": "Unser Team kümmert sich bald darum",
         "loading": "Server wird geladen...",
         "error": "Fehler",
         "serverNotFound": "Server nicht gefunden",

@@ -18,6 +18,12 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
             return;
         }
 
+        if (server.status === 'CREATION_FAILED') {
+            setLoading(false);
+            setStatus('Error');
+            return;
+        }
+
         fetch(
             `${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`,
             {

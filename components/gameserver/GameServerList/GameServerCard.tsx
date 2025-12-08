@@ -53,10 +53,14 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
             ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
             : formatExpirationDate(server.expires);
 
+    const isCreationFailed = server.status === 'CREATION_FAILED';
+
     return (
-        <Card className="group hover:shadow-md transition-all duration-300 shadow-sm">
+        <Card className={`group hover:shadow-md transition-all duration-300 shadow-sm ${
+            isCreationFailed ? 'border-2 border-red-500 dark:border-red-600 bg-red-50/50 dark:bg-red-950/20' : ''
+        }`}>
             <Link
-                href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' ? '/upgrade' : ''}`}
+                href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' && '/upgrade'}`}
             >
                 <CardContent className="p-3 sm:p-6">
                     {/* Mobile layout: compact stacked design */}
@@ -64,7 +68,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                         {/* Top row on mobile: icon + name + status */}
                         <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                             {/* Game icon */}
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                                 <span className="block dark:hidden">
                                     <Image
                                         src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
@@ -100,7 +104,19 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                                             ✨ {t('freeServer')}
                                         </Badge>
                                     )}
+                                    {isCreationFailed && (
+                                        <Badge className="bg-red-600 text-white border-0 px-2 py-0.5 text-xs font-bold shadow-sm animate-pulse">
+                                            ⚠️ {t('creationFailed')}
+                                        </Badge>
+                                    )}
                                 </div>
+
+                                {/* Creation failed message */}
+                                {isCreationFailed && (
+                                    <div className="mt-1 text-sm text-red-700 dark:text-red-300 font-medium">
+                                        {t('creationFailedMessage')}
+                                    </div>
+                                )}
 
                                 {/* Specs row - compact on mobile */}
                                 <div className="flex items-center gap-4 sm:gap-5 mt-1.5 text-sm text-slate-600 dark:text-slate-400">
@@ -121,8 +137,8 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                         </div>
 
                         {/* Expiration - inline on mobile */}
-                        <div className="flex items-center gap-2 text-sm sm:flex-shrink-0 pl-15 sm:pl-0">
-                            <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                        <div className="flex items-center gap-2 text-sm sm:shrink-0 pl-15 sm:pl-0">
+                            <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                             <span className={`font-medium ${expiration.color}`}>
                                 {expiration.text}
                             </span>
