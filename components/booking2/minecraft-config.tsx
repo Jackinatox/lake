@@ -98,7 +98,6 @@ export const MinecraftConfigComponent = forwardRef(
                 // Create a complete game configuration object
                 const completeConfig: GameConfig = {
                     gameId: givenGame.id,
-                    gameType: givenGame.name,
                     eggId: selectedEggId,
                     version: selectedVersion.version,
                     dockerImage: selectedVersion.docker_image,

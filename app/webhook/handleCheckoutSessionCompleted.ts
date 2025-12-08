@@ -48,6 +48,7 @@ export default async function handleCheckoutSessionCompleted(
         });
         switch (serverOrder.type) {
             case 'NEW':
+            case 'PACKAGE':
                 await provisionServer(serverOrder);
                 break;
             case 'UPGRADE':

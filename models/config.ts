@@ -23,7 +23,6 @@ export interface HardwareConfig {
 
 export interface GameConfig {
     gameId: number;
-    gameType: string;
     eggId: number;
     version: string;
     dockerImage: string;

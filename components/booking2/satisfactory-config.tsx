@@ -41,7 +41,6 @@ export const SatisfactoryConfigComponent = forwardRef(
                 // Create a complete game configuration object
                 const completeConfig: GameConfig = {
                     gameId: game.id,
-                    gameType: game.name,
                     eggId: game.data.egg_id,
                     version: 'latest', // Assuming we always use the latest version
                     dockerImage: game.data.docker_image,

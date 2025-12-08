@@ -1,10 +1,7 @@
 import PackageBooking from '@/components/packages/PackageBooking';
-import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import prisma from '@/lib/prisma';
 import { Game } from '@/models/config';
 import { notFound } from 'next/navigation';
-
-const PACKAGE_DURATION_DAYS = 30;
 
 async function page(params: PageProps<'/[locale]/products/packages/[packageId]/[gameId]'>) {
     const awaitedParams = await params.params;
@@ -33,13 +30,11 @@ async function page(params: PageProps<'/[locale]/products/packages/[packageId]/[
         notFound();
     }
 
-    // Calculate price
-    const price = calculateNew(
-        packageDb.location,
-        packageDb.cpuPercent,
-        packageDb.ramMB,
-        PACKAGE_DURATION_DAYS
-    );
+    // Extract pricing info for client-side calculation
+    const pricing = {
+        cpuPricePerCore: packageDb.location.cpu.pricePerCore,
+        ramPricePerGb: packageDb.location.ram.pricePerGb,
+    };
 
     // Transform gameData to Game type expected by components
     const game: Game = {
@@ -52,7 +47,7 @@ async function page(params: PageProps<'/[locale]/products/packages/[packageId]/[
         <PackageBooking 
             packageData={packageDb} 
             game={game}
-            priceCents={price.totalCents}
+            pricing={pricing}
         />
     );
 }

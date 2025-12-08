@@ -4,16 +4,16 @@ import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
 import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
+import {
+    checkFreeServerEligibility,
+    notifyFreeServerCreated,
+} from '@/lib/freeServer';
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
+import prisma from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig } from '@/models/config';
-import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
-import {
-    notifyFreeServerCreated,
-    checkFreeServerEligibility,
-} from '@/lib/freeServer';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
 import { ServerConfig } from '../../[locale]/booking2/[gameId]/page';
@@ -37,6 +37,7 @@ export type CheckoutParams =
         type: 'PACKAGE';
         gameConfig: GameConfig;
         packageId: number;
+        durationDays: number;
     };
 
 export async function checkoutAction(params: CheckoutParams) {
@@ -267,8 +268,8 @@ export async function checkoutAction(params: CheckoutParams) {
                 throw new Error('Game configuration is required');
             }
 
-            // Default duration for packages (30 days)
-            const durationDays = 30;
+            // Use provided duration
+            const durationDays = params.durationDays;
 
             // Calculate price based on package specs
             const price = calculateNew(

@@ -8,9 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth-client';
+import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
-import { Cpu, Database, HardDrive, MapPin, MemoryStick, ArrowLeft, Info } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Cpu, Database, HardDrive, MapPin, MemoryStick, ArrowLeft, Info, Clock, Check } from 'lucide-react';
+import { useRef, useState, useMemo } from 'react';
+
+// Duration options in days
+const DURATION_OPTIONS: { days: number; label: string; shortLabel: string; discount?: number }[] = [
+    { days: 7, label: '1 Week', shortLabel: '1W' },
+    { days: 30, label: '1 Month', shortLabel: '1M' },
+    { days: 90, label: '3 Months', shortLabel: '3M', discount: 10 },
+    { days: 180, label: '6 Months', shortLabel: '6M', discount: 15 },
+];
 
 interface PackageData {
     id: number;
@@ -28,13 +37,42 @@ interface PackageData {
     };
 }
 
+interface PricingInfo {
+    cpuPricePerCore: number;
+    ramPricePerGb: number;
+}
+
 interface PackageBookingProps {
     packageData: PackageData;
     game: Game;
-    priceCents: number;
+    pricing: PricingInfo;
 }
 
-export default function PackageBooking({ packageData, game, priceCents }: PackageBookingProps) {
+// Calculate price for a given duration (mirrors server-side logic)
+function calculatePrice(
+    cpuPercent: number,
+    ramMB: number,
+    durationDays: number,
+    cpuPricePerCore: number,
+    ramPricePerGb: number
+): { totalCents: number; discountPercent: number } {
+    const cpuPrice = Math.round(((cpuPricePerCore * cpuPercent) / 100 / 30) * durationDays);
+    const ramPrice = Math.round(((ramPricePerGb * ramMB) / 1024 / 30) * durationDays);
+    const baseTotal = cpuPrice + ramPrice;
+
+    // Apply discount based on duration
+    let discountPercent = 0;
+    if (durationDays >= 180) {
+        discountPercent = 15;
+    } else if (durationDays >= 90) {
+        discountPercent = 10;
+    }
+
+    const discountAmount = Math.round(baseTotal * (discountPercent / 100));
+    return { totalCents: baseTotal - discountAmount, discountPercent };
+}
+
+export default function PackageBooking({ packageData, game, pricing }: PackageBookingProps) {
     const { toast } = useToast();
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
@@ -42,8 +80,20 @@ export default function PackageBooking({ packageData, game, priceCents }: Packag
     const [step, setStep] = useState<'config' | 'payment'>('config');
     const [clientSecret, setClientSecret] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [selectedDuration, setSelectedDuration] = useState(30); // Default to 1 month
 
     const isLoggedIn = Boolean(session.data?.user);
+
+    // Calculate price based on selected duration
+    const { totalCents, discountPercent } = useMemo(() => {
+        return calculatePrice(
+            packageData.cpuPercent,
+            packageData.ramMB,
+            selectedDuration,
+            pricing.cpuPricePerCore,
+            pricing.ramPricePerGb
+        );
+    }, [packageData.cpuPercent, packageData.ramMB, selectedDuration, pricing]);
 
     const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
         if (!isLoggedIn) {
@@ -61,6 +111,7 @@ export default function PackageBooking({ packageData, game, priceCents }: Packag
                 type: 'PACKAGE',
                 packageId: packageData.id,
                 gameConfig: gameConfig,
+                durationDays: selectedDuration,
             };
 
             const result = await checkoutAction(checkoutParams);
@@ -87,6 +138,8 @@ export default function PackageBooking({ packageData, game, priceCents }: Packag
         gameConfigRef.current?.submit();
     };
 
+    const selectedOption = DURATION_OPTIONS.find(o => o.days === selectedDuration);
+
     return (
         <div className="min-h-screen bg-background md:-my-4">
             {/* Header with progress indicator */}
@@ -101,9 +154,13 @@ export default function PackageBooking({ packageData, game, priceCents }: Packag
                                 Total:
                             </span>
                             <span className="text-lg font-bold text-primary">
-                                €{(priceCents / 100).toFixed(2)}
+                                €{(totalCents / 100).toFixed(2)}
                             </span>
-                            <span className="text-sm text-muted-foreground">/month</span>
+                            {discountPercent > 0 && (
+                                <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-600">
+                                    -{discountPercent}%
+                                </Badge>
+                            )}
                         </div>
                     </div>
 
@@ -131,6 +188,55 @@ export default function PackageBooking({ packageData, game, priceCents }: Packag
                     <div className="space-y-4">
                         {/* Package Summary Card */}
                         <PackageSummaryCard packageData={packageData} />
+
+                        {/* Duration Selection */}
+                        <Card className="p-3 md:p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                                <div className="flex items-center gap-2 shrink-0">
+                                    <Clock className="h-4 w-4 text-primary" />
+                                    <span className="font-semibold">Duration</span>
+                                </div>
+                                <div className="grid grid-cols-4 gap-2 flex-1">
+                                    {DURATION_OPTIONS.map((option) => {
+                                        const isSelected = selectedDuration === option.days;
+                                        const optionPrice = calculatePrice(
+                                            packageData.cpuPercent,
+                                            packageData.ramMB,
+                                            option.days,
+                                            pricing.cpuPricePerCore,
+                                            pricing.ramPricePerGb
+                                        );
+                                        
+                                        return (
+                                            <button
+                                                key={option.days}
+                                                onClick={() => setSelectedDuration(option.days)}
+                                                className={cn(
+                                                    'relative flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg border transition-all text-sm',
+                                                    isSelected
+                                                        ? 'border-primary bg-primary/10 text-primary'
+                                                        : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                                                )}
+                                            >
+                                                {option.discount && (
+                                                    <Badge 
+                                                        variant="secondary" 
+                                                        className="absolute -top-2 -right-1 text-[10px] px-1 py-0 bg-green-500/20 text-green-600 border-green-500/30"
+                                                    >
+                                                        -{option.discount}%
+                                                    </Badge>
+                                                )}
+                                                <span className="font-medium whitespace-nowrap">{option.shortLabel}</span>
+                                                <span className="text-muted-foreground text-xs hidden md:inline">
+                                                    €{(optionPrice.totalCents / 100).toFixed(0)}
+                                                </span>
+                                                {isSelected && <Check className="h-3 w-3 shrink-0" />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </Card>
 
                         {/* Game Configuration */}
                         <Card className="p-2 md:p-6">

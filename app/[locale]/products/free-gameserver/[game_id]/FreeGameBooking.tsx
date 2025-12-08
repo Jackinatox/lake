@@ -71,7 +71,7 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
     const handleCreateFreeServer = () => {
         gameConfigRef.current?.submit();
     };
-
+    
     const imgName = `${game.name.toLowerCase()}.webp`;
     const gameImages = {
         light: `/images/light/games/icons/${imgName}`,
