@@ -1,6 +1,6 @@
 import PackagesList from '@/components/products/PackagesList';
 import prisma from '@/lib/prisma';
-import { Database, Package } from 'lucide-react';
+import { Package } from 'lucide-react';
 
 export default async function PackagesPage() {
     const packages = await prisma.package.findMany({
@@ -10,7 +10,7 @@ export default async function PackagesPage() {
                 include: { cpu: true, ram: true },
             },
         },
-        orderBy: { name: 'asc' },
+        orderBy: { sorting: 'asc' },
     });
 
     return (
