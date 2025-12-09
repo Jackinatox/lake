@@ -4,10 +4,8 @@ import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import prisma from '@/lib/prisma';
 
-import { Builder } from '@avionrx/pterodactyl-js';
-import GameserversTable from './GameserversTable';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import GameserversTable from './GameserversTable';
 
 async function Gameservers() {
     const session = await auth.api.getSession({

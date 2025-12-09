@@ -1,8 +1,18 @@
 import { Suspense } from 'react';
 import { JobStatusSkeleton } from './Job-Status-Sekelton';
-import { JobStatusList } from './Job-Status-List';
+import { ErrorLogSection, JobStatusGrid } from './Job-Status-List';
+import { auth } from '@/auth';
+import { headers } from 'next/headers';
+import NoAdmin from '@/components/admin/NoAdminMessage';
 
-export default function Page() {
+export default async function Page() {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (session?.user.role !== 'admin') {
+        return <NoAdmin />;
+    }
     return (
         <main className="min-h-screen bg-background p-0 md:p-2">
             <div className="mx-auto max-w-6xl">
@@ -13,9 +23,13 @@ export default function Page() {
                     </p>
                 </header>
 
-                <Suspense fallback={<JobStatusSkeleton />}>
-                    <JobStatusList />
-                </Suspense>
+                <div className="px-1 md:px-0">
+                    <Suspense fallback={<JobStatusSkeleton />}>
+                        <JobStatusGrid />
+                    </Suspense>
+
+                    <ErrorLogSection />
+                </div>
             </div>
         </main>
     );

@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function JobStatusSkeleton() {
     return (
         <div className="grid gap-4 md:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 1 }).map((_, i) => (
                 <Card key={i}>
                     <CardHeader className="pb-3">
                         <div className="flex items-start justify-between gap-2">

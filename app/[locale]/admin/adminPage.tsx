@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {
+    Activity,
     CalendarClock,
     Cog,
     Gamepad2Icon,
@@ -35,6 +36,12 @@ const tiles: AdminTile[] = [
         color: 'from-purple-500 to-indigo-600',
     },
     { name: 'Tickets', link: '/admin/tickets', Icon: Ticket, color: 'from-cyan-500 to-teal-600' },
+    {
+        name: 'System Status',
+        link: '/admin/status',
+        Icon: Activity,
+        color: 'from-emerald-500 to-green-600',
+    },
     {
         name: 'Stripe Sessions',
         link: '/admin/sessions',

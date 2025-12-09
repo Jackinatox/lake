@@ -3,7 +3,6 @@ import { env } from 'next-runtime-env';
 import { ErrorSection } from './ErrorSection';
 import { JobStatusCard } from './Job-Status-Card';
 
-
 // Async function to fetch job statuses
 async function getJobStatuses(): Promise<any[]> {
     try {
@@ -15,8 +14,25 @@ async function getJobStatuses(): Promise<any[]> {
     }
 }
 
-export async function JobStatusList() {
+// Component for job statuses (will be suspended)
+export async function JobStatusGrid() {
     const jobStatuses = await getJobStatuses();
+
+    return (
+        <div className="grid gap-3 md:gap-4 md:grid-cols-2 mb-6">
+            {jobStatuses.length > 0 ? (
+                jobStatuses.map((job) => {
+                    return <JobStatusCard key={job.name} job={job} jobName={job.name} />;
+                })
+            ) : (
+                <p className="text-red-600">Could not fetch Jobs</p>
+            )}
+        </div>
+    );
+}
+
+// Component for error logs (loads immediately)
+export async function ErrorLogSection() {
     const errorCount = await prisma.workerLog.count({
         where: {
             level: { in: ['ERROR', 'FATAL'] },
@@ -47,19 +63,5 @@ export async function JobStatusList() {
         take: 100, // Show last 100 errors
     });
 
-    return (
-        <div className="px-1 md:px-0">
-            <div className="grid gap-3 md:gap-4 md:grid-cols-2">
-                {jobStatuses.length > 0 ? (
-                    jobStatuses.map((job) => {
-                        return <JobStatusCard key={job.name} job={job} jobName={job.name} />;
-                    })
-                ) : (
-                    <p className="text-red-600">Could not fetch Jobs</p>
-                )}
-            </div>
-
-            <ErrorSection errorCount={errorCount} recentErrors={recentErrors} />
-        </div>
-    );
+    return <ErrorSection errorCount={errorCount} recentErrors={recentErrors} />;
 }
