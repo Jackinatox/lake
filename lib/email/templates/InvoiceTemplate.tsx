@@ -1,21 +1,17 @@
-import {
-    Body,
-    Button,
-    Container,
-    Head,
-    Heading,
-    Hr,
-    Html,
-    Img,
-    Preview,
-    Section,
-    Tailwind,
-    Text,
-} from '@react-email/components';
+import { Heading, Hr, Img, Section, Text } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { OrderType } from '@/app/client/generated/enums';
+import {
+    EmailButton,
+    EmailCard,
+    EmailLayout,
+    headingStyle,
+    mutedTextStyle,
+    subheadingStyle,
+    textStyle,
+} from '../components';
 
 interface InvoiceTemplateProps {
     userName: string;
@@ -74,304 +70,169 @@ export default function InvoiceTemplate({
     const vatAmount = price - netPrice;
 
     return (
-        <Html>
-            <Head />
-            <Preview>Rechnung für deinen {gameName} Server</Preview>
-            <Tailwind>
-                <Body style={{ backgroundColor: '#f8f9fa', margin: 0, padding: 0 }}>
-                    <Container
-                        style={{
-                            margin: '0 auto',
-                            maxWidth: '600px',
-                            backgroundColor: '#ffffff',
-                            padding: '32px 24px',
-                        }}
-                    >
-                        <Heading
-                            style={{
-                                margin: 0,
-                                fontSize: '24px',
-                                fontWeight: 'bold',
-                                color: '#0f172a',
-                            }}
-                        >
-                            Rechnung
-                        </Heading>
+        <EmailLayout
+            preview={`Rechnung für deinen ${gameName} Server`}
+            footerNote="Diese Rechnung wurde elektronisch erstellt und ist ohne Unterschrift gültig."
+            hideSupport
+        >
+            <Heading style={headingStyle}>Rechnung</Heading>
+            <Text style={{ ...mutedTextStyle, marginTop: 6 }}>Rechnungsnummer: {invoiceNumber}</Text>
 
-                        <Text className="mt-2 text-sm text-slate-500">
-                            Rechnungsnummer: {invoiceNumber}
-                        </Text>
+            <Text style={textStyle}>Hallo {userName},</Text>
+            <Text style={textStyle}>
+                vielen Dank für deine Zahlung. Hier ist deine Rechnung für den gebuchten Gameserver.
+            </Text>
 
-                        <Text className="mt-6 text-base leading-6 text-slate-600">
-                            Hallo {userName},
-                        </Text>
+            <EmailCard style={{ marginTop: 16 }}>
+                <Section style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <Img
+                        src={gameImageUrl}
+                        alt={`${gameName} Icon`}
+                        width="64"
+                        height="64"
+                        style={{ borderRadius: '10px', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                        <Text style={{ ...subheadingStyle, margin: 0 }}>{gameName} Gameserver</Text>
+                        <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
+                    </div>
+                </Section>
+            </EmailCard>
 
-                        <Text className="mt-4 text-base leading-6 text-slate-600">
-                            vielen Dank für deine Zahlung. Hier ist deine Rechnung für den gebuchten
-                            Gameserver.
-                        </Text>
+            <Section style={{ marginTop: 16 }}>
+                <table style={{ width: '100%' }} cellPadding="0" cellSpacing="0">
+                    <tbody>
+                        <tr>
+                            <td style={cellLabelStyle}>Rechnungsdatum:</td>
+                            <td style={cellValueStyle}>{formatDate(invoiceDate)}</td>
+                        </tr>
+                        <tr>
+                            <td style={cellLabelStyle}>Leistungszeitraum:</td>
+                            <td style={cellValueStyle}>bis {formatDate(expiresAt)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </Section>
 
-                        <Hr className="my-6 border-slate-200" />
+            <EmailCard style={{ marginTop: 16 }}>
+                <Heading style={{ ...subheadingStyle, marginBottom: 8 }}>Leistungsbeschreibung</Heading>
+                <Text style={{ ...textStyle, fontWeight: 600, marginTop: 4 }}>
+                    {gameName} Gameserver - {getOrderTypeLabel(orderType)}
+                </Text>
+                <table style={{ width: '100%', marginTop: 8 }} cellPadding="0" cellSpacing="0">
+                    <tbody>
+                        <tr>
+                            <td style={smallLabelStyle}>Server:</td>
+                            <td style={smallValueStyle}>{serverName}</td>
+                        </tr>
+                        <tr>
+                            <td style={smallLabelStyle}>Konfiguration:</td>
+                            <td style={smallValueStyle}>
+                                {(ramMB / 1024).toFixed(1)} GB RAM, {formatVCores(cpuVCores)},{' '}
+                                {(diskMB / 1024).toFixed(1)} GB Speicher
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style={smallLabelStyle}>Performance-Level:</td>
+                            <td style={smallValueStyle}>{location}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </EmailCard>
 
-                        {/* Game Image with Server Name */}
-                        <Section className="mt-6 mb-6">
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '16px',
-                                    padding: '16px',
-                                    backgroundColor: '#f8fafc',
-                                    borderRadius: '12px',
-                                    border: '1px solid #e2e8f0',
-                                }}
-                            >
-                                <Img
-                                    src={gameImageUrl}
-                                    alt={`${gameName} Icon`}
-                                    width="64"
-                                    height="64"
-                                    style={{ borderRadius: '8px', flexShrink: 0 }}
-                                />
-                                <div style={{ flex: 1, marginLeft: '12px' }}>
-                                    <Text
-                                        style={{
-                                            margin: 0,
-                                            fontSize: '16px',
-                                            fontWeight: 600,
-                                            color: '#0f172a',
-                                        }}
-                                    >
-                                        {gameName} Gameserver
-                                    </Text>
-                                    <Text
-                                        style={{
-                                            margin: '4px 0 0 0',
-                                            fontSize: '14px',
-                                            color: '#64748b',
-                                        }}
-                                    >
-                                        {serverName}
-                                    </Text>
-                                </div>
-                            </div>
-                        </Section>
+            <EmailCard tone="info" style={{ marginTop: 16 }}>
+                <table style={{ width: '100%' }} cellPadding="0" cellSpacing="0">
+                    <tbody>
+                        <tr>
+                            <td style={priceLabelStyle}>Nettobetrag:</td>
+                            <td style={priceValueStyle}>{formatPrice(Math.round(netPrice))}</td>
+                        </tr>
+                        <tr>
+                            <td style={priceLabelStyle}>MwSt. (19%):</td>
+                            <td style={priceValueStyle}>{formatPrice(Math.round(vatAmount))}</td>
+                        </tr>
+                        <tr>
+                            <td colSpan={2} style={{ padding: '10px 0' }}>
+                                <Hr style={{ borderColor: '#cbd5e1', margin: '6px 0' }} />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style={{ ...priceLabelStyle, fontWeight: 700 }}>Gesamtbetrag:</td>
+                            <td style={{ ...priceValueStyle, fontSize: '18px', fontWeight: 700 }}>
+                                {formatPrice(price)}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </EmailCard>
 
-                        <Hr className="my-6 border-slate-200" />
+            <EmailCard tone="success" style={{ marginTop: 16 }}>
+                <Text style={{ ...textStyle, fontWeight: 700, color: '#065f46', margin: 0 }}>
+                    ✓ Bezahlt
+                </Text>
+                <Text style={{ ...mutedTextStyle, marginTop: 4, color: '#047857' }}>
+                    Zahlung erfolgreich am {formatDate(invoiceDate)} eingegangen.
+                </Text>
+            </EmailCard>
 
-                        {/* Invoice Details */}
-                        <Section className="mt-6">
-                            <table className="w-full" cellPadding="0" cellSpacing="0">
-                                <tbody>
-                                    <tr>
-                                        <td className="py-2 text-sm text-slate-600">
-                                            Rechnungsdatum:
-                                        </td>
-                                        <td className="py-2 text-right text-sm text-slate-900">
-                                            {formatDate(invoiceDate)}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="py-2 text-sm text-slate-600">
-                                            Leistungszeitraum:
-                                        </td>
-                                        <td className="py-2 text-right text-sm text-slate-900">
-                                            bis {formatDate(expiresAt)}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </Section>
+            {receiptUrl ? (
+                <Section style={{ marginTop: 16, textAlign: 'center' }}>
+                    <EmailButton href={receiptUrl}>Zahlungsbeleg herunterladen</EmailButton>
+                </Section>
+            ) : null}
 
-                        <Hr className="my-6 border-slate-200" />
-
-                        {/* Line Items */}
-                        <Section className="mt-6">
-                            <Heading className="m-0 mb-4 text-base font-semibold text-slate-900">
-                                Leistungsbeschreibung
-                            </Heading>
-
-                            <div className="rounded-lg bg-slate-50 p-4">
-                                <div className="mb-3 flex justify-between">
-                                    <Text className="m-0 text-sm font-semibold text-slate-900">
-                                        {gameName} Gameserver - {getOrderTypeLabel(orderType)}
-                                    </Text>
-                                </div>
-
-                                <table className="w-full" cellPadding="0" cellSpacing="0">
-                                    <tbody>
-                                        <tr>
-                                            <td className="py-1 text-xs text-slate-600">Server:</td>
-                                            <td className="py-1 text-right text-xs text-slate-900">
-                                                {serverName}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="py-1 text-xs text-slate-600">
-                                                Konfiguration:
-                                            </td>
-                                            <td className="py-1 text-right text-xs text-slate-900">
-                                                {(ramMB / 1024).toFixed(1)} GB RAM,{' '}
-                                                {formatVCores(cpuVCores)},{' '}
-                                                {(diskMB / 1024).toFixed(1)} GB Speicher
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="py-1 text-xs text-slate-600">
-                                                Performance-Level:
-                                            </td>
-                                            <td className="py-1 text-right text-xs text-slate-900">
-                                                {location}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </Section>
-
-                        <Hr className="my-6 border-slate-200" />
-
-                        {/* Pricing Breakdown */}
-                        <Section className="mt-6">
-                            <table style={{ width: '100%' }} cellPadding="0" cellSpacing="0">
-                                <tbody>
-                                    <tr>
-                                        <td
-                                            style={{
-                                                padding: '8px 0',
-                                                fontSize: '14px',
-                                                color: '#64748b',
-                                            }}
-                                        >
-                                            Nettobetrag:
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '8px 0',
-                                                textAlign: 'right',
-                                                fontSize: '14px',
-                                                color: '#0f172a',
-                                            }}
-                                        >
-                                            {formatPrice(Math.round(netPrice))}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            style={{
-                                                padding: '8px 0',
-                                                fontSize: '14px',
-                                                color: '#64748b',
-                                            }}
-                                        >
-                                            MwSt. (19%):
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '8px 0',
-                                                textAlign: 'right',
-                                                fontSize: '14px',
-                                                color: '#0f172a',
-                                            }}
-                                        >
-                                            {formatPrice(Math.round(vatAmount))}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colSpan={2} style={{ padding: '8px 0' }}>
-                                            <Hr className="my-2 border-slate-200" />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            style={{
-                                                padding: '12px 0',
-                                                fontSize: '16px',
-                                                fontWeight: 'bold',
-                                                color: '#0f172a',
-                                            }}
-                                        >
-                                            {'Gesamtbetrag:' + ' '}
-                                        </td>
-                                        <td
-                                            style={{
-                                                padding: '12px 0',
-                                                textAlign: 'right',
-                                                fontSize: '20px',
-                                                fontWeight: 'bold',
-                                                color: '#0f172a',
-                                            }}
-                                        >
-                                            {formatPrice(price)}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </Section>
-
-                        <Hr className="my-6 border-slate-200" />
-
-                        {/* Payment Status */}
-                        <Section className="mt-6">
-                            <div className="rounded-lg bg-green-50 p-4 border border-green-200">
-                                <Text className="m-0 text-sm font-semibold text-green-900">
-                                    ✓ Bezahlt
-                                </Text>
-                                <Text className="m-0 mt-1 text-xs text-green-700">
-                                    Zahlung erfolgreich am {formatDate(invoiceDate)} eingegangen.
-                                </Text>
-                            </div>
-                        </Section>
-
-                        {/* Receipt Button */}
-                        {receiptUrl && (
-                            <Section className="mt-6" style={{ textAlign: 'center' }}>
-                                <Button
-                                    href={receiptUrl}
-                                    style={{
-                                        display: 'inline-block',
-                                        width: '100%',
-                                        maxWidth: '100%',
-                                        padding: '12px 24px',
-                                        backgroundColor: '#0f172a',
-                                        color: '#ffffff',
-                                        textDecoration: 'none',
-                                        borderRadius: '9999px',
-                                        fontSize: '16px',
-                                        fontWeight: '600',
-                                        textAlign: 'center',
-                                        boxSizing: 'border-box',
-                                    }}
-                                >
-                                    Zahlungsbeleg herunterladen
-                                </Button>
-                            </Section>
-                        )}
-
-                        <Text className="mt-8 text-sm leading-6 text-slate-600">
-                            Diese Rechnung wurde elektronisch erstellt und ist ohne Unterschrift
-                            gültig.
-                        </Text>
-
-                        <Text className="mt-6 text-base font-medium text-slate-900">
-                            Bei Fragen zu dieser Rechnung{' '}
-                            <a
-                                href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
-                                style={{ color: '#0f172a', textDecoration: 'underline' }}
-                            >
-                                kontaktiere uns gerne
-                            </a>
-                            .
-                            <br />
-                            Dein Scyed Team
-                        </Text>
-
-                        <Text className="mt-8 text-sm leading-6 text-slate-400">
-                            Scyed | Gameserver Hosting
-                        </Text>
-                    </Container>
-                </Body>
-            </Tailwind>
-        </Html>
+            <Text style={{ ...textStyle, marginTop: 16 }}>
+                Bei Fragen zu dieser Rechnung{' '}
+                <a
+                    href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
+                    style={{ color: '#0f172a', textDecoration: 'underline' }}
+                >
+                    kontaktiere uns gerne
+                </a>
+                .
+            </Text>
+        </EmailLayout>
     );
 }
+
+const cellLabelStyle = {
+    padding: '6px 0',
+    fontSize: '14px',
+    color: '#64748b',
+} as const;
+
+const cellValueStyle = {
+    padding: '6px 0',
+    textAlign: 'right' as const,
+    fontSize: '14px',
+    color: '#0f172a',
+    fontWeight: 600,
+} as const;
+
+const smallLabelStyle = {
+    padding: '4px 0',
+    fontSize: '13px',
+    color: '#64748b',
+} as const;
+
+const smallValueStyle = {
+    padding: '4px 0',
+    textAlign: 'right' as const,
+    fontSize: '13px',
+    color: '#0f172a',
+    fontWeight: 600,
+} as const;
+
+const priceLabelStyle = {
+    padding: '6px 0',
+    fontSize: '14px',
+    color: '#475569',
+} as const;
+
+const priceValueStyle = {
+    padding: '6px 0',
+    textAlign: 'right' as const,
+    fontSize: '14px',
+    color: '#0f172a',
+    fontWeight: 600,
+} as const;

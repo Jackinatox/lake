@@ -4,11 +4,17 @@ import { sendMail } from './NodeMailer';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
 import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
+import PasswordResetSuccessTemplate from './templates/PasswordResetSuccessTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
 import ServerBookingConfirmationTemplate from './templates/ServerBookingConfirmationTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
+import SupportTicketResponseTemplate from './templates/SupportTicketResponseTemplate';
+import TwoFactorCreatedTemplate from './templates/TwoFactorCreatedTemplate';
+import TwoFactorOtpTemplate from './templates/TwoFactorOtpTemplate';
+import TwoFactorRemovedTemplate from './templates/TwoFactorRemovedTemplate';
 import { percentToVCores } from '../GlobalFunctions/formatVCores';
 import { OrderType, SupportTicket } from '@/app/client/generated/browser';
+import { TicketStatus } from '@/app/client/generated/enums';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(
@@ -31,6 +37,17 @@ export async function sendResetPasswordEmail(to: string, url: string, token: str
     await sendMail(to, 'Setze dein Passwort zurück', html, 'REQUEST_PASSWORD_RESET');
 }
 
+export async function sendPasswordResetSuccessEmail(to: string, loginUrl: string, userName?: string) {
+    const html = await render(
+        PasswordResetSuccessTemplate({
+            loginUrl,
+            userName,
+        }),
+    );
+
+    await sendMail(to, 'Dein Passwort wurde geändert', html, 'PASSWORD_RESET_SUCCESS');
+}
+
 export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) {
     const html = await render(
         SupportTicketCreatedTemplate({
@@ -49,6 +66,72 @@ export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) 
         html,
         'SUPPORT_TICKET_CREATED',
     );
+}
+
+interface SupportTicketResponseEmail {
+    to: string;
+    ticketId?: string;
+    agentName?: string;
+    responseMessage: string;
+    status?: TicketStatus;
+    ticketUrl?: string;
+    userName?: string;
+}
+
+export async function sendSupportTicketResponseEmail(data: SupportTicketResponseEmail) {
+    const html = await render(
+        SupportTicketResponseTemplate({
+            ticketId: data.ticketId,
+            agentName: data.agentName,
+            responseMessage: data.responseMessage,
+            status: data.status,
+            ticketUrl: data.ticketUrl,
+            userName: data.userName,
+        }),
+    );
+
+    await sendMail(data.to, 'Neue Antwort auf dein Support-Ticket', html, 'SUPPORT_TICKET_RESPONSE');
+}
+
+interface TwoFactorEmailData {
+    to: string;
+    userName?: string;
+}
+
+export async function sendTwoFactorCreatedEmail(data: TwoFactorEmailData & { recoveryCodes?: string[]; manageUrl: string }) {
+    const html = await render(
+        TwoFactorCreatedTemplate({
+            userName: data.userName,
+            recoveryCodes: data.recoveryCodes,
+            manageUrl: data.manageUrl,
+        }),
+    );
+
+    await sendMail(data.to, '2FA wurde aktiviert', html, 'TWO_FACTOR_CREATED');
+}
+
+export async function sendTwoFactorRemovedEmail(data: TwoFactorEmailData & { manageUrl: string }) {
+    const html = await render(
+        TwoFactorRemovedTemplate({
+            userName: data.userName,
+            manageUrl: data.manageUrl,
+        }),
+    );
+
+    await sendMail(data.to, '2FA wurde deaktiviert', html, 'TWO_FACTOR_REMOVED');
+}
+
+export async function sendTwoFactorOtpEmail(data: TwoFactorEmailData & { code: string; expiresInMinutes?: number; loginUrl?: string }) {
+    const html = await render(
+        TwoFactorOtpTemplate({
+            userName: data.userName,
+            code: data.code,
+            expiresInMinutes: data.expiresInMinutes,
+            loginUrl: data.loginUrl,
+        }),
+    );
+
+    await sendMail(data.to, 'Dein Sicherheitscode', html, 'TWO_FAKTOR_OPT_SEND');
 }
 
 interface ServerBookingEmailData {

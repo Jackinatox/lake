@@ -8,6 +8,7 @@ import { PublicEnvScript, env } from 'next-runtime-env';
 import { ThemeProvider } from 'next-themes';
 import { Geist } from 'next/font/google';
 import './globals.css';
+import DevSessionInfo from '@/components/auth/DevSessionInfo';
 
 export async function generateMetadata(): Promise<Metadata> {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
@@ -59,11 +60,7 @@ export default async function RootLayout({
                             <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4 flex-1">
                                 {children}
                                 <Toaster />
-                                {/* {env('NODE_ENV') !== 'production' && (
-                                    <pre className="break-words whitespace-pre-wrap bg-muted p-4 rounded text-xs ">
-                                        {JSON.stringify(session?.user, null, 2)}
-                                    </pre>
-                                )} */}
+                                {env('NODE_ENV') !== 'production' && <DevSessionInfo />}
                             </div>
                             <Footer />
                         </main>

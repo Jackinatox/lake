@@ -5,8 +5,9 @@ import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
-import { sendConfirmEmail, sendResetPasswordEmail } from './lib/email/sendEmailEmailsFromLake';
+import { sendConfirmEmail, sendPasswordResetSuccessEmail, sendResetPasswordEmail } from './lib/email/sendEmailEmailsFromLake';
 import prisma from './lib/prisma';
+import { logger } from './lib/logger';
 
 function generateRandomPassword(length: number = 32): string {
     return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');
@@ -58,6 +59,10 @@ export const auth = betterAuth({
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendResetPasswordEmail(user.email, url, token);
         },
+        onPasswordReset: async ({ user }, request) => {
+            await logger.info(`Password for user ${user.email} has been reset.`, 'AUTHENTICATION');
+            await sendPasswordResetSuccessEmail(user.email, `${env('NEXT_PUBLIC_APP_URL')}/login`, user.name || "");
+        },
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }, request) => {
@@ -70,6 +75,7 @@ export const auth = betterAuth({
         twoFactor(),
         lastLoginMethod({
             storeInDatabase: true,
+            
         }),
         admin(),
     ],
