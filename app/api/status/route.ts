@@ -31,12 +31,12 @@ const LOCAL_IP_RANGES = [
     '192.168.',
 ];
 
-function isLocalIP(ip: string | null): boolean {
+export function isLocalIP(ip: string | null): boolean {
     if (!ip) return false;
     return LOCAL_IP_RANGES.some((range) => ip.startsWith(range) || ip === range);
 }
 
-function getClientIP(req: NextRequest): string | null {
+export function getClientIP(req: NextRequest): string | null {
     // Check various headers for the real IP
     const xForwardedFor = req.headers.get('x-forwarded-for');
     if (xForwardedFor) {

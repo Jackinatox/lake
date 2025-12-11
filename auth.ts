@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, lastLoginMethod } from 'better-auth/plugins';
+import { admin, lastLoginMethod, twoFactor } from 'better-auth/plugins';
 import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
@@ -67,6 +67,7 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
+        twoFactor(),
         lastLoginMethod({
             storeInDatabase: true,
         }),

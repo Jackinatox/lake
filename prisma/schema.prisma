@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "postgresql"
 }
@@ -214,6 +215,7 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+  @@index([identifier])
 }
 
 model User {
@@ -247,6 +249,9 @@ model User {
   UserSettings   Json             @default("{}")
   ApplicationLog ApplicationLog[]
 
+  twoFactorEnabled Boolean?    @default(false)
+  twofactors       TwoFactor[]
+
   @@unique([email])
   @@unique([ptUsername])
   @@map("user")
@@ -267,6 +272,7 @@ model Session {
 
   @@unique([token])
   @@map("session")
+  @@index([userId])
 }
 
 model Account {
@@ -286,6 +292,7 @@ model Account {
   updatedAt             DateTime  @updatedAt
 
   @@map("account")
+  @@index([userId])
 }
 
 enum LogLevel {
@@ -393,7 +400,11 @@ enum EmailStatus {
 
 enum EmailType {
   EMAIL_VERIFICATION
-  PASSWORD_RESET
+  REQUEST_PASSWORD_RESET
+  PASSWORD_RESET_SUCCESS
+  TWO_FACTOR_CREATED
+  TWO_FACTOR_REMOVED
+  TWO_FAKTOR_OPT_SEND
   SUPPORT_TICKET_CREATED
   SUPPORT_TICKET_RESPONSE
   GAME_SERVER_EXPIRED
@@ -439,4 +450,16 @@ model Package {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
 }

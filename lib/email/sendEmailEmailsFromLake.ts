@@ -28,7 +28,7 @@ export async function sendResetPasswordEmail(to: string, url: string, token: str
         }),
     );
 
-    await sendMail(to, 'Setze dein Passwort zurück', html, 'PASSWORD_RESET');
+    await sendMail(to, 'Setze dein Passwort zurück', html, 'REQUEST_PASSWORD_RESET');
 }
 
 export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) {
