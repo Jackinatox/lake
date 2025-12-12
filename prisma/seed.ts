@@ -26,7 +26,7 @@ async function main() {
         data: {
             data: {
                 id: 0,
-                egg_id: 16,
+                egg_id: 15,
                 docker_image: 'ghcr.io/parkervcp/games:source',
                 experimental: true,
             },

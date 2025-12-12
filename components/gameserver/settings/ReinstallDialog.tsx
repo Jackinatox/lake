@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { RefreshCw } from 'lucide-react';
-import ReinstallPTUserServer from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
+import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import { notifyReinstallStarted } from '../serverEvents';
 
 interface ReinstallDialogProps {
@@ -35,7 +35,7 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
     const handleReinstall = async () => {
         setIsLoading(true);
         notifyReinstallStarted(server_id);
-        const response = await ReinstallPTUserServer(server_id, apiKey, deleteAllFiles);
+        const response = await ReinstallPTServerClient(server_id, apiKey, deleteAllFiles);
 
         if (!response.ok) {
             console.error('Failed to reinstall server:', response.statusText);

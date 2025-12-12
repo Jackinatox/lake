@@ -60,7 +60,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
             isCreationFailed ? 'border-2 border-red-500 dark:border-red-600 bg-red-50/50 dark:bg-red-950/20' : ''
         }`}>
             <Link
-                href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' && '/upgrade'}`}
+                href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' ? '/upgrade' : ''}`}
             >
                 <CardContent className="p-3 sm:p-6">
                     {/* Mobile layout: compact stacked design */}
@@ -101,7 +101,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                                     <GameServerStatus apiKey={apiKey} server={server} />
                                     {server.type === 'FREE' && (
                                         <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 px-2 py-0.5 text-xs font-bold shadow-sm">
-                                            ✨ {t('freeServer')}
+                                            💸 {t('freeServer')}
                                         </Badge>
                                     )}
                                     {isCreationFailed && (
@@ -122,15 +122,15 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                                 <div className="flex items-center gap-4 sm:gap-5 mt-1.5 text-sm text-slate-600 dark:text-slate-400">
                                     <span className="flex items-center gap-1">
                                         <Cpu className="w-4 h-4 text-blue-500" />
-                                        <span>{server.cpuPercent / 100}</span>
+                                        <span>{server.cpuPercent / 100}</span> VCores
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <MemoryStick className="w-4 h-4 text-purple-500" />
-                                        <span>{server.ramMB / 1024}GB</span>
+                                        <span>{server.ramMB / 1024} GB</span>
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <HardDrive className="w-4 h-4 text-green-500" />
-                                        <span>{server.diskMB / 1024}GB</span>
+                                        <span>{server.diskMB / 1024} GB</span>
                                     </span>
                                 </div>
                             </div>

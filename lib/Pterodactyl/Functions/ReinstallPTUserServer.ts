@@ -1,7 +1,7 @@
 import { env } from 'next-runtime-env';
 import DeleteAllFilesUserServer from './DeleteAllFilesUser';
 
-export default async function ReinstallPTUserServer(
+export default async function ReinstallPTServerClient(
     server: string,
     apiKey: string,
     deleteAllFiles: boolean,
@@ -10,9 +10,8 @@ export default async function ReinstallPTUserServer(
 
     if (deleteAllFiles) {
         await DeleteAllFilesUserServer(server, apiKey);
+        await new Promise((resolve) => setTimeout(resolve, 500));
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const response = await fetch(`${ptUrl}/api/client/servers/${server}/settings/reinstall`, {
         method: 'POST',

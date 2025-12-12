@@ -5,9 +5,11 @@ import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConf
 import prisma from '@/lib/prisma';
 
 import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
-import { buildMC_ENVs_and_startup } from '../buildMinecraftENVs';
+import { buildMC_ENVs_and_startup } from './buildMinecraftENVs';
 import { logger } from '@/lib/logger';
 import { GameServerOrder, GameServerType, OrderType } from '@/app/client/generated/browser';
+import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
+import { reinstallPTServerOnly } from '@/lib/Pterodactyl/Functions/ReinstallPTServerOnly';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({
@@ -16,7 +18,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
     });
     const pt = createPtClient();
 
-    if (!serverOrder || !serverOrder.creationGameData || !serverOrder.creationLocation)
+    if (!serverOrder || !serverOrder.creationGameData || !serverOrder.creationLocation || !serverOrder.user.ptKey)
         throw new Error(`No Server found for serverOrder: ${order.id}`);
 
     console.log('user id: ', serverOrder.user.ptUserId);
@@ -114,15 +116,45 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
 
     let newServer: Server;
     try {
-        console.log(options);
-        newServer = await pt.createServer(options);
+        logger.info(`Creating Pterodactyl server for order ${order.id}`, 'GAME_SERVER', {
+            userId: serverOrder.user.id,
+            gameServerId: dbNewServer.id,
+            details: { serverName, egg: gameConfig.eggId, options }
+        });
 
-        const dbUpdatedServer = await prisma.gameServer.update({
+        newServer = await pt.createServer({ ...options, skipScripts: true });
+
+        logger.info(`Pterodactyl server created: ${newServer.identifier}`, 'GAME_SERVER', {
+            userId: serverOrder.user.id,
+            gameServerId: dbNewServer.id,
+            details: { ptServerId: newServer.identifier, ptAdminId: newServer.id }
+        });
+
+        await prisma.gameServer.update({
             where: { id: dbNewServer.id },
             data: {
                 ptServerId: newServer.identifier,
                 ptAdminId: newServer.id,
             },
+        });
+
+        // Wait for server to be fully initialized before port corrections
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log(1)
+        await correctPortsForGame(newServer.identifier, serverOrder.creationGameData.id, serverOrder.user.ptKey);
+        console.log(2)
+        await new Promise(resolve => setTimeout(resolve, 100));
+        console.log(3)
+
+        await reinstallPTServerOnly(
+            newServer.identifier,
+            serverOrder.user.ptKey,
+            false,
+        );
+
+        logger.info(`Server provisioning completed for ${newServer.identifier}`, 'GAME_SERVER', {
+            userId: serverOrder.user.id,
+            gameServerId: dbNewServer.id
         });
 
         return newServer.identifier;

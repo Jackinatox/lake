@@ -2,8 +2,8 @@
 
 import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { auth } from '@/auth';
-import { buildMC_ENVs_and_startup } from '@/lib/Pterodactyl/buildMinecraftENVs';
-import ReinstallPTUserServer from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
+import { buildMC_ENVs_and_startup } from '@/lib/Pterodactyl/createServers/buildMinecraftENVs';
+import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import PTUserServerPowerAction from '@/lib/Pterodactyl/Functions/StopPTUserServer';
 import type { GameConfig } from '@/models/config';
 import prisma from '@/lib/prisma';
@@ -90,7 +90,7 @@ export async function changeGame({
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Reinstall the server, optionally deleting all files first
-    const response2 = await ReinstallPTUserServer(serverId, session.user.ptKey, deleteFiles);
+    const response2 = await ReinstallPTServerClient(serverId, session.user.ptKey, deleteFiles);
 
     if (!response2.ok) {
         const errorData = await response2.json();
