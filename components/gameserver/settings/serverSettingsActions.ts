@@ -1,9 +1,8 @@
 'use server';
 
 import { auth } from '@/auth';
-import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import prisma from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import prisma from '@/lib/prisma';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 
 import { env } from 'next-runtime-env';
@@ -84,8 +83,6 @@ export async function reinstallServer(server: string): Promise<boolean> {
 }
 
 export async function changeServerStartup(server: string, docker_image: string): Promise<boolean> {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptAdminKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -98,15 +95,28 @@ export async function changeServerStartup(server: string, docker_image: string):
         where: { ptServerId: server, userId: session.user.id },
     });
 
-    if (!ptServer) {
+    if (!ptServer || !ptServer.ptAdminId) {
         throw new Error('Server not found');
     }
 
-    try {
-        const admin = createPtClient();
+    return await changeServerDockerImageInternal(ptServer.ptAdminId.toString(), docker_image);
+}
 
+/**
+ * Internal server-only function to change server docker image and startup configuration.
+ * This function uses admin API key and should NEVER be exposed to client-side code.
+ * 
+ * @param ptAdminId - Pterodactyl admin server ID
+ * @param docker_image - Docker image to set (null to keep existing)
+ * @param skipScripts - Whether to skip install scripts
+ * @returns true if successful, false otherwise
+ */
+async function changeServerDockerImageInternal(ptAdminId: string, docker_image: string | null, skipScripts: boolean = false): Promise<boolean> {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptAdminKey = env('PTERODACTYL_API_KEY');
+    try {
         // Get full server details with admin API
-        const adminServer = await fetch(`${ptUrl}/api/application/servers/${ptServer.ptAdminId}`, {
+        const adminServer = await fetch(`${ptUrl}/api/application/servers/${ptAdminId}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${ptAdminKey}`,
@@ -117,9 +127,20 @@ export async function changeServerStartup(server: string, docker_image: string):
             .then((response) => response.json())
             .then((server) => server.attributes);
 
+
+        const body = JSON.stringify({
+            skip_scripts: skipScripts,
+            egg: adminServer.egg,
+            environment: adminServer.container.environment,
+            startup: adminServer.container.startup_command,
+            image: docker_image || adminServer.container.image,
+        });
+
+        console.log({ body, existing_details: adminServer })
+
         // Update the server Configuration
         const response = await fetch(
-            `${ptUrl}/api/application/servers/${ptServer.ptAdminId}/startup`,
+            `${ptUrl}/api/application/servers/${ptAdminId}/startup`,
             {
                 method: 'PATCH',
                 headers: {
@@ -127,18 +148,44 @@ export async function changeServerStartup(server: string, docker_image: string):
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    skip_scripts: false,
-                    egg: adminServer.egg,
-                    environment: adminServer.container.environment,
-                    startup: adminServer.container.startup_command,
-                    image: docker_image,
-                }),
+                body
             },
         );
+        console.log({ response })
+        if (!response.ok) {
+            const errorData = await response.text();
+            logger.error('Failed to change server docker image', 'GAME_SERVER', {
+                details: { ptAdminId, docker_image, status: response.status, error: errorData },
+            });
+            return false;
+        }
     } catch (error) {
-        console.log(error);
+        logger.error('Failed to change server docker image', 'GAME_SERVER', {
+            details: { ptAdminId, docker_image, error },
+        });
         return false;
     }
     return true;
+}
+
+/**
+ * Server-only function to enable install scripts after initial server creation.
+ * This is used during provisioning to re-enable scripts after creating server with skipScripts: true.
+ * Should only be called from server-side code like provisionServer.ts
+ * 
+ * @param ptAdminId - Pterodactyl admin server ID
+ * @returns true if successful, false otherwise
+ */
+export async function enableServerInstallScripts(
+    ptAdminId: number,
+): Promise<boolean> {
+    logger.info(`Enabling install scripts for server ${ptAdminId}`, 'GAME_SERVER');
+
+    const success = await changeServerDockerImageInternal(ptAdminId.toString(), null, false);
+
+    if (!success) {
+        logger.error(`Failed to enable install scripts for server ${ptAdminId}`, 'GAME_SERVER');
+    }
+
+    return success;
 }

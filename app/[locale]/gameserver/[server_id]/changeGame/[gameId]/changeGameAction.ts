@@ -10,6 +10,10 @@ import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { GameData } from '@/app/client/generated/browser';
+import { correctPortsForGame } from '@/lib/Pterodactyl/PortHandeling/MultiPortGames';
+import createSatisStartup from '@/lib/Pterodactyl/createServers/createSatisENVs';
+import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConfig';
+import { enableServerInstallScripts } from '@/components/gameserver/settings/serverSettingsActions';
 
 interface SubmitGameChangeInput {
     serverId: string;
@@ -48,13 +52,16 @@ export async function changeGame({
         prisma.gameData.findUnique({ where: { id: gameId } }),
     ]);
 
-    if (!gameServer) {
+    if (!gameServer || !gameServer.ptServerId || !gameServer.ptAdminId) {
         throw new Error('Server not found or wrong user');
     }
 
     if (!newGameData) {
         throw new Error('Selected game not found');
     }
+
+    const newBody = await buildBody(gameConfig, newGameData);
+    console.log(JSON.stringify(newBody))
 
     await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
 
@@ -69,15 +76,24 @@ export async function changeGame({
                 Authorization: `Bearer ${ptAdminKey}`,
                 Accept: 'application/json',
             },
-            body: JSON.stringify(await buildBody(gameConfig, newGameData)),
+            body: JSON.stringify(newBody),
         },
     );
 
     if (!response.ok) {
+        // er failt schojn hier
         const errorData = await response.json();
         console.error('Error response from Pterodactyl:', errorData);
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await correctPortsForGame(gameServer.ptServerId, newGameData.id, session.user.ptKey);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const scriptsEnabled = await enableServerInstallScripts(gameServer.ptAdminId)
 
     await prisma.gameServer.update({
         where: { id: gameServer.id },
@@ -107,7 +123,7 @@ export async function changeGame({
 
 async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
     const plainBody = {
-        skip_scripts: false,
+        skip_scripts: true,
         egg: gameConfig.eggId,
         image: gameConfig.dockerImage,
     };
@@ -118,8 +134,7 @@ async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
             body = buildMC_ENVs_and_startup(gameConfig.eggId, gameConfig.version);
             break;
         case SatisfactoryGameId:
-            // Build body for game 2
-            throw new Error('Not implemented yet');
+            body = createSatisStartup(gameConfig.gameSpecificConfig as SatisfactoryConfig);
             break;
         default:
             throw new Error('Unsupported game ID');

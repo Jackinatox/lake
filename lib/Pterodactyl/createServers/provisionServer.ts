@@ -10,6 +10,8 @@ import { logger } from '@/lib/logger';
 import { GameServerOrder, GameServerType, OrderType } from '@/app/client/generated/browser';
 import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
 import { reinstallPTServerOnly } from '@/lib/Pterodactyl/Functions/ReinstallPTServerOnly';
+import { enableServerInstallScripts } from '@/components/gameserver/settings/serverSettingsActions';
+import createSatisStartup from './createSatisENVs';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({
@@ -57,23 +59,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             startAndVars = buildMC_ENVs_and_startup(parseInt(gameConfig.eggId), gameConfig.version);
             break;
         case SatisfactoryGameId:
-            const satisfactoryConfig = gameConfig.gameSpecificConfig as SatisfactoryConfig;
-            console.log(satisfactoryConfig);
-            startAndVars = {
-                startup:
-                    './Engine/Binaries/Linux/*-Linux-Shipping FactoryGame ?listen -Port={{SERVER_PORT}} -ReliablePort={{RELIABLE_PORT}}',
-                environment: {
-                    SRCDS_BETAID:
-                        satisfactoryConfig.version === 'experimental' ? 'experimental' : 'public',
-                    MAX_PLAYERS: satisfactoryConfig.max_players,
-                    NUM_AUTOSAVES: satisfactoryConfig.num_autosaves,
-                    UPLOAD_CRASH_REPORT: satisfactoryConfig.upload_crash_report.toString(),
-                    AUTOSAVE_INTERVAL: satisfactoryConfig.autosave_interval,
-                    // HardCoded:
-                    RELIABLE_PORT: 8888, // Will be replaced by
-                    SRCDS_APPID: 1690800,
-                },
-            };
+            startAndVars = createSatisStartup(gameConfig.gameSpecificConfig) // has type SatisfactoryConfig
             break;
         default:
             throw new Error('No Handler for this GameServer');
@@ -140,11 +126,30 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
 
         // Wait for server to be fully initialized before port corrections
         await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log(1)
+        
+        logger.info(`Correcting ports for game ${serverOrder.creationGameData.id}`, 'GAME_SERVER', {
+            userId: serverOrder.user.id,
+            gameServerId: dbNewServer.id
+        });
         await correctPortsForGame(newServer.identifier, serverOrder.creationGameData.id, serverOrder.user.ptKey);
-        console.log(2)
-        await new Promise(resolve => setTimeout(resolve, 100));
-        console.log(3)
+        
+        // Wait for port corrections to apply
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const scriptsEnabled = await enableServerInstallScripts(
+            newServer.id,   // Is Admin Id
+        );
+        
+        if (!scriptsEnabled) {
+            throw new Error('Failed to enable install scripts');
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        logger.info(`Triggering install script for server ${newServer.identifier}`, 'GAME_SERVER', {
+            userId: serverOrder.user.id,
+            gameServerId: dbNewServer.id
+        });
 
         await reinstallPTServerOnly(
             newServer.identifier,
