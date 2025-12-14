@@ -3,7 +3,9 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
+import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
@@ -149,7 +151,7 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
                 body
             },
         );
-        
+
         if (!response.ok) {
             const errorData = await response.text();
             logger.error('Failed to change server docker image', 'GAME_SERVER', {
@@ -186,4 +188,48 @@ export async function enableServerInstallScripts(
     }
 
     return success;
+}
+
+/**
+ * This currently verifies ownership and that the server is FREE and then returns true.
+ */
+export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session) {
+        logger.warn(`Delete attempt without authentication for server ${ptServerId}`, 'GAME_SERVER');
+        return false;
+    }
+
+    const server = await prisma.gameServer.findFirst({ where: { ptServerId, userId: session.user.id } });
+
+    if (!server || !server.ptAdminId) {
+        logger.warn(`Delete attempt for unknown server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+        return false;
+    }
+
+    if (server.type !== 'FREE') {
+        logger.warn(`Delete attempt for non-free server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+        return false;
+    }
+
+    try {
+        await deleteServerAdmin(server.ptAdminId)
+        await prisma.gameServer.update({
+            where: { id: server.id },
+            data: { status: 'DELETED' },
+        });
+    } catch (error) {
+        logger.error(`Failed to delete free server ${ptServerId}`, 'GAME_SERVER', {
+            userId: session.user.id,
+            gameServerId: server.id,
+            details: { error },
+        });
+        return false;
+    }
+
+    logger.info(`deleteFreeServer requested for server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+    return true;
 }

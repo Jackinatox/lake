@@ -15,6 +15,26 @@
         "contactSupport": "Support kontaktieren",
         "home": "Zur Startseite"
     },
+
+        "gameserverSettings": {
+            "deleteFreeServer": {
+                "button": "Kostenlosen Server löschen",
+                "title": "Server löschen?",
+                "description": "Dies löscht Ihren kostenlosen Server dauerhaft. Diese Aktion ist unwiderruflich.",
+                "checkbox": "Ich verstehe, dass diese Aktion unwiderruflich ist",
+                "cancel": "Abbrechen",
+                "delete": "Server löschen",
+                "deleting": "Lösche...",
+                "success": {
+                    "title": "Server gelöscht",
+                    "description": "Ihr Server wurde gelöscht. Bei Bedarf kontaktieren Sie bitte den Support."
+                },
+                "error": {
+                    "title": "Löschen fehlgeschlagen",
+                    "description": "Der Server konnte nicht gelöscht werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+                }
+            }
+        },
     "ServerExpired": {
         "title": "Server abgelaufen",
         "description": "Dein Server-Abonnement ist abgelaufen. Um deinen Server weiter zu nutzen, verlängere bitte dein Abonnement. Alle deine Daten sind noch sicher und werden verfügbar sein, sobald du verlängerst.",

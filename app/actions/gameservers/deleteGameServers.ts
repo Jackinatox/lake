@@ -1,8 +1,8 @@
 'use server';
 import { auth } from '@/auth';
-import { env } from 'next-runtime-env';
 import prisma from '@/lib/prisma';
 
+import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import { headers } from 'next/headers';
 
 export async function deleteGameServers(ids: string[]) {
@@ -22,36 +22,26 @@ export async function deleteGameServers(ids: string[]) {
     for (const id of ids) {
         try {
             const gameServer = await prisma.gameServer.findUnique({ where: { id } });
-            if (!gameServer) {
+            if (!gameServer || !gameServer.ptAdminId) {
                 continue;
             }
             if (gameServer.status === 'DELETED' || gameServer.status === 'CREATION_FAILED') {
                 deletedIds.push(id);
                 continue;
             }
-            const response = await fetch(
-                env('NEXT_PUBLIC_PTERODACTYL_URL') +
-                    `/api/application/servers/${gameServer.ptAdminId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${env('PTERODACTYL_API_KEY')}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                },
-            );
-            if (response.ok) {
-                deletedIds.push(id);
-            } else {
-                const errorData = await response.json();
+
+            try {
+                await deleteServerAdmin(gameServer.ptAdminId);
+            } catch (error: any) {
                 errors.push(
-                    `Failed to delete server ${id}: ${errorData.errors ? JSON.stringify(errorData.errors) : response.statusText}`,
+                    `Failed to delete server ${id}: ${error.toString()} `
                 );
             }
+
         } catch (error) {
             errors.push(error instanceof Error ? error.message : String(error));
         }
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     try {

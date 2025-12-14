@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
+import { GameServerType } from '@/app/client/generated/enums';
 
 interface ServerLoaderProps {
     serverId: string;
@@ -16,6 +17,7 @@ interface ServerLoaderProps {
         egg_id: number;
         gameDataId: number;
         gameData: any;
+        type: GameServerType
     };
 }
 
@@ -61,6 +63,7 @@ export default function ServerLoader({
                 egg_id: initialServer.egg_id,
                 gameDataId: initialServer.gameDataId,
                 gameData: initialServer.gameData,
+                type: initialServer.type,
             };
 
             setServer(updatedServer);

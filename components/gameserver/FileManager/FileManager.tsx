@@ -39,7 +39,7 @@ import { authClient } from '@/lib/auth-client';
 import { MAX_EDITABLE_FILE_SIZE, MAX_EDITABLE_FILE_SIZE_LABEL } from '@/app/GlobalConstants';
 
 interface FileManagerProps {
-    apiKey?: string;
+    apiKey: string;
     server: GameServer;
 }
 

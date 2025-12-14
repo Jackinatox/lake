@@ -44,7 +44,7 @@ function ensureLeadingSlash(path: string) {
 export async function listDirectory(
     serverId: string,
     directory: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<DirectoryListingResponse> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
@@ -52,7 +52,7 @@ export async function listDirectory(
     const response = await fetch(
         `${PANEL_URL}/api/client/servers/${serverId}/files/list?directory=${safeDirectory}`,
         {
-            headers: buildHeaders(apiKey!),
+            headers: buildHeaders(apiKey),
         },
     );
 
@@ -85,7 +85,7 @@ export async function listDirectory(
 export async function readFile(
     serverId: string,
     filePath: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<string> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
@@ -94,7 +94,7 @@ export async function readFile(
         `${PANEL_URL}/api/client/servers/${serverId}/files/contents?file=${safePath}`,
         {
             headers: {
-                ...buildHeaders(apiKey!),
+                ...buildHeaders(apiKey),
                 Accept: 'text/plain',
             },
         },
@@ -112,7 +112,7 @@ export async function writeFile(
     serverId: string,
     filePath: string,
     content: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<void> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
@@ -122,7 +122,7 @@ export async function writeFile(
         {
             method: 'POST',
             headers: {
-                ...buildHeaders(apiKey!),
+                ...buildHeaders(apiKey),
                 'Content-Type': 'text/plain',
             },
             body: content,
@@ -138,7 +138,7 @@ export async function writeFile(
 export async function getDownloadUrl(
     serverId: string,
     filePath: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<string> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
@@ -146,7 +146,7 @@ export async function getDownloadUrl(
     const response = await fetch(
         `${PANEL_URL}/api/client/servers/${serverId}/files/download?file=${safePath}`,
         {
-            headers: buildHeaders(apiKey!),
+            headers: buildHeaders(apiKey),
         },
     );
 
@@ -175,7 +175,7 @@ export async function uploadFiles(
     serverId: string,
     directory: string,
     files: FileList | File[],
-    apiKey?: string,
+    apiKey: string,
     onProgress?: UploadProgressHandler,
 ): Promise<void> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
@@ -193,7 +193,7 @@ export async function uploadFiles(
     // Get signed upload URL from the Panel
     const signedResponse = await fetch(
         `${PANEL_URL}/api/client/servers/${serverId}/files/upload`,
-        { headers: buildHeaders(apiKey!) },
+        { headers: buildHeaders(apiKey) },
     );
 
     if (!signedResponse.ok) {
@@ -255,14 +255,14 @@ export async function renameEntry(
     directory: string,
     from: string,
     to: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<void> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
     const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/rename`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
-            ...buildHeaders(apiKey!),
+            ...buildHeaders(apiKey),
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -281,14 +281,14 @@ export async function deleteEntry(
     serverId: string,
     directory: string,
     name: string,
-    apiKey?: string,
+    apiKey: string,
 ): Promise<void> {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
     const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/delete`, {
         method: 'POST',
         headers: {
-            ...buildHeaders(apiKey!),
+            ...buildHeaders(apiKey),
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({

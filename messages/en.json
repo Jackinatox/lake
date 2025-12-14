@@ -15,6 +15,25 @@
         "contactSupport": "Contact Support",
         "home": "Go to Home"
     },
+    "gameserverSettings": {
+        "deleteFreeServer": {
+            "button": "Delete Free Server",
+            "title": "Delete Server?",
+            "description": "This will permanently delete your free server. This action is irreversible.",
+            "checkbox": "I understand this action is irreversible",
+            "cancel": "Cancel",
+            "delete": "Delete Server",
+            "deleting": "Deleting...",
+            "success": {
+                "title": "Server deleted",
+                "description": "Your server has been deleted. If you need help, contact support."
+            },
+            "error": {
+                "title": "Could not delete",
+                "description": "The server could not be deleted. Please try again or contact support."
+            }
+        }
+    },
     "ServerExpired": {
         "title": "Server Expired",
         "description": "Your server subscription has expired. To continue using your server, please extend your subscription. All your data is still safe and will be available once you renew.",

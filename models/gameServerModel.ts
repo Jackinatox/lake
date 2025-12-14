@@ -1,3 +1,4 @@
+import { GameServerType } from '@/app/client/generated/enums';
 import { GameConfig } from './config';
 
 export type GameServer = {
@@ -8,6 +9,7 @@ export type GameServer = {
     name: string;
     node: string;
     egg_id: number;
+    type: GameServerType
     is_node_under_maintenance: boolean;
     sftp_details: {
         ip: string;
