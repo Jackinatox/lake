@@ -343,6 +343,7 @@ enum LogType {
   EMAIL
   SUPPORT_TICKET
   FREE_SERVER_EXTEND
+  TELEGRAM
 }
 
 model ApplicationLog {
