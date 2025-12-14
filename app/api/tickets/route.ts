@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendTicketCreatedEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
 import { TicketCategory } from '@/app/client/generated/enums';
+import { sendSupportTicketNotification } from '@/lib/Notifications/telegram';
+import { env } from 'next-runtime-env';
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_SUBJECT_LENGTH = 120;
@@ -56,17 +58,22 @@ export async function POST(req: NextRequest) {
 
         sendTicketCreatedEmail(session.user.email, ticket).catch((error) => {
             logger
-                .email('Failed to send support ticket created email', 'ERROR', {
+                .error('Failed to send support ticket created email', 'EMAIL', {
                     userId: session.user.id,
                     details: {
                         ticketId: ticket.ticketId,
                         error: error instanceof Error ? error.message : String(error),
                     },
                 })
-                .catch((logError) => {
-                    console.error('Failed to record email send failure', logError);
-                });
         });
+
+        sendSupportTicketNotification({
+            category: ticket.category,
+            userEmail: session.user.email,
+            subject: ticket.title,
+            message: ticket.message,
+            ticketUrl: `${env("NEXT_PUBLIC_APP_URL")}/admin/tickets/${ticket.id}`,
+        })
 
         return NextResponse.json({ ticket: ticket }, { status: 201 });
     } catch (error) {

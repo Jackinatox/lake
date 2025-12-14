@@ -252,7 +252,7 @@ export async function checkoutAction(params: CheckoutParams) {
             // Fetch the package with location details for pricing
             const packageData = await prisma.package.findUnique({
                 where: { id: packageId, enabled: true },
-                include: { 
+                include: {
                     location: {
                         include: { cpu: true, ram: true }
                     }
@@ -309,7 +309,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     {
                         price_data: {
                             currency: 'eur',
-                            product_data: { 
+                            product_data: {
                                 name: `${packageData.name} - Game Server Package`,
                                 description: `${packageData.cpuPercent / 100} vCPU, ${packageData.ramMB / 1024}GB RAM, ${packageData.diskMB / 1024}GB Storage`,
                             },
@@ -377,15 +377,20 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
             await notifyFreeServerCreated(order.id);
         } catch (notifyErr) {
             logger.error('Failed to run free server notification helper', 'EMAIL', {
-                details: { error: notifyErr, orderId: order.id },
+                details: {
+                    error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
+                    orderId: order.id
+                },
             });
         }
         return ptId;
     } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
         logger.error("Failed to provision free server", 'GAME_SERVER', {
             userId: dbUser.id,
             details: {
-                error: error instanceof Error ? error.message : JSON.stringify(error),
+                error: errorMessage,
                 orderId: order.id
             }
         });

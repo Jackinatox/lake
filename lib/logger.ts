@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@/app/client/generated/client';
 import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
+import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
 
 
 /**
@@ -39,11 +40,52 @@ class Logger {
     }
 
     /**
+     * Formats details for clean console output
+     */
+    private formatDetailsForConsole(details?: Record<string, any>): string {
+        if (!details) return '';
+
+        const cleaned = { ...details };
+
+        // Truncate long stack traces
+        if (cleaned.stack && typeof cleaned.stack === 'string') {
+            const lines = cleaned.stack.split('\n');
+            if (lines.length > 5) {
+                cleaned.stack = lines.slice(0, 5).join('\n') + '\n... (truncated)';
+            }
+        }
+
+        // Format error objects
+        if (cleaned.error) {
+            if (cleaned.error instanceof Error) {
+                cleaned.error = {
+                    name: cleaned.error.name,
+                    message: cleaned.error.message,
+                };
+            } else if (typeof cleaned.error === 'string') {
+                // Truncate very long error strings
+                if (cleaned.error.length > 500) {
+                    cleaned.error = cleaned.error.substring(0, 500) + '... (truncated)';
+                }
+            }
+        }
+
+        return JSON.stringify(cleaned, null, 2);
+    }
+
+    /**
      * Core logging method - all other methods call this
      */
     private async log(entry: LogEntry): Promise<void> {
         try {
-            console.log(`[${entry.level}] [${entry.type}] ${entry.message}`, entry.details);
+            // Clean console output
+            const formattedDetails = this.formatDetailsForConsole(entry.details);
+            if (formattedDetails) {
+                console.log(`[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}`);
+            } else {
+                console.log(`[${entry.level}] [${entry.type}] ${entry.message}`);
+            }
+
             await this.prisma.applicationLog.create({
                 data: {
                     level: entry.level,
@@ -100,6 +142,48 @@ class Logger {
             type,
             ...context,
         });
+
+        // Send Telegram notification with all context
+        sendErrorNotification({
+            errorMessage: message,
+            context: type,
+            userId: context?.userId,
+            gameServerId: context?.gameServerId,
+            details: context?.details ? this.sanitizeDetailsForNotification(context.details) : undefined
+        }).catch(err => {
+            console.error('Failed to send error notification to Telegram:', err);
+        });
+    }
+
+    /**
+     * Sanitize details for Telegram notifications (remove large objects, truncate long strings)
+     */
+    private sanitizeDetailsForNotification(details: Record<string, any>): Record<string, unknown> {
+        const sanitized: Record<string, unknown> = {};
+
+        for (const [key, value] of Object.entries(details)) {
+            if (key === 'stack') {
+                // Include only first 3 lines of stack trace
+                if (typeof value === 'string') {
+                    const lines = value.split('\n').slice(0, 3);
+                    sanitized[key] = lines.join('\n');
+                }
+            } else if (typeof value === 'string' && value.length > 200) {
+                sanitized[key] = value.substring(0, 200) + '...';
+            } else if (typeof value === 'object' && value !== null) {
+                // Convert objects to strings but keep them short
+                const str = JSON.stringify(value);
+                if (str.length > 200) {
+                    sanitized[key] = str.substring(0, 200) + '...';
+                } else {
+                    sanitized[key] = value;
+                }
+            } else {
+                sanitized[key] = value;
+            }
+        }
+
+        return sanitized;
     }
 
     /**
@@ -112,83 +196,19 @@ class Logger {
             type,
             ...context,
         });
-    }
 
-    /**
-     * Log system events
-     */
-    async system(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'SYSTEM',
-            ...context,
+        // Send Telegram notification with all context
+        sendFatalErrorNotification({
+            errorMessage: message,
+            context: type,
+            userId: context?.userId,
+            gameServerId: context?.gameServerId,
+            additionalInfo: context?.details ? this.sanitizeDetailsForNotification(context.details) : undefined
+        }).catch(err => {
+            console.error('Failed to send fatal error notification to Telegram:', err);
         });
     }
 
-    /**
-     * Log authentication events
-     */
-    async auth(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'AUTHENTICATION',
-            ...context,
-        });
-    }
-
-    /**
-     * Log payment events
-     */
-    async payment(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'PAYMENT',
-            ...context,
-        });
-    }
-
-    /**
-     * Log game server events
-     */
-    async gameServer(
-        message: string,
-        level: LogLevel = 'INFO',
-        context?: LogContext,
-    ): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'GAME_SERVER',
-            ...context,
-        });
-    }
-
-    /**
-     * Log email events
-     */
-    async email(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'EMAIL',
-            ...context,
-        });
-    }
-
-    /**
-     * Log support ticket events
-     */
-    async ticket(message: string, level: LogLevel = 'INFO', context?: LogContext): Promise<void> {
-        await this.log({
-            message,
-            level,
-            type: 'SUPPORT_TICKET',
-            ...context,
-        });
-    }
 
     /**
      * Helper to extract request context from Next.js Request object

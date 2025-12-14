@@ -100,7 +100,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         },
     });
 
-    let newServer: Server;
+    let newServer: Server | null = null;
     try {
         logger.info(`Creating Pterodactyl server for order ${order.id}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
@@ -108,7 +108,35 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             details: { serverName, egg: gameConfig.eggId, options }
         });
 
-        newServer = await pt.createServer({ ...options, skipScripts: true });
+
+        const maxRetries = 3;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                newServer = await pt.createServer({ ...options, skipScripts: true });
+                logger.info(`Pterodactyl server creation succeeded on attempt ${attempt}`, 'GAME_SERVER', {
+                    userId: serverOrder.user.id,
+                    gameServerId: dbNewServer.id,
+                    details: { attempt },
+                });
+                break;
+            } catch (error) {
+                const errText = error instanceof Error ? (error.stack || error.message) : JSON.stringify(error);
+                logger.error(`Pterodactyl server creation failed on attempt ${attempt}`, 'GAME_SERVER', {
+                    userId: serverOrder.user.id,
+                    gameServerId: dbNewServer.id,
+                    details: { attempt, error: errText },
+                });
+                if (attempt < maxRetries) {
+                    await new Promise((resolve) => setTimeout(resolve, 5000));
+                } else {
+                    throw new Error(`Failed to create Pterodactyl server after ${maxRetries} attempts: ${errText}`);
+                }
+            }
+        }
+
+        if (newServer === null || newServer === undefined) {
+            throw new Error('Pterodactyl server creation returned null');
+        }
 
         logger.info(`Pterodactyl server created: ${newServer.identifier}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
@@ -126,22 +154,22 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
 
         // Wait for server to be fully initialized before port corrections
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
+
         await correctPortsForGame(newServer.identifier, serverOrder.creationGameData.id, serverOrder.user.ptKey);
-        
+
         // Wait for port corrections to apply
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         const scriptsEnabled = await enableServerInstallScripts(
             newServer.id,   // Is Admin Id
         );
-        
+
         if (!scriptsEnabled) {
             throw new Error('Failed to enable install scripts');
         }
-        
+
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         logger.info(`Triggering install script for server ${newServer.identifier}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
             gameServerId: dbNewServer.id
