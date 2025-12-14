@@ -7,6 +7,7 @@ import { GameServer } from '@/models/gameServerModel';
 import { Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import ReinstallDialog from './ReinstallDialog';
+import DeleteFreeServerModal from './DeleteFreeServerModal';
 import ServerSettingsCard from './ServerSettingsCard';
 import MinecraftSettings from './gameSpecific/settings/MinecraftSettings';
 
@@ -53,8 +54,8 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                         </p>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-3">
-                            <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="space-y-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
                                 <div className="w-full sm:w-1/2">
                                     <ReinstallDialog
                                         apiKey={apiKey}
@@ -70,6 +71,10 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                                     </Button>
                                 </div>
                             </div>
+                            {/* Delete Free Server (only for free servers) */}
+                            {server.type === 'FREE' && (
+                                <DeleteFreeServerModal ptServerId={server.identifier} />
+                            )}
                         </div>
                     </CardContent>
                 </Card>
