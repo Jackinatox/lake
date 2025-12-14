@@ -172,29 +172,31 @@ export default function ContactForm() {
                     </div>
 
                     <CardFooter className="flex flex-col items-end gap-2 p-0 md:p-0">
-                        <Button
-                            type="submit"
-                            disabled={
-                                !session.data?.user ||
-                                isSubmitting ||
-                                !trimmedMessage ||
-                                messageTooLong
-                            }
-                        >
-                            {isSubmitting ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    {t('submitting')}
-                                </span>
-                            ) : (
-                                t('submit')
+                        <div className="flex flex-row justify-between w-full items-center gap-4">
+                            {!(session.isPending || session.data?.user) && (
+                                <p className="text-foreground font-bold">
+                                    {t('loginRequiredTitle')}
+                                </p>
                             )}
-                        </Button>
-                        {!(session.isPending || session.data?.user) && (
-                            <p className="text-sm text-muted-foreground">
-                                {t('loginRequiredTitle')}
-                            </p>
-                        )}
+                            <Button
+                                type="submit"
+                                disabled={
+                                    !session.data?.user ||
+                                    isSubmitting ||
+                                    !trimmedMessage ||
+                                    messageTooLong
+                                }
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        {t('submitting')}
+                                    </span>
+                                ) : (
+                                    t('submit')
+                                )}
+                            </Button>
+                        </div>
                     </CardFooter>
                 </form>
             </CardContent>

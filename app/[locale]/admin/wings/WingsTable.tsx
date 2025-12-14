@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface WingsTableProps {
     wings: WingModel[];
@@ -23,8 +24,8 @@ const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
                     <TableHead>ID</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Location ID</TableHead>
-                    <TableHead>Disk (GB)</TableHead>
-                    <TableHead>Memory (GB)</TableHead>
+                    <TableHead>Disk</TableHead>
+                    <TableHead>Memory</TableHead>
                     <TableHead>FQDN</TableHead>
                     <TableHead>Edit</TableHead>
                 </TableRow>
@@ -35,8 +36,16 @@ const WingsTable: React.FC<WingsTableProps> = ({ wings: wings }) => {
                         <TableCell>{wing.id}</TableCell>
                         <TableCell>{wing.name}</TableCell>
                         <TableCell>{wing.locationId}</TableCell>
-                        <TableCell>{wing.disk / 1000}</TableCell>
-                        <TableCell>{wing.memory / 1000}</TableCell>
+                        <TableCell>
+                            {formatBytes(
+                                wing.disk * (wing.diskOverAllocate / 100 + 1) * 1024 * 1024,
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            {formatBytes(
+                                wing.memory * (wing.memoryOverAllocate / 100 + 1) * 1024 * 1024,
+                            )}
+                        </TableCell>
                         <TableCell>{wing.fqdn}</TableCell>
                         <TableCell>
                             <Link href={`/admin/wings/${wing.id}`}>

@@ -15,3 +15,7 @@ export type DbSession = Prisma.GameServerOrderGetPayload<{
 export type GameServerAdmin = Prisma.GameServerGetPayload<{
     include: { user: { select: { email: true } }; location: { select: { name: true } } };
 }>;
+
+export type PackageWithCPURAM = Prisma.PackageGetPayload<{
+    include: { location: { include: { cpu: true, ram: true } } };
+}>;

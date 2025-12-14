@@ -600,7 +600,7 @@
         "dashboard": {
             "preparing": "Preparing checkout…",
             "header": {
-                "upgrade": "Upgrade"
+                "upgrade": "Upgrade/Extend"
             },
             "status": "Status:",
             "serverIP": "Server IP:",

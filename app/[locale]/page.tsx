@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, Gift } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -200,13 +200,13 @@ export default async function LandingPage() {
                             </div>
 
                             {/* CTA Buttons */}
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                            <div className="flex flex-col sm:flex-row gap-2 justify-center lg:justify-start pt-4">
                                 <Button
                                     size="lg"
                                     className="w-full sm:w-auto px-8 text-base group"
                                     asChild
                                 >
-                                    <Link href="/products/gameserver" className="w-full sm:w-auto">
+                                    <Link href="/products/gameserver" className="w-full sm:w-auto text-secondary-foreground">
                                         {t('buttonStartNow')}
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Link>
@@ -219,6 +219,18 @@ export default async function LandingPage() {
                                 >
                                     <Link href="/products/packages">{t('buttonComparePlans')}</Link>
                                 </Button>
+                                <div className='md:hidden'>
+                                    <Button
+                                        size="lg"
+                                        className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700"
+                                        asChild
+                                    >
+                                        <Link href="/products/packages" className="flex items-center justify-center gap-2 text-secondary-foreground">
+                                            <Gift className="h-4 w-4" />
+                                            Todo Translation Free
+                                        </Link>
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Stats Row */}

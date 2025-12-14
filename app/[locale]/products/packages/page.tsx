@@ -45,7 +45,7 @@ export default async function PackagesPage() {
 
             {/* Packages Grid - pulled up to overlap hero */}
             <section className="relative -mt-20 md:-mt-32 pb-16 md:pb-24 z-10">
-                <div className="mx-auto max-w-6xl px-4 md:px-6">
+                <div className="mx-auto px-2 md:px-6">
                     <PackagesList packages={packages} />
                 </div>
             </section>

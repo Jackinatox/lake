@@ -60,10 +60,11 @@ export async function changeGame({
         throw new Error('Selected game not found');
     }
 
+    await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
+    
     const newBody = await buildBody(gameConfig, newGameData);
     console.log(JSON.stringify(newBody))
 
-    await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
 
     await new Promise((resolve) => setTimeout(resolve, 200)); // Wait so the server is really killed
 
