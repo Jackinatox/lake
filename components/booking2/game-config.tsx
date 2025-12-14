@@ -2,7 +2,7 @@
 
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Card } from '@/components/ui/card';
+// Replaced Card with a plain div so we can control responsive borders directly
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfigComponent } from './minecraft-config';
 import { SatisfactoryConfigComponent } from './satisfactory-config';
@@ -36,8 +36,12 @@ export const GameConfigComponent = forwardRef(
 
         return (
             <div className="w-full">
-                <Card className="shadow-md border">
-                    <div className="p-4 lg:p-6">
+                <div
+                    className={
+                        'rounded-lg bg-card text-card-foreground md:shadow-md border-0 md:border'
+                    }
+                >
+                    <div className="p-0 md:p-4">
                         {(() => {
                             switch (game.id) {
                                 case 1: // Minecraft
@@ -59,7 +63,7 @@ export const GameConfigComponent = forwardRef(
                                     );
                                 default:
                                     return (
-                                        <div className="p-4 sm:p-6 border rounded-md bg-muted/50">
+                                        <div className="p-4 sm:p-6 sm:border sm:rounded-md bg-muted/50">
                                             <p className="text-muted-foreground text-center text-sm sm:text-base">
                                                 {t('noSpecific')}
                                             </p>
@@ -68,7 +72,7 @@ export const GameConfigComponent = forwardRef(
                             }
                         })()}
                     </div>
-                </Card>
+                </div>
             </div>
         );
     },

@@ -125,12 +125,8 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         });
 
         // Wait for server to be fully initialized before port corrections
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
-        logger.info(`Correcting ports for game ${serverOrder.creationGameData.id}`, 'GAME_SERVER', {
-            userId: serverOrder.user.id,
-            gameServerId: dbNewServer.id
-        });
         await correctPortsForGame(newServer.identifier, serverOrder.creationGameData.id, serverOrder.user.ptKey);
         
         // Wait for port corrections to apply

@@ -88,7 +88,7 @@ export async function changeGame({
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     await correctPortsForGame(gameServer.ptServerId, newGameData.id, session.user.ptKey);
 

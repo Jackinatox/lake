@@ -136,8 +136,6 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
             image: docker_image || adminServer.container.image,
         });
 
-        console.log({ body, existing_details: adminServer })
-
         // Update the server Configuration
         const response = await fetch(
             `${ptUrl}/api/application/servers/${ptAdminId}/startup`,
@@ -151,7 +149,7 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
                 body
             },
         );
-        console.log({ response })
+        
         if (!response.ok) {
             const errorData = await response.text();
             logger.error('Failed to change server docker image', 'GAME_SERVER', {

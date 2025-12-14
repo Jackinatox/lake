@@ -255,6 +255,7 @@ model User {
   @@unique([email])
   @@unique([ptUsername])
   @@map("user")
+  @@index([email])
 }
 
 model Session {
@@ -273,6 +274,7 @@ model Session {
   @@unique([token])
   @@map("session")
   @@index([userId])
+  @@index([token])
 }
 
 model Account {

@@ -69,9 +69,9 @@ export const SatisfactoryConfigComponent = forwardRef(
                     </div>
                 </div>
 
-                <div className="space-y-4 sm:space-y-6">
+                <div className="space-y-2 md:space-y-6">
                     {/* Early Access Toggle */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-2 md:p-4 border rounded-lg">
                         <div className="space-y-1">
                             <Label
                                 htmlFor="isEarlyAccess"
@@ -93,7 +93,7 @@ export const SatisfactoryConfigComponent = forwardRef(
                     </div>
 
                     {/* MAX_PLAYERS */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-2 md:p-4 border rounded-lg">
                         <div className="space-y-1">
                             <Label
                                 htmlFor="maxPlayers"
@@ -122,7 +122,7 @@ export const SatisfactoryConfigComponent = forwardRef(
                     </div>
 
                     {/* NUM_AUTOSAVES */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-2 md:p-4 border rounded-lg">
                         <div className="space-y-1">
                             <Label
                                 htmlFor="numAutosaves"
@@ -151,7 +151,7 @@ export const SatisfactoryConfigComponent = forwardRef(
                     </div>
 
                     {/* AUTOSAVE_INTERVAL */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-2 md:p-4 border rounded-lg">
                         <div className="space-y-1">
                             <Label
                                 htmlFor="autosaveInterval"
@@ -179,7 +179,7 @@ export const SatisfactoryConfigComponent = forwardRef(
                     </div>
 
                     {/* UPLOAD_CRASH_REPORT */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border rounded-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-2 md:p-4 border rounded-lg">
                         <div className="space-y-1">
                             <Label
                                 htmlFor="uploadCrashReport"
