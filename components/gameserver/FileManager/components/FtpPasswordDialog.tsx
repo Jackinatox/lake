@@ -17,6 +17,7 @@ import { Copy, Loader2 } from 'lucide-react';
 import { updateFtpPassword } from '@/app/actions/gameservers/updateFtpPassword';
 import { useToast } from '@/hooks/use-toast';
 import { FTP_PASSWORD_MAX_LENGTH, FTP_PASSWORD_MIN_LENGTH } from '@/app/GlobalConstants';
+import { useTranslations } from 'next-intl';
 
 interface FtpPasswordDialogProps {
     open: boolean;
@@ -30,6 +31,7 @@ export function FtpPasswordDialog({
     serverIdentifier,
 }: FtpPasswordDialogProps) {
     const { toast } = useToast();
+    const t = useTranslations('gameserver.fileManager.ftpPassword');
 
     const [passwordInput, setPasswordInput] = useState('');
     const [passwordConfirmInput, setPasswordConfirmInput] = useState('');
@@ -79,13 +81,13 @@ export function FtpPasswordDialog({
         try {
             await navigator.clipboard.writeText(passwordResult);
             toast({
-                title: 'Password copied',
-                description: 'Paste it into your FTP client to sign in.',
+                title: t('toasts.passwordCopied'),
+                description: t('toasts.passwordCopiedDescription'),
             });
         } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unable to copy password.';
+            const message = error instanceof Error ? error.message : t('toasts.copyFailed');
             toast({
-                title: 'Unable to copy password',
+                title: t('toasts.copyFailed'),
                 description: message,
                 variant: 'destructive',
             });
@@ -104,17 +106,15 @@ export function FtpPasswordDialog({
 
         if (trimmedPassword.length > 0) {
             if (trimmedPassword !== trimmedConfirm) {
-                setPasswordError('Passwords do not match.');
+                setPasswordError(t('errors.passwordMismatch'));
                 return;
             }
             if (trimmedPassword.length < FTP_PASSWORD_MIN_LENGTH) {
-                setPasswordError(
-                    `Password must be at least ${FTP_PASSWORD_MIN_LENGTH} characters.`,
-                );
+                setPasswordError(t('errors.passwordTooShort', { min: FTP_PASSWORD_MIN_LENGTH }));
                 return;
             }
             if (trimmedPassword.length > FTP_PASSWORD_MAX_LENGTH) {
-                setPasswordError(`Password must not exceed ${FTP_PASSWORD_MAX_LENGTH} characters.`);
+                setPasswordError(t('errors.passwordTooLong', { max: FTP_PASSWORD_MAX_LENGTH }));
                 return;
             }
         }
@@ -127,10 +127,10 @@ export function FtpPasswordDialog({
                 });
 
                 if (!result.success) {
-                    const errorMessage = result.error ?? 'Unable to change FTP password.';
+                    const errorMessage = result.error ?? t('toasts.updateFailed');
                     setPasswordError(errorMessage);
                     toast({
-                        title: 'Unable to update password',
+                        title: t('toasts.updateFailed'),
                         description: errorMessage,
                         variant: 'destructive',
                     });
@@ -142,8 +142,8 @@ export function FtpPasswordDialog({
                 setPasswordInput(nextPassword || '');
                 setPasswordConfirmInput(nextPassword || '');
                 toast({
-                    title: 'FTP password updated',
-                    description: 'Use the password below when connecting via SFTP.',
+                    title: t('toasts.passwordUpdated'),
+                    description: t('toasts.passwordUpdatedDescription'),
                 });
             })();
         });
@@ -153,11 +153,9 @@ export function FtpPasswordDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Change FTP password</DialogTitle>
+                    <DialogTitle>{t('dialogTitle')}</DialogTitle>
                     <DialogDescription>
-                        {passwordResult
-                            ? 'Copy the new password before closing this window.'
-                            : `Enter a new password or leave the fields blank to let us generate one for you.`}
+                        {passwordResult ? t('dialogDescriptionResult') : t('dialogDescriptionSet')}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -165,7 +163,7 @@ export function FtpPasswordDialog({
                     <div className="space-y-4">
                         <div className="rounded-md border bg-muted/40 p-4">
                             <div className="mb-2 flex items-center justify-between text-xs uppercase text-muted-foreground">
-                                <span>New password</span>
+                                <span>{t('newPasswordLabel')}</span>
                                 <Button
                                     type="button"
                                     variant="ghost"
@@ -174,25 +172,22 @@ export function FtpPasswordDialog({
                                     onClick={handlePasswordCopy}
                                 >
                                     <Copy className="mr-1 h-3.5 w-3.5" />
-                                    Copy
+                                    {t('copyButton')}
                                 </Button>
                             </div>
                             <p
-                                className="break-words font-mono text-sm"
+                                className="wrap-break-word font-mono text-sm"
                                 data-testid="ftp-new-password"
                             >
                                 {passwordResult}
                             </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                            This password is only shown once. Store it somewhere safe before closing
-                            the dialog.
-                        </p>
+                        <p className="text-xs text-muted-foreground">{t('warningText')}</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="ftp-password">New password</Label>
+                            <Label htmlFor="ftp-password">{t('newPasswordLabel')}</Label>
                             <Input
                                 id="ftp-password"
                                 type="password"
@@ -203,7 +198,9 @@ export function FtpPasswordDialog({
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="ftp-password-confirm">Confirm password</Label>
+                            <Label htmlFor="ftp-password-confirm">
+                                {t('confirmPasswordLabel')}
+                            </Label>
                             <Input
                                 id="ftp-password-confirm"
                                 type="password"
@@ -222,7 +219,7 @@ export function FtpPasswordDialog({
                 <DialogFooter>
                     {passwordResult ? (
                         <Button type="button" onClick={() => onOpenChange(false)}>
-                            Done
+                            {t('doneButton')}
                         </Button>
                     ) : (
                         <>
@@ -232,7 +229,7 @@ export function FtpPasswordDialog({
                                 onClick={() => onOpenChange(false)}
                                 disabled={isUpdatingPassword}
                             >
-                                Cancel
+                                {t('cancelButton')}
                             </Button>
                             <Button
                                 type="button"
@@ -243,7 +240,9 @@ export function FtpPasswordDialog({
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 )}
 
-                                {passwordInput.trim() ? 'Set password' : 'Generate password'}
+                                {passwordInput.trim()
+                                    ? t('setPasswordButton')
+                                    : t('generatePasswordButton')}
                             </Button>
                         </>
                     )}

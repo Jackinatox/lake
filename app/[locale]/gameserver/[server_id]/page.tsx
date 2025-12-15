@@ -49,7 +49,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     }
 
     const ptApiKey = session.user.ptKey;
-    const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL')!;
 
     try {
         const pt = createPtClient();
@@ -66,7 +66,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             <ServerLoader
                 serverId={serverId}
                 ptApiKey={ptApiKey}
-                baseUrl={baseUrl || ''}
+                baseUrl={baseUrl}
                 initialServer={initialServer}
             />
         );

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Folder } from 'lucide-react';
 import { Fragment, memo, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface DirectoryBreadcrumbProps {
     path: string;
@@ -33,6 +34,7 @@ const DirectoryBreadcrumbComponent = ({
     onRefresh,
     className,
 }: DirectoryBreadcrumbProps) => {
+    const t = useTranslations('gameserver.fileManager.breadcrumb');
     const segments = useMemo(() => normalize(path), [path]);
 
     const buildPath = (index: number) => {
@@ -53,7 +55,7 @@ const DirectoryBreadcrumbComponent = ({
                                 onClick={() => onNavigate('/')}
                             >
                                 <Folder className="h-4 w-4" />
-                                root
+                                {t('root')}
                             </button>
                         </BreadcrumbLink>
                     </BreadcrumbItem>

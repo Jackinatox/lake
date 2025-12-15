@@ -37,6 +37,7 @@ import { FtpAccessDetails } from './components/FtpAccessDetails';
 import { FtpPasswordDialog } from './components/FtpPasswordDialog';
 import { authClient } from '@/lib/auth-client';
 import { MAX_EDITABLE_FILE_SIZE, MAX_EDITABLE_FILE_SIZE_LABEL } from '@/app/GlobalConstants';
+import { useTranslations } from 'next-intl';
 
 interface FileManagerProps {
     apiKey: string;
@@ -195,6 +196,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     const [deleting, setDeleting] = useState<boolean>(false);
     const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
     const { data: session } = authClient.useSession();
+    const t = useTranslations('gameserver.fileManager');
 
     const canInteract = Boolean(server && apiKey);
 
@@ -215,7 +217,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 const message = err instanceof Error ? err.message : 'Failed to load directory';
                 setError(message);
                 toast({
-                    title: 'Unable to list files',
+                    title: t('toasts.unableToList'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -289,9 +291,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 loading: false,
             }));
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to load file';
+            const message = err instanceof Error ? err.message : t('toasts.unableToOpenDescription');
             toast({
-                title: 'Unable to open file',
+                title: t('toasts.unableToOpen'),
                 description: message,
                 variant: 'destructive',
             });
@@ -309,8 +311,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             }
             if ((entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE) {
                 toast({
-                    title: 'File too large to edit',
-                    description: `Only files up to ${MAX_EDITABLE_FILE_SIZE_LABEL} can be opened in the browser. Download the file to edit it locally.`,
+                    title: t('toasts.fileTooLarge'),
+                    description: t('toasts.fileTooLargeDescription', { maxSize: MAX_EDITABLE_FILE_SIZE_LABEL }),
                 });
                 return;
             }
@@ -335,14 +337,14 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         try {
             await writeFile(server.identifier, editorState.path, editorState.content, apiKey);
             toast({
-                title: 'File saved',
-                description: `${editorState.fileName} was updated successfully.`,
+                title: t('toasts.fileSaved'),
+                description: t('toasts.fileSavedDescription', { fileName: editorState.fileName ?? '' }),
             });
             await fetchDirectory(currentPath);
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to save file';
             toast({
-                title: 'Unable to save file',
+                title: t('toasts.unableToSave'),
                 description: message,
                 variant: 'destructive',
             });
@@ -364,7 +366,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to start download';
             toast({
-                title: 'Unable to download',
+                title: t('toasts.unableToDownload'),
                 description: message,
                 variant: 'destructive',
             });
@@ -383,8 +385,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         const trimmed = renameValue.trim();
         if (!trimmed) {
             toast({
-                title: 'Name is required',
-                description: 'Please enter a new name before saving.',
+                title: t('toasts.nameRequired'),
+                description: t('toasts.nameRequiredDescription'),
                 variant: 'destructive',
             });
             return;
@@ -400,8 +402,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         try {
             await renameEntry(server.identifier, currentPath, renameTarget.name, trimmed, apiKey);
             toast({
-                title: 'Entry renamed',
-                description: `${renameTarget.name} is now ${trimmed}.`,
+                title: t('toasts.entryRenamed'),
+                description: t('toasts.entryRenamedDescription', { oldName: renameTarget.name, newName: trimmed }),
             });
             setRenameTarget(null);
             setRenameValue('');
@@ -409,7 +411,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to rename entry';
             toast({
-                title: 'Unable to rename',
+                title: t('toasts.unableToRename'),
                 description: message,
                 variant: 'destructive',
             });
@@ -430,8 +432,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         try {
             await deleteEntry(server.identifier, currentPath, deleteTarget.name, apiKey);
             toast({
-                title: 'Entry deleted',
-                description: `${deleteTarget.name} has been removed.`,
+                title: t('toasts.entryDeleted'),
+                description: t('toasts.entryDeletedDescription', { name: deleteTarget.name }),
             });
             setDeleteTarget(null);
             setOpenMenuKey(null);
@@ -442,7 +444,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to delete entry';
             toast({
-                title: 'Unable to delete',
+                title: t('toasts.unableToDelete'),
                 description: message,
                 variant: 'destructive',
             });
@@ -478,8 +480,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         if (!canInteract) return;
         if (!uploadState.files || uploadState.files.length === 0) {
             toast({
-                title: 'No files selected',
-                description: 'Choose one or more files before uploading.',
+                title: t('toasts.noFilesSelected'),
+                description: t('toasts.noFilesSelectedDescription'),
             });
             return;
         }
@@ -498,16 +500,16 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             );
 
             toast({
-                title: 'Upload complete',
-                description: `${uploadState.files.length} file(s) uploaded successfully.`,
+                title: t('toasts.uploadComplete'),
+                description: t('toasts.uploadCompleteDescription', { count: uploadState.files.length }),
             });
 
             setUploadState(initialUploadState);
             await fetchDirectory(currentPath);
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Upload failed';
+            const message = err instanceof Error ? err.message : t('toasts.uploadFailed');
             toast({
-                title: 'Unable to upload',
+                title: t('toasts.unableToUpload'),
                 description: message,
                 variant: 'destructive',
             });
@@ -524,13 +526,13 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             <CardHeader className="space-y-3">
                 <CardTitle className="flex items-center gap-3 text-xl">
                     <FolderTree className="h-5 w-5" />
-                    File Manager
+                    {t('title')}
                 </CardTitle>
                 {!canInteract && (
                     <Alert variant="destructive">
                         <AlertDescription className="flex items-center gap-2 text-sm">
                             <FileWarning className="h-4 w-4" />
-                            Provide a valid API key to browse and manage files.
+                            {t('noApiKeyAlert')}
                         </AlertDescription>
                     </Alert>
                 )}
@@ -615,26 +617,26 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Rename {renameTarget?.isFile ? 'file' : 'folder'}
+                            {renameTarget?.isFile ? t('rename.dialogTitleFile') : t('rename.dialogTitleFolder')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Choose a new name for{' '}
+                            {t('rename.dialogDescription', { name: '' })}{' '}
                             <span className="font-semibold">{renameTarget?.name}</span>.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <Input
                         value={renameValue}
                         onChange={(event) => setRenameValue(event.target.value)}
-                        placeholder="New name"
+                        placeholder={t('rename.inputPlaceholder')}
                         autoFocus
                         disabled={renaming}
                     />
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={handleRenameDialogClose} disabled={renaming}>
-                            Cancel
+                            {t('rename.cancelButton')}
                         </AlertDialogCancel>
                         <AlertDialogAction onClick={handleRenameConfirm} disabled={renaming}>
-                            {renaming ? 'Renaming…' : 'Rename'}
+                            {renaming ? t('rename.renamingButton') : t('rename.renameButton')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -647,24 +649,23 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Delete {deleteTarget?.isFile ? 'file' : 'folder'}
+                            {deleteTarget?.isFile ? t('delete.dialogTitleFile') : t('delete.dialogTitleFolder')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            This action can&apos;t be undone. You&apos;re about to permanently
-                            remove
+                            {t('delete.dialogDescription', { name: '' })}
                             <span className="font-semibold"> {deleteTarget?.name}</span>.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={handleDeleteDialogClose} disabled={deleting}>
-                            Cancel
+                            {t('delete.cancelButton')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             onClick={handleDeleteConfirm}
                             disabled={deleting}
                         >
-                            {deleting ? 'Deleting…' : 'Delete'}
+                            {deleting ? t('delete.deletingButton') : t('delete.deleteButton')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

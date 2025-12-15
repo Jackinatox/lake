@@ -1,32 +1,53 @@
-# Project: Lake
+<img src="./public/images/light/logo/ScyedLogo.webp" alt="Scyed Logo" width="200" />
 
-This project is a full-stack web application for renting and managing game servers, built with Next.js, TypeScript, and integrated with the Pterodactyl game server management panel.
+# Lake
+### Scyed Game Server Hosting Platform
 
-## Incomplete Feature: Server Booking Flow
+A full-stack game server hosting platform with Stripe payments, Pterodactyl integration, and a free-tier system. Built with Next.js 16, TypeScript, and Prisma.
 
-The current server booking process is incomplete. The user's selected server configuration is not saved before they are redirected to payment, which means the application does not know what to provision after a successful transaction.
+## Features
 
-## TODO
+- **Multi-Game Support** - Minecraft, Palworld, and more with game-specific configurations
+- **Free Tier** - 30 or 60-day renewable free servers with automatic cleanup
+- **Payment Integration** - Stripe Embedded Checkout with webhook-driven provisioning
+- **Server Management** - Real-time console, file manager with in-browser editing, resource monitoring
+- **SFTP Access** - Full file access with password rotation via Pterodactyl API
+- **Authentication** - Better Auth with Discord/Google OAuth and email/password. 2FA (Planned)
+- **Internationalization** - almost Full German and English translations (next-intl)
+- **Background Jobs** - Custom Bun worker for server provisioning, reminders, and cleanup
 
-Here is the plan to complete the server booking feature:
+## Tech Stack
 
-- [x] **Update Database Schema:**
-    - Add a new `ServerOrder` table to the Prisma schema (`prisma/schema.prisma`).
-    - This table will temporarily store the user's hardware and game configuration, along with the payment status and user details.
+**Frontend**
+- Next.js 16 (App Router) with TypeScript
+- Tailwind CSS + shadcn/ui components
+- next-intl for i18n (de/en)
+- Real-time WebSocket console
 
-- [x] **Modify Booking Logic:**
-    - Update the server-side logic that is called when the user submits their configuration.
-    - This logic will now:
-        - Save the chosen server configuration to the new `ServerOrder` table with a `PENDING` status.
-        - Create a Stripe payment intent and associate it with the newly created order record.
+**Backend**
+- Server Actions for mutations
+- Route handlers for Pterodactyl API proxying
+- Better Auth (Prisma adapter)
+- Prisma ORM + PostgreSQL
+- Nextjs caching for KeyValue from Database
+- Upcomming: Redis cache
 
-- [x] **Update Frontend Component:**
-    - Adjust the frontend page (`app/[locale]/booking2/[gameId]/page.tsx`) to call this updated server logic before redirecting the user to the payment page.
+**Integrations**
+- Pterodactyl Panel API (requires custom modifications)
+- Stripe payment processing + webhooks
+- Discord/Google OAuth
 
-- [x] **Enhance Payment Webhook:**
-    - Modify the Stripe webhook handler (`app/webhook/route.ts`).
-    - When a payment is successful, it will:
-        - Find the corresponding `ServerOrder` using the payment intent ID.
-        - Mark the order as `PAID`.
-        - Use the saved configuration from the order to create the game server via the Pterodactyl API.
-        - Update the order status to `CREATED`.
+## Project Status
+
+This is production code for Scyed.com. It likely won't work out of the box for others due to:
+- Undocumented Pterodactyl Panel modifications
+- Hardcoded assumptions about panel structure
+- Custom API endpoints required on panel side
+
+No setup documentation is planned. Use as reference only.
+
+## Notes
+
+License TBD.
+
+No AI was harmend in the making of this project

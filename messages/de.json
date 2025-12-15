@@ -573,7 +573,8 @@
         "documentation": "Dokumentation (Bald verfügbar)",
         "about": "Über uns (Bald verfügbar)",
         "blog": "Blog",
-        "company": "Unternehmen"
+        "company": "Unternehmen",
+        "sourcecode": "Quellcode"
     },
     "gameserver": {
         "freeServer": "Kostenlos",
@@ -636,6 +637,133 @@
             "memory": {
                 "usage": "Speicherauslastung",
                 "current": "Aktuell:"
+            }
+        },
+        "fileManager": {
+            "title": "Datei-Manager",
+            "noApiKeyAlert": "Gib einen gültigen API-Schlüssel an, um Dateien zu durchsuchen und zu verwalten.",
+            "toolbar": {
+                "filterPlaceholder": "Dateien filtern",
+                "refreshButton": "Aktualisieren",
+                "uploadButton": "Hochladen"
+            },
+            "breadcrumb": {
+                "root": "root"
+            },
+            "table": {
+                "columns": {
+                    "name": "Name",
+                    "size": "Größe",
+                    "modifiedAt": "Geändert",
+                    "createdAt": "Erstellt"
+                },
+                "loading": "Verzeichnis wird geladen…",
+                "empty": "Dieses Verzeichnis ist leer.",
+                "parentDirectory": "..",
+                "actions": {
+                    "open": "Öffnen",
+                    "download": "Herunterladen",
+                    "rename": "Umbenennen",
+                    "delete": "Löschen"
+                }
+            },
+            "ftpAccess": {
+                "title": "FTP-Zugangsdaten",
+                "host": "Host",
+                "username": "Benutzername",
+                "password": "Passwort",
+                "changePasswordButton": "FTP-Passwort ändern",
+                "description": "Verwende diese Zugangsdaten mit deinem bevorzugten FTP/SFTP-Client. Du kannst das Passwort jederzeit ändern.",
+                "copiedToast": "{label} kopiert",
+                "copyFailedToast": "{label} konnte nicht kopiert werden",
+                "copyFailedDescription": "Bitte kopiere es stattdessen manuell."
+            },
+            "ftpPassword": {
+                "dialogTitle": "FTP-Passwort ändern",
+                "dialogDescriptionSet": "Gib ein neues Passwort ein oder lasse die Felder leer, damit wir eines für dich generieren.",
+                "dialogDescriptionResult": "Kopiere das neue Passwort, bevor du dieses Fenster schließt.",
+                "newPasswordLabel": "Neues Passwort",
+                "confirmPasswordLabel": "Passwort bestätigen",
+                "copyButton": "Kopieren",
+                "cancelButton": "Abbrechen",
+                "doneButton": "Fertig",
+                "setPasswordButton": "Passwort setzen",
+                "generatePasswordButton": "Passwort generieren",
+                "warningText": "Dieses Passwort wird nur einmal angezeigt. Bewahre es an einem sicheren Ort auf, bevor du den Dialog schließt.",
+                "errors": {
+                    "passwordMismatch": "Passwörter stimmen nicht überein.",
+                    "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein.",
+                    "passwordTooLong": "Passwort darf nicht länger als {max} Zeichen sein."
+                },
+                "toasts": {
+                    "passwordCopied": "Passwort kopiert",
+                    "passwordCopiedDescription": "Füge es in deinen FTP-Client ein, um dich anzumelden.",
+                    "passwordUpdated": "FTP-Passwort aktualisiert",
+                    "passwordUpdatedDescription": "Verwende das folgende Passwort bei der Verbindung über SFTP.",
+                    "updateFailed": "Passwort konnte nicht aktualisiert werden",
+                    "copyFailed": "Passwort konnte nicht kopiert werden"
+                }
+            },
+            "upload": {
+                "dialogTitle": "Dateien hochladen",
+                "dialogDescription": "Dateien werden nach {directory} hochgeladen",
+                "selectFilesText": "Wähle von deinem Gerät aus.",
+                "chooseFilesButton": "Dateien auswählen",
+                "selectedFilesLabel": "Ausgewählte Dateien:",
+                "cancelButton": "Abbrechen",
+                "uploadButton": "Hochladen"
+            },
+            "editor": {
+                "dialogTitle": "Datei",
+                "dialogDescriptionEditable": "Mache deine Änderungen unten und drücke auf Speichern, um die Datei zu aktualisieren.",
+                "dialogDescriptionBinary": "Binärdateien können nicht im Browser bearbeitet werden.",
+                "loadingText": "Dateiinhalt wird geladen…",
+                "binaryFileWarning": "Diese Datei scheint binär zu sein oder ist zu groß für die Anzeige im Browser.",
+                "binaryFileDownload": "Bitte lade sie stattdessen herunter.",
+                "cancelButton": "Abbrechen",
+                "saveButton": "Änderungen speichern"
+            },
+            "rename": {
+                "dialogTitleFile": "Datei umbenennen",
+                "dialogTitleFolder": "Ordner umbenennen",
+                "dialogDescription": "Wähle einen neuen Namen für {name}.",
+                "inputPlaceholder": "Neuer Name",
+                "cancelButton": "Abbrechen",
+                "renameButton": "Umbenennen",
+                "renamingButton": "Wird umbenannt…"
+            },
+            "delete": {
+                "dialogTitleFile": "Datei löschen",
+                "dialogTitleFolder": "Ordner löschen",
+                "dialogDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Du bist dabei, {name} dauerhaft zu entfernen.",
+                "cancelButton": "Abbrechen",
+                "deleteButton": "Löschen",
+                "deletingButton": "Wird gelöscht…"
+            },
+            "toasts": {
+                "unableToList": "Dateien konnten nicht aufgelistet werden",
+                "unableToOpen": "Datei konnte nicht geöffnet werden",
+                "unableToOpenDescription": "Datei konnte nicht geladen werden",
+                "fileTooLarge": "Datei zu groß zum Bearbeiten",
+                "fileTooLargeDescription": "Nur Dateien bis {maxSize} können im Browser geöffnet werden. Lade die Datei herunter, um sie lokal zu bearbeiten.",
+                "fileSaved": "Datei gespeichert",
+                "fileSavedDescription": "{fileName} wurde erfolgreich aktualisiert.",
+                "unableToSave": "Datei konnte nicht gespeichert werden",
+                "unableToDownload": "Download nicht möglich",
+                "nameRequired": "Name erforderlich",
+                "nameRequiredDescription": "Bitte gib einen neuen Namen ein, bevor du speicherst.",
+                "entryRenamed": "Eintrag umbenannt",
+                "entryRenamedDescription": "{oldName} heißt jetzt {newName}.",
+                "unableToRename": "Umbenennen nicht möglich",
+                "entryDeleted": "Eintrag gelöscht",
+                "entryDeletedDescription": "{name} wurde entfernt.",
+                "unableToDelete": "Löschen nicht möglich",
+                "noFilesSelected": "Keine Dateien ausgewählt",
+                "noFilesSelectedDescription": "Wähle eine oder mehrere Dateien aus, bevor du hochlädst.",
+                "uploadComplete": "Upload abgeschlossen",
+                "uploadCompleteDescription": "{count} Datei(en) erfolgreich hochgeladen.",
+                "uploadFailed": "Upload fehlgeschlagen",
+                "unableToUpload": "Hochladen nicht möglich"
             }
         }
     },

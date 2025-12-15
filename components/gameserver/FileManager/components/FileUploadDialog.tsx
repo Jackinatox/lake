@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { UploadCloud } from 'lucide-react';
 import { ChangeEvent, ReactNode, memo, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface FileUploadDialogProps {
     children?: ReactNode;
@@ -43,6 +44,7 @@ const FileUploadDialogComponent = ({
     onFileSelect,
     onUpload,
 }: FileUploadDialogProps) => {
+    const t = useTranslations('gameserver.fileManager.upload');
     const progressLabel = useMemo(() => {
         if (!isUploading) return null;
         return `${progress}%`;
@@ -57,10 +59,9 @@ const FileUploadDialogComponent = ({
             {children && <DialogTrigger asChild>{children}</DialogTrigger>}
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Upload files</DialogTitle>
+                    <DialogTitle>{t('dialogTitle')}</DialogTitle>
                     <DialogDescription>
-                        Files will be uploaded to{' '}
-                        <span className="font-mono">{formatDirectory(directory)}</span>
+                        {t('dialogDescription', { directory: formatDirectory(directory) })}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -68,14 +69,14 @@ const FileUploadDialogComponent = ({
                     <div className="rounded-lg border border-dashed p-6 text-center">
                         <UploadCloud className="mx-auto h-10 w-10 text-muted-foreground" />
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Select from your device.
+                            {t('selectFilesText')}
                         </p>
                         <div className="mt-4 flex justify-center">
                             <Label
                                 htmlFor="file-upload-input"
                                 className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                             >
-                                Choose files
+                                {t('chooseFilesButton')}
                             </Label>
                             <Input
                                 id="file-upload-input"
@@ -90,7 +91,7 @@ const FileUploadDialogComponent = ({
 
                     {files && files.length > 0 && (
                         <div className="rounded-md border bg-muted/40 p-3 text-sm">
-                            <p className="font-medium">Selected files:</p>
+                            <p className="font-medium">{t('selectedFilesLabel')}</p>
                             <ul className="mt-2 space-y-1 font-mono text-xs">
                                 {Array.from(files).map((file) => (
                                     <li key={file.name}>{file.name}</li>
@@ -114,14 +115,14 @@ const FileUploadDialogComponent = ({
                         onClick={() => onOpenChange(false)}
                         disabled={isUploading}
                     >
-                        Cancel
+                        {t('cancelButton')}
                     </Button>
                     <Button
                         type="button"
                         onClick={onUpload}
                         disabled={isUploading || !files || files.length === 0}
                     >
-                        Upload
+                        {t('uploadButton')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

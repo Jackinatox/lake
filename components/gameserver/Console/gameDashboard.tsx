@@ -311,7 +311,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
             <div className="w-full">
                 {/* Header with server info and controls - spans full width */}
-                <Card className="border-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
+                <Card className="border-2 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
                     <CardHeader className="pb-2">
                         <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
                             <CardTitle className="text-xl font-bold">{server.name}</CardTitle>

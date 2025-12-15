@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { FileEntry, SortColumn, SortDirection } from '../types';
 import { MouseEvent, memo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -48,13 +49,6 @@ interface DirectoryTableProps {
     isTextLikeFile: (entry: FileEntry) => boolean;
 }
 
-const sortLabel: Record<SortColumn, string> = {
-    name: 'Name',
-    size: 'Size',
-    modifiedAt: 'Modified',
-    createdAt: 'Created',
-};
-
 function formatBytes(bytes: number) {
     if (!Number.isFinite(bytes) || bytes <= 0) return '—';
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -76,32 +70,6 @@ function formatDate(value: string) {
     }).format(date);
 }
 
-function SortableHeader({
-    column,
-    active,
-    direction,
-    onSort,
-}: {
-    column: SortColumn;
-    active: boolean;
-    direction: SortDirection;
-    onSort: (column: SortColumn) => void;
-}) {
-    return (
-        <button
-            type="button"
-            className={cn(
-                'inline-flex items-center gap-2 font-medium',
-                active ? 'text-foreground' : 'text-muted-foreground',
-            )}
-            onClick={() => onSort(column)}
-        >
-            {sortLabel[column]}
-            {active && <span className="text-xs">{direction === 'asc' ? '▲' : '▼'}</span>}
-        </button>
-    );
-}
-
 const DirectoryTableComponent = ({
     entries,
     currentPath,
@@ -118,7 +86,41 @@ const DirectoryTableComponent = ({
     onMenuOpenKeyChange,
     isTextLikeFile,
 }: DirectoryTableProps) => {
+    const t = useTranslations('gameserver.fileManager.table');
     const hasParent = currentPath !== '/';
+
+    const sortLabel: Record<SortColumn, string> = {
+        name: t('columns.name'),
+        size: t('columns.size'),
+        modifiedAt: t('columns.modifiedAt'),
+        createdAt: t('columns.createdAt'),
+    };
+
+    function SortableHeader({
+        column,
+        active,
+        direction,
+        onSort,
+    }: {
+        column: SortColumn;
+        active: boolean;
+        direction: SortDirection;
+        onSort: (column: SortColumn) => void;
+    }) {
+        return (
+            <button
+                type="button"
+                className={cn(
+                    'inline-flex items-center gap-2 font-medium',
+                    active ? 'text-foreground' : 'text-muted-foreground',
+                )}
+                onClick={() => onSort(column)}
+            >
+                {sortLabel[column]}
+                {active && <span className="text-xs">{direction === 'asc' ? '▲' : '▼'}</span>}
+            </button>
+        );
+    }
 
     const handleRowClick = (event: MouseEvent<HTMLTableRowElement>, entry: FileEntry) => {
         const target = event.target as HTMLElement | null;
@@ -177,7 +179,7 @@ const DirectoryTableComponent = ({
                             >
                                 <div className="flex items-center justify-center gap-2">
                                     <Loader2 className="h-4 w-4 animate-spin" />
-                                    Loading directory…
+                                    {t('loading')}
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -193,7 +195,7 @@ const DirectoryTableComponent = ({
                             <TableCell colSpan={5} className="py-2">
                                 <div className="flex items-center gap-2">
                                     <FolderOpen className="h-4 w-4 text-muted-foreground" />
-                                    ..
+                                    {t('parentDirectory')}
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -205,7 +207,7 @@ const DirectoryTableComponent = ({
                                 colSpan={5}
                                 className="py-12 text-center text-muted-foreground"
                             >
-                                This directory is empty.
+                                {t('empty')}
                             </TableCell>
                         </TableRow>
                     )}
@@ -291,7 +293,7 @@ const DirectoryTableComponent = ({
                                                         }}
                                                     >
                                                         <OpenIcon className="mr-2 h-4 w-4" />
-                                                        Open
+                                                        {t('actions.open')}
                                                     </DropdownMenuItem>
                                                     {entry.isFile && (
                                                         <DropdownMenuItem
@@ -302,7 +304,7 @@ const DirectoryTableComponent = ({
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Download
+                                                            {t('actions.download')}
                                                         </DropdownMenuItem>
                                                     )}
                                                 </DropdownMenuGroup>
@@ -316,7 +318,7 @@ const DirectoryTableComponent = ({
                                                         }}
                                                     >
                                                         <Pencil className="mr-2 h-4 w-4" />
-                                                        Rename
+                                                        {t('actions.rename')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         className="text-destructive focus:text-destructive"
@@ -327,7 +329,7 @@ const DirectoryTableComponent = ({
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete
+                                                        {t('actions.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuGroup>
                                             </DropdownMenuContent>

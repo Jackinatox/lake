@@ -572,7 +572,8 @@
         "documentation": "Documentation (Coming Soon)",
         "about": "About Us (Coming Soon)",
         "blog": "Blog",
-        "company": "Company"
+        "company": "Company",
+        "sourcecode": "Source Code"
     },
     "gameserver": {
         "freeServer": "Free",
@@ -635,6 +636,133 @@
             "memory": {
                 "usage": "Memory Usage",
                 "current": "Current:"
+            }
+        },
+        "fileManager": {
+            "title": "File Manager",
+            "noApiKeyAlert": "Provide a valid API key to browse and manage files.",
+            "toolbar": {
+                "filterPlaceholder": "Filter files",
+                "refreshButton": "Refresh",
+                "uploadButton": "Upload"
+            },
+            "breadcrumb": {
+                "root": "root"
+            },
+            "table": {
+                "columns": {
+                    "name": "Name",
+                    "size": "Size",
+                    "modifiedAt": "Modified",
+                    "createdAt": "Created"
+                },
+                "loading": "Loading directory…",
+                "empty": "This directory is empty.",
+                "parentDirectory": "..",
+                "actions": {
+                    "open": "Open",
+                    "download": "Download",
+                    "rename": "Rename",
+                    "delete": "Delete"
+                }
+            },
+            "ftpAccess": {
+                "title": "FTP access details",
+                "host": "Host",
+                "username": "Username",
+                "password": "Password",
+                "changePasswordButton": "Change FTP password",
+                "description": "Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.",
+                "copiedToast": "{label} copied",
+                "copyFailedToast": "Unable to copy {label}",
+                "copyFailedDescription": "Please copy it manually instead."
+            },
+            "ftpPassword": {
+                "dialogTitle": "Change FTP password",
+                "dialogDescriptionSet": "Enter a new password or leave the fields blank to let us generate one for you.",
+                "dialogDescriptionResult": "Copy the new password before closing this window.",
+                "newPasswordLabel": "New password",
+                "confirmPasswordLabel": "Confirm password",
+                "copyButton": "Copy",
+                "cancelButton": "Cancel",
+                "doneButton": "Done",
+                "setPasswordButton": "Set password",
+                "generatePasswordButton": "Generate password",
+                "warningText": "This password is only shown once. Store it somewhere safe before closing the dialog.",
+                "errors": {
+                    "passwordMismatch": "Passwords do not match.",
+                    "passwordTooShort": "Password must be at least {min} characters.",
+                    "passwordTooLong": "Password must not exceed {max} characters."
+                },
+                "toasts": {
+                    "passwordCopied": "Password copied",
+                    "passwordCopiedDescription": "Paste it into your FTP client to sign in.",
+                    "passwordUpdated": "FTP password updated",
+                    "passwordUpdatedDescription": "Use the password below when connecting via SFTP.",
+                    "updateFailed": "Unable to update password",
+                    "copyFailed": "Unable to copy password"
+                }
+            },
+            "upload": {
+                "dialogTitle": "Upload files",
+                "dialogDescription": "Files will be uploaded to {directory}",
+                "selectFilesText": "Select from your device.",
+                "chooseFilesButton": "Choose files",
+                "selectedFilesLabel": "Selected files:",
+                "cancelButton": "Cancel",
+                "uploadButton": "Upload"
+            },
+            "editor": {
+                "dialogTitle": "File",
+                "dialogDescriptionEditable": "Make your changes below and press save to update the file.",
+                "dialogDescriptionBinary": "Binary files cannot be edited in the browser.",
+                "loadingText": "Loading file contents…",
+                "binaryFileWarning": "This file appears to be binary or too large to display in the browser.",
+                "binaryFileDownload": "Please download it instead.",
+                "cancelButton": "Cancel",
+                "saveButton": "Save changes"
+            },
+            "rename": {
+                "dialogTitleFile": "Rename file",
+                "dialogTitleFolder": "Rename folder",
+                "dialogDescription": "Choose a new name for {name}.",
+                "inputPlaceholder": "New name",
+                "cancelButton": "Cancel",
+                "renameButton": "Rename",
+                "renamingButton": "Renaming…"
+            },
+            "delete": {
+                "dialogTitleFile": "Delete file",
+                "dialogTitleFolder": "Delete folder",
+                "dialogDescription": "This action can't be undone. You're about to permanently remove {name}.",
+                "cancelButton": "Cancel",
+                "deleteButton": "Delete",
+                "deletingButton": "Deleting…"
+            },
+            "toasts": {
+                "unableToList": "Unable to list files",
+                "unableToOpen": "Unable to open file",
+                "unableToOpenDescription": "Failed to load file",
+                "fileTooLarge": "File too large to edit",
+                "fileTooLargeDescription": "Only files up to {maxSize} can be opened in the browser. Download the file to edit it locally.",
+                "fileSaved": "File saved",
+                "fileSavedDescription": "{fileName} was updated successfully.",
+                "unableToSave": "Unable to save file",
+                "unableToDownload": "Unable to download",
+                "nameRequired": "Name is required",
+                "nameRequiredDescription": "Please enter a new name before saving.",
+                "entryRenamed": "Entry renamed",
+                "entryRenamedDescription": "{oldName} is now {newName}.",
+                "unableToRename": "Unable to rename",
+                "entryDeleted": "Entry deleted",
+                "entryDeletedDescription": "{name} has been removed.",
+                "unableToDelete": "Unable to delete",
+                "noFilesSelected": "No files selected",
+                "noFilesSelectedDescription": "Choose one or more files before uploading.",
+                "uploadComplete": "Upload complete",
+                "uploadCompleteDescription": "{count} file(s) uploaded successfully.",
+                "uploadFailed": "Upload failed",
+                "unableToUpload": "Unable to upload"
             }
         }
     },

@@ -68,6 +68,9 @@ export default function Footer() {
                             <Link href="/" className="hover:text-foreground transition-colors">
                                 {t('about')}
                             </Link>
+                            <Link href="https://github.com/Jackinatox/lake" className="hover:text-foreground transition-colors" prefetch={false}>
+                                {t('sourcecode')}
+                            </Link>
                             {/* <Link href="/" className="hover:text-foreground transition-colors">
                                 {t('blog')}
                             </Link> */}

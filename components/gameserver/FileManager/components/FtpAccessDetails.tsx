@@ -6,6 +6,7 @@ import { ChevronDown, Copy, KeyRound, Server } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslations } from 'next-intl';
 
 interface FtpAccessDetailsProps {
     isOpen: boolean;
@@ -31,25 +32,26 @@ export function FtpAccessDetails({
     className,
 }: FtpAccessDetailsProps) {
     const { toast } = useToast();
+    const t = useTranslations('gameserver.fileManager.ftpAccess');
 
     const handleCopy = useCallback(
         async (label: string, value: string) => {
             try {
                 await navigator.clipboard.writeText(value);
                 toast({
-                    title: `${label} copied`,
+                    title: t('copiedToast', { label }),
                     description: value,
                 });
             } catch (error) {
                 console.error('Failed to copy', error);
                 toast({
-                    title: `Unable to copy ${label.toLowerCase()}`,
-                    description: 'Please copy it manually instead.',
+                    title: t('copyFailedToast', { label: label.toLowerCase() }),
+                    description: t('copyFailedDescription'),
                     variant: 'destructive',
                 });
             }
         },
-        [toast],
+        [toast, t],
     );
 
     const renderCopyBox = (label: string, value: string) => (
@@ -81,7 +83,7 @@ export function FtpAccessDetails({
                     >
                         <span className="flex items-center gap-2">
                             <Server className="h-4 w-4" />
-                            FTP access details
+                            {t('title')}
                         </span>
                         <ChevronDown
                             className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -90,17 +92,16 @@ export function FtpAccessDetails({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="px-4 pb-4 pt-1">
                     <div className="grid gap-3 sm:grid-cols-2">
-                        {renderCopyBox('Host', `${host}:${port}`)}
-                        {renderCopyBox('Username', username)}
+                        {renderCopyBox(t('host'), `${host}:${port}`)}
+                        {renderCopyBox(t('username'), username)}
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-3">
                         <p className="text-xs text-muted-foreground">
-                            Use these credentials with your preferred FTP/SFTP client. You can
-                            rotate the password anytime.
+                            {t('description')}
                         </p>
                         <Button size="sm" onClick={onChangePassword}>
                             <KeyRound className="mr-2 h-4 w-4" />
-                            Change FTP password
+                            {t('changePasswordButton')}
                         </Button>
                     </div>
                 </CollapsibleContent>
