@@ -76,14 +76,13 @@ export default function SupportTicketCreatedTemplate({
                 <Text style={{ ...subheadingStyle, margin: 0 }}>Deine Nachricht</Text>
                 <Text style={messageTextStyle}>{message}</Text>
             </EmailCard>
-            {ticketUrl ? (
+            {/* {ticketUrl ? (
                 <Section style={{ marginTop: 16 }}>
                     <EmailButton href={ticketUrl}>Ticket im Dashboard ansehen</EmailButton>
                 </Section>
-            ) : null}
+            ) : null} */}
             <Text style={{ ...textStyle, marginTop: 16 }}>
-                Falls du weitere Informationen ergänzen möchtest, antworte einfach auf diese E-Mail
-                oder aktualisiere dein Ticket im Dashboard.
+                Falls du weitere Informationen ergänzen möchtest, antworte einfach auf diese E-Mail.
             </Text>
         </EmailLayout>
     );

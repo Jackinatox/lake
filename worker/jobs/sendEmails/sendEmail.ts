@@ -4,7 +4,7 @@ import { logError, logInfo } from '../../lib/logger';
 import { prisma } from '../../prisma';
 import nodemailer from 'nodemailer';
 
-const mailer = nodemailer.createTransport({
+const noReplyMailer = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: 465,
     secure: true,
@@ -16,7 +16,7 @@ const mailer = nodemailer.createTransport({
 
 export default async function SendEmail(email: Email, jobRun: string) {
     try {
-        const response = await mailer.sendMail({
+        const response = await noReplyMailer.sendMail({
             from: `"Scyed" <${process.env.SMTP_USER}>`,
             to: email.recipient,
             subject: email.subject,

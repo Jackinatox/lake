@@ -1,5 +1,6 @@
 'use server';
 import { auth } from '@/auth';
+import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
@@ -23,15 +24,20 @@ export async function deleteGameServers(ids: string[]) {
         try {
             const gameServer = await prisma.gameServer.findUnique({ where: { id } });
             if (!gameServer || !gameServer.ptAdminId) {
+                logger.warn('GameServer Deletion: ', 'SYSTEM', { details: { error: `Game server with ID ${id} not found or missing ptAdminId` } });
                 continue;
             }
-            if (gameServer.status === 'DELETED' || gameServer.status === 'CREATION_FAILED') {
+            if (gameServer.status === 'DELETED') {
+                continue;
+            }
+            if (gameServer.status === 'CREATION_FAILED') {
                 deletedIds.push(id);
                 continue;
             }
 
             try {
                 await deleteServerAdmin(gameServer.ptAdminId);
+                deletedIds.push(id);
             } catch (error: any) {
                 errors.push(
                     `Failed to delete server ${id}: ${error.toString()} `

@@ -76,7 +76,9 @@ export default function InvoiceTemplate({
             hideSupport
         >
             <Heading style={headingStyle}>Rechnung</Heading>
-            <Text style={{ ...mutedTextStyle, marginTop: 6 }}>Rechnungsnummer: {invoiceNumber}</Text>
+            <Text style={{ ...mutedTextStyle, marginTop: 6 }}>
+                Rechnungsnummer: {invoiceNumber}
+            </Text>
 
             <Text style={textStyle}>Hallo {userName},</Text>
             <Text style={textStyle}>
@@ -85,14 +87,23 @@ export default function InvoiceTemplate({
 
             <EmailCard style={{ marginTop: 16 }}>
                 <Section style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <Img
-                        src={gameImageUrl}
-                        alt={`${gameName} Icon`}
-                        width="64"
-                        height="64"
-                        style={{ borderRadius: '10px', flexShrink: 0 }}
-                    />
-                    <div style={{ flex: 1 }}>
+                    <div style={{ flexShrink: 0 }}>
+                        <Img
+                            src={gameImageUrl}
+                            alt={`${gameName} Icon`}
+                            width="64"
+                            height="64"
+                            style={{ borderRadius: '10px', display: 'block' }}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                        }}
+                    >
                         <Text style={{ ...subheadingStyle, margin: 0 }}>{gameName} Gameserver</Text>
                         <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
                     </div>
@@ -115,7 +126,9 @@ export default function InvoiceTemplate({
             </Section>
 
             <EmailCard style={{ marginTop: 16 }}>
-                <Heading style={{ ...subheadingStyle, marginBottom: 8 }}>Leistungsbeschreibung</Heading>
+                <Heading style={{ ...subheadingStyle, marginBottom: 8 }}>
+                    Leistungsbeschreibung
+                </Heading>
                 <Text style={{ ...textStyle, fontWeight: 600, marginTop: 4 }}>
                     {gameName} Gameserver - {getOrderTypeLabel(orderType)}
                 </Text>

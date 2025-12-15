@@ -1,4 +1,5 @@
 import { env } from 'next-runtime-env';
+import { logger } from '../logger';
 
 async function createUserApiKey(userId: number): Promise<any> {
     const pturl = env('NEXT_PUBLIC_PTERODACTYL_URL');
@@ -13,6 +14,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
+                Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${apiKey}`, // Replace with your actual API key
             },
@@ -20,7 +22,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}, url: ${url}`);
+            throw new Error(`HTTP error! status: ${response.status}, url: ${url}, body: ${JSON.stringify(response.body)}`);
         }
 
         const responseData = await response.json();
@@ -32,7 +34,7 @@ async function createUserApiKey(userId: number): Promise<any> {
 
         return key;
     } catch (e) {
-        console.error('PTUser API-Key Creation: ', e);
+        logger.fatal('PTUser API-Key Creation: ', 'SYSTEM', { details: { error: (e as Error).message } });
     }
 }
 

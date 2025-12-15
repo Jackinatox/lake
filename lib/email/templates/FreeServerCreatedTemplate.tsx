@@ -55,33 +55,20 @@ export default function FreeServerCreatedTemplate({
             </Text>
 
             <EmailCard style={{ marginTop: 16 }}>
-                <Section style={{ padding: 0 }}>
-                    <table
-                        role="presentation"
-                        style={{ width: '100%', borderCollapse: 'collapse' }}
-                    >
-                        <tbody>
-                            <tr>
-                                <td
-                                    style={{ width: 72, verticalAlign: 'middle', paddingRight: 16 }}
-                                >
-                                    <Img
-                                        src={gameImageUrl}
-                                        alt={`${gameName} Icon`}
-                                        width="72"
-                                        height="72"
-                                        style={{ borderRadius: '12px', display: 'block' }}
-                                    />
-                                </td>
-                                <td style={{ verticalAlign: 'middle' }}>
-                                    <Text style={{ ...subheadingStyle, margin: 0 }}>
-                                        {gameName} Gameserver (Kostenlos)
-                                    </Text>
-                                    <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <Section style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <Img
+                        src={gameImageUrl}
+                        alt={`${gameName} Icon`}
+                        width="72"
+                        height="72"
+                        style={{ borderRadius: '12px', flexShrink: 0 }}
+                    />
+                    <div style={{ flex: 1 }}>
+                        <Text style={{ ...subheadingStyle, margin: 0 }}>
+                            {gameName} Gameserver (Kostenlos)
+                        </Text>
+                        <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
+                    </div>
                 </Section>
             </EmailCard>
 
