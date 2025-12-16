@@ -68,8 +68,8 @@ const FileEditorDialogComponent = ({
 
     return (
         <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
-            <DialogContent className="h-[95vh] w-full max-w-3xl overflow-hidden p-0 sm:p-0">
-                <DialogHeader className="space-y-2 border-b px-6 py-4">
+            <DialogContent className="h-[95vh] w-full max-w-3xl overflow-hidden p-0 sm:p-0 gap-0">
+                <DialogHeader className="space-y-0 border-b px-6 py-4">
                     <div className="flex items-center justify-between gap-3">
                         <DialogTitle className="truncate text-lg font-semibold">
                             {title}
@@ -79,7 +79,7 @@ const FileEditorDialogComponent = ({
                         {isBinary ? t('dialogDescriptionBinary') : t('dialogDescriptionEditable')}
                     </DialogDescription>
                 </DialogHeader>
-                <div className="flex flex-col">
+                <div className="flex flex-col flex-1 min-h-0">
                     {loading ? (
                         <div className="flex h-70 items-center justify-center text-muted-foreground">
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -92,7 +92,7 @@ const FileEditorDialogComponent = ({
                         </div>
                     ) : (
                         <Editor
-                            className="w-full h-full"
+                            className="w-full h-full min-h-0"
                             theme={theme === 'dark' ? 'vs-dark' : 'light'}
                             defaultLanguage={language}
                             defaultValue={content}

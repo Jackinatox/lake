@@ -100,7 +100,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                                     </h3>
                                     <GameServerStatus apiKey={apiKey} server={server} />
                                     {server.type === 'FREE' && (
-                                        <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 px-2 py-0.5 text-xs font-bold shadow-sm">
+                                        <Badge className="bg-linear-to-r from-green-500 to-emerald-600 text-white border-0 px-2 py-0.5 text-xs font-bold shadow-sm">
                                             💸 {t('freeServer')}
                                         </Badge>
                                     )}

@@ -1,52 +1,44 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:20-alpine AS base
+FROM oven/bun:1.3.4-alpine AS base
+
+# libc6-compat is commonly required for native deps on Alpine.
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+# Copy manifests/lockfiles for better layer caching.
+COPY package.json bun.lockb* bun.lock* pnpm-lock.yaml* package-lock.json* yarn.lock* .npmrc* ./
+
+# If a Bun lockfile exists, enforce it; otherwise allow Bun to resolve deps.
 RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
+  if [ -f bun.lockb ] || [ -f bun.lock ]; then bun install --frozen-lockfile; \
+  else bun install; \
   fi
 
 
 # Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
-RUN \
-  if [ -f yarn.lock ]; then yarn prisma generate; \
-  elif [ -f package-lock.json ]; then npx prisma generate; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm exec prisma generate; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Generate Prisma client (Prisma CLI is in devDependencies)
+RUN bunx prisma generate
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN bun run build
+
 
 # Production image, copy all the files and run next
 FROM base AS runner
-WORKDIR /app
 
 ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
@@ -71,4 +63,4 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "server.js"]
+CMD ["bun", "server.js"]
