@@ -1,9 +1,8 @@
 'use client';
 
+import { FabricEggId, ForgeEggId, NeoForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
 import { GameServer } from '@/models/gameServerModel';
-import React from 'react';
 import MinecraftInfo from './MinecraftInfo';
-import { FabricEggId, ForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
 
 interface GameInfoProps {
     server: GameServer;
@@ -17,6 +16,8 @@ function GameInfo({ server, apiKey }: GameInfoProps) {
             {server.egg_id === VanillaEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === ForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === FabricEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
+            {server.egg_id === NeoForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
+             {/* TODO: add satis info */}
         </>
     );
 }

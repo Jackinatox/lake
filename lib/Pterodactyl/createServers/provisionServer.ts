@@ -105,7 +105,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         logger.info(`Creating Pterodactyl server for order ${order.id}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
             gameServerId: dbNewServer.id,
-            details: { serverName, egg: gameConfig.eggId, options }
+            details: { options }
         });
 
 

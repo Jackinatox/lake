@@ -4,6 +4,7 @@ export const VanillaEggId = 2;
 export const ForgeEggId = 3;
 export const FabricEggId = 16;
 export const SatisfactoryEggId = 15;
+export const NeoForgeEggId = 20;
 
 // GameIds
 export const MinecraftGameId = 1;

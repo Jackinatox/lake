@@ -51,25 +51,31 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             case 'stats': {
                 const stats = JSON.parse(data.args[0]);
 
+                const smallToZero = (n: number) => (n < 1 ? 0 : n);
+
+                const cpu = Number.parseFloat(
+                    Math.min((stats.cpu_absolute / server.limits.cpu) * 100, 100).toFixed(1),
+                );
+                const disk = Number.parseFloat((stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2));
+                const memory = Number.parseFloat(
+                    (stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2),
+                );
+                const memoryLimit = Number.parseFloat(
+                    (stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2),
+                );
+                const uptime = Number.parseFloat((stats.uptime / 1000).toFixed(2));
+
                 const roundedStats = {
-                    cpu_absolute: Number.parseFloat(
-                        ((stats.cpu_absolute / server.limits.cpu) * 100).toFixed(1),
-                    ),
-                    disk_bytes: Number.parseFloat(
-                        (stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2),
-                    ),
-                    memory_bytes: Number.parseFloat(
-                        (stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2),
-                    ),
-                    memory_limit_bytes: Number.parseFloat(
-                        (stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2),
-                    ),
+                    cpu_absolute: smallToZero(cpu),
+                    disk_bytes: smallToZero(disk),
+                    memory_bytes: (memory),
+                    memory_limit_bytes: smallToZero(memoryLimit),
                     network: {
                         rx_bytes: stats.network.rx_bytes,
                         tx_bytes: stats.network.tx_bytes,
                     },
                     state: stats.state,
-                    uptime: Number.parseFloat((stats.uptime / 1000).toFixed(2)),
+                    uptime: smallToZero(uptime),
                 };
                 setServerStats(roundedStats);
                 break;

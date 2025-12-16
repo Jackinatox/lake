@@ -91,7 +91,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                         </svg>
                                         {t('oauthDiscord')}
                                     </Button>
-                                    <Button variant="outline" className="w-full" type="button">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full"
+                                        type="button"
+                                        onClick={() =>
+                                            authClient.signIn.social({
+                                                provider: 'google',
+                                                callbackURL: '/gameserver',
+                                            })
+                                        }
+                                    >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
