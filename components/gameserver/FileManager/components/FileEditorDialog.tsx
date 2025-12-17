@@ -9,6 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import Editor, { Monaco } from '@monaco-editor/react';
 import { Loader2 } from 'lucide-react';
 import type { editor } from 'monaco-editor';
@@ -47,6 +48,8 @@ const FileEditorDialogComponent = ({
     const { theme } = useTheme();
     const extension = fileName?.split('.').pop() ?? '';
     const language = extensionToLanguage[extension] ?? 'plaintext';
+
+    const isMobile = useIsMobile();
 
     function handleEditorDidMount(editor: editor.IStandaloneCodeEditor, _monaco: Monaco) {
         editorRef.current = editor;
@@ -101,7 +104,7 @@ const FileEditorDialogComponent = ({
                                 onChange(value ?? '');
                             }}
                             options={{
-                                minimap: { enabled: false },
+                                minimap: { enabled: !isMobile },
                                 fontSize: 14,
                                 lineNumbers: 'on',
                                 roundedSelection: false,

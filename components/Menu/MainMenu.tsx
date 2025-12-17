@@ -72,7 +72,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
             <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 justify-between items-center">
                     {/* — Desktop Menu — */}
-                    <NavigationMenu className="hidden md:flex">
+                    <NavigationMenu className="hidden lg:flex">
                         <NavigationMenuList className="flex space-x-4 items-center">
                             {MENU.map((item) =>
                                 item.subItems ? (
@@ -139,7 +139,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                     </NavigationMenu>
 
                     {/* — Mobile Menu — */}
-                    <div className="md:hidden">
+                    <div className="lg:hidden">
                         <Sheet open={open} onOpenChange={setOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon">

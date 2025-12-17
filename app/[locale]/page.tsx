@@ -27,7 +27,7 @@ export default async function LandingPage() {
     });
 
     const stuff = (
-        <div className="p-2 md:p-6 l:p-8">
+        <div className="p-2 md:p-8">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t('toolsHeader')}</h2>
 
             {/* Control Panel */}
@@ -147,7 +147,7 @@ export default async function LandingPage() {
     );
 
     return (
-        <main className="flex flex-col min-h-screen -mx-2 md:-mx-6 lg:-mx-8 -my-5">
+        <main className="flex flex-col min-h-screen -mx-2 md:-mx-8 -my-5">
             {/* Hero Section - Completely Redesigned */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Animated Background Gradient */}

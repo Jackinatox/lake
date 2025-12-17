@@ -12,7 +12,7 @@ import {
     FREE_SERVERS_LOCATION_ID,
     FREE_TIER_MAX_SERVERS,
 } from '@/app/GlobalConstants';
-import prisma from '@/lib/prisma';
+import prisma from './prisma';
 
 
 /**
