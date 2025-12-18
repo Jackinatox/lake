@@ -19,3 +19,10 @@ export type GameServerAdmin = Prisma.GameServerGetPayload<{
 export type PackageWithCPURAM = Prisma.PackageGetPayload<{
     include: { location: { include: { cpu: true, ram: true } } };
 }>;
+
+export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
+    include: {
+        user: { select: { id: true; name: true; email: true } };
+        gameServer: { select: { id: true; name: true } };
+    };
+}>;

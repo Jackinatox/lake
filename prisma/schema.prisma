@@ -368,9 +368,11 @@ model ApplicationLog {
   createdAt DateTime @default(now())
 
   @@index([level, createdAt])
+  @@index([type, createdAt])
   @@index([userId])
   @@index([gameServerId])
   @@index([path, method])
+  @@index([createdAt])
 }
 
 model Email {

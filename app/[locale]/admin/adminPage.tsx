@@ -5,6 +5,7 @@ import {
     Activity,
     CalendarClock,
     Cog,
+    FileText,
     Gamepad2Icon,
     MonitorX,
     RefreshCw,
@@ -41,6 +42,12 @@ const tiles: AdminTile[] = [
         link: '/admin/status',
         Icon: Activity,
         color: 'from-emerald-500 to-green-600',
+    },
+    {
+        name: 'Application Logs',
+        link: '/admin/logs',
+        Icon: FileText,
+        color: 'from-indigo-500 to-purple-600',
     },
     {
         name: 'Stripe Sessions',
