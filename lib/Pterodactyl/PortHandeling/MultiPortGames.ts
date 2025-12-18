@@ -59,9 +59,9 @@ export async function correctPortsForGame(
         try {
             const result = await configureServerPorts(ptServerId, gameId, apiKey);
 
-            if (attempt > 1) {
+            if (attempt > 2) {
                 logger.info(
-                    `Port configuration succeeded on attempt ${attempt}/${maxRetries}`,
+                    `Port configuration needed more than 2 attempts on attempt ${attempt}/${maxRetries}`,
                     'GAME_SERVER',
                 );
             }
@@ -80,10 +80,7 @@ export async function correctPortsForGame(
 
             if (attempt < maxRetries) {
                 const delayMs = Math.min(5000 * Math.pow(2, attempt - 1), 10000); // Exponential backoff, max 10s
-                logger.info(
-                    `Retrying in ${delayMs}ms...`,
-                    'GAME_SERVER',
-                );
+
                 await new Promise(resolve => setTimeout(resolve, delayMs));
             }
         }
@@ -142,10 +139,6 @@ async function configureServerPorts(
 
             if (portConfig.isSecondary && secondaryAllocations[i]) {
                 const allocation = secondaryAllocations[i];
-                logger.info(
-                    `Setting ${portConfig.envVar} to port ${allocation.port}`,
-                    'GAME_SERVER',
-                );
 
                 await updateServerEnvironmentVariable(
                     ptServerId,

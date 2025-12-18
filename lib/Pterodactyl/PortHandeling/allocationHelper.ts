@@ -230,10 +230,6 @@ export async function setAllocationCount(
     if (currentCount < targetCount) {
         // Add allocations
         const allocationsToAdd = targetCount - currentCount;
-        logger.info(
-            `Adding ${allocationsToAdd} allocations to server ${serverId}`,
-            'GAME_SERVER',
-        );
 
         for (let i = 0; i < allocationsToAdd; i++) {
             try {
@@ -250,10 +246,6 @@ export async function setAllocationCount(
     } else {
         // Remove allocations (cannot remove primary)
         const allocationsToRemove = currentCount - targetCount;
-        logger.info(
-            `Removing ${allocationsToRemove} allocations from server ${serverId}`,
-            'GAME_SERVER',
-        );
 
         const nonPrimaryAllocations = currentAllocations.filter((a) => !a.is_default);
 
@@ -313,8 +305,9 @@ export async function updateServerEnvironmentVariable(
 
     if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(
-            `Failed to update environment variable ${envVarName}: ${response.status} ${response.statusText} - ${errorData}`,
+        logger.error(
+            `Failed to update environment variable ${envVarName} for server ${serverId}: ${response.status} ${response.statusText} - ${errorData}`,
+            'GAME_SERVER',
         );
     }
 
