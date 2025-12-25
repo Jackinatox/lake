@@ -129,13 +129,13 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
                 if (attempt < maxRetries) {
                     await new Promise((resolve) => setTimeout(resolve, 5000));
                 } else {
-                    throw new Error(`Failed to create Pterodactyl server after ${maxRetries} attempts: ${errText}`);
+                    throw new Error(`Failed to create Pterodactyl server after ${maxRetries} attempts: ${errText}. Server details: name=${serverName}, gameDataId=${serverOrder.creationGameData.id}, locationId=${serverOrder.creationLocation.ptLocationId}, userId=${serverOrder.user.id}, dbServerId=${dbNewServer.id}`);
                 }
             }
         }
 
         if (newServer === null || newServer === undefined) {
-            throw new Error('Pterodactyl server creation returned null');
+            throw new Error('Pterodactyl server creation returned null. This exception should never throw.');
         }
 
         logger.info(`Pterodactyl server created: ${newServer.identifier}`, 'GAME_SERVER', {
@@ -197,8 +197,8 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             },
         });
 
-        logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id, details: { errorText } });
-        throw { message: updated.errorText ?? errorText, dbNewServerId: dbNewServer.id };
+        // logger.fatal(`Failed to create Pterodactyl server for orderId: ${serverOrder.id}`, 'GAME_SERVER', { gameServerId: dbNewServer.id, userId: serverOrder.user.id, details: { errorText } });
+        throw err;
     } finally {
         await prisma.gameServerOrder.update({
             where: {

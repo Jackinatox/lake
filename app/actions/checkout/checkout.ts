@@ -385,9 +385,9 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
         }
         return ptId;
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
 
-        logger.error("Failed to provision free server", 'GAME_SERVER', {
+        logger.fatal("Failed to provision free server", 'GAME_SERVER', {
             userId: dbUser.id,
             details: {
                 error: errorMessage,
