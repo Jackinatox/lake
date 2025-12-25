@@ -86,27 +86,49 @@ export default function InvoiceTemplate({
             </Text>
 
             <EmailCard style={{ marginTop: 16 }}>
-                <Section style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ flexShrink: 0 }}>
-                        <Img
-                            src={gameImageUrl}
-                            alt={`${gameName} Icon`}
-                            width="64"
-                            height="64"
-                            style={{ borderRadius: '10px', display: 'block' }}
-                        />
-                    </div>
-                    <div
-                        style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                        }}
+                <Section style={{ margin: 0 }}>
+                    <table
+                        role="presentation"
+                        width="100%"
+                        cellPadding="0"
+                        cellSpacing="0"
+                        style={{ borderCollapse: 'collapse' }}
                     >
-                        <Text style={{ ...subheadingStyle, margin: 0 }}>{gameName} Gameserver</Text>
-                        <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
-                    </div>
+                        <tbody>
+                            <tr>
+                                <td
+                                    style={{ verticalAlign: 'middle', paddingRight: 14, width: 64 }}
+                                >
+                                    <Img
+                                        src={gameImageUrl}
+                                        alt={`${gameName} Icon`}
+                                        width="64"
+                                        height="64"
+                                        style={{ borderRadius: '10px', display: 'block' }}
+                                    />
+                                </td>
+                                <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+                                    <div style={{ lineHeight: 1 }}>
+                                        <Text style={{ ...subheadingStyle, margin: 0 }}>
+                                            {gameName} Gameserver
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                ...textStyle,
+                                                margin: '6px 0 0 0',
+                                                display: 'block',
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                            }}
+                                        >
+                                            {serverName}
+                                        </Text>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </Section>
             </EmailCard>
 

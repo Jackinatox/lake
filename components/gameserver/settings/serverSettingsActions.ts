@@ -199,7 +199,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
     });
 
     if (!session) {
-        logger.warn(`Delete attempt without authentication for server ${ptServerId}`, 'GAME_SERVER');
+        logger.warn(`Delete attempt without authentication for server ${ptServerId}`, 'AUTHENTICATION');
         return false;
     }
 
