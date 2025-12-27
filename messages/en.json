@@ -567,13 +567,14 @@
         "impressum": "Imprint",
         "agb": "Terms",
         "datenschutz": "Privacy",
-        "contact": "Contact",
+        "support_center": "Support-Center",
         "faq": "FAQ (Coming Soon)",
         "documentation": "Documentation (Coming Soon)",
         "about": "About Us (Coming Soon)",
         "blog": "Blog",
         "company": "Company",
-        "sourcecode": "Source Code"
+        "sourcecode": "Source Code",
+        "contactUs": "Contact"
     },
     "gameserver": {
         "freeServer": "Free",

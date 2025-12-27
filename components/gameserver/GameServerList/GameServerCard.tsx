@@ -155,4 +155,4 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
     );
 }
 
-export default ServerCard;
+export { ServerCard };

@@ -21,7 +21,11 @@ async function PaymentList() {
 
     const payments = await prisma.gameServerOrder.findMany({
         where: { userId: session.user.id, status: 'PAID' },
-        include: { gameServer: true },
+        include: {
+            gameServer: {
+                select: { ptServerId: true, status: true },
+            }
+        },
         orderBy: { createdAt: 'desc' },
     });
 
@@ -52,7 +56,7 @@ async function PaymentList() {
                             date={pay.createdAt}
                             receiptUrl={pay.receipt_url ?? undefined}
                             gameServerUrl={`/gameserver/${pay.gameServer?.ptServerId}`}
-                            serverExpired={!pay.gameServer}
+                            serverStatus={pay.gameServer?.status!} // Todo: handle absense of gameserver 
                         />
                     ))}
                 </div>

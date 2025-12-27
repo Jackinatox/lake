@@ -3,7 +3,7 @@
 import { getUserServer } from '@/app/data-access-layer/clientServers/getUsersServer';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
-import ServerCard from '@/components/gameserver/GameServerList/GameServerCard';
+import { ServerCard } from '@/components/gameserver/GameServerList/GameServerCard';
 import { Button } from '@/components/ui/button';
 import { ClientServer } from '@/models/prisma';
 import { Settings } from 'lucide-react';

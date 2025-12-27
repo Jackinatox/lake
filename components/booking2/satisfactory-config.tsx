@@ -19,7 +19,7 @@ export const SatisfactoryConfigComponent = forwardRef(
     ({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
         const t = useTranslations('buyGameServer.gameConfig');
         const [config, setConfig] = useState<SatisfactoryConfig>({
-            version: 'experimental',
+            version: 'release',
             max_players: 8,
             num_autosaves: 4,
             upload_crash_report: true,

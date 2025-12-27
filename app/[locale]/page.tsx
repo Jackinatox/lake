@@ -206,7 +206,10 @@ export default async function LandingPage() {
                                     className="w-full sm:w-auto px-8 text-base group"
                                     asChild
                                 >
-                                    <Link href="/products/gameserver" className="w-full sm:w-auto text-secondary-foreground">
+                                    <Link
+                                        href="/products/gameserver"
+                                        className="w-full sm:w-auto text-secondary-foreground"
+                                    >
                                         {t('buttonStartNow')}
                                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Link>
@@ -219,13 +222,16 @@ export default async function LandingPage() {
                                 >
                                     <Link href="/products/packages">{t('buttonComparePlans')}</Link>
                                 </Button>
-                                <div className='md:hidden'>
+                                <div className="md:hidden">
                                     <Button
                                         size="lg"
                                         className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700"
                                         asChild
                                     >
-                                        <Link href="/products/packages" className="flex items-center justify-center gap-2 text-secondary-foreground">
+                                        <Link
+                                            href="/products/packages"
+                                            className="flex items-center justify-center gap-2 text-secondary-foreground"
+                                        >
                                             <Gift className="h-4 w-4" />
                                             Todo Translation Free
                                         </Link>
@@ -282,18 +288,16 @@ export default async function LandingPage() {
                     <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-sm md:text-base">
                         {t('ctaDesc')}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/products/gameserver">
-                            <Button size="lg" className="px-8 group w-full">
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                        <Button size="lg" asChild>
+                            <Link href="/products/gameserver">
                                 {t('ctaButton')}
                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                            </Button>
-                        </Link>
-                        <Link href="#">
-                            <Button size="lg" variant="outline" className="px-8 group w-full">
-                                {t('buttonComparePlans') + ' (coming soon)'}
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild>
+                            <Link href="/products/packages">{t('buttonComparePlans')}</Link>
+                        </Button>
                     </div>
                 </Card>
             </div>

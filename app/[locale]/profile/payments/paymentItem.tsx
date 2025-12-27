@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Receipt, Server, AlertCircle, Cog } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { OrderType } from '@/app/client/generated/browser';
+import { GameServerStatus, OrderType } from '@/app/client/generated/browser';
 
 interface PaymentItemProps {
     amount: number;
@@ -12,7 +12,7 @@ interface PaymentItemProps {
     date: Date;
     receiptUrl?: string;
     gameServerUrl?: string;
-    serverExpired?: boolean;
+    serverStatus: GameServerStatus;
     locale?: string;
 }
 
@@ -22,7 +22,7 @@ export function PaymentItem({
     date,
     receiptUrl,
     gameServerUrl,
-    serverExpired = false,
+    serverStatus,
     locale = 'de',
 }: PaymentItemProps) {
     const t = useTranslations('payments');
@@ -40,7 +40,7 @@ export function PaymentItem({
             <div>
                 <p className="font-medium">{t(`orderType.${paymentType}`)}</p>
                 <p className="text-sm text-muted-foreground">{formatDate(date)}</p>
-                {serverExpired && (
+                {serverStatus === 'EXPIRED' && (
                     <div className="flex items-center gap-1 mt-1">
                         <AlertCircle className="h-3 w-3 text-orange-500" />
                         <span className="text-xs text-orange-500">{t('serverExpired')}</span>
@@ -65,7 +65,7 @@ export function PaymentItem({
                     )}
                 </Button>
                 {gameServerUrl &&
-                    (serverExpired ? (
+                    (serverStatus === 'EXPIRED' ? (
                         <Button variant="outline" disabled>
                             <Cog className="h-5 w-5" />
                         </Button>

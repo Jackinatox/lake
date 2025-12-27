@@ -19,7 +19,7 @@ export default function Footer() {
                                 href="/support"
                                 className="hover:text-foreground transition-colors"
                             >
-                                {t('contact')}
+                                {t('support_center')}
                             </Link>
                             <Link
                                 href="/support"
@@ -57,6 +57,12 @@ export default function Footer() {
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('datenschutz')}
+                            </Link>
+                            <Link
+                                href="/legal/contact"
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('contactUs')}
                             </Link>
                         </nav>
                     </div>

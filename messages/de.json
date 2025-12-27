@@ -565,16 +565,18 @@
         "datenschutz": "Datenschutzerklärung"
     },
     "footer": {
+        
         "impressum": "Impressum",
         "agb": "AGB",
         "datenschutz": "Datenschutz",
-        "contact": "Kontakt",
+        "support_center": "Support-Center",
         "faq": "FAQ (Bald verfügbar)",
         "documentation": "Dokumentation (Bald verfügbar)",
         "about": "Über uns (Bald verfügbar)",
         "blog": "Blog",
         "company": "Unternehmen",
-        "sourcecode": "Quellcode"
+        "sourcecode": "Quellcode",
+        "contactUs": "Kontakt"
     },
     "gameserver": {
         "freeServer": "Kostenlos",

@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
 import { GameFlavor, GameVersion } from '@/types/gameData';
+import { SelectGroup } from '@radix-ui/react-select';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
@@ -150,57 +151,35 @@ export const MinecraftConfigComponent = forwardRef(
                 {/* Game Version Selection */}
                 <div className="space-y-2">
                     <Label className="text-sm font-medium">Game Version</Label>
-                    <Popover open={versionOpen} onOpenChange={setVersionOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={versionOpen}
-                                className="w-full justify-between text-left"
-                                disabled={gameVersions.length === 0}
-                            >
-                                <span className="truncate">
-                                    {selectedVersion?.version || 'Select a version'}
-                                </span>
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                            className="w-[var(--radix-popover-trigger-width)] p-0"
-                            align="start"
-                        >
-                            <Command>
-                                <CommandInput placeholder="Search version..." className="h-9" />
-                                <CommandList>
-                                    <CommandEmpty>No version found.</CommandEmpty>
-                                    <CommandGroup>
-                                        {gameVersions.slice().map((version) => (
-                                            <CommandItem
-                                                key={version.version}
-                                                value={version.version}
-                                                onSelect={() => {
-                                                    setSelectedVersion(version);
-                                                    setVersionOpen(false);
-                                                }}
-                                                className="cursor-pointer"
-                                            >
-                                                <Check
-                                                    className={cn(
-                                                        'mr-2 h-4 w-4',
-                                                        selectedVersion?.version === version.version
-                                                            ? 'opacity-100'
-                                                            : 'opacity-0',
-                                                    )}
-                                                />
-                                                <span className="truncate">{version.version}</span>
-                                            </CommandItem>
-                                        ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-                </div>
+                    <Select
+                        disabled={gameVersions.length === 0}
+                        value={selectedVersion?.version}
+                        onValueChange={(value) => setSelectedVersion(gameVersions.find((v) => v.version === value) || null)}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a fruit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                {gameVersions.slice().map((version) => (
+                                    <SelectItem
+                                        key={version.version}
+                                        value={version.version}
+                                        onSelect={() => {
+                                            setSelectedVersion(version);
+                                            setVersionOpen(false);
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+
+                                        <span className="truncate">{version.version}</span>
+                                    </SelectItem >
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div >
+
             </div>
         );
     },
