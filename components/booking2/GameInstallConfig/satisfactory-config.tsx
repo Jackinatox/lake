@@ -10,13 +10,12 @@ import type { Game, GameConfig } from '@/models/config';
 import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConfig';
 
 interface SatisfactoryConfigProps {
-    onChange: (config: SatisfactoryConfig) => void;
     game: Game;
     onSubmit: (config: GameConfig) => void;
 }
 
 export const SatisfactoryConfigComponent = forwardRef(
-    ({ onChange, game, onSubmit }: SatisfactoryConfigProps, ref) => {
+    ({ game, onSubmit }: SatisfactoryConfigProps, ref) => {
         const t = useTranslations('buyGameServer.gameConfig');
         const [config, setConfig] = useState<SatisfactoryConfig>({
             version: 'release',
@@ -30,11 +29,8 @@ export const SatisfactoryConfigComponent = forwardRef(
             key: K,
             value: SatisfactoryConfig[K],
         ) => {
-            const newConfig = { ...config, [key]: value };
-            setConfig(newConfig);
-            if (onChange) onChange(newConfig);
+            setConfig({ ...config, [key]: value });
         };
-        // Note: removed stray expression that caused a syntax error
 
         useImperativeHandle(ref, () => ({
             submit: () => {
@@ -59,12 +55,9 @@ export const SatisfactoryConfigComponent = forwardRef(
                 <div className="space-y-2">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <div className="flex-1">
-                            <CardTitle className="text-lg sm:text-xl">
-                                {t('title', { game: game.name || 'Game' })}
-                            </CardTitle>
-                            <CardDescription className="text-sm">
+                            <CardTitle>
                                 {t('description')}
-                            </CardDescription>
+                            </CardTitle>
                         </div>
                     </div>
                 </div>

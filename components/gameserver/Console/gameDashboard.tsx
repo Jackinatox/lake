@@ -68,7 +68,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 const roundedStats = {
                     cpu_absolute: smallToZero(cpu),
                     disk_bytes: smallToZero(disk),
-                    memory_bytes: (memory),
+                    memory_bytes: memory,
                     memory_limit_bytes: smallToZero(memoryLimit),
                     network: {
                         rx_bytes: stats.network.rx_bytes,
@@ -178,7 +178,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     const handleAcceptEula = async () => {
         if (!loading && wsRef.current) {
             await writeFile(server.identifier, 'eula.txt', 'eula=true', ptApiKey);
-            handleRestart();
+            killAndRestart();
         }
     };
 
@@ -224,6 +224,16 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                     args: ['kill'],
                 }),
             );
+        }
+    };
+
+    const killAndRestart = () => {
+        if (!loading && wsRef.current) {
+            handleKill();
+            setTimeout(() => {
+                handleStart();
+            }, 500);
+            return;
         }
     };
 

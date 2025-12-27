@@ -1,16 +1,6 @@
 import { PaperEggId } from '@/app/GlobalConstants';
-import { Button } from '@/components/ui/button';
 import { CardDescription, CardTitle } from '@/components/ui/card';
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
     Select,
     SelectContent,
@@ -18,31 +8,27 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
 import { GameFlavor, GameVersion } from '@/types/gameData';
 import { SelectGroup } from '@radix-ui/react-select';
-import { Check, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 interface MinecraftConfigProps {
     game: Game;
-    additionalConfig?: Record<string, any>;
-    onAdditionalConfigChange?: (config: Record<string, any>) => void;
     onSubmit: (config: GameConfig) => void;
 }
 
 export const MinecraftConfigComponent = forwardRef(
-    ({ game: givenGame, onSubmit }: MinecraftConfigProps, ref) => {
+    ({ game, onSubmit }: MinecraftConfigProps, ref) => {
         const t = useTranslations('buyGameServer.gameConfig');
         const [selectedEggId, setSelectedFlavorId] = useState<number | null>(null);
         const [selectedVersion, setSelectedVersion] = useState<GameVersion | null>(null);
         const [gameVersions, setGameVersions] = useState<GameVersion[]>([]);
         const [versionOpen, setVersionOpen] = useState(false);
 
-        const flavors = useMemo(() => (givenGame.data.flavors as GameFlavor[]) ?? [], [givenGame]);
+        const flavors = useMemo(() => (game.data.flavors as GameFlavor[]) ?? [], [game]);
 
         useEffect(() => {
             const defaultEggId =
@@ -98,7 +84,7 @@ export const MinecraftConfigComponent = forwardRef(
 
                 // Create a complete game configuration object
                 const completeConfig: GameConfig = {
-                    gameId: givenGame.id,
+                    gameId: game.id,
                     eggId: selectedEggId,
                     version: selectedVersion.version,
                     dockerImage: selectedVersion.docker_image,
@@ -117,12 +103,9 @@ export const MinecraftConfigComponent = forwardRef(
                 <div className="space-y-2">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         <div className="flex-1">
-                            <CardTitle className="text-lg sm:text-xl">
-                                {t('title', { game: givenGame.name || 'Game' })}
-                            </CardTitle>
-                            <CardDescription className="text-sm">
+                            <CardTitle>
                                 {t('description')}
-                            </CardDescription>
+                            </CardTitle>
                         </div>
                     </div>
                 </div>

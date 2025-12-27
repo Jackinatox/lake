@@ -5,10 +5,12 @@ export const ForgeEggId = 3;
 export const FabricEggId = 16;
 export const SatisfactoryEggId = 15;
 export const NeoForgeEggId = 20;
+export const FactorioEggId = 22;
 
 // GameIds
 export const MinecraftGameId = 1;
 export const SatisfactoryGameId = 2;
+export const FactorioGameId = 3;
 
 // Legal Content Keys
 export const LEGAL_IMPRESSUM_DE = 'legal_impressum_de';

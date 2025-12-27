@@ -11,9 +11,13 @@ import { Game, SupportedGamesList } from './SupportedGamesList';
 
 export default async function LandingPage() {
     const t = await getTranslations('landingpage');
-    const data = await prisma.gameData.findMany();
+    const games = await prisma.gameData.findMany({
+        where: { enabled: true, featured: true },
+        take: 4,
+        orderBy: { id: 'asc' },
+    });
 
-    const supportedGames: Array<Game> = data.map((game) => {
+    const supportedGames: Array<Game> = games.map((game) => {
         const imgName = game.name.toLowerCase() + '.webp';
 
         return {

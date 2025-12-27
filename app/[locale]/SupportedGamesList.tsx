@@ -22,11 +22,11 @@ export async function SupportedGamesList({ supportedGames }: SupportedGamesListP
     return (
         <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 md:p-6 border w-full">
             <h2 className="text-2xl font-bold mb-4 md:mb-6">{t('supportedGames')}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
                 {supportedGames.map((game) => (
                     <Link href={`/booking2/${game.id}`} key={game.id} className="block">
-                        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg hover:bg-muted transition-all hover:scale-[1.02] border border-transparent hover:border-primary/20">
-                            <div className="relative h-14 w-14 md:h-12 md:w-12 rounded-md overflow-hidden border shrink-0">
+                        <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-lg hover:bg-muted transition-all hover:scale-[1.02] border border-transparent hover:border-primary/20">
+                            <div className="relative h-14 w-14 md:h-16 md:w-16 rounded-md overflow-hidden border shrink-0">
                                 <Image
                                     src={game.images.light}
                                     alt={`${game.name} Icon`}

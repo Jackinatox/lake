@@ -129,7 +129,7 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
                 )}
 
                 {step === 2 && game && (
-                    <div className="bg-card border rounded-lg p-2 md:p-6">
+                    <div className="">
                         <GameConfigComponent
                             ref={gameConfigRef}
                             game={game}

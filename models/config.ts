@@ -1,3 +1,4 @@
+import { FactorioConfig } from './gameSpecificConfig/FactorioConfig';
 import { MinecraftConfig } from './gameSpecificConfig/MinecraftConfig';
 import { SatisfactoryConfig } from './gameSpecificConfig/SatisfactoryConfig';
 
@@ -26,5 +27,5 @@ export interface GameConfig {
     eggId: number;
     version: string;
     dockerImage: string;
-    gameSpecificConfig: SatisfactoryConfig | MinecraftConfig;
+    gameSpecificConfig: SatisfactoryConfig | MinecraftConfig | FactorioConfig;
 }

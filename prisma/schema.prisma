@@ -20,10 +20,11 @@ generator worker {
 }
 
 model GameData {
-  id      Int     @id @default(autoincrement())
-  name    String
-  data    Json?
-  enabled Boolean @default(false)
+  id       Int     @id @default(autoincrement())
+  name     String
+  data     Json?
+  enabled  Boolean @default(false)
+  featured Boolean @default(false)
 
   GameServer GameServer[]
 

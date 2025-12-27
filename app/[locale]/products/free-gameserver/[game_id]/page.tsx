@@ -51,7 +51,7 @@ export default async function FreeGameServerPage(
     };
 
     return (
-        <div className="w-full min-h-screen bg-linear-to-b from-background to-muted/20">
+        <div className="w-full min-h-screen">
             <div className="w-full max-w-5xl mx-auto px-0 md:px-6">
                 <FreeGameServerBooking game={game} stats={stats} />
             </div>

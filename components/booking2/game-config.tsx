@@ -4,27 +4,21 @@ import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 // Replaced Card with a plain div so we can control responsive borders directly
 import type { Game, GameConfig } from '@/models/config';
-import { MinecraftConfigComponent } from './minecraft-config';
-import { SatisfactoryConfigComponent } from './satisfactory-config';
+import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
+import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
+import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
+import { FactorioGameId } from '@/app/GlobalConstants';
 
 interface GameConfigProps {
     game: Game;
-    onAdditionalConfigChange?: () => void;
     onSubmit: (config: GameConfig) => void;
     fullWidth?: boolean;
 }
 
 export const GameConfigComponent = forwardRef(
-    (
-        { game, onAdditionalConfigChange = () => {}, onSubmit, fullWidth = false }: GameConfigProps,
-        ref,
-    ) => {
+    ({ game, onSubmit, fullWidth = false }: GameConfigProps, ref) => {
         const t = useTranslations('buyGameServer.gameConfig');
         const configRef = useRef<any>(null);
-
-        const handleConfigChange = () => {
-            onAdditionalConfigChange();
-        };
 
         useImperativeHandle(ref, () => ({
             submit: () => {
@@ -38,10 +32,10 @@ export const GameConfigComponent = forwardRef(
             <div className="w-full">
                 <div
                     className={
-                        'rounded-lg bg-card text-card-foreground md:shadow-md border-0 md:border'
+                        'rounded-lg bg-card text-card-foreground'
                     }
                 >
-                    <div className="p-0 md:p-4">
+                    <div className="p-0 md:p-0">
                         {(() => {
                             switch (game.id) {
                                 case 1: // Minecraft
@@ -56,7 +50,14 @@ export const GameConfigComponent = forwardRef(
                                     return (
                                         <SatisfactoryConfigComponent
                                             ref={configRef}
-                                            onChange={handleConfigChange}
+                                            onSubmit={onSubmit}
+                                            game={game}
+                                        />
+                                    );
+                                case FactorioGameId: // Factorio
+                                    return (
+                                        <FactorioConfigComponent
+                                            ref={configRef}
                                             onSubmit={onSubmit}
                                             game={game}
                                         />
