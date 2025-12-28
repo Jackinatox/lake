@@ -5,11 +5,10 @@ import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
-import Link from 'next/link';
 import React from 'react';
-import { UpgradeHardwareConfig } from '../UpgradeHardwareConfig';
 import { UpgradeHardwareConfigToPayed } from './UpgradeToPayedComponent';
 
 interface UpgradeGameServerProps {
@@ -18,11 +17,16 @@ interface UpgradeGameServerProps {
     minOptions: HardwareConfig;
 }
 
-function UpgradeGameServerFromFree({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
+function UpgradeGameServerFromFree({
+    serverId,
+    performanceOptions,
+    minOptions,
+}: UpgradeGameServerProps) {
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+    const locale = useLakeLocale();
 
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
@@ -33,6 +37,7 @@ function UpgradeGameServerFromFree({ serverId, performanceOptions, minOptions }:
     const handleNext = async (hardwareConfig: HardwareConfig) => {
         const params: CheckoutParams = {
             type: 'TO_PAYED',
+            locale: locale,
             hardwareConfig: hardwareConfig,
             ptServerId: serverId,
         };
@@ -86,5 +91,3 @@ function UpgradeGameServerFromFree({ serverId, performanceOptions, minOptions }:
         </div>
     );
 }
-
-export default UpgradeGameServerFromFree;

@@ -6,6 +6,7 @@ import { HardwareConfigComponent } from '@/components/booking2/hardware-config';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
 import { NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { Game, GameConfig, HardwareConfig } from '@/models/config';
@@ -23,6 +24,8 @@ interface GameServerConfigProps {
 export default function GameServerConfig({ performanceGroups, game }: GameServerConfigProps) {
     const session = authClient.useSession();
     const t = useTranslations('buyGameServer');
+    const locale = useLakeLocale();
+
 
     const [clientSecret, setClientSecret] = useState('');
     const [step, setStep] = useState(1);
@@ -52,6 +55,7 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
 
         const checkouParams: CheckoutParams = {
             type: 'NEW',
+            locale: locale,
             creationServerConfig: {
                 gameConfig: gameSpecificConfig,
                 hardwareConfig: hardwareConfig,
@@ -68,7 +72,7 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
             console.error('Error submitting server configuration:', error);
             toast({
                 title: 'Error',
-                description: JSON.stringify(error),
+                description: 'There was an error processing your request. Please try again.',
                 variant: 'destructive',
             });
         }

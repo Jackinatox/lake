@@ -22,19 +22,23 @@ import upgradeToPayed from './createOrder';
 export type CheckoutParams =
     | {
         type: 'NEW';
+        locale: 'de' | 'en';
         creationServerConfig: ServerConfig; // Needed for Server Creation!!!
     }
     | {
         type: 'UPGRADE';
+        locale: 'de' | 'en';
         upgradeConfig: HardwareConfig;
         ptServerId: string;
     }
     | {
         type: 'TO_PAYED';
+        locale: 'de' | 'en';
         ptServerId: string;
         hardwareConfig: HardwareConfig;
     } | {
         type: 'PACKAGE';
+        locale: 'de' | 'en';
         gameConfig: GameConfig;
         packageId: number;
         durationDays: number;
@@ -123,6 +127,16 @@ export async function checkoutAction(params: CheckoutParams) {
                         quantity: 1,
                     },
                 ],
+                custom_text: {
+                    terms_of_service_acceptance: {
+                        message: getTermsMessage(params.locale)
+                    },
+                },
+
+                // Require acceptance
+                consent_collection: {
+                    terms_of_service: 'required',
+                },
                 metadata: {
                     orderId: String(order.id),
                 },
@@ -395,5 +409,13 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
             }
         });
         throw new Error("Interner Fehler - Server konnte nicht erstellt werden");
+    }
+}
+
+function getTermsMessage(locale: 'de' | 'en') {
+    if (locale === 'de') {
+        return 'Ich stimme Scyed\'s AGB und der Widerrufsbelehrung zu [AGB](https://scyed.com/de/legal/agb) (Rückerstattungen nur innerhalb von 2 Tagen nach dem Kauf).';
+    } else {
+        return 'I agree to Scyed\'s Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/terms) (Refunds only within 2 days of purchase).';
     }
 }

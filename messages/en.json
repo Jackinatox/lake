@@ -544,6 +544,10 @@
         "freeServers": {
             "title": "Free Servers"
         },
+        "supportInfo": {
+            "text": "Questions about a payment or need a refund? Contact our",
+            "link": "support team"
+        },
         "serverExpired": "Server expired",
         "extendServer": "Extend server",
         "manageServer": "Manage server",

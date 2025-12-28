@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
@@ -76,6 +77,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
     const { toast } = useToast();
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
+    const locale = useLakeLocale();
     
     const [step, setStep] = useState<'config' | 'payment'>('config');
     const [clientSecret, setClientSecret] = useState<string>('');
@@ -109,6 +111,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
         try {
             const checkoutParams: CheckoutParams = {
                 type: 'PACKAGE',
+                locale: locale,
                 packageId: packageData.id,
                 gameConfig: gameConfig,
                 durationDays: selectedDuration,

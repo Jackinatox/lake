@@ -2,7 +2,7 @@ import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { Toaster } from '@/components/ui/toaster';
 import { Metadata } from 'next';
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider, useLocale } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { PublicEnvScript, env } from 'next-runtime-env';
 import { ThemeProvider } from 'next-themes';

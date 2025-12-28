@@ -1,8 +1,6 @@
 'use client';
 
 import { extendFreeServer } from '@/app/actions/gameservers/extendFreeServer';
-import UpgradeGameServerFromFree from '@/components/gameserver/Upgrade/freeToPayed/UpgradeFreeToPayed';
-import UpgradeGameServer from '@/components/gameserver/Upgrade/UpgradeGameServer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +18,6 @@ import { HardwareConfig } from '@/models/config';
 import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

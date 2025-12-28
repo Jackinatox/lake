@@ -544,6 +544,10 @@
         "freeServers": {
             "title": "Kostenlose Server"
         },
+        "supportInfo": {
+            "text": "Fragen zu einer Zahlung oder brauchst du eine Rückerstattung? Kontaktiere unser",
+            "link": "Support-Team"
+        },
         "serverExpired": "Server abgelaufen",
         "extendServer": "Server verlängern",
         "manageServer": "Server verwalten",

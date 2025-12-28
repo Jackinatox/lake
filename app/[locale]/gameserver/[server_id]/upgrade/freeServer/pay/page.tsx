@@ -2,7 +2,6 @@ import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameS
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import UpgradeGameServerFromFree from '@/components/gameserver/Upgrade/freeToPayed/UpgradeFreeToPayed';
 import { Button } from '@/components/ui/button';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import prisma from '@/lib/prisma';

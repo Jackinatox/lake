@@ -10,6 +10,7 @@ import { PerformanceGroup } from '@/models/prisma';
 import Link from 'next/link';
 import React from 'react';
 import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
+import { useLakeLocale } from '@/hooks/useLakeLocale';
 
 interface UpgradeGameServerProps {
     serverId: string;
@@ -23,6 +24,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+    const locale = useLakeLocale();
 
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
@@ -33,6 +35,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
     const handleNext = async (newHardwareConfig: HardwareConfig) => {
         const params: CheckoutParams = {
             type: 'UPGRADE',
+            locale: locale,
             ptServerId: serverId,
             upgradeConfig: newHardwareConfig,
         };
