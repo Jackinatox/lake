@@ -85,7 +85,8 @@
         "backupFeature3": "Download backups",
         "ctaHeader": "Ready to host?",
         "ctaDesc": "Choose a game and get your server online in minutes.",
-        "ctaButton": "Get started"
+        "ctaButton": "Get started",
+        "getFreeServer": "Create a free server"
     },
     "notAdmin": "You are not an admin",
     "notAdminDescription": "You do not have admin rights to view this page.",

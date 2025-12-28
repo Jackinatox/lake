@@ -85,7 +85,8 @@
         "backupFeature3": "Backups herunterladen",
         "ctaHeader": "Bereit zum Hosten?",
         "ctaDesc": "Wähle ein Spiel und bring deinen Server in wenigen Minuten online.",
-        "ctaButton": "Loslegen"
+        "ctaButton": "Loslegen",
+        "getFreeServer": "Kostenlosen Server erstellen"
     },
     "freeServer": {
         "buttonText": "Kostenloser Server",

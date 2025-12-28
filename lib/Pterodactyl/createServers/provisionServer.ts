@@ -1,16 +1,14 @@
 import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConfig';
 import prisma from '@/lib/prisma';
-
-import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
-import { buildMC_ENVs_and_startup } from './buildMinecraftENVs';
-import { logger } from '@/lib/logger';
+import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { GameServerOrder, GameServerType, OrderType } from '@/app/client/generated/browser';
-import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
-import { reinstallPTServerOnly } from '@/lib/Pterodactyl/Functions/ReinstallPTServerOnly';
 import { enableServerInstallScripts } from '@/components/gameserver/settings/serverSettingsActions';
+import { logger } from '@/lib/logger';
+import { reinstallPTServerOnly } from '@/lib/Pterodactyl/Functions/ReinstallPTServerOnly';
+import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
+import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
+import { buildMC_ENVs_and_startup } from './buildMinecraftENVs';
 import createSatisStartup from './createSatisENVs';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
