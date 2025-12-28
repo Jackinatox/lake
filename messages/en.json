@@ -533,7 +533,22 @@
             "TO_PAYED": "From Free to Paid",
             "PACKAGE": "Package"
         },
+        "status": {
+            "created": "Active",
+            "active": "Online",
+            "creationFailed": "Creation failed",
+            "expired": "Expired",
+            "deleted": "Deleted",
+            "provisioning": "Provisioning..."
+        },
+        "freeServers": {
+            "title": "Free Servers"
+        },
         "serverExpired": "Server expired",
+        "extendServer": "Extend server",
+        "manageServer": "Manage server",
+        "serverInaccessible": "Server no longer accessible",
+        "viewReceipt": "View receipt",
         "historyTitle": "Payment History",
         "totalSpend": "Total spent",
         "noPayments": "No payments",
