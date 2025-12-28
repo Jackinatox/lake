@@ -30,50 +30,42 @@ export const GameConfigComponent = forwardRef(
 
         return (
             <div className="w-full">
-                <div
-                    className={
-                        'rounded-lg bg-card text-card-foreground'
+                {(() => {
+                    switch (game.id) {
+                        case 1: // Minecraft
+                            return (
+                                <MinecraftConfigComponent
+                                    ref={configRef}
+                                    onSubmit={onSubmit}
+                                    game={game}
+                                />
+                            );
+                        case 2: // Satisfactory
+                            return (
+                                <SatisfactoryConfigComponent
+                                    ref={configRef}
+                                    onSubmit={onSubmit}
+                                    game={game}
+                                />
+                            );
+                        case FactorioGameId: // Factorio
+                            return (
+                                <FactorioConfigComponent
+                                    ref={configRef}
+                                    onSubmit={onSubmit}
+                                    game={game}
+                                />
+                            );
+                        default:
+                            return (
+                                <div className="p-3 md:p-4 border rounded-lg bg-muted/50">
+                                    <p className="text-muted-foreground text-center text-sm">
+                                        {t('noSpecific')}
+                                    </p>
+                                </div>
+                            );
                     }
-                >
-                    <div className="p-0 md:p-0">
-                        {(() => {
-                            switch (game.id) {
-                                case 1: // Minecraft
-                                    return (
-                                        <MinecraftConfigComponent
-                                            ref={configRef}
-                                            onSubmit={onSubmit}
-                                            game={game}
-                                        />
-                                    );
-                                case 2: // Satisfactory
-                                    return (
-                                        <SatisfactoryConfigComponent
-                                            ref={configRef}
-                                            onSubmit={onSubmit}
-                                            game={game}
-                                        />
-                                    );
-                                case FactorioGameId: // Factorio
-                                    return (
-                                        <FactorioConfigComponent
-                                            ref={configRef}
-                                            onSubmit={onSubmit}
-                                            game={game}
-                                        />
-                                    );
-                                default:
-                                    return (
-                                        <div className="p-4 sm:p-6 sm:border sm:rounded-md bg-muted/50">
-                                            <p className="text-muted-foreground text-center text-sm sm:text-base">
-                                                {t('noSpecific')}
-                                            </p>
-                                        </div>
-                                    );
-                            }
-                        })()}
-                    </div>
-                </div>
+                })()}
             </div>
         );
     },

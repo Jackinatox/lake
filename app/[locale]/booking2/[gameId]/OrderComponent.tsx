@@ -12,8 +12,8 @@ import type { Game, GameConfig, HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useRef, useState } from 'react';
-
 
 interface GameServerConfigProps {
     performanceGroups: PerformanceGroup[];
@@ -31,6 +31,12 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
     const { toast } = useToast();
     const hardwareConfigRef = useRef<{ submit: () => void }>(null);
     const gameConfigRef = useRef<{ submit: () => void }>(null);
+
+    const imgName = `${game.name.toLowerCase()}.webp`;
+    const gameImages = {
+        light: `/images/light/games/icons/${imgName}`,
+        dark: `/images/dark/games/icons/${imgName}`,
+    };
 
     const handleHardwareConfigNext = (config: HardwareConfig) => {
         setHardwareConfig(config);
@@ -129,7 +135,32 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
                 )}
 
                 {step === 2 && game && (
-                    <div className="">
+                    <div className="bg-card border rounded-lg p-2 md:p-6">
+                        {/* Header with Game Icon */}
+                        <div className="mb-4 md:mb-6 flex items-center gap-4">
+                            <div className="relative w-14 h-14 md:w-16 md:h-16 shrink-0">
+                                <Image
+                                    src={gameImages.light}
+                                    alt={game.name}
+                                    fill
+                                    className="object-cover rounded-lg block dark:hidden shadow-md"
+                                />
+                                <Image
+                                    src={gameImages.dark}
+                                    alt={game.name}
+                                    fill
+                                    className="object-cover rounded-lg hidden dark:block shadow-md"
+                                />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-bold text-primary/90">
+                                    {game.name}
+                                </h2>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('gameConfig.description')}
+                                </p>
+                            </div>
+                        </div>
                         <GameConfigComponent
                             ref={gameConfigRef}
                             game={game}

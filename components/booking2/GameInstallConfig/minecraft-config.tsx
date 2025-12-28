@@ -1,6 +1,4 @@
 import { PaperEggId } from '@/app/GlobalConstants';
-import { CardDescription, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -14,6 +12,8 @@ import { GameFlavor, GameVersion } from '@/types/gameData';
 import { SelectGroup } from '@radix-ui/react-select';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { ConfigContainer } from '../shared/config-container';
+import { ConfigSettingItem } from '../shared/config-setting-item';
 
 interface MinecraftConfigProps {
     game: Game;
@@ -99,26 +99,19 @@ export const MinecraftConfigComponent = forwardRef(
         }));
 
         return (
-            <div className="space-y-4 sm:space-y-6">
-                <div className="space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <div className="flex-1">
-                            <CardTitle>
-                                {t('description')}
-                            </CardTitle>
-                        </div>
-                    </div>
-                </div>
-
+            <ConfigContainer>
                 {/* Game Flavor Selection */}
-                <div className="space-y-2">
-                    <Label className="text-sm font-medium">Game Flavor</Label>
+                <ConfigSettingItem
+                    id="flavor"
+                    label="Game Flavor"
+                    description="Choose the server software (Paper, Vanilla, etc.)"
+                >
                     <Select
                         value={selectedEggId?.toString() ?? ''}
                         onValueChange={(value) => setSelectedFlavorId(Number(value))}
                         disabled={flavors.length === 0}
                     >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-40 md:w-48">
                             <SelectValue placeholder="Select a flavor" />
                         </SelectTrigger>
                         <SelectContent>
@@ -129,18 +122,25 @@ export const MinecraftConfigComponent = forwardRef(
                             ))}
                         </SelectContent>
                     </Select>
-                </div>
+                </ConfigSettingItem>
 
                 {/* Game Version Selection */}
-                <div className="space-y-2">
-                    <Label className="text-sm font-medium">Game Version</Label>
+                <ConfigSettingItem
+                    id="version"
+                    label="Game Version"
+                    description="Select the Minecraft version to run"
+                >
                     <Select
                         disabled={gameVersions.length === 0}
                         value={selectedVersion?.version}
-                        onValueChange={(value) => setSelectedVersion(gameVersions.find((v) => v.version === value) || null)}
+                        onValueChange={(value) =>
+                            setSelectedVersion(
+                                gameVersions.find((v) => v.version === value) || null,
+                            )
+                        }
                     >
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a fruit" />
+                        <SelectTrigger className="w-40 md:w-48">
+                            <SelectValue placeholder="Select version" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
@@ -154,16 +154,14 @@ export const MinecraftConfigComponent = forwardRef(
                                         }}
                                         className="cursor-pointer"
                                     >
-
                                         <span className="truncate">{version.version}</span>
-                                    </SelectItem >
+                                    </SelectItem>
                                 ))}
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                </div >
-
-            </div>
+                </ConfigSettingItem>
+            </ConfigContainer>
         );
     },
 );
