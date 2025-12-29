@@ -222,6 +222,7 @@
                 "returnToDashboard": "Zur Übersicht",
                 "successButton": "Server jetzt öffnen",
                 "redirecting": "Weiterleitung in {seconds}s...",
+                "redirectingPlain": "Weiterleitung...",
                 "errorHeadline": "Etwas ist schiefgelaufen",
                 "errorSubheadline": "Wir konnten deinen Server nicht bereitstellen. Prüfe die Details unten oder kontaktiere den Support.",
                 "networkHeadline": "Kurzzeitiges Verbindungsproblem",
@@ -546,7 +547,7 @@
             "title": "Kostenlose Server"
         },
         "supportInfo": {
-            "text": "Fragen zu einer Zahlung oder brauchst du eine Rückerstattung? Kontaktiere unser",
+            "text": "Fragen zu einer Zahlung, Gameserver oder Rückerstattung? Kontaktiere unser",
             "link": "Support-Team"
         },
         "serverExpired": "Server abgelaufen",

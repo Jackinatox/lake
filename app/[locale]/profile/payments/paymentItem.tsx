@@ -1,11 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Receipt, AlertCircle, Cog, RefreshCw, XCircle, CheckCircle2, Gift } from 'lucide-react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { GameServerStatus, GameServerType, OrderType } from '@/app/client/generated/browser';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, CheckCircle2, Cog, Receipt, RefreshCw, Settings, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 interface PaymentItemProps {
     amount: number;
@@ -134,7 +133,7 @@ export function PaymentItem({
                             // Active/Created: Show server access button
                             <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9" asChild title={t('manageServer')}>
                                 <Link href={gameServerUrl}>
-                                    <Cog className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                    <Settings className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Link>
                             </Button>
                         ) : (

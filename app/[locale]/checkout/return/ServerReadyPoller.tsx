@@ -13,7 +13,7 @@ import {
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { GameServerStatus } from '@/types/gameData';
@@ -34,6 +34,8 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     const [pollingSignal, setPollingSignal] = useState(0);
     const [countdown, setCountdown] = useState(10);
     const [isCountdownActive, setIsCountdownActive] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
+    const redirectStartedRef = useRef(false);
 
     const translations = useTranslations();
     const pollerT = useTranslations('checkout.return.poller');
@@ -98,18 +100,31 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
             if (isCountdownActive) {
                 setIsCountdownActive(false);
             }
+            // reset redirect marker for a fresh flow if server disappears
+            redirectStartedRef.current = false;
+            setIsRedirecting(false);
             return;
         }
+
+        // If a redirect was already initiated in this lifecycle, keep showing the plain
+        // redirecting message and don't restart the countdown.
+        if (redirectStartedRef.current || isRedirecting) {
+            setIsRedirecting(true);
+            return;
+        }
+
         if (!isCountdownActive) {
             setCountdown(10);
             setIsCountdownActive(true);
         }
-    }, [serverId, isCountdownActive]);
+    }, [serverId, isCountdownActive, isRedirecting]);
 
     useEffect(() => {
         if (!isCountdownActive || !serverId) return;
         if (countdown <= 0) {
             setIsCountdownActive(false);
+            redirectStartedRef.current = true;
+            setIsRedirecting(true);
             router.push(`/gameserver/${encodeURIComponent(serverId)}?start=true`);
             return;
         }
@@ -327,7 +342,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                         {isSuccess && (
                             <div className="flex w-full flex-col items-center gap-4">
                                 <p className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                                    {pollerT('redirecting', { seconds: countdown })}
+                                    {isRedirecting ? pollerT('redirectingPlain' as any) : pollerT('redirecting', { seconds: countdown })}
                                 </p>
                                 <div className="flex flex-col gap-2 sm:flex-row">
                                     <Button asChild>

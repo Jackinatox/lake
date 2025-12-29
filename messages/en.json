@@ -222,6 +222,7 @@
                 "returnToDashboard": "Back to dashboard",
                 "successButton": "Open server now",
                 "redirecting": "Redirecting in {seconds}s...",
+                "redirectingPlain": "Redirecting...",
                 "errorHeadline": "Something went wrong",
                 "errorSubheadline": "We couldn't finish provisioning your server. Check the details below or reach out to support.",
                 "networkHeadline": "Temporary connection issue",
@@ -546,7 +547,7 @@
             "title": "Free Servers"
         },
         "supportInfo": {
-            "text": "Questions about a payment or need a refund? Contact our",
+            "text": "Questions about a payment, gameserver or refund? Contact our",
             "link": "support team"
         },
         "serverExpired": "Server expired",

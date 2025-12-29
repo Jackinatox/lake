@@ -56,23 +56,72 @@ export default function ServerBookingConfirmationTemplate({
             <Text style={textStyle}>Hallo {userName},</Text>
 
             <Text style={textStyle}>
-                Vielen Dank für deine Buchung! Dein {gameName} Gameserver wurde erfolgreich erstellt
-                und wird gerade für dich eingerichtet.
+                Vielen Dank für deine Buchung! Dein {gameName} Server wurde erfolgreich erstellt und
+                wird gerade für dich eingerichtet.
             </Text>
 
             <EmailCard style={{ marginTop: 16 }}>
-                <Section style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <Img
-                        src={gameImageUrl}
-                        alt={`${gameName} Icon`}
-                        width="72"
-                        height="72"
-                        style={{ borderRadius: '12px', flexShrink: 0 }}
-                    />
-                    <div style={{ flex: 1 }}>
-                        <Text style={{ ...subheadingStyle, margin: 0 }}>{gameName} Gameserver</Text>
-                        <Text style={{ ...textStyle, marginTop: 6 }}>{serverName}</Text>
-                    </div>
+                <Section style={{ margin: 0 }}>
+                    <table
+                        role="presentation"
+                        width="100%"
+                        cellPadding="0"
+                        cellSpacing="0"
+                        style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}
+                    >
+                        <tbody>
+                            <tr>
+                                <td
+                                    style={{
+                                        verticalAlign: 'middle',
+                                        paddingRight: 14,
+                                        width: 72,
+                                        minWidth: 72,
+                                    }}
+                                >
+                                    <Img
+                                        src={gameImageUrl}
+                                        alt={`${gameName} Icon`}
+                                        width="72"
+                                        height="72"
+                                        style={{
+                                            borderRadius: '12px',
+                                            display: 'block',
+                                            maxWidth: '72px',
+                                        }}
+                                    />
+                                </td>
+                                <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
+                                    <table
+                                        role="presentation"
+                                        style={{ borderCollapse: 'collapse' }}
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <Text style={{ ...subheadingStyle, margin: 0 }}>
+                                                        {gameName}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text
+                                                        style={{
+                                                            ...textStyle,
+                                                            margin: '6px 0 0 0',
+                                                        }}
+                                                    >
+                                                        {serverName}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </Section>
             </EmailCard>
 
@@ -120,8 +169,17 @@ export default function ServerBookingConfirmationTemplate({
                 <table style={{ width: '100%' }} cellPadding="0" cellSpacing="0">
                     <tbody>
                         <tr>
-                            <td style={{ ...textStyle, fontWeight: 600, margin: 0 }}>Gesamtbetrag:</td>
-                            <td style={{ ...textStyle, textAlign: 'right', fontSize: '20px', fontWeight: 700 }}>
+                            <td style={{ ...textStyle, fontWeight: 600, margin: 0 }}>
+                                Gesamtbetrag:
+                            </td>
+                            <td
+                                style={{
+                                    ...textStyle,
+                                    textAlign: 'right',
+                                    fontSize: '20px',
+                                    fontWeight: 700,
+                                }}
+                            >
                                 {formatPrice(price)}
                             </td>
                         </tr>

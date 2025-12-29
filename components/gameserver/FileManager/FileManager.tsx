@@ -291,7 +291,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 loading: false,
             }));
         } catch (err) {
-            const message = err instanceof Error ? err.message : t('toasts.unableToOpenDescription');
+            const message =
+                err instanceof Error ? err.message : t('toasts.unableToOpenDescription');
             toast({
                 title: t('toasts.unableToOpen'),
                 description: message,
@@ -312,7 +313,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             if ((entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE) {
                 toast({
                     title: t('toasts.fileTooLarge'),
-                    description: t('toasts.fileTooLargeDescription', { maxSize: MAX_EDITABLE_FILE_SIZE_LABEL }),
+                    description: t('toasts.fileTooLargeDescription', {
+                        maxSize: MAX_EDITABLE_FILE_SIZE_LABEL,
+                    }),
                 });
                 return;
             }
@@ -338,8 +341,11 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             await writeFile(server.identifier, editorState.path, editorState.content, apiKey);
             toast({
                 title: t('toasts.fileSaved'),
-                description: t('toasts.fileSavedDescription', { fileName: editorState.fileName ?? '' }),
+                description: t('toasts.fileSavedDescription', {
+                    fileName: editorState.fileName ?? '',
+                }),
             });
+            handleEditorClose();
             await fetchDirectory(currentPath);
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to save file';
@@ -403,7 +409,10 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             await renameEntry(server.identifier, currentPath, renameTarget.name, trimmed, apiKey);
             toast({
                 title: t('toasts.entryRenamed'),
-                description: t('toasts.entryRenamedDescription', { oldName: renameTarget.name, newName: trimmed }),
+                description: t('toasts.entryRenamedDescription', {
+                    oldName: renameTarget.name,
+                    newName: trimmed,
+                }),
             });
             setRenameTarget(null);
             setRenameValue('');
@@ -501,7 +510,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
 
             toast({
                 title: t('toasts.uploadComplete'),
-                description: t('toasts.uploadCompleteDescription', { count: uploadState.files.length }),
+                description: t('toasts.uploadCompleteDescription', {
+                    count: uploadState.files.length,
+                }),
             });
 
             setUploadState(initialUploadState);
@@ -617,7 +628,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {renameTarget?.isFile ? t('rename.dialogTitleFile') : t('rename.dialogTitleFolder')}
+                            {renameTarget?.isFile
+                                ? t('rename.dialogTitleFile')
+                                : t('rename.dialogTitleFolder')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             {t('rename.dialogDescription', { name: '' })}{' '}
@@ -649,7 +662,9 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {deleteTarget?.isFile ? t('delete.dialogTitleFile') : t('delete.dialogTitleFolder')}
+                            {deleteTarget?.isFile
+                                ? t('delete.dialogTitleFile')
+                                : t('delete.dialogTitleFolder')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             {t('delete.dialogDescription', { name: '' })}

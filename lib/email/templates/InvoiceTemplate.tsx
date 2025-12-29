@@ -92,39 +92,57 @@ export default function InvoiceTemplate({
                         width="100%"
                         cellPadding="0"
                         cellSpacing="0"
-                        style={{ borderCollapse: 'collapse' }}
+                        style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}
                     >
                         <tbody>
                             <tr>
                                 <td
-                                    style={{ verticalAlign: 'middle', paddingRight: 14, width: 64 }}
+                                    style={{
+                                        verticalAlign: 'middle',
+                                        paddingRight: 14,
+                                        width: 64,
+                                        minWidth: 64,
+                                    }}
                                 >
                                     <Img
                                         src={gameImageUrl}
                                         alt={`${gameName} Icon`}
                                         width="64"
                                         height="64"
-                                        style={{ borderRadius: '10px', display: 'block' }}
+                                        style={{
+                                            borderRadius: '10px',
+                                            display: 'block',
+                                            maxWidth: '64px',
+                                        }}
                                     />
                                 </td>
                                 <td style={{ verticalAlign: 'middle', textAlign: 'left' }}>
-                                    <div style={{ lineHeight: 1 }}>
-                                        <Text style={{ ...subheadingStyle, margin: 0 }}>
-                                            {gameName} Gameserver
-                                        </Text>
-                                        <Text
-                                            style={{
-                                                ...textStyle,
-                                                margin: '6px 0 0 0',
-                                                display: 'block',
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                            }}
-                                        >
-                                            {serverName}
-                                        </Text>
-                                    </div>
+                                    <table
+                                        role="presentation"
+                                        style={{ borderCollapse: 'collapse' }}
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <Text style={{ ...subheadingStyle, margin: 0 }}>
+                                                        {gameName}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <Text
+                                                        style={{
+                                                            ...textStyle,
+                                                            margin: '6px 0 0 0',
+                                                        }}
+                                                    >
+                                                        {serverName}
+                                                    </Text>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </td>
                             </tr>
                         </tbody>
@@ -152,7 +170,7 @@ export default function InvoiceTemplate({
                     Leistungsbeschreibung
                 </Heading>
                 <Text style={{ ...textStyle, fontWeight: 600, marginTop: 4 }}>
-                    {gameName} Gameserver - {getOrderTypeLabel(orderType)}
+                    {gameName} - {getOrderTypeLabel(orderType)}
                 </Text>
                 <table style={{ width: '100%', marginTop: 8 }} cellPadding="0" cellSpacing="0">
                     <tbody>
