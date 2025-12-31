@@ -25,6 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
+import { useSearchParams } from 'next/navigation';
 
 export default function ContactForm() {
     const session = authClient.useSession();
@@ -37,7 +38,9 @@ export default function ContactForm() {
         BILLING: 'categories.billing',
         ACCOUNT: 'categories.account',
     } as const;
-    const defaultCategory = categories[0];
+    const searchParams = useSearchParams();
+    const categoryPreSelect = searchParams.get('category');
+    const defaultCategory = categories.find((cat) => cat === categoryPreSelect) || 'GENERAL'; // Lets me preset the selected cat by providing it as a search param, used to link for a refund
     const [category, setCategory] = useState<(typeof categories)[number]>(defaultCategory);
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');

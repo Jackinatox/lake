@@ -38,7 +38,7 @@ export default async function ProfilePage() {
                                 <p className="text-muted-foreground">
                                     {t('supportInfo.text')}{' '}
                                     <Link
-                                        href="/support"
+                                        href="/support?category=BILLING"
                                         className="text-primary hover:underline font-medium"
                                     >
                                         {t('supportInfo.link')}
