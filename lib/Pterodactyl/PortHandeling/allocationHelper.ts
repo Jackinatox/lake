@@ -220,7 +220,7 @@ export async function setAllocationCount(
     const currentCount = currentAllocations.length;
 
     if (currentCount === targetCount) {
-        logger.info(
+        logger.trace(
             `Server ${serverId} already has ${targetCount} allocations`,
             'GAME_SERVER',
         );
@@ -311,7 +311,7 @@ export async function updateServerEnvironmentVariable(
         );
     }
 
-    logger.info(
+    logger.trace(
         `Updated environment variable ${envVarName} to ${value} for server ${serverId}`,
         'GAME_SERVER',
     );

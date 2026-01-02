@@ -298,6 +298,7 @@ model Account {
 }
 
 enum LogLevel {
+  TRACE
   INFO
   WARN
   ERROR

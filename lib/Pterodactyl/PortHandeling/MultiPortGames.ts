@@ -51,20 +51,13 @@ export async function correctPortsForGame(
     ptServerId: string,
     gameId: number,
     apiKey: string,
-    maxRetries: number = 3,
+    maxRetries: number = 4,
 ): Promise<PortConfigurationResult> {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             const result = await configureServerPorts(ptServerId, gameId, apiKey);
-
-            if (attempt > 2) {
-                logger.info(
-                    `Port configuration needed more than 2 attempts on attempt ${attempt}/${maxRetries}`,
-                    'GAME_SERVER',
-                );
-            }
 
             return {
                 ...result,
@@ -109,7 +102,7 @@ async function configureServerPorts(
     gameId: number,
     apiKey: string,
 ): Promise<Omit<PortConfigurationResult, 'attemptsMade'>> {
-    logger.info(`Starting port configuration for server ${ptServerId}, game ${gameId}`, 'GAME_SERVER');
+    logger.trace(`Starting port configuration for server ${ptServerId}, game ${gameId}`, 'GAME_SERVER');
 
     const gameConfig = GAME_PORT_CONFIG[gameId as keyof typeof GAME_PORT_CONFIG];
 

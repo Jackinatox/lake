@@ -109,6 +109,18 @@ class Logger {
     }
 
     /**
+     * Log an trace message
+     */
+    async trace(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {
+        await this.log({
+            message,
+            level: 'TRACE',
+            type,
+            ...context,
+        });
+    }
+
+    /**
      * Log an informational message
      */
     async info(message: string, type: LogType = 'SYSTEM', context?: LogContext): Promise<void> {

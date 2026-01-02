@@ -5,7 +5,10 @@
  */
 
 export async function register() {
-    // const { performVerification } = await import('@/lib/startup');
-    // console.log('Running startup database constant verification...');
-    // await performVerification();
+    // Only run in Node.js runtime, not Edge Runtime (Prisma requires Node.js APIs)
+    if (process.env.NEXT_RUNTIME === 'nodejs' || !process.env.NEXT_RUNTIME) {
+        const { performVerification } = await import('@/lib/startup');
+        console.log('Running startup database constant verification...');
+        await performVerification();
+    }
 }
