@@ -4,6 +4,8 @@ import { runDeleteServers } from './jobs/DeleteServers';
 import { runGenerateExpiryEmails } from './jobs/Reminder';
 import { runGenerateDeletionEmails } from './jobs/DeletionReminder';
 import { runSendEmails } from './jobs/sendEmails';
+import { CronJob } from 'cron';
+import { checkFactorioNewVersion } from './jobs/checkNewVersions/Factorio/Factorio';
 
 const app = express();
 const port = 8080;
@@ -25,6 +27,8 @@ const jobStatus: Record<string, JobStatus> = {
     GenerateExpiryEmails: { running: false, runCount: 0 },
     GenerateDeletionEmails: { running: false, runCount: 0 },
     SendEmails: { running: false, runCount: 0 },
+    // Added job status for version checks
+    CheckNewVersions: { running: false, runCount: 0 },
 };
 
 // Helper to run a job safely
@@ -45,8 +49,8 @@ async function runJob(name: string, jobFn: () => Promise<any>) {
         jobStatus[name].lastError = undefined;
         console.log(`[${new Date().toISOString()}] ${name} completed`);
     } catch (error) {
-        jobStatus[name].lastError = error instanceof Error ? error.message : String(error);
-        console.error(`[${new Date().toISOString()}] ${name} failed:`, error);
+        jobStatus[name].lastError = error instanceof Error ? error.message : JSON.stringify(error);
+        console.error(`[${new Date().toISOString()}] ${name} failed:`, JSON.stringify(error));
     } finally {
         jobStatus[name].running = false;
     }
@@ -55,6 +59,15 @@ async function runJob(name: string, jobFn: () => Promise<any>) {
 // Schedule jobs
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * 60 * 1000;
+
+const hourlyCron = CronJob.from({
+    cronTime: '0 0 * * * *', // Run at the start of every hour (HH:00:00)
+    onTick: async () => {
+        await runJob('CheckNewVersions', checkFactorioNewVersion);
+    },
+    start: true,
+    timeZone: 'Europe/Berlin',
+});
 
 // Run all jobs once on startup (after a short delay)
 setTimeout(async () => {
@@ -65,6 +78,7 @@ setTimeout(async () => {
         runJob('GenerateExpiryEmails', runGenerateExpiryEmails),
         runJob('GenerateDeletionEmails', runGenerateDeletionEmails),
         runJob('SendEmails', runSendEmails),
+        runJob('CheckNewVersions', checkFactorioNewVersion),
     ]);
     console.log('Initial job execution complete');
 }, 5000);
@@ -116,6 +130,13 @@ const gracefulShutdown = async (signal: NodeJS.Signals) => {
     // Clear all intervals
     for (const interval of intervals) {
         clearInterval(interval);
+    }
+
+    // Stop the cron job
+    try {
+        hourlyCron.stop();
+    } catch (err) {
+        console.warn('Failed to stop hourly cron:', err);
     }
 
     server.close(() => {

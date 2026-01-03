@@ -60,7 +60,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             startAndVars = createSatisStartup(gameConfig.gameSpecificConfig) // has type SatisfactoryConfig
             break;
         default:
-            throw new Error('No Handler for this GameServer');
+            throw new Error(`No Handler for: ${serverOrder.creationGameData.name} (${serverOrder.creationGameData.id})`);
     }
 
     const serverName = serverOrder.creationGameData.name + ' Gameserver';

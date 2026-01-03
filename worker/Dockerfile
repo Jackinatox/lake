@@ -15,11 +15,15 @@ RUN bun install --frozen-lockfile --production
 # Build stage
 FROM base AS build
 COPY --from=install /usr/src/app/node_modules ./node_modules
+
+# Copy Prisma schema to parent-like structure to maintain relative paths
+COPY prisma/schema.prisma ../prisma/schema.prisma
+
+# Copy worker code
 COPY worker/ ./
 
-# Copy and generate Prisma client
-COPY prisma/schema.prisma ./prisma/schema.prisma
-RUN bunx prisma generate --schema=./prisma/schema.prisma --generator=worker
+# Generate Prisma client - this will output to ./client/generated as per schema config
+RUN bunx prisma generate --schema=../prisma/schema.prisma --generator=worker
 
 # Production stage
 FROM oven/bun:1-slim AS release
