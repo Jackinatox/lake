@@ -15,6 +15,8 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
             id: true,
             name: true,
         },
+        where: { enabled: true },
+        orderBy: { sorting: 'asc' },
     });
 
     if (!data || data.length === 0) {

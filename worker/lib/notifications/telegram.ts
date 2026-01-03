@@ -1,20 +1,4 @@
 /**
- * Telegram notification provider for worker
- * Lightweight implementation for sending notifications via Telegram Bot API
- */
-
-interface TelegramButton {
-    text: string;
-    url: string;
-}
-
-interface SendMessageOptions {
-    reply_markup?: {
-        inline_keyboard: Array<Array<TelegramButton>>;
-    };
-}
-
-/**
  * Escapes HTML special characters for Telegram's HTML parse mode
  */
 function escapeHtml(text: string): string {
@@ -30,7 +14,6 @@ function escapeHtml(text: string): string {
  */
 async function sendTelegramMessage(
     message: string,
-    options?: SendMessageOptions
 ): Promise<boolean> {
     const chat_id = process.env.TELEGRAM_CHAT_ID;
     const bot_token = process.env.TELEGRAM_BOT_TOKEN;
@@ -50,7 +33,6 @@ async function sendTelegramMessage(
                 chat_id: chat_id,
                 text: message,
                 parse_mode: "HTML",
-                ...options,
             }),
         });
 
@@ -91,22 +73,7 @@ export async function sendNewVersionNotification(params: {
         text += `<b>Branch:</b> <code>${escapeHtml(branch)}</code>\n`;
     }
 
-    const options: SendMessageOptions | undefined = releaseUrl
-        ? {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: '🔗 View Release',
-                            url: releaseUrl,
-                        },
-                    ],
-                ],
-            },
-        }
-        : undefined;
-
-    return sendTelegramMessage(text, options);
+    return sendTelegramMessage(text);
 }
 
 /**

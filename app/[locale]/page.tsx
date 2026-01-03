@@ -15,7 +15,7 @@ export default async function LandingPage() {
         select: { id: true, name: true },
         where: { enabled: true, featured: true },
         take: 4,
-        orderBy: { id: 'asc' },
+        orderBy: { sorting: 'asc' },
     });
 
     const supportedGames: Array<Game> = games.map((game) => {

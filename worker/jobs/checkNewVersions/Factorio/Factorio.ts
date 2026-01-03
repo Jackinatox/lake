@@ -29,7 +29,7 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
                     { jobRun },
                 );
                 console.log(JSON.stringify(compare >= 0 ? latestOnlineVersion : latestLocalVersion));
-                
+
                 // Send notification about new version
                 await notifyNewVersion({
                     gameName: 'Factorio',
@@ -37,7 +37,7 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
                     newVersion: latestOnlineVersion.version,
                     branch: latestOnlineVersion.branch,
                 });
-                
+
                 return latestOnlineVersion;
             } else {
                 await logInfo(

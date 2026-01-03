@@ -29,6 +29,8 @@ async function FreeGameServerPage() {
     const [data, freeTierConfig, userFreeServers] = await Promise.all([
         prisma.gameData.findMany({
             select: { id: true, name: true },
+            where: { enabled: true },
+            orderBy: { sorting: 'asc' },
         }),
         getFreeTierConfigCached(),
         promise,

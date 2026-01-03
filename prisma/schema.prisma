@@ -25,6 +25,7 @@ model GameData {
   data     Json?
   enabled  Boolean @default(false)
   featured Boolean @default(false)
+  sorting  Int     @default(0)
 
   GameServer GameServer[]
 
@@ -42,6 +43,7 @@ model Location {
   ptLocationId Int     @default(1)
   cpuId        Int     @default(1)
   ramId        Int
+  sorting      Int     @default(0)
 
   cpu CPU @relation(fields: [cpuId], references: [id], onDelete: Restrict)
   ram RAM @relation(fields: [ramId], references: [id], onDelete: Restrict)

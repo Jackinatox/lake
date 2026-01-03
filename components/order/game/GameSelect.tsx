@@ -3,9 +3,12 @@
 import GameCard from './gameCard';
 import prisma from '@/lib/prisma';
 
-
 async function GameSelect() {
-    const data = await prisma.gameData.findMany({ select: { id: true, name: true } });
+    const data = await prisma.gameData.findMany({
+        select: { id: true, name: true },
+        where: { enabled: true },
+        orderBy: { sorting: 'asc' },
+    });
 
     const games = data.map((game) => {
         const imgName = `${game.name.toLowerCase()}.webp`;
