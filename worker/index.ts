@@ -6,6 +6,9 @@ import { runGenerateDeletionEmails } from './jobs/DeletionReminder';
 import { runSendEmails } from './jobs/sendEmails';
 import { CronJob } from 'cron';
 import { checkFactorioNewVersion } from './jobs/checkNewVersions/Factorio/Factorio';
+import { verifyEnvVars } from './lib/startup';
+
+await verifyEnvVars()
 
 const app = express();
 const port = 8080;

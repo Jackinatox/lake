@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth-client';
 import { Game, GameConfig } from '@/models/config';
 import Image from 'next/image';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 export interface FreeServerStats {
