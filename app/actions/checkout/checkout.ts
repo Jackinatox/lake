@@ -2,7 +2,7 @@
 
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
-import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
+import { JobId, provisionServer, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import {
     checkFreeServerEligibility,
@@ -351,7 +351,7 @@ export async function checkoutAction(params: CheckoutParams) {
 }
 
 // Create a free GameServer
-export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<string> {
+export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<JobId> {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -385,7 +385,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
     });
 
     try {
-        const ptId = await provisionServer(order);
+        const jobId = await provisionServerWithWorker(order);
         // notify via lib helper (handles its own logging/errors)
         try {
             await notifyFreeServerCreated(order.id);
@@ -397,7 +397,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<st
                 },
             });
         }
-        return ptId;
+        return jobId;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
 
@@ -416,6 +416,6 @@ function getTermsMessage(locale: 'de' | 'en') {
     if (locale === 'de') {
         return 'Ich stimme Scyed\'s AGB und der Widerrufsbelehrung zu [AGB](https://scyed.com/de/legal/agb) (Rückerstattungen nur innerhalb von 2 Tagen nach dem Kauf).';
     } else {
-        return 'I agree to Scyed\'s Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/terms) (Refunds only within 2 days of purchase).';
+        return 'I agree to Scyed\'s Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/agb) (Refunds only within 2 days of purchase).';
     }
 }

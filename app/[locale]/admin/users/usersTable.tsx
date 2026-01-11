@@ -28,6 +28,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                     <TableHead>ID</TableHead>
                     <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
+                    <TableHead>Last Login Method</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Edit</TableHead>
                 </TableRow>
@@ -51,7 +52,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                             </Avatar>
                         </TableCell>
                         <TableCell>{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.lastLoginMethod}</TableCell>
                         <TableCell>
                             <Button asChild variant="ghost" size="icon">
                                 <Link href={`users/${user.ptUserId}`}>

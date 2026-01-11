@@ -10,6 +10,7 @@ import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
 import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
 import { buildMC_ENVs_and_startup } from './buildMinecraftENVs';
 import createSatisStartup from './createSatisENVs';
+import { env } from 'next-runtime-env';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({
@@ -18,7 +19,12 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
     });
     const pt = createPtClient();
 
-    if (!serverOrder || !serverOrder.creationGameData || !serverOrder.creationLocation || !serverOrder.user.ptKey)
+    if (
+        !serverOrder ||
+        !serverOrder.creationGameData ||
+        !serverOrder.creationLocation ||
+        !serverOrder.user.ptKey
+    )
         throw new Error(`No Server found for serverOrder: ${order.id}`);
 
     console.log('user id: ', serverOrder.user.ptUserId);
@@ -57,10 +63,12 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             startAndVars = buildMC_ENVs_and_startup(parseInt(gameConfig.eggId), gameConfig.version);
             break;
         case SatisfactoryGameId:
-            startAndVars = createSatisStartup(gameConfig.gameSpecificConfig) // has type SatisfactoryConfig
+            startAndVars = createSatisStartup(gameConfig.gameSpecificConfig); // has type SatisfactoryConfig
             break;
         default:
-            throw new Error(`No Handler for: ${serverOrder.creationGameData.name} (${serverOrder.creationGameData.id})`);
+            throw new Error(
+                `No Handler for: ${serverOrder.creationGameData.name} (${serverOrder.creationGameData.id})`,
+            );
     }
 
     const serverName = serverOrder.creationGameData.name + ' Gameserver';
@@ -94,7 +102,7 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             locationId: serverOrder.creationLocation.ptLocationId,
             gameConfig: serverOrder.gameConfig || undefined,
             name: serverName,
-            type: enumMap[serverOrder.type]
+            type: enumMap[serverOrder.type],
         },
     });
 
@@ -103,43 +111,55 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         logger.info(`Creating Pterodactyl server for order ${order.id}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
             gameServerId: dbNewServer.id,
-            details: { options }
+            details: { options },
         });
-
 
         const maxRetries = 3;
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 newServer = await pt.createServer({ ...options, skipScripts: true });
-                logger.info(`Pterodactyl server creation succeeded on attempt ${attempt}`, 'GAME_SERVER', {
-                    userId: serverOrder.user.id,
-                    gameServerId: dbNewServer.id,
-                    details: { attempt },
-                });
+                logger.info(
+                    `Pterodactyl server creation succeeded on attempt ${attempt}`,
+                    'GAME_SERVER',
+                    {
+                        userId: serverOrder.user.id,
+                        gameServerId: dbNewServer.id,
+                        details: { attempt },
+                    },
+                );
                 break;
             } catch (error) {
-                const errText = error instanceof Error ? (error.stack || error.message) : JSON.stringify(error);
-                logger.error(`Pterodactyl server creation failed on attempt ${attempt}`, 'GAME_SERVER', {
-                    userId: serverOrder.user.id,
-                    gameServerId: dbNewServer.id,
-                    details: { attempt, error: errText },
-                });
+                const errText =
+                    error instanceof Error ? error.stack || error.message : JSON.stringify(error);
+                logger.error(
+                    `Pterodactyl server creation failed on attempt ${attempt}`,
+                    'GAME_SERVER',
+                    {
+                        userId: serverOrder.user.id,
+                        gameServerId: dbNewServer.id,
+                        details: { attempt, error: errText },
+                    },
+                );
                 if (attempt < maxRetries) {
                     await new Promise((resolve) => setTimeout(resolve, 5000));
                 } else {
-                    throw new Error(`Failed to create Pterodactyl server after ${maxRetries} attempts: ${errText}. Server details: name=${serverName}, gameDataId=${serverOrder.creationGameData.id}, locationId=${serverOrder.creationLocation.ptLocationId}, userId=${serverOrder.user.id}, dbServerId=${dbNewServer.id}`);
+                    throw new Error(
+                        `Failed to create Pterodactyl server after ${maxRetries} attempts: ${errText}. Server details: name=${serverName}, gameDataId=${serverOrder.creationGameData.id}, locationId=${serverOrder.creationLocation.ptLocationId}, userId=${serverOrder.user.id}, dbServerId=${dbNewServer.id}`,
+                    );
                 }
             }
         }
 
         if (newServer === null || newServer === undefined) {
-            throw new Error('Pterodactyl server creation returned null. This exception should never throw.');
+            throw new Error(
+                'Pterodactyl server creation returned null. This exception should never throw.',
+            );
         }
 
         logger.info(`Pterodactyl server created: ${newServer.identifier}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
             gameServerId: dbNewServer.id,
-            details: { ptServerId: newServer.identifier, ptAdminId: newServer.id }
+            details: { ptServerId: newServer.identifier, ptAdminId: newServer.id },
         });
 
         await prisma.gameServer.update({
@@ -151,37 +171,37 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
         });
 
         // Wait for server to be fully initialized before port corrections
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise((resolve) => setTimeout(resolve, 4000));
 
-        await correctPortsForGame(newServer.identifier, serverOrder.creationGameData.id, serverOrder.user.ptKey);
+        await correctPortsForGame(
+            newServer.identifier,
+            serverOrder.creationGameData.id,
+            serverOrder.user.ptKey,
+        );
 
         // Wait for port corrections to apply
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         const scriptsEnabled = await enableServerInstallScripts(
-            newServer.id,   // Is Admin Id
+            newServer.id, // Is Admin Id
         );
 
         if (!scriptsEnabled) {
             throw new Error('Failed to enable install scripts');
         }
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         logger.info(`Triggering install script for server ${newServer.identifier}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
-            gameServerId: dbNewServer.id
+            gameServerId: dbNewServer.id,
         });
 
-        await reinstallPTServerOnly(
-            newServer.identifier,
-            serverOrder.user.ptKey,
-            false,
-        );
+        await reinstallPTServerOnly(newServer.identifier, serverOrder.user.ptKey, false);
 
         logger.info(`Server provisioning completed for ${newServer.identifier}`, 'GAME_SERVER', {
             userId: serverOrder.user.id,
-            gameServerId: dbNewServer.id
+            gameServerId: dbNewServer.id,
         });
 
         return newServer.identifier;
@@ -204,9 +224,44 @@ export async function provisionServer(order: GameServerOrder): Promise<string> {
             },
             data: {
                 gameServerId: dbNewServer.id,
-
             },
         });
     }
+}
 
+export type JobId = string;
+
+export async function provisionServerWithWorker(order: GameServerOrder): Promise<JobId> {
+    try {
+        const workerUrl = env('WORKER_IP');
+
+        const response = await fetch(`${workerUrl}/v1/queue/provision`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId: order.id }),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to queue server provisioning job: ${errorText}`);
+        }
+
+        const data = await response.json();
+        const jobId: JobId = data.jobId;
+
+        logger.trace('Queued server provisioning job with worker', 'GAME_SERVER', {
+            userId: order.userId,
+            details: { jobId },
+        });
+
+        return jobId;
+    } catch (error) {
+        logger.error('Error provisioning server with worker', 'GAME_SERVER', {
+            userId: order.userId,
+            details: { error: error instanceof Error ? error.message : JSON.stringify(error) },
+        });
+        throw error;
+    }
 }

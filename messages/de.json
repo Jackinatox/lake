@@ -838,5 +838,26 @@
             }
         },
         "helpText": "Brauchst du Hilfe bei der Entscheidung? Kontaktiere unser Support-Team für persönliche Beratung."
+    },
+    "provisioning": {
+        "title": "Server wird eingerichtet",
+        "description": "Dein Server wird bereitgestellt",
+        "loading": "Lädt...",
+        "stateQueued": "Dein Server steht in der Warteschlange und wird bald erstellt",
+        "stateActive": "Server wird erstellt...",
+        "stateCompleted": "Server erfolgreich erstellt!",
+        "stateFailed": "Servererstellung fehlgeschlagen",
+        "progress": "Fortschritt",
+        "jobId": "Job ID",
+        "attempts": "Versuche",
+        "orderId": "Bestell-ID",
+        "pleaseWait": "Dies kann einige Momente dauern. Bitte schließe diese Seite nicht.",
+        "redirecting": "Weiterleitung zu deinem Server...",
+        "error": "Fehler",
+        "errorFetchingStatus": "Status konnte nicht abgerufen werden",
+        "provisioningFailed": "Serverbereitstellung fehlgeschlagen. Bitte kontaktiere den Support.",
+        "backToProfile": "Zurück zum Profil",
+        "notFoundTitle": "Job nicht gefunden",
+        "notFoundDescription": "Der Bereitstellungsjob, den du suchst, existiert nicht oder ist abgelaufen. Bitte überprüfe die Job-ID und versuche es erneut."
     }
 }

@@ -838,5 +838,26 @@
             }
         },
         "helpText": "Need help deciding? Contact our support team for personalized advice."
+    },
+    "provisioning": {
+        "title": "Setting Up Your Server",
+        "description": "Your server is being provisioned",
+        "loading": "Loading...",
+        "stateQueued": "Your server is queued and will be created shortly",
+        "stateActive": "Creating your server...",
+        "stateCompleted": "Server created successfully!",
+        "stateFailed": "Server creation failed",
+        "progress": "Progress",
+        "jobId": "Job ID",
+        "attempts": "Attempts",
+        "orderId": "Order ID",
+        "pleaseWait": "This may take a few moments. Please don't close this page.",
+        "redirecting": "Redirecting to your server...",
+        "error": "Error",
+        "errorFetchingStatus": "Failed to fetch provisioning status",
+        "provisioningFailed": "Server provisioning failed. Please contact support.",
+        "backToProfile": "Back to Profile",
+        "notFoundTitle": "Job Not Found",
+        "notFoundDescription": "The provisioning job you're looking for doesn't exist or has expired. Please check the job ID and try again."
     }
 }

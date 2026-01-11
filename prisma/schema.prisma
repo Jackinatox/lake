@@ -2,13 +2,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum OrderStatus {
-  PENDING // Only the intend was created, now money received
-  PAID // Money received, now the server is being created
-  PAYMENT_FAILED // Stripe weebhook said order failed   
-  EXPIRED // Just to keep the entry, i dont know why yet
-}
-
 generator client {
   provider = "prisma-client"
   output   = "../app/client/generated"
@@ -166,6 +159,14 @@ model GameServerOrder {
 
   @@index([stripeSessionId])
 }
+
+enum OrderStatus {
+  PENDING // Only the intend was created, now money received
+  PAID // Money received, now the server is being created
+  PAYMENT_FAILED // Stripe weebhook said order failed   
+  EXPIRED // Just to keep the entry, i dont know why yet
+}
+
 
 enum OrderType {
   NEW

@@ -1,158 +1,111 @@
 import express from 'express';
-import { runExpireServers } from './jobs/ExpireServers';
-import { runDeleteServers } from './jobs/DeleteServers';
-import { runGenerateExpiryEmails } from './jobs/Reminder';
-import { runGenerateDeletionEmails } from './jobs/DeletionReminder';
-import { runSendEmails } from './jobs/sendEmails';
-import { CronJob } from 'cron';
-import { checkFactorioNewVersion } from './jobs/checkNewVersions/Factorio/Factorio';
 import { verifyEnvVars } from './lib/startup';
+import { CronScheduler } from './lib/cronScheduler';
+import { QueueManager } from './lib/queueManager';
+import { cronJobs } from './config/cronJobs';
+import { queueWorkers } from './config/queueWorkers';
+import { redisConnection } from './config/redis';
 
-await verifyEnvVars()
-
-const app = express();
-const port = 8080;
+// ─────────────────────────────────────────────────────────────
+// Startup
+// ─────────────────────────────────────────────────────────────
+await verifyEnvVars();
 
 console.log('Worker starting...');
-console.log(`Environment: ${process.env.NODE_ENV || 'Node env nicht gefunden'}`);
+console.log(`Environment: ${process.env.NODE_ENV ?? 'development'}`);
 
-// Job status tracking
-interface JobStatus {
-    running: boolean;
-    lastRun?: string;
-    lastError?: string;
-    runCount: number;
+// ─────────────────────────────────────────────────────────────
+// Initialize Schedulers
+// ─────────────────────────────────────────────────────────────
+const cronScheduler = new CronScheduler('Europe/Berlin');
+const queueManager = new QueueManager(redisConnection);
+
+// Register cron jobs
+cronScheduler.registerAll(cronJobs);
+console.log(`Registered ${cronJobs.length} cron jobs`);
+
+// Register queue workers (if any are defined)
+if (queueWorkers.length > 0) {
+    queueManager.registerAll(queueWorkers);
+    console.log(`Registered ${queueWorkers.length} queue workers`);
 }
 
-const jobStatus: Record<string, JobStatus> = {
-    ExpireServers: { running: false, runCount: 0 },
-    DeleteServers: { running: false, runCount: 0 },
-    GenerateExpiryEmails: { running: false, runCount: 0 },
-    GenerateDeletionEmails: { running: false, runCount: 0 },
-    SendEmails: { running: false, runCount: 0 },
-    // Added job status for version checks
-    CheckNewVersions: { running: false, runCount: 0 },
-};
-
-// Helper to run a job safely
-async function runJob(name: string, jobFn: () => Promise<any>) {
-    if (jobStatus[name]?.running) {
-        console.log(`${name} is already running, skipping...`);
-        return;
-    }
-
-    jobStatus[name] = jobStatus[name] || { running: false, runCount: 0 };
-    jobStatus[name].running = true;
-
-    try {
-        console.log(`[${new Date().toISOString()}] Starting ${name}...`);
-        await jobFn();
-        jobStatus[name].lastRun = new Date().toISOString();
-        jobStatus[name].runCount += 1;
-        jobStatus[name].lastError = undefined;
-        console.log(`[${new Date().toISOString()}] ${name} completed`);
-    } catch (error) {
-        jobStatus[name].lastError = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error(`[${new Date().toISOString()}] ${name} failed:`, JSON.stringify(error));
-    } finally {
-        jobStatus[name].running = false;
-    }
-}
-
-// Schedule jobs
-const ONE_MINUTE = 60 * 1000;
-const FIVE_MINUTES = 5 * 60 * 1000;
-
-const hourlyCron = CronJob.from({
-    cronTime: '0 0 * * * *', // Run at the start of every hour (HH:00:00)
-    onTick: async () => {
-        await runJob('CheckNewVersions', checkFactorioNewVersion);
-    },
-    start: true,
-    timeZone: 'Europe/Berlin',
-});
-
-// Run all jobs once on startup (after a short delay)
+// Run startup jobs after a short delay
 setTimeout(async () => {
-    console.log('Running initial job execution...');
-    await Promise.all([
-        runJob('ExpireServers', runExpireServers),
-        runJob('DeleteServers', runDeleteServers),
-        runJob('GenerateExpiryEmails', runGenerateExpiryEmails),
-        runJob('GenerateDeletionEmails', runGenerateDeletionEmails),
-        runJob('SendEmails', runSendEmails),
-        runJob('CheckNewVersions', checkFactorioNewVersion),
-    ]);
-    console.log('Initial job execution complete');
+    console.log('Running startup jobs...');
+    await cronScheduler.runStartupJobs(cronJobs);
 }, 5000);
 
-// Schedule recurring jobs
-const intervals: NodeJS.Timeout[] = [];
+// ─────────────────────────────────────────────────────────────
+// Express Server (Health Checks & Status)
+// ─────────────────────────────────────────────────────────────
+const app = express();
+const port = process.env.PORT ?? 8080;
 
-// Every 1 minute
-intervals.push(setInterval(() => runJob('ExpireServers', runExpireServers), ONE_MINUTE));
-intervals.push(setInterval(() => runJob('DeleteServers', runDeleteServers), ONE_MINUTE));
-intervals.push(setInterval(() => runJob('SendEmails', runSendEmails), ONE_MINUTE));
-
-// Every 5 minutes
-intervals.push(setInterval(() => runJob('GenerateExpiryEmails', runGenerateExpiryEmails), FIVE_MINUTES));
-intervals.push(setInterval(() => runJob('GenerateDeletionEmails', runGenerateDeletionEmails), FIVE_MINUTES));
-
-console.log('Jobs scheduled');
-
-// API endpoints
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+app.get('/', (_, res) => {
+    res.json({ status: 'ok', service: 'lake-worker' });
 });
 
 app.get('/status', (_, res) => {
-    const jobs = Object.entries(jobStatus).map(([name, status]) => ({
-        name,
-        ...status,
-    }));
-
     res.json({
-        jobs,
         timestamp: new Date().toISOString(),
+        cron: {
+            jobs: cronScheduler.getStatus(),
+        },
+        queues: {
+            workers: queueManager.getStatus(),
+        },
     });
+});
+
+app.get('/health', (_, res) => {
+    res.status(200).json({ healthy: true });
 });
 
 const server = app.listen(port, () => {
-    console.log(`Listening on port ${port}...`);
-    console.log('API started');
+    console.log(`Health API listening on port ${port}`);
 });
 
-// Graceful shutdown
+// ─────────────────────────────────────────────────────────────
+// Graceful Shutdown
+// ─────────────────────────────────────────────────────────────
 let isShuttingDown = false;
 
-const gracefulShutdown = async (signal: NodeJS.Signals) => {
+async function gracefulShutdown(signal: NodeJS.Signals): Promise<void> {
     if (isShuttingDown) return;
     isShuttingDown = true;
-    console.log(`Received ${signal}. Closing server...`);
 
-    // Clear all intervals
-    for (const interval of intervals) {
-        clearInterval(interval);
-    }
+    console.log(`\nReceived ${signal}. Shutting down gracefully...`);
 
-    // Stop the cron job
-    try {
-        hourlyCron.stop();
-    } catch (err) {
-        console.warn('Failed to stop hourly cron:', err);
-    }
-
+    // Stop accepting new requests
     server.close(() => {
-        console.log('Server closed. Bye!');
-        process.exit(0);
+        console.log('HTTP server closed');
     });
 
-    // Force exit if shutdown hangs
+    // Stop cron jobs
+    cronScheduler.stopAll();
+
+    // Close queue workers (waits for active jobs to complete)
+    await queueManager.closeAll();
+
+    console.log('Shutdown complete. Bye!');
+    process.exit(0);
+}
+
+// Force exit if shutdown takes too long
+function forceExit(): void {
     setTimeout(() => {
         console.warn('Shutdown timed out. Forcing exit.');
         process.exit(1);
     }, 10_000).unref();
-};
+}
 
-process.once('SIGINT', gracefulShutdown);
-process.once('SIGTERM', gracefulShutdown);
+process.once('SIGINT', (signal) => {
+    forceExit();
+    gracefulShutdown(signal);
+});
+
+process.once('SIGTERM', (signal) => {
+    forceExit();
+    gracefulShutdown(signal);
+});

@@ -54,8 +54,8 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
         console.log(config);
         try {
             setLoading(true);
-            const serverId = await checkoutFreeGameServer(config);
-            router.push(`/gameserver/${serverId}?start=true`);
+            const jobId = await checkoutFreeGameServer(config);
+            router.push(`/products/wait/${jobId}`);
         } catch (error) {
             toast({
                 title: 'Error',
