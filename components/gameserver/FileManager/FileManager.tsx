@@ -533,10 +533,10 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     };
 
     return (
-        <Card className="w-full">
-            <CardHeader className="space-y-3">
-                <CardTitle className="flex items-center gap-3 text-xl">
-                    <FolderTree className="h-5 w-5" />
+        <Card className="w-full max-w-full overflow-hidden">
+            <CardHeader className="p-3 sm:p-6 space-y-3">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-xl">
+                    <FolderTree className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
                     {t('title')}
                 </CardTitle>
                 {!canInteract && (
@@ -548,7 +548,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                     </Alert>
                 )}
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="p-3 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-4">
                 <FtpAccessDetails
                     isOpen={isFtpDetailsOpen}
                     onOpenChange={setIsFtpDetailsOpen}

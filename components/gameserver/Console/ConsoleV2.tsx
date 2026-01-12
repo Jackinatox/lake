@@ -140,21 +140,10 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
     }, [logs, terminal]);
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col rounded-md overflow-hidden shadow-md">
             <div
                 ref={terminalRef}
-                style={{
-                    flex: 1,
-                    minHeight: 0,
-                    height: '400px', // Set a fixed or max height as needed
-                    width: '100%',
-                    backgroundColor: '#1e1e1e',
-                    padding: '10px',
-                    borderTopRightRadius: '5px',
-                    borderTopLeftRadius: '5px',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    overflow: 'hidden', // Prevent scrolling inside the terminal
-                }}
+                className="flex-1 min-h-0 w-full bg-[#1e1e1e] p-2 sm:p-3 rounded-t-md overflow-hidden"
                 onWheel={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -164,19 +153,7 @@ const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
                 type="text"
                 placeholder="Type a command..."
                 onKeyDown={handleCommandKeyDown}
-                style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '16px',
-                    backgroundColor: '#2a2a2a',
-                    color: '#f0f0f0',
-                    border: 'none',
-                    borderTop: '1px solid #3a3a3a',
-                    outline: 'none',
-                    fontFamily: '"Fira Code", monospace',
-                    borderBottomRightRadius: '5px',
-                    borderBottomLeftRadius: '5px',
-                }}
+                className="w-full px-3 py-2 text-sm sm:text-base bg-[#2a2a2a] text-gray-100 border-0 border-t border-[#3a3a3a] outline-none font-mono rounded-b-md placeholder:text-gray-500"
             />
         </div>
     );

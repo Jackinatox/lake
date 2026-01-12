@@ -628,6 +628,7 @@
             "network": "Network",
             "backups": "Backups",
             "settings": "Settings",
+            "comingSoon": "Coming soon",
             "networkComingSoon": "Network control coming soon",
             "backupsComingSoon": "Backup manager coming soon",
             "settingsComingSoon": "Settings coming soon"

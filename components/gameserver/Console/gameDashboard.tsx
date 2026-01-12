@@ -1,13 +1,7 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import webSocket from '@/lib/Pterodactyl/webSocket';
 import { GameServer } from '@/models/gameServerModel';
-import { Cpu, MemoryStickIcon as Memory, Terminal } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import EulaDialog from '../EulaDialog';
@@ -15,14 +9,10 @@ import FileManager from '../FileManager/FileManager';
 import { writeFile } from '../FileManager/pteroFileApi';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
-import GameInfo from '../settings/gameSpecific/info/GameInfo';
-import ConsoleV2 from './ConsoleV2';
-import CPUChart from './graphs/CPUChart';
-import RAMChart from './graphs/RAMChart';
-import { PowerBtns } from './powerBtns';
-import { Status } from './status';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import BackupManager from '../BackupManager/BackupManager';
+import { ServerHeader } from './ServerHeader';
+import { ConsolePanel } from './ConsolePanel';
 
 interface serverProps {
     server: GameServer;
@@ -39,7 +29,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     const autoStart = useRef(searchParams.get('start') === 'true');
     const router = useRouter();
     const t = useTranslations();
-
     const pathname = usePathname();
 
     const [serverStats, setServerStats] = useState<any>();
@@ -54,14 +43,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 const smallToZero = (n: number) => (n < 1 ? 0 : n);
 
                 const cpu = Number.parseFloat(
-                    Math.min((stats.cpu_absolute / server.limits.cpu) * 100, 100).toFixed(1),
+                    Math.min((stats.cpu_absolute / server.limits.cpu) * 100, 100).toFixed(1)
                 );
                 const disk = Number.parseFloat((stats.disk_bytes / 1024 / 1024 / 1024).toFixed(2));
                 const memory = Number.parseFloat(
-                    (stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2),
+                    (stats.memory_bytes / 1024 / 1024 / 1024).toFixed(2)
                 );
                 const memoryLimit = Number.parseFloat(
-                    (stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2),
+                    (stats.memory_limit_bytes / 1024 / 1024 / 1024).toFixed(2)
                 );
                 const uptime = Number.parseFloat((stats.uptime / 1000).toFixed(2));
 
@@ -85,7 +74,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 const consoleLine = data.args[0];
                 if (
                     consoleLine.includes(
-                        'You need to agree to the EULA in order to run the server.',
+                        'You need to agree to the EULA in order to run the server.'
                     )
                 ) {
                     setEulaOpen(true);
@@ -116,7 +105,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                     wsRef.current?.send(
                         JSON.stringify({
                             event: 'send logs',
-                        }),
+                        })
                     );
                 }
 
@@ -128,12 +117,12 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         JSON.stringify({
                             event: 'set state',
                             args: ['start'],
-                        }),
+                        })
                     );
                     autoStart.current = false;
                     router.replace(pathname, { scroll: false });
                 } else {
-                    console.log('auto satart is false');
+                    console.log('auto start is false');
                 }
             }
         }
@@ -153,7 +142,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         JSON.stringify({
                             event: 'auth',
                             args: [wsCred?.data.token],
-                        }),
+                        })
                     );
                 };
 
@@ -171,10 +160,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         };
     }, []);
 
-    const days = Math.floor(serverStats?.uptime / 86400); // 86400 Sekunden pro Tag
-    const hours = Math.floor((serverStats?.uptime % 86400) / 3600); // Restliche Stunden
-    const minutes = Math.floor((serverStats?.uptime % 3600) / 60); // Restliche Minuten
-
     const handleAcceptEula = async () => {
         if (!loading && wsRef.current) {
             await writeFile(server.identifier, 'eula.txt', 'eula=true', ptApiKey);
@@ -188,7 +173,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 JSON.stringify({
                     event: 'set state',
                     args: ['start'],
-                }),
+                })
             );
         }
     };
@@ -199,19 +184,18 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 JSON.stringify({
                     event: 'set state',
                     args: ['restart'],
-                }),
+                })
             );
         }
     };
 
-    // STOP
     const handleStop = () => {
         if (!loading && wsRef.current) {
             wsRef.current.send(
                 JSON.stringify({
                     event: 'set state',
                     args: ['stop'],
-                }),
+                })
             );
         }
     };
@@ -222,7 +206,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                 JSON.stringify({
                     event: 'set state',
                     args: ['kill'],
-                }),
+                })
             );
         }
     };
@@ -243,178 +227,36 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             JSON.stringify({
                 event: 'send command',
                 args: [command],
-            }),
+            })
         );
     };
-
-    const defAlloc = server.relationships.allocations.data.find(
-        (alloc: any) => alloc.attributes.is_default,
-    );
-
-    const ipPortCombo = defAlloc
-        ? defAlloc.attributes.ip_alias + ':' + defAlloc.attributes.port
-        : null;
-
-    // Console component to pass to the tabs
-    const ConsoleComponent = (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
-            <Card className="lg:col-span-8 lg:row-span-1">
-                <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Terminal className="h-5 w-5" /> {t('gameserver.tabs.console')}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[calc(100%-4rem)]">
-                    <div className="flex h-full flex-col gap-4">
-                        <ConsoleV2 logs={logs} handleCommand={handleCommand} />
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Performance metrics - takes up 4/12 columns on desktop */}
-            <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
-                <Card>
-                    <CardHeader className="pb-0 space-y-0">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Cpu className="h-5 w-5" /> {t('gameserver.dashboard.cpu.usage')} (
-                            {server.limits.cpu / 100} {t('gameserver.dashboard.cpu.cores')})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <CPUChart newData={serverStats} />
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">
-                                {t('gameserver.dashboard.memory.current')}
-                            </div>
-                            <div>{serverStats?.cpu_absolute + '% / ' + 100 + ' %'}</div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Memory className="h-5 w-5" /> {t('gameserver.dashboard.memory.usage')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <RAMChart
-                            newData={{
-                                ...serverStats,
-                                memory_limit_bytes: server.limits.memory / 1024,
-                            }}
-                        />
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">
-                                {t('gameserver.dashboard.memory.current')}
-                            </div>
-                            <div>
-                                {' '}
-                                {serverStats?.memory_bytes + ' GiB'} /{' '}
-                                {server.limits.memory / 1024 + ' GiB'}
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
-    );
 
     return (
         <>
             <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
-            <div className="w-full">
-                {/* Header with server info and controls - spans full width */}
-                <Card className="border-2 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
-                    <CardHeader className="pb-2">
-                        <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
-                            <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
-                            <Button asChild variant="outline">
-                                <Link href={`${pathname}/upgrade`}>
-                                    {t('gameserver.dashboard.header.upgrade')}
-                                </Link>
-                            </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
-                            <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.status')}
-                                    </div>
-                                    <div>
-                                        <Badge
-                                            variant={
-                                                serverStats?.state.toLowerCase() === 'online'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            className="px-3 py-1"
-                                        >
-                                            <Status state={serverStats?.state} />
-                                        </Badge>
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.serverIP')}
-                                    </div>
-                                    <div>
-                                        <span className="flex items-center gap-2">
-                                            {ipPortCombo
-                                                ? ipPortCombo
-                                                : t('gameserver.dashboard.noAllocation')}
-                                            {ipPortCombo && (
-                                                <button
-                                                    type="button"
-                                                    className="ml-2 rounded bg-slate-200 px-2 py-1 text-xs hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-                                                    title={t('gameserver.dashboard.copyIPPort')}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(ipPortCombo);
-                                                    }}
-                                                >
-                                                    {t('gameserver.dashboard.copyIPPort')}
-                                                </button>
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.info')}
-                                    </div>
-                                    <div>
-                                        <GameInfo server={server} apiKey={ptApiKey} />
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.uptime')}
-                                    </div>
-                                    <div>
-                                        {serverStats?.uptime !== undefined
-                                            ? `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${Math.floor(serverStats.uptime % 60)}s`
-                                            : '—'}
-                                    </div>
-                                </div>
-                            </div>
+            <div className="w-full max-w-full overflow-hidden">
+                {/* Header with server info and controls */}
+                <ServerHeader
+                    server={server}
+                    ptApiKey={ptApiKey}
+                    serverStats={serverStats}
+                    loading={loading}
+                    onStart={handleStart}
+                    onStop={handleStop}
+                    onRestart={handleRestart}
+                    onKill={handleKill}
+                />
 
-                            <div className="rounded-md border bg-card p-3 sm:col-span-1 lg:col-span-8">
-                                <h3 className="mb-2 font-semibold">
-                                    {t('gameserver.dashboard.serverControls')}
-                                </h3>
-                                <PowerBtns
-                                    loading={loading}
-                                    onStart={handleStart}
-                                    onStop={handleStop}
-                                    onRestart={handleRestart}
-                                    onKill={handleKill}
-                                    state={serverStats?.state}
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
+                {/* Tabs with Console, Files, Backups, Settings */}
                 <TabsComponent
-                    consoleComponent={ConsoleComponent}
+                    consoleComponent={
+                        <ConsolePanel
+                            server={server}
+                            serverStats={serverStats}
+                            logs={logs}
+                            handleCommand={handleCommand}
+                        />
+                    }
                     fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
                     backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
                     settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey} />}
