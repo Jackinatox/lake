@@ -12,9 +12,7 @@ function escapeHtml(text: string): string {
 /**
  * Core Telegram message sender
  */
-async function sendTelegramMessage(
-    message: string,
-): Promise<boolean> {
+async function sendTelegramMessage(message: string): Promise<boolean> {
     const chat_id = process.env.TELEGRAM_CHAT_ID;
     const bot_token = process.env.TELEGRAM_BOT_TOKEN;
 
@@ -27,12 +25,12 @@ async function sendTelegramMessage(
 
     try {
         const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: chat_id,
                 text: message,
-                parse_mode: "HTML",
+                parse_mode: 'HTML',
             }),
         });
 
@@ -45,7 +43,7 @@ async function sendTelegramMessage(
         return true;
     } catch (error) {
         console.error(
-            `[Telegram] API error: ${error instanceof Error ? error.message : String(error)}`
+            `[Telegram] API error: ${error instanceof Error ? error.message : String(error)}`,
         );
         return false;
     }
@@ -87,9 +85,7 @@ export async function sendInfoNotification(params: {
     const { title, message, details } = params;
 
     let text =
-        `<b>ℹ️ ${escapeHtml(title)}</b>\n` +
-        `━━━━━━━━━━━━━━━━━━━━\n` +
-        `${escapeHtml(message)}\n`;
+        `<b>ℹ️ ${escapeHtml(title)}</b>\n` + `━━━━━━━━━━━━━━━━━━━━\n` + `${escapeHtml(message)}\n`;
 
     if (details && Object.keys(details).length > 0) {
         text += `\n`;
@@ -124,13 +120,11 @@ export async function sendErrorNotification(params: {
         text += `\n<b>Details:</b>\n`;
         for (const [key, value] of Object.entries(details)) {
             if (value !== undefined && value !== null) {
-                const valueStr = typeof value === 'object'
-                    ? JSON.stringify(value, null, 2)
-                    : String(value);
+                const valueStr =
+                    typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value);
 
-                const displayValue = valueStr.length > 300
-                    ? valueStr.substring(0, 300) + '...'
-                    : valueStr;
+                const displayValue =
+                    valueStr.length > 300 ? valueStr.substring(0, 300) + '...' : valueStr;
 
                 text += `  • <b>${escapeHtml(key)}:</b> <code>${escapeHtml(displayValue)}</code>\n`;
             }

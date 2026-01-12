@@ -30,16 +30,16 @@ interface PackageGameSelectorWrapperProps {
     priceCents: number;
 }
 
-export default function PackageGameSelectorWrapper({ 
-    packageData, 
+export default function PackageGameSelectorWrapper({
+    packageData,
     games,
     packageId,
-    priceCents
+    priceCents,
 }: PackageGameSelectorWrapperProps) {
     return (
-        <PackageGameSelector 
-            packageData={packageData} 
-            games={games} 
+        <PackageGameSelector
+            packageData={packageData}
+            games={games}
             packageId={packageId}
             priceCents={priceCents}
         />

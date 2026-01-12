@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/client/generated/browser";
+import { Prisma } from '@/app/client/generated/browser';
 
 export type PerformanceGroup = Prisma.LocationGetPayload<{
     include: { cpu: true; ram: true };
@@ -17,7 +17,7 @@ export type GameServerAdmin = Prisma.GameServerGetPayload<{
 }>;
 
 export type PackageWithCPURAM = Prisma.PackageGetPayload<{
-    include: { location: { include: { cpu: true, ram: true } } };
+    include: { location: { include: { cpu: true; ram: true } } };
 }>;
 
 export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{

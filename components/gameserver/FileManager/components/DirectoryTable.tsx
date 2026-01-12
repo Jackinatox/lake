@@ -131,7 +131,7 @@ const DirectoryTableComponent = ({
     };
 
     return (
-        <div className="rounded-md border">
+        <div className="w-full min-w-0 rounded-md border overflow-x-auto">
             <Table>
                 <TableHeader>
                     <TableRow>

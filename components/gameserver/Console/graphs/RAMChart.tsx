@@ -7,6 +7,7 @@ import {
     ChartTooltipContent,
 } from '@/components/ui/chart';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 interface RAMData {
@@ -19,6 +20,7 @@ interface RAMChartProps {
         memory_bytes?: number; // Already in GB from the parent component
         memory_limit_bytes?: number; // Already in GB from the parent component
     };
+    memoryLimit: number; // Memory limit in GiB
 }
 
 const chartConfig = {
@@ -30,20 +32,20 @@ const chartConfig = {
 
 const HISTORY_DURATION = 300; // 5 minutes in seconds
 
-function RAMChart({ newData }: RAMChartProps) {
+function RAMChart({ newData, memoryLimit }: RAMChartProps) {
     const [chartData, setChartData] = useState<RAMData[]>([]);
     const lastUpdateTime = useRef<number>(0);
+    const t = useTranslations();
 
     // Format GB values for display
     const formatGB = (gb: number): string => {
-        return gb >= 1 ? `${gb.toFixed(2)} GB` : `${(gb * 1024).toFixed(0)} MB`;
+        return gb >= 1 ? `${gb.toFixed(2)} GiB` : `${(gb * 1024).toFixed(0)} MiB`;
     };
 
     // Calculate the max Y value based on memory limit
     const maxMemoryGB = useMemo(() => {
-        if (!newData?.memory_limit_bytes) return 8;
-        return Math.ceil(newData.memory_limit_bytes);
-    }, [newData?.memory_limit_bytes]);
+        return Math.ceil(memoryLimit);
+    }, [memoryLimit]);
 
     useEffect(() => {
         if (newData?.memory_bytes === undefined) return;
@@ -71,27 +73,27 @@ function RAMChart({ newData }: RAMChartProps) {
         const secondsAgo = now - timestamp;
 
         if (secondsAgo < 60) return `${secondsAgo}s`;
-        if (secondsAgo < 300) return `${Math.floor(secondsAgo / 60)}m`;
         return `${Math.floor(secondsAgo / 60)}m`;
     };
 
     const currentUsage =
         newData?.memory_bytes !== undefined ? formatGB(newData.memory_bytes) : 'N/A';
-    const memoryLimit =
-        newData?.memory_limit_bytes !== undefined ? formatGB(newData.memory_limit_bytes) : 'N/A';
+    const memoryLimitLabel = t('gameserver.dashboard.charts.memoryGiB', { amount: memoryLimit });
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
                 <div className="text-muted-foreground">
-                    Current: <span className="font-semibold text-foreground">{currentUsage}</span>
+                    {t('gameserver.dashboard.charts.current')}:{' '}
+                    <span className="font-semibold text-foreground">{currentUsage}</span>
                 </div>
                 <div className="text-muted-foreground">
-                    Limit: <span className="font-semibold text-foreground">{memoryLimit}</span>
+                    {t('gameserver.dashboard.charts.limit')}:{' '}
+                    <span className="font-semibold text-foreground">{memoryLimitLabel}</span>
                 </div>
             </div>
 
-            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+            <ChartContainer config={chartConfig} className="h-[150px] w-full">
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="ramGradient" x1="0" y1="0" x2="0" y2="1">
@@ -129,9 +131,9 @@ function RAMChart({ newData }: RAMChartProps) {
                         axisLine={false}
                         tickMargin={8}
                         domain={[0, maxMemoryGB]}
-                        tickCount={6}
-                        tickFormatter={(value) => `${value.toFixed(1)} GB`}
-                        width={60}
+                        tickCount={5}
+                        tickFormatter={(value) => `${value} GiB`}
+                        width={50}
                         className="text-xs"
                     />
 
@@ -145,7 +147,7 @@ function RAMChart({ newData }: RAMChartProps) {
                                     }
                                     return '';
                                 }}
-                                formatter={(value) => `${Number(value).toFixed(2)} GB`}
+                                formatter={(value) => `${Number(value).toFixed(2)} GiB`}
                             />
                         }
                     />

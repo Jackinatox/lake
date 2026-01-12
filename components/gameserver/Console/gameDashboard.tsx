@@ -3,10 +3,25 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import webSocket from '@/lib/Pterodactyl/webSocket';
 import { GameServer } from '@/models/gameServerModel';
-import { Cpu, MemoryStickIcon as Memory, Terminal } from 'lucide-react';
+import {
+    ArrowDownToLine,
+    ArrowUpFromLine,
+    Clock,
+    Cpu,
+    HardDrive,
+    MemoryStickIcon as Memory,
+    Play,
+    Power,
+    RefreshCw,
+    Square,
+    Terminal,
+    Zap,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
@@ -16,10 +31,10 @@ import { writeFile } from '../FileManager/pteroFileApi';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
+import { ServerAddress } from '../ServerAddress';
 import ConsoleV2 from './ConsoleV2';
 import CPUChart from './graphs/CPUChart';
 import RAMChart from './graphs/RAMChart';
-import { PowerBtns } from './powerBtns';
 import { Status } from './status';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import BackupManager from '../BackupManager/BackupManager';
@@ -251,176 +266,375 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         (alloc: any) => alloc.attributes.is_default,
     );
 
-    const ipPortCombo = defAlloc
-        ? defAlloc.attributes.ip_alias + ':' + defAlloc.attributes.port
-        : null;
+    const address = defAlloc?.attributes.ip_alias || defAlloc?.attributes.ip || '';
+    const port = defAlloc?.attributes.port || 0;
 
-    // Console component to pass to the tabs
-    const ConsoleComponent = (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr]">
-            <Card className="lg:col-span-8 lg:row-span-1">
-                <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <Terminal className="h-5 w-5" /> {t('gameserver.tabs.console')}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="h-[calc(100%-4rem)]">
-                    <div className="flex h-full flex-col gap-4">
-                        <ConsoleV2 logs={logs} handleCommand={handleCommand} />
+    // Helper to format bytes
+    const formatBytes = (bytes: number) => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+    };
+
+    // Server state helpers
+    const isOnline = serverStats?.state?.toLowerCase() === 'running';
+    const isOffline = serverStats?.state?.toLowerCase() === 'offline';
+    const isTransitioning = !isOnline && !isOffline && serverStats?.state;
+
+    // Uptime formatted string
+    const uptimeString =
+        serverStats?.uptime !== undefined
+            ? `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${Math.floor(serverStats.uptime % 60)}s`
+            : '—';
+
+    // Compact Mobile Stats Component - all info in one card
+    const MobileStatsCard = (
+        <Card className="md:hidden border-0 shadow-sm">
+            <CardContent className="py-2 px-3">
+                {/* Resource bars row */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    {/* CPU */}
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1">
+                                <Cpu className="h-3 w-3 text-blue-500" />
+                                <span className="text-muted-foreground">CPU</span>
+                            </div>
+                            <span className="font-medium tabular-nums">
+                                {loading ? '—' : `${serverStats?.cpu_absolute ?? 0}%`}
+                            </span>
+                        </div>
+                        <Progress
+                            value={serverStats?.cpu_absolute ?? 0}
+                            className="h-1.5 bg-blue-500/20"
+                        />
                     </div>
+
+                    {/* RAM */}
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1">
+                                <Memory className="h-3 w-3 text-purple-500" />
+                                <span className="text-muted-foreground">RAM</span>
+                            </div>
+                            <span className="font-medium tabular-nums">
+                                {loading ? '—' : `${serverStats?.memory_bytes ?? 0}G`}
+                            </span>
+                        </div>
+                        <Progress
+                            value={
+                                ((serverStats?.memory_bytes ?? 0) / (server.limits.memory / 1024)) *
+                                100
+                            }
+                            className="h-1.5 bg-purple-500/20"
+                        />
+                    </div>
+
+                    {/* Disk */}
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1">
+                                <HardDrive className="h-3 w-3 text-emerald-500" />
+                                <span className="text-muted-foreground">Disk</span>
+                            </div>
+                            <span className="font-medium tabular-nums">
+                                {loading ? '—' : `${serverStats?.disk_bytes ?? 0}G`}
+                            </span>
+                        </div>
+                        <Progress
+                            value={
+                                ((serverStats?.disk_bytes ?? 0) / (server.limits.disk / 1024)) * 100
+                            }
+                            className="h-1.5 bg-emerald-500/20"
+                        />
+                    </div>
+                </div>
+
+                {/* Bottom row: Uptime + Network */}
+                <div className="flex items-center justify-between text-xs border-t pt-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-cyan-500" />
+                            <span className="font-medium tabular-nums">
+                                {loading ? '—' : uptimeString}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                            <GameInfo server={server} apiKey={ptApiKey} />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                            <ArrowDownToLine className="h-3 w-3 text-emerald-500" />
+                            <span className="tabular-nums">
+                                {loading ? '—' : formatBytes(serverStats?.network?.rx_bytes ?? 0)}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <ArrowUpFromLine className="h-3 w-3 text-blue-500" />
+                            <span className="tabular-nums">
+                                {loading ? '—' : formatBytes(serverStats?.network?.tx_bytes ?? 0)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    // Desktop Sidebar component - charts + compact stats
+    const DesktopSidebar = (
+        <>
+            {/* CPU Chart */}
+            <Card className="border-0 shadow-sm">
+                <CardContent className="p-2 md:p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Cpu className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm font-medium">CPU</span>
+                    </div>
+                    <CPUChart newData={serverStats} cpuLimit={server.limits.cpu / 100} />
                 </CardContent>
             </Card>
 
-            {/* Performance metrics - takes up 4/12 columns on desktop */}
-            <div className="flex flex-col gap-4 lg:col-span-4 lg:row-span-1">
-                <Card>
-                    <CardHeader className="pb-0 space-y-0">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Cpu className="h-5 w-5" /> {t('gameserver.dashboard.cpu.usage')} (
-                            {server.limits.cpu / 100} {t('gameserver.dashboard.cpu.cores')})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <CPUChart newData={serverStats} />
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">
-                                {t('gameserver.dashboard.memory.current')}
-                            </div>
-                            <div>{serverStats?.cpu_absolute + '% / ' + 100 + ' %'}</div>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* RAM Chart */}
+            <Card className="border-0 shadow-sm">
+                <CardContent className="p-2 md:p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Memory className="h-4 w-4 text-purple-500" />
+                        <span className="text-sm font-medium">RAM</span>
+                    </div>
+                    <RAMChart newData={serverStats} memoryLimit={server.limits.memory / 1024} />
+                </CardContent>
+            </Card>
 
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Memory className="h-5 w-5" /> {t('gameserver.dashboard.memory.usage')}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <RAMChart
-                            newData={{
-                                ...serverStats,
-                                memory_limit_bytes: server.limits.memory / 1024,
-                            }}
-                        />
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-2 gap-1 text-sm">
-                            <div className="font-medium">
-                                {t('gameserver.dashboard.memory.current')}
-                            </div>
-                            <div>
-                                {' '}
-                                {serverStats?.memory_bytes + ' GiB'} /{' '}
-                                {server.limits.memory / 1024 + ' GiB'}
-                            </div>
+            {/* Compact Stats Card - Disk, Network, Uptime, Game Info */}
+            <Card className="border-0 shadow-sm">
+                <CardContent className="p-3 space-y-2">
+                    {/* Disk */}
+                    <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                            <HardDrive className="h-3.5 w-3.5 text-emerald-500" />
+                            <span>Disk</span>
                         </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
+                        <span className="font-medium tabular-nums">
+                            {loading
+                                ? '—'
+                                : `${serverStats?.disk_bytes ?? 0}/${server.limits.disk / 1024} GB`}
+                        </span>
+                    </div>
+                    <Progress
+                        value={((serverStats?.disk_bytes ?? 0) / (server.limits.disk / 1024)) * 100}
+                        className="h-1.5 bg-emerald-500/20"
+                    />
+
+                    {/* Network */}
+                    <div className="flex items-center justify-between text-sm pt-1">
+                        <div className="flex items-center gap-2">
+                            <Zap className="h-3.5 w-3.5 text-amber-500" />
+                            <span>Network</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                            <span className="flex items-center gap-1">
+                                <ArrowDownToLine className="h-3 w-3 text-emerald-500" />
+                                {loading ? '—' : formatBytes(serverStats?.network?.rx_bytes ?? 0)}
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <ArrowUpFromLine className="h-3 w-3 text-blue-500" />
+                                {loading ? '—' : formatBytes(serverStats?.network?.tx_bytes ?? 0)}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Uptime */}
+                    <div className="flex items-center justify-between text-sm pt-1">
+                        <div className="flex items-center gap-2">
+                            <Clock className="h-3.5 w-3.5 text-cyan-500" />
+                            <span>{t('gameserver.dashboard.uptime')}</span>
+                        </div>
+                        <span className="font-medium tabular-nums">
+                            {loading ? '—' : uptimeString}
+                        </span>
+                    </div>
+
+                    {/* Game Info */}
+                    <div className="flex items-center justify-between text-sm pt-1 border-t">
+                        <span className="text-muted-foreground">
+                            {t('gameserver.dashboard.info')}
+                        </span>
+                        <GameInfo server={server} apiKey={ptApiKey} />
+                    </div>
+                </CardContent>
+            </Card>
+        </>
     );
 
+    // Console component - now full width in tab content
+    const ConsoleComponent = (
+        <Card className="border-0 shadow-sm min-h-72 w-full min-w-0">
+            <CardContent className="p-2 sm:p-3">
+                <ConsoleV2 logs={logs} handleCommand={handleCommand} />
+            </CardContent>
+        </Card>
+    );
+
+    // Charts are now integrated into DesktopSidebar
+
     return (
-        <>
+        <TooltipProvider>
             <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
-            <div className="w-full">
-                {/* Header with server info and controls - spans full width */}
-                <Card className="border-2 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 mb-4">
-                    <CardHeader className="pb-2">
-                        <div className="flex  justify-between gap-2 sm:flex-row sm:items-center">
-                            <CardTitle className="text-xl font-bold">{server.name}</CardTitle>
-                            <Button asChild variant="outline">
-                                <Link href={`${pathname}/upgrade`}>
-                                    {t('gameserver.dashboard.header.upgrade')}
-                                </Link>
-                            </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12">
-                            <div className="rounded-md bg-slate-100 p-3 dark:bg-slate-800 lg:col-span-4">
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.status')}
+            <div className="space-y-3">
+                {/* Sticky Header Bar */}
+                <Card className="sticky top-0 z-20 border-0 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+                    <CardContent className="py-2 px-3">
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                            {/* Left: Server Name + Status */}
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                    {/* Status indicator with pulse when online */}
+                                    <div className="relative">
+                                        <div
+                                            className={`h-3 w-3 rounded-full ${
+                                                isOnline
+                                                    ? 'bg-emerald-500'
+                                                    : isTransitioning
+                                                      ? 'bg-amber-500'
+                                                      : 'bg-slate-400'
+                                            }`}
+                                        />
+                                        {isOnline && (
+                                            <div className="absolute inset-0 h-3 w-3 animate-ping rounded-full bg-emerald-500 opacity-75" />
+                                        )}
                                     </div>
-                                    <div>
-                                        <Badge
-                                            variant={
-                                                serverStats?.state.toLowerCase() === 'online'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            className="px-3 py-1"
-                                        >
-                                            <Status state={serverStats?.state} />
-                                        </Badge>
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.serverIP')}
-                                    </div>
-                                    <div>
-                                        <span className="flex items-center gap-2">
-                                            {ipPortCombo
-                                                ? ipPortCombo
-                                                : t('gameserver.dashboard.noAllocation')}
-                                            {ipPortCombo && (
-                                                <button
-                                                    type="button"
-                                                    className="ml-2 rounded bg-slate-200 px-2 py-1 text-xs hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
-                                                    title={t('gameserver.dashboard.copyIPPort')}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(ipPortCombo);
-                                                    }}
-                                                >
-                                                    {t('gameserver.dashboard.copyIPPort')}
-                                                </button>
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.info')}
-                                    </div>
-                                    <div>
-                                        <GameInfo server={server} apiKey={ptApiKey} />
-                                    </div>
-                                    <div className="font-medium">
-                                        {t('gameserver.dashboard.uptime')}
-                                    </div>
-                                    <div>
-                                        {serverStats?.uptime !== undefined
-                                            ? `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${Math.floor(serverStats.uptime % 60)}s`
-                                            : '—'}
-                                    </div>
+                                    <h1 className="text-base font-bold truncate max-w-40 md:max-w-none">
+                                        {server.name}
+                                    </h1>
                                 </div>
+                                <Badge
+                                    variant={isOnline ? 'default' : 'outline'}
+                                    className="hidden md:flex"
+                                >
+                                    <Status state={serverStats?.state} />
+                                </Badge>
                             </div>
 
-                            <div className="rounded-md border bg-card p-3 sm:col-span-1 lg:col-span-8">
-                                <h3 className="mb-2 font-semibold">
-                                    {t('gameserver.dashboard.serverControls')}
-                                </h3>
-                                <PowerBtns
-                                    loading={loading}
-                                    onStart={handleStart}
-                                    onStop={handleStop}
-                                    onRestart={handleRestart}
-                                    onKill={handleKill}
-                                    state={serverStats?.state}
-                                />
+                            {/* Center: Server Address */}
+                            <div className="flex items-center gap-2 text-sm">
+                                {address && port ? (
+                                    <ServerAddress
+                                        address={address}
+                                        port={port}
+                                        eggId={server.egg_id}
+                                    />
+                                ) : (
+                                    <span className="text-muted-foreground">
+                                        {t('gameserver.dashboard.noAllocation')}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Right: Power Controls + Upgrade */}
+                            <div className="flex items-center gap-2">
+                                {/* Power Buttons */}
+                                <div className="flex items-center gap-1">
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant={isOnline ? 'outline' : 'default'}
+                                                size="icon"
+                                                onClick={handleStart}
+                                                disabled={loading || isOnline || isTransitioning}
+                                                className="h-8 w-8"
+                                            >
+                                                <Play className="h-4 w-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>Start</TooltipContent>
+                                    </Tooltip>
+
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={handleStop}
+                                                disabled={loading || isOffline}
+                                                className="h-8 w-8"
+                                            >
+                                                <Square className="h-4 w-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>Stop</TooltipContent>
+                                    </Tooltip>
+
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={handleRestart}
+                                                disabled={loading || isOffline}
+                                                className="h-8 w-8"
+                                            >
+                                                <RefreshCw className="h-4 w-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>Restart</TooltipContent>
+                                    </Tooltip>
+
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant="destructive"
+                                                size="icon"
+                                                onClick={handleKill}
+                                                disabled={loading || isOffline}
+                                                className="h-8 w-8"
+                                            >
+                                                <Power className="h-4 w-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>Kill</TooltipContent>
+                                    </Tooltip>
+                                </div>
+
+                                {/* Upgrade Button */}
+                                <Button asChild variant="outline" size="sm">
+                                    <Link href={`${pathname}/upgrade`}>
+                                        {t('gameserver.dashboard.header.upgrade')}
+                                    </Link>
+                                </Button>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <TabsComponent
-                    consoleComponent={ConsoleComponent}
-                    fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
-                    backupManagerComponent={<BackupManager server={server} apiKey={ptApiKey} />}
-                    settingsComponent={<GameServerSettings server={server} apiKey={ptApiKey} />}
-                />
+                {/* Mobile Stats Card */}
+                {MobileStatsCard}
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-stretch">
+                    {/* Main Content Area - Tabs */}
+                    <div className="w-full md:col-span-8 min-w-0">
+                        <TabsComponent
+                            consoleComponent={ConsoleComponent}
+                            fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
+                            backupManagerComponent={
+                                <BackupManager server={server} apiKey={ptApiKey} />
+                            }
+                            settingsComponent={
+                                <GameServerSettings server={server} apiKey={ptApiKey} />
+                            }
+                        />
+                    </div>
+
+                    {/* Desktop Sidebar - Charts + Stats */}
+                    <aside className="hidden md:flex md:col-span-4 flex-col gap-3">
+                        {DesktopSidebar}
+                    </aside>
+                </div>
             </div>
-        </>
+        </TooltipProvider>
     );
 }
 

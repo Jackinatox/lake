@@ -19,7 +19,7 @@ export default async function FreeServerUpgrade({ serverId, userId }: FreeServer
             where: { ptServerId: serverId, userId },
             include: { gameData: true },
         }),
-        getFreeTierConfigCached()
+        getFreeTierConfigCached(),
     ]);
 
     if (!minOptions || !server) {

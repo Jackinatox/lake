@@ -191,10 +191,9 @@ export async function uploadFiles(
     }
 
     // Get signed upload URL from the Panel
-    const signedResponse = await fetch(
-        `${PANEL_URL}/api/client/servers/${serverId}/files/upload`,
-        { headers: buildHeaders(apiKey) },
-    );
+    const signedResponse = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/upload`, {
+        headers: buildHeaders(apiKey),
+    });
 
     if (!signedResponse.ok) {
         const message = await signedResponse.text();

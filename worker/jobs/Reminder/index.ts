@@ -13,12 +13,7 @@ export async function runGenerateExpiryEmails(): Promise<{ processed: number }> 
 
     try {
         console.log(`${JobName} started`);
-        await logInfo(
-            WorkerJobType.GENERATE_EMAILS,
-            `Job started`,
-            { jobRun },
-            { jobRun },
-        );
+        await logInfo(WorkerJobType.GENERATE_EMAILS, `Job started`, { jobRun }, { jobRun });
 
         // Process 1-day expiry reminders
         const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);

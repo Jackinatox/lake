@@ -15,10 +15,10 @@ async function page(params: PageProps<'/[locale]/products/packages/[packageId]/[
     const [packageDb, gameData] = await Promise.all([
         prisma.package.findUnique({
             where: { id: packageId, enabled: true },
-            include: { 
+            include: {
                 location: {
-                    include: { cpu: true, ram: true }
-                }
+                    include: { cpu: true, ram: true },
+                },
             },
         }),
         prisma.gameData.findUnique({
@@ -43,13 +43,7 @@ async function page(params: PageProps<'/[locale]/products/packages/[packageId]/[
         data: gameData.data,
     };
 
-    return (
-        <PackageBooking 
-            packageData={packageDb} 
-            game={game}
-            pricing={pricing}
-        />
-    );
+    return <PackageBooking packageData={packageDb} game={game} pricing={pricing} />;
 }
 
 export default page;

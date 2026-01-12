@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
             logger.error('Payment failed', 'PAYMENT_LOG', {
                 details: {
                     paymentIntentId: failedIntent.id,
-                    failureCode: failedIntent.last_payment_error?.code, 
+                    failureCode: failedIntent.last_payment_error?.code,
                     failureMessage: failedIntent.last_payment_error?.message,
                 },
             });

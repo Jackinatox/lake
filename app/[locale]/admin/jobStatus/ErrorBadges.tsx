@@ -1,4 +1,4 @@
-import { LogLevel } from "@/app/client/generated/browser";
+import { LogLevel } from '@/app/client/generated/browser';
 
 interface ErrorBadgeProps {
     level: LogLevel;

@@ -96,9 +96,7 @@ export function FtpAccessDetails({
                         {renderCopyBox(t('username'), username)}
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-3">
-                        <p className="text-xs text-muted-foreground">
-                            {t('description')}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{t('description')}</p>
                         <Button size="sm" onClick={onChangePassword}>
                             <KeyRound className="mr-2 h-4 w-4" />
                             {t('changePasswordButton')}

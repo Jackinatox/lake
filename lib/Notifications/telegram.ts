@@ -1,7 +1,7 @@
-import { env } from "next-runtime-env"
-import { logger } from "../logger";
+import { env } from 'next-runtime-env';
+import { logger } from '../logger';
 
-type NotificationType = "Support" | "FatalError" | "Error" | "Info" | "Warning"
+type NotificationType = 'Support' | 'FatalError' | 'Error' | 'Info' | 'Warning';
 
 interface TelegramButton {
     text: string;
@@ -31,13 +31,13 @@ export function escapeHtml(text: string): string {
  */
 async function sendTelegramMessage(
     message: string,
-    options?: SendMessageOptions
+    options?: SendMessageOptions,
 ): Promise<boolean> {
-    const chat_id = env("TELEGRAM_CHAT_ID");
-    const bot_token = env("TELEGRAM_BOT_TOKEN");
+    const chat_id = env('TELEGRAM_CHAT_ID');
+    const bot_token = env('TELEGRAM_BOT_TOKEN');
 
     if (!bot_token || !chat_id) {
-        logger.warn("Telegram credentials missing - notification skipped", 'TELEGRAM');
+        logger.warn('Telegram credentials missing - notification skipped', 'TELEGRAM');
         return false;
     }
 
@@ -45,19 +45,22 @@ async function sendTelegramMessage(
 
     try {
         const res = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: chat_id,
                 text: message,
-                parse_mode: "HTML",
+                parse_mode: 'HTML',
                 ...options,
             }),
         });
 
         if (!res.ok) {
             const body = await res.text();
-            logger.error(`Failed to send Telegram notification: ${res.status} - ${body}`, 'TELEGRAM');
+            logger.error(
+                `Failed to send Telegram notification: ${res.status} - ${body}`,
+                'TELEGRAM',
+            );
             return false;
         }
 
@@ -65,7 +68,7 @@ async function sendTelegramMessage(
     } catch (error) {
         logger.error(
             `Telegram API error: ${error instanceof Error ? error.message : String(error)}`,
-            'TELEGRAM'
+            'TELEGRAM',
         );
         return false;
     }
@@ -94,17 +97,17 @@ export async function sendSupportTicketNotification(params: {
 
     const options: SendMessageOptions | undefined = ticketUrl
         ? {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: '🔗 Open Ticket',
-                            url: ticketUrl,
-                        },
-                    ],
-                ],
-            },
-        }
+              reply_markup: {
+                  inline_keyboard: [
+                      [
+                          {
+                              text: '🔗 Open Ticket',
+                              url: ticketUrl,
+                          },
+                      ],
+                  ],
+              },
+          }
         : undefined;
 
     return sendTelegramMessage(text, options);
@@ -143,14 +146,12 @@ export async function sendFatalErrorNotification(params: {
         text += `\n<b>Additional Info:</b>\n`;
         for (const [key, value] of Object.entries(additionalInfo)) {
             if (value !== undefined && value !== null) {
-                const valueStr = typeof value === 'object'
-                    ? JSON.stringify(value, null, 2)
-                    : String(value);
+                const valueStr =
+                    typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value);
 
                 // Truncate long values
-                const displayValue = valueStr.length > 300
-                    ? valueStr.substring(0, 300) + '...'
-                    : valueStr;
+                const displayValue =
+                    valueStr.length > 300 ? valueStr.substring(0, 300) + '...' : valueStr;
 
                 text += `  • <b>${escapeHtml(key)}:</b> <code>${escapeHtml(displayValue)}</code>\n`;
             }
@@ -193,14 +194,12 @@ export async function sendErrorNotification(params: {
         text += `\n<b>Details:</b>\n`;
         for (const [key, value] of Object.entries(details)) {
             if (value !== undefined && value !== null) {
-                const valueStr = typeof value === 'object'
-                    ? JSON.stringify(value, null, 2)
-                    : String(value);
+                const valueStr =
+                    typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value);
 
                 // Truncate long values
-                const displayValue = valueStr.length > 300
-                    ? valueStr.substring(0, 300) + '...'
-                    : valueStr;
+                const displayValue =
+                    valueStr.length > 300 ? valueStr.substring(0, 300) + '...' : valueStr;
 
                 text += `  • <b>${escapeHtml(key)}:</b> <code>${escapeHtml(displayValue)}</code>\n`;
             }
@@ -221,9 +220,7 @@ export async function sendInfoNotification(params: {
     const { title, message, details } = params;
 
     let text =
-        `<b>ℹ️ ${escapeHtml(title)}</b>\n` +
-        `━━━━━━━━━━━━━━━━━━━━\n` +
-        `${escapeHtml(message)}\n`;
+        `<b>ℹ️ ${escapeHtml(title)}</b>\n` + `━━━━━━━━━━━━━━━━━━━━\n` + `${escapeHtml(message)}\n`;
 
     if (details && Object.keys(details).length > 0) {
         text += `\n`;
@@ -264,7 +261,7 @@ export async function sendWarningNotification(params: {
 export default async function sendTelegramNotification(
     type: NotificationType,
     message: string,
-    options?: SendMessageOptions
+    options?: SendMessageOptions,
 ): Promise<boolean> {
     return sendTelegramMessage(message, options);
 }

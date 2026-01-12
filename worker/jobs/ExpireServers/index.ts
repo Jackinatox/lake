@@ -11,7 +11,10 @@ export async function runExpireServers(): Promise<{ processed: number; total: nu
 
     const now = new Date();
     const count = await prisma.gameServer.count({
-        where: { expires: { lte: now }, status: { notIn: ['EXPIRED', 'DELETED', 'CREATION_FAILED'] } },
+        where: {
+            expires: { lte: now },
+            status: { notIn: ['EXPIRED', 'DELETED', 'CREATION_FAILED'] },
+        },
     });
 
     try {
@@ -46,7 +49,10 @@ export async function runExpireServers(): Promise<{ processed: number; total: nu
                         `Failed to process individual server`,
                         {
                             serverId: server.id,
-                            error: serverError instanceof Error ? serverError.message : String(serverError),
+                            error:
+                                serverError instanceof Error
+                                    ? serverError.message
+                                    : String(serverError),
                             stack: serverError instanceof Error ? serverError.stack : undefined,
                             serverDetails: {
                                 id: server.id,

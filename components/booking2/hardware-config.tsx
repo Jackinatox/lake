@@ -64,7 +64,7 @@ export const HardwareConfigComponent = forwardRef(
 
         useEffect(() => {
             setPriceToSmall(totalPrice.totalCents < 100);
-            onPriceChange(totalPrice)
+            onPriceChange(totalPrice);
         }, [totalPrice]);
 
         // Calculate total price whenever configuration changes

@@ -17,24 +17,20 @@ export default function FreeServerUsageCard({
     const limitReached = userFreeServers >= maxServers;
 
     const cardClass = `mb-6 w-full max-w-3xl ${
-        limitReached ? 'border-amber-300 dark:border-amber-800' : 'border-blue-300 dark:border-blue-800'
+        limitReached
+            ? 'border-amber-300 dark:border-amber-800'
+            : 'border-blue-300 dark:border-blue-800'
     }`;
 
     const innerClass = `flex items-center justify-between p-4 rounded-lg ${
         limitReached ? 'bg-amber-50 dark:bg-amber-950/20' : 'bg-blue-100 dark:bg-blue-950/50'
     }`;
 
-    const iconColor = limitReached
-        ? 'dark:text-amber-400'
-        : 'text-blue-600 dark:text-blue-400';
+    const iconColor = limitReached ? 'dark:text-amber-400' : 'text-blue-600 dark:text-blue-400';
 
-    const textColor = limitReached
-        ? ''
-        : 'text-blue-700 dark:text-blue-400';
+    const textColor = limitReached ? '' : 'text-blue-700 dark:text-blue-400';
 
-    const countColor = limitReached
-        ? ''
-        : 'text-blue-600 dark:text-blue-400';
+    const countColor = limitReached ? '' : 'text-blue-600 dark:text-blue-400';
 
     return (
         <div className="flex justify-center w-full">

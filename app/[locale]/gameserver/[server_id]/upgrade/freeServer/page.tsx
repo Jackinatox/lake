@@ -36,11 +36,13 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
         redirect(`/gameserver/${server_id}/upgrade/payedServer`);
     }
 
-    return <div className="flex justify-center w-full">
-        <Suspense fallback={<Loading />}>
-            <FreeServerUpgrade serverId={server_id} userId={session.user.id} />
-        </Suspense>
-    </div>;
+    return (
+        <div className="flex justify-center w-full">
+            <Suspense fallback={<Loading />}>
+                <FreeServerUpgrade serverId={server_id} userId={session.user.id} />
+            </Suspense>
+        </div>
+    );
 }
 
 export default UpgradePage;

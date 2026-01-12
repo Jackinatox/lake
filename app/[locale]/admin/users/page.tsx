@@ -10,7 +10,6 @@ import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import prisma from '@/lib/prisma';
 
-
 export default async function AdminPage() {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const apiKey = env('PTERODACTYL_API_KEY');

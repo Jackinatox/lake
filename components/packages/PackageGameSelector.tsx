@@ -33,20 +33,18 @@ interface PackageGameSelectorProps {
     priceCents: number;
 }
 
-export default function PackageGameSelector({ 
-    packageData, 
+export default function PackageGameSelector({
+    packageData,
     games,
     packageId,
-    priceCents
+    priceCents,
 }: PackageGameSelectorProps) {
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
                 <div className="w-full px-1 max-w-7xl mx-auto">
-                    <h1 className="text-xl sm:text-2xl font-bold">
-                        Select a Game
-                    </h1>
+                    <h1 className="text-xl sm:text-2xl font-bold">Select a Game</h1>
                 </div>
             </div>
 
@@ -59,7 +57,9 @@ export default function PackageGameSelector({
                             <div className="flex items-center gap-3">
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-lg">{packageData.name}</span>
+                                        <span className="font-semibold text-lg">
+                                            {packageData.name}
+                                        </span>
                                         <Badge variant="secondary" className="text-xs">
                                             Package
                                         </Badge>
@@ -79,19 +79,27 @@ export default function PackageGameSelector({
                             <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                                     <Cpu className="h-4 w-4 text-blue-500" />
-                                    <span className="font-medium">{(packageData.cpuPercent / 100).toFixed(1)} vCPU</span>
+                                    <span className="font-medium">
+                                        {(packageData.cpuPercent / 100).toFixed(1)} vCPU
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                                     <MemoryStick className="h-4 w-4 text-purple-500" />
-                                    <span className="font-medium">{(packageData.ramMB / 1024).toFixed(1)} GB RAM</span>
+                                    <span className="font-medium">
+                                        {(packageData.ramMB / 1024).toFixed(1)} GB RAM
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">
                                     <HardDrive className="h-4 w-4 text-green-500" />
-                                    <span className="font-medium">{(packageData.diskMB / 1024).toFixed(0)} GB</span>
+                                    <span className="font-medium">
+                                        {(packageData.diskMB / 1024).toFixed(0)} GB
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-500/10">
                                     <Database className="h-4 w-4 text-orange-500" />
-                                    <span className="font-medium">{packageData.backups} Backups</span>
+                                    <span className="font-medium">
+                                        {packageData.backups} Backups
+                                    </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-muted-foreground">
                                     <MapPin className="h-4 w-4" />

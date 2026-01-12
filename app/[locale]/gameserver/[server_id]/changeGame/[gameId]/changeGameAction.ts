@@ -61,10 +61,9 @@ export async function changeGame({
     }
 
     await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
-    
-    const newBody = await buildBody(gameConfig, newGameData);
-    console.log(JSON.stringify(newBody))
 
+    const newBody = await buildBody(gameConfig, newGameData);
+    console.log(JSON.stringify(newBody));
 
     await new Promise((resolve) => setTimeout(resolve, 200)); // Wait so the server is really killed
 
@@ -94,7 +93,7 @@ export async function changeGame({
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const scriptsEnabled = await enableServerInstallScripts(gameServer.ptAdminId)
+    const scriptsEnabled = await enableServerInstallScripts(gameServer.ptAdminId);
 
     await prisma.gameServer.update({
         where: { id: gameServer.id },

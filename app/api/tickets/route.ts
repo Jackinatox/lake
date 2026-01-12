@@ -57,14 +57,13 @@ export async function POST(req: NextRequest) {
         });
 
         sendTicketCreatedEmail(session.user.email, ticket).catch((error) => {
-            logger
-                .error('Failed to send support ticket created email', 'EMAIL', {
-                    userId: session.user.id,
-                    details: {
-                        ticketId: ticket.ticketId,
-                        error: error instanceof Error ? error.message : String(error),
-                    },
-                })
+            logger.error('Failed to send support ticket created email', 'EMAIL', {
+                userId: session.user.id,
+                details: {
+                    ticketId: ticket.ticketId,
+                    error: error instanceof Error ? error.message : String(error),
+                },
+            });
         });
 
         sendSupportTicketNotification({
@@ -72,8 +71,8 @@ export async function POST(req: NextRequest) {
             userEmail: session.user.email,
             subject: ticket.title,
             message: ticket.message,
-            ticketUrl: `${env("NEXT_PUBLIC_APP_URL")}/admin/tickets/${ticket.id}`,
-        })
+            ticketUrl: `${env('NEXT_PUBLIC_APP_URL')}/admin/tickets/${ticket.id}`,
+        });
 
         return NextResponse.json({ ticket: ticket }, { status: 201 });
     } catch (error) {

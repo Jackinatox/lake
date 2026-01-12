@@ -1,13 +1,12 @@
-import toggleSuspendGameServer from "../suspendServer/suspendServer";
-import { createPtClient } from "../ptAdminClient";
-import { env } from "next-runtime-env";
-import { logger } from "@/lib/logger";
-import { calcBackups, calcDiskSize } from "@/lib/GlobalFunctions/ptResourceLogic";
-import prisma from "@/lib/prisma";
-import { GameServerOrder } from "@/app/client/generated/browser";
+import toggleSuspendGameServer from '../suspendServer/suspendServer';
+import { createPtClient } from '../ptAdminClient';
+import { env } from 'next-runtime-env';
+import { logger } from '@/lib/logger';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import prisma from '@/lib/prisma';
+import { GameServerOrder } from '@/app/client/generated/browser';
 
 export default async function upgradeFromFreeGameServer(serverOrder: GameServerOrder) {
-
     throw new Error('Feature not vompleted.');
 
     const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
@@ -22,7 +21,6 @@ export default async function upgradeFromFreeGameServer(serverOrder: GameServerO
 
     try {
         await toggleSuspendGameServer(gameServer.id, 'unsuspend');
-
 
         // set new CPU and RAM
         const response = await fetch(

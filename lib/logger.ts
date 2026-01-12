@@ -3,7 +3,6 @@ import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
 import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
 
-
 /**
  * Unified application logger that writes to ApplicationLog table.
  * Can be easily swapped to different backends (file, cloud logging, etc.) later.
@@ -81,7 +80,9 @@ class Logger {
             // Clean console output
             const formattedDetails = this.formatDetailsForConsole(entry.details);
             if (formattedDetails) {
-                console.log(`[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}`);
+                console.log(
+                    `[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}`,
+                );
             } else {
                 console.log(`[${entry.level}] [${entry.type}] ${entry.message}`);
             }
@@ -161,8 +162,10 @@ class Logger {
             context: type,
             userId: context?.userId,
             gameServerId: context?.gameServerId,
-            details: context?.details ? this.sanitizeDetailsForNotification(context.details) : undefined
-        }).catch(err => {
+            details: context?.details
+                ? this.sanitizeDetailsForNotification(context.details)
+                : undefined,
+        }).catch((err) => {
             console.error('Failed to send error notification to Telegram:', err);
         });
     }
@@ -215,12 +218,13 @@ class Logger {
             context: type,
             userId: context?.userId,
             gameServerId: context?.gameServerId,
-            additionalInfo: context?.details ? this.sanitizeDetailsForNotification(context.details) : undefined
-        }).catch(err => {
+            additionalInfo: context?.details
+                ? this.sanitizeDetailsForNotification(context.details)
+                : undefined,
+        }).catch((err) => {
             console.error('Failed to send fatal error notification to Telegram:', err);
         });
     }
-
 
     /**
      * Helper to extract request context from Next.js Request object

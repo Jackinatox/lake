@@ -15,14 +15,13 @@ import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgrade
 export default async function handleCheckoutSessionCompleted(
     checkoutSession: Stripe.Checkout.Session,
 ) {
-
     try {
         const serverOrderId = parseInt(checkoutSession.metadata?.orderId || '0');
 
         const orderUnprocessed = await prisma.gameServerOrder.findUnique({
             where: { id: serverOrderId },
         });
-        
+
         if (orderUnprocessed?.status === 'PAID') {
             logger.info('Order already processed, skipping', 'PAYMENT_LOG', {
                 details: { serverOrderId: serverOrderId },
@@ -91,7 +90,7 @@ export default async function handleCheckoutSessionCompleted(
             updatedOrder.creationGameData &&
             updatedOrder.creationLocation
         ) {
-            const appUrl = env("NEXT_PUBLIC_APP_URL");
+            const appUrl = env('NEXT_PUBLIC_APP_URL');
             const gameName = updatedOrder.creationGameData.name;
             const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
             const serverUrl = `${appUrl}/gameserver/${updatedOrder.gameServer.ptServerId}`;

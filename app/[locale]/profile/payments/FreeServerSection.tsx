@@ -38,10 +38,18 @@ export function FreeServerSection({ payments }: FreeServerSectionProps) {
             >
                 <div className="flex items-center gap-1.5 md:gap-2">
                     <Gift className="h-3.5 w-3.5 md:h-4 md:w-4 text-green-500" />
-                    <span className="font-medium text-sm md:text-base">{t('freeServers.title')}</span>
-                    <span className="text-muted-foreground text-xs md:text-sm">({payments.length})</span>
+                    <span className="font-medium text-sm md:text-base">
+                        {t('freeServers.title')}
+                    </span>
+                    <span className="text-muted-foreground text-xs md:text-sm">
+                        ({payments.length})
+                    </span>
                 </div>
-                {isOpen ? <ChevronUp className="h-3.5 w-3.5 md:h-4 md:w-4" /> : <ChevronDown className="h-3.5 w-3.5 md:h-4 md:w-4" />}
+                {isOpen ? (
+                    <ChevronUp className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                ) : (
+                    <ChevronDown className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                )}
             </Button>
 
             {isOpen && (

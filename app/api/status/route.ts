@@ -185,12 +185,11 @@ function formatBytes(bytes: number): string {
 export async function GET(req: NextRequest) {
     const clientIP = getClientIP(req);
     const session = await auth.api.getSession({
-        headers: await headers()
+        headers: await headers(),
     });
 
-
     if (!(isLocalIP(clientIP) || session?.user.role?.includes('admin'))) {
-        console.log(clientIP)
+        console.log(clientIP);
         logger
             .logError({}, 'SYSTEM', {
                 method: 'GET',
@@ -238,7 +237,7 @@ export async function GET(req: NextRequest) {
                 },
                 system: systemInfo,
             },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (error) {
         logger

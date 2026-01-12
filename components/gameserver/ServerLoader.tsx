@@ -17,7 +17,7 @@ interface ServerLoaderProps {
         egg_id: number;
         gameDataId: number;
         gameData: any;
-        type: GameServerType
+        type: GameServerType;
     };
 }
 
@@ -170,7 +170,10 @@ export default function ServerLoader({
                             {t('gameserver.installation.title')}
                         </CardTitle>
                         <CardDescription>
-                            {t.rich('gameserver.installation.description', { serverName: server.name, strong: (children) => <strong>{children}</strong> })}
+                            {t.rich('gameserver.installation.description', {
+                                serverName: server.name,
+                                strong: (children) => <strong>{children}</strong>,
+                            })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -195,7 +198,10 @@ export default function ServerLoader({
                             {t('gameserver.restore.title')}
                         </CardTitle>
                         <CardDescription>
-                            {t.rich('gameserver.restore.description', { serverName: server.name, strong: (children) => <strong>{children}</strong> })}
+                            {t.rich('gameserver.restore.description', {
+                                serverName: server.name,
+                                strong: (children) => <strong>{children}</strong>,
+                            })}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -215,7 +221,9 @@ export default function ServerLoader({
             <div className="flex justify-center items-center min-h-[60vh]">
                 <Card className="w-full max-w-md">
                     <CardHeader>
-                        <CardTitle className="text-destructive">{t('gameserver.serverNotFound')}</CardTitle>
+                        <CardTitle className="text-destructive">
+                            {t('gameserver.serverNotFound')}
+                        </CardTitle>
                         <CardDescription>{t('gameserver.serverNotFoundDesc')}</CardDescription>
                     </CardHeader>
                 </Card>

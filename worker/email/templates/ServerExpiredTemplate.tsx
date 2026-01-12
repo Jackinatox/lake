@@ -37,11 +37,14 @@ export default function ServerExpiredTemplate({
 
     return (
         <EmailLayout preview={`Dein Server ${serverName} ist abgelaufen.`}>
-            <Heading className="m-0 text-2xl font-bold text-slate-900">Server ist abgelaufen</Heading>
+            <Heading className="m-0 text-2xl font-bold text-slate-900">
+                Server ist abgelaufen
+            </Heading>
             <Text className="mt-6 text-base leading-6 text-slate-600">Hallo {username},</Text>
             <Text className="mt-4 text-base leading-6 text-slate-600">
-                Dein Server <span className="font-semibold text-slate-900">{serverName}</span> ist am{' '}
-                {formattedExpiredAt} abgelaufen und wurde pausiert. Wir bewahren deine Daten noch bis zum
+                Dein Server <span className="font-semibold text-slate-900">{serverName}</span> ist
+                am {formattedExpiredAt} abgelaufen und wurde pausiert. Wir bewahren deine Daten noch
+                bis zum
                 {formattedDeleteDate} auf.
             </Text>
             <Section className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
@@ -49,8 +52,8 @@ export default function ServerExpiredTemplate({
                     Datenaufbewahrung bis: {formattedDeleteDate}
                 </Text>
                 <Text className="mt-2 text-sm leading-6 text-amber-700">
-                    Nach diesem Datum werden alle Serverdaten gelöscht. Reaktiviere den Server vorher, um
-                    Datenverlust zu vermeiden.
+                    Nach diesem Datum werden alle Serverdaten gelöscht. Reaktiviere den Server
+                    vorher, um Datenverlust zu vermeiden.
                 </Text>
             </Section>
             <Section className="mt-6">

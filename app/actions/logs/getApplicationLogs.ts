@@ -24,7 +24,14 @@ export async function getApplicationLogs(filters: LogFilters = {}) {
         throw new Error('Unauthorized');
     }
 
-    const { search = '', level = 'ALL', type = 'ALL', timeRange = 'ALL', page = 1, limit = 50 } = filters;
+    const {
+        search = '',
+        level = 'ALL',
+        type = 'ALL',
+        timeRange = 'ALL',
+        page = 1,
+        limit = 50,
+    } = filters;
 
     const where: any = {};
 

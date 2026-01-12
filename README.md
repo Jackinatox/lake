@@ -1,6 +1,7 @@
 <img src="./public/images/light/logo/ScyedLogo.webp" alt="Scyed Logo" width="200" />
 
 # Lake
+
 ### Scyed Game Server Hosting Platform
 
 A full-stack game server hosting platform with Stripe payments, Pterodactyl integration, and a free-tier system. Built with Next.js 16, TypeScript, and Prisma.
@@ -19,12 +20,14 @@ A full-stack game server hosting platform with Stripe payments, Pterodactyl inte
 ## Tech Stack
 
 **Frontend**
+
 - Next.js 16 (App Router) with TypeScript
 - Tailwind CSS + shadcn/ui components
 - next-intl for i18n (de/en)
 - Real-time WebSocket console
 
 **Backend**
+
 - Server Actions for mutations
 - Route handlers for Pterodactyl API proxying
 - Better Auth (Prisma adapter)
@@ -33,6 +36,7 @@ A full-stack game server hosting platform with Stripe payments, Pterodactyl inte
 - Upcomming: Redis cache
 
 **Integrations**
+
 - Pterodactyl Panel API (requires custom modifications)
 - Stripe payment processing + webhooks
 - Discord/Google OAuth
@@ -40,6 +44,7 @@ A full-stack game server hosting platform with Stripe payments, Pterodactyl inte
 ## Project Status
 
 This is production code for Scyed.com. It likely won't work out of the box for others due to:
+
 - Undocumented Pterodactyl Panel modifications
 - Hardcoded assumptions about panel structure
 - Custom API endpoints required on panel side

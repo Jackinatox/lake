@@ -29,8 +29,8 @@ export default function TwoFactorCreatedTemplate({
                         Deine Wiederherstellungscodes
                     </Text>
                     <Text style={{ ...textStyle, marginTop: 6 }}>
-                        Bewahre diese Codes offline an einem sicheren Ort auf. Jeder Code kann einmal
-                        genutzt werden, falls du keinen Zugriff mehr auf dein Gerät hast.
+                        Bewahre diese Codes offline an einem sicheren Ort auf. Jeder Code kann
+                        einmal genutzt werden, falls du keinen Zugriff mehr auf dein Gerät hast.
                     </Text>
                     <div style={{ marginTop: 10, display: 'grid', gap: 6 }}>
                         {recoveryCodes.map((code) => (

@@ -41,7 +41,10 @@ export async function runSendEmails(): Promise<{ processed: number; total: numbe
                         `Failed to send Email`,
                         {
                             emailId: email.id,
-                            error: serverError instanceof Error ? serverError.message : String(serverError),
+                            error:
+                                serverError instanceof Error
+                                    ? serverError.message
+                                    : String(serverError),
                             stack: serverError instanceof Error ? serverError.stack : undefined,
                             emailDetails: {
                                 id: email.id,

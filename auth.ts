@@ -5,7 +5,11 @@ import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
-import { sendConfirmEmail, sendPasswordResetSuccessEmail, sendResetPasswordEmail } from './lib/email/sendEmailEmailsFromLake';
+import {
+    sendConfirmEmail,
+    sendPasswordResetSuccessEmail,
+    sendResetPasswordEmail,
+} from './lib/email/sendEmailEmailsFromLake';
 import prisma from './lib/prisma';
 import { logger } from './lib/logger';
 
@@ -55,7 +59,7 @@ export const auth = betterAuth({
         google: {
             clientId: env('GOOGLE_CLIENT_ID')!,
             clientSecret: env('GOOGLE_CLIENT_SECRET')!,
-        }
+        },
     },
     emailAndPassword: {
         enabled: true,
@@ -65,7 +69,11 @@ export const auth = betterAuth({
         },
         onPasswordReset: async ({ user }, request) => {
             await logger.info(`Password for user ${user.email} has been reset.`, 'AUTHENTICATION');
-            await sendPasswordResetSuccessEmail(user.email, `${env('NEXT_PUBLIC_APP_URL')}/login`, user.name || "");
+            await sendPasswordResetSuccessEmail(
+                user.email,
+                `${env('NEXT_PUBLIC_APP_URL')}/login`,
+                user.name || '',
+            );
         },
     },
     emailVerification: {
@@ -79,7 +87,6 @@ export const auth = betterAuth({
         twoFactor(),
         lastLoginMethod({
             storeInDatabase: true,
-            
         }),
         admin(),
     ],

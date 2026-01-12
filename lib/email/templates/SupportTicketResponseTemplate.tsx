@@ -42,7 +42,8 @@ export default function SupportTicketResponseTemplate({
             <Heading style={headingStyle}>Antwort auf dein Ticket</Heading>
             <Text style={textStyle}>Hallo {userName || 'Scyed Nutzer'},</Text>
             <Text style={textStyle}>
-                Wir haben eine neue Antwort für dich. {agentName ? `${agentName} hat` : 'Unser Team hat'}
+                Wir haben eine neue Antwort für dich.{' '}
+                {agentName ? `${agentName} hat` : 'Unser Team hat'}
                 sich dein Ticket angesehen und dir geantwortet.
             </Text>
 
@@ -54,7 +55,8 @@ export default function SupportTicketResponseTemplate({
                 ) : null}
                 {status ? (
                     <Text style={{ ...mutedTextStyle, marginTop: 6 }}>
-                        Status: <span style={{ color: '#0f172a' }}>{statusLabels[status] || status}</span>
+                        Status:{' '}
+                        <span style={{ color: '#0f172a' }}>{statusLabels[status] || status}</span>
                     </Text>
                 ) : null}
             </EmailCard>
@@ -71,8 +73,8 @@ export default function SupportTicketResponseTemplate({
             ) : null}
 
             <Text style={{ ...textStyle, marginTop: 16 }}>
-                Wenn du weitere Informationen ergänzen möchtest, antworte einfach auf diese E-Mail oder
-                aktualisiere dein Ticket.
+                Wenn du weitere Informationen ergänzen möchtest, antworte einfach auf diese E-Mail
+                oder aktualisiere dein Ticket.
             </Text>
         </EmailLayout>
     );

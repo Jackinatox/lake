@@ -1,8 +1,15 @@
-"use client"
+'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu as MenuIcon, LayoutDashboard, Gamepad2, HeadphonesIcon, Gift } from 'lucide-react';
+import {
+    ChevronDown,
+    Menu as MenuIcon,
+    LayoutDashboard,
+    Gamepad2,
+    HeadphonesIcon,
+    Gift,
+} from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -64,7 +71,10 @@ export default function MainMenu({ locale }: MainMenuInterface) {
         // Remove locale prefix for comparison
         const pathWithoutLocale = pathname?.replace(/^\/(de|en)/, '') || '';
         const hrefWithoutLocale = href.replace(/^\/(de|en)/, '');
-        return pathWithoutLocale === hrefWithoutLocale || pathWithoutLocale.startsWith(hrefWithoutLocale + '/');
+        return (
+            pathWithoutLocale === hrefWithoutLocale ||
+            pathWithoutLocale.startsWith(hrefWithoutLocale + '/')
+        );
     };
 
     return (
@@ -112,7 +122,8 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             className={cn(
                                                 'flex items-center px-3 py-2 text-sm font-medium',
                                                 'hover:text-primary rounded-md transition-colors',
-                                                isActive(item.href!) && 'bg-primary/10 text-primary font-semibold',
+                                                isActive(item.href!) &&
+                                                    'bg-primary/10 text-primary font-semibold',
                                             )}
                                         >
                                             <item.Icon className="h-4 w-4 mr-1.5" />
@@ -123,8 +134,15 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                             )}
                             {/* Free Server Button */}
                             <NavigationMenuItem>
-                                <Button asChild size="default" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg">
-                                    <Link href="/products/free-gameserver" className="flex items-center">
+                                <Button
+                                    asChild
+                                    size="default"
+                                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg"
+                                >
+                                    <Link
+                                        href="/products/free-gameserver"
+                                        className="flex items-center"
+                                    >
                                         <Gift className="h-4 w-4 mr-1.5" />
                                         {t('buttonText')}
                                     </Link>
@@ -183,10 +201,10 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                         href="/gameserver"
                                         onClick={() => setOpen(false)}
                                         className={cn(
-                                            "flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors",
-                                            isActive('/gameserver') 
-                                                ? "bg-primary text-primary-foreground" 
-                                                : "bg-primary/10 hover:bg-primary/20"
+                                            'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
+                                            isActive('/gameserver')
+                                                ? 'bg-primary text-primary-foreground'
+                                                : 'bg-primary/10 hover:bg-primary/20',
                                         )}
                                     >
                                         <LayoutDashboard className="h-6 w-6 mr-3" />
@@ -247,10 +265,10 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                     href={item.href!}
                                                     onClick={() => setOpen(false)}
                                                     className={cn(
-                                                        "flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors",
+                                                        'flex items-center px-3 py-2 text-base font-medium rounded-md transition-colors',
                                                         isActive(item.href!)
-                                                            ? "bg-primary/20 text-primary font-semibold"
-                                                            : "hover:text-primary"
+                                                            ? 'bg-primary/20 text-primary font-semibold'
+                                                            : 'hover:text-primary',
                                                     )}
                                                 >
                                                     <item.Icon className="h-5 w-5 mr-3" />

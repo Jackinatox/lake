@@ -8,7 +8,7 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuTrigger
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { authClient } from '@/lib/auth-client';
 import { Laptop, LogOut, Moon, Sun, User, UserRoundCog } from 'lucide-react';

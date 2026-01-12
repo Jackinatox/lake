@@ -15,7 +15,6 @@ import {
 import prisma from './prisma';
 import { env } from 'next-runtime-env';
 
-
 /**
  * List of all required KeyValue constants that must exist in the database
  */
@@ -33,7 +32,7 @@ const REQUIRED_DB_CONSTANTS = [
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
     FREE_SERVERS_LOCATION_ID,
-    FREE_TIER_MAX_SERVERS
+    FREE_TIER_MAX_SERVERS,
 ];
 
 const ENV_VARS_REQUIRED = [
@@ -61,13 +60,12 @@ const ENV_VARS_REQUIRED = [
     'SUPPORT_SMTP_PASS',
     'NEXT_PUBLIC_SUPPORT_MAIL',
     'TELEGRAM_CHAT_ID',
-    'TELEGRAM_BOT_TOKEN'
-]
+    'TELEGRAM_BOT_TOKEN',
+];
 export async function performVerification(): Promise<void> {
     await verifyDatabaseConst();
     await verifyEnvVars();
 }
-
 
 /**
  * Verifies that all required database constants and resources exist.
@@ -113,7 +111,7 @@ ${missingKeys.map((key) => `║   • ${key.padEnd(56)} ║`).join('\n')}
         }
 
         console.log(
-            `✓ All ${REQUIRED_DB_CONSTANTS.length} required database constants are present`
+            `✓ All ${REQUIRED_DB_CONSTANTS.length} required database constants are present`,
         );
 
         // Check required database resources
@@ -151,7 +149,7 @@ ${missingResources.map((res) => `║   • ${res.padEnd(56)} ║`).join('\n')}
 
         console.log(
             `✓ Required resources verified: GameData (${gameDataCount}), ` +
-            `Locations (${locationCount}), CPU (${cpuCount}), RAM (${ramCount})`
+                `Locations (${locationCount}), CPU (${cpuCount}), RAM (${ramCount})`,
         );
     } catch (error) {
         if (error instanceof Error && error.message.includes('CRITICAL')) {
@@ -196,7 +194,5 @@ ${missingVars.map((v) => `║   • ${v.padEnd(58)} ║`).join('\n')}
 `;
         throw new Error(errorMessage);
     }
-    console.log(
-        `✓ All ${ENV_VARS_REQUIRED.length} required ENV-Vars are present`
-    );
+    console.log(`✓ All ${ENV_VARS_REQUIRED.length} required ENV-Vars are present`);
 }

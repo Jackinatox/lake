@@ -5,18 +5,17 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { getClientIP, isLocalIP } from '../status/route';
 
-
 export async function GET(req: NextRequest) {
     const clientIP = getClientIP(req);
     const session = await auth.api.getSession({
-        headers: await headers()
+        headers: await headers(),
     });
 
     const gameServerCount = await prisma.gameServer.count();
     const uptime = process.uptime();
 
     if (!(isLocalIP(clientIP) || session?.user.role?.includes('admin'))) {
-        console.log(clientIP)
+        console.log(clientIP);
         logger
             .logError({}, 'SYSTEM', {
                 method: 'GET',
@@ -37,7 +36,7 @@ export async function GET(req: NextRequest) {
                 uptime: { seconds: Math.round(uptime), formatted: formatUptime(uptime) },
                 gameServerCount,
             },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (error) {
         logger

@@ -5,22 +5,22 @@ import nodemailer from 'nodemailer';
 import { logger } from '../logger';
 
 const noReplyMailer = nodemailer.createTransport({
-    host: env("SMTP_HOST"),
+    host: env('SMTP_HOST'),
     port: 465,
     secure: true,
     auth: {
-        user: env("SMTP_USER"),
-        pass: env("SMTP_PASS"),
+        user: env('SMTP_USER'),
+        pass: env('SMTP_PASS'),
     },
 });
 
 const supportMailer = nodemailer.createTransport({
-    host: env("SUPPORT_SMTP_HOST"),
-    port: Number(env("SUPPORT_SMTP_PORT")),
+    host: env('SUPPORT_SMTP_HOST'),
+    port: Number(env('SUPPORT_SMTP_PORT')),
     secure: true,
     auth: {
-        user: env("SUPPORT_SMTP_USER"),
-        pass: env("SUPPORT_SMTP_PASS"),
+        user: env('SUPPORT_SMTP_USER'),
+        pass: env('SUPPORT_SMTP_PASS'),
     },
 });
 
@@ -39,7 +39,7 @@ export async function sendMail(to: string, subject: string, html: string, type: 
 
     try {
         const res = await mailer.sendMail({
-            from: `"Scyed" <${env("SMTP_USER")}>`,
+            from: `"Scyed" <${env('SMTP_USER')}>`,
             to,
             subject,
             html,
@@ -51,14 +51,14 @@ export async function sendMail(to: string, subject: string, html: string, type: 
                 where: { id: email.id },
                 data: { nodeMailerResponse: res as any },
             })
-            .catch(() => { });
+            .catch(() => {});
     } catch (error) {
         await prisma.email
             .update({
                 where: { id: email.id },
                 data: { status: 'FAILED' },
             })
-            .catch(() => { });
+            .catch(() => {});
 
         await logger.error(`Failed to send: ${subject}`, 'EMAIL', {
             details: { error: (error as Error)?.message, to },

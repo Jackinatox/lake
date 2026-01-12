@@ -1,4 +1,10 @@
-import { FabricEggId, ForgeEggId, NeoForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
+import {
+    FabricEggId,
+    ForgeEggId,
+    NeoForgeEggId,
+    PaperEggId,
+    VanillaEggId,
+} from '@/app/GlobalConstants';
 
 export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
     let startAndVars;
@@ -51,7 +57,8 @@ export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
                 environment: {
                     MINECRAFT_VERSION: minecraftVersion,
                 },
-                startup: 'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true @unix_args.txt',
+                startup:
+                    'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true @unix_args.txt',
             };
             break;
     }

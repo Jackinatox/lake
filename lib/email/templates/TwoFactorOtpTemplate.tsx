@@ -15,12 +15,17 @@ export default function TwoFactorOtpTemplate({
     loginUrl,
 }: TwoFactorOtpTemplateProps) {
     return (
-        <EmailLayout preview="Dein Anmeldecode für Scyed." hideSupport footerNote="Teile diesen Code mit niemandem." hideSignature>
+        <EmailLayout
+            preview="Dein Anmeldecode für Scyed."
+            hideSupport
+            footerNote="Teile diesen Code mit niemandem."
+            hideSignature
+        >
             <Heading style={headingStyle}>Dein Sicherheitscode</Heading>
             <Text style={textStyle}>Hallo {userName || 'Scyed Nutzer'},</Text>
             <Text style={textStyle}>
-                Verwende den folgenden Code, um die Anmeldung bei Scyed abzuschließen. Der Code ist für
-                kurze Zeit gültig und kann nur einmal verwendet werden.
+                Verwende den folgenden Code, um die Anmeldung bei Scyed abzuschließen. Der Code ist
+                für kurze Zeit gültig und kann nur einmal verwendet werden.
             </Text>
             <Section style={{ marginTop: 12 }}>
                 <Text
@@ -39,8 +44,8 @@ export default function TwoFactorOtpTemplate({
                 </Text>
             </Section>
             <Text style={{ ...mutedTextStyle, marginTop: 12 }}>
-                Gültig für etwa {expiresInMinutes} Minuten. Wenn du diese Anmeldung nicht gestartet hast,
-                ändere bitte dein Passwort und aktiviere 2FA.
+                Gültig für etwa {expiresInMinutes} Minuten. Wenn du diese Anmeldung nicht gestartet
+                hast, ändere bitte dein Passwort und aktiviere 2FA.
             </Text>
             {loginUrl ? (
                 <Text style={{ ...textStyle, marginTop: 12 }}>

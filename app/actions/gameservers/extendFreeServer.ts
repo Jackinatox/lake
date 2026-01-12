@@ -10,7 +10,9 @@ import { FREE_TIER_EXTEND_COOLDOWN_HOURS } from '@/app/GlobalConstants';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
 import { GameServer } from '@/app/client/generated/browser';
 
-export async function extendFreeServer(serverId: string): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
+export async function extendFreeServer(
+    serverId: string,
+): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -50,7 +52,9 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
 
             if (timeSinceLastExtend < cooldownMs) {
                 const canExtendAt = new Date(server.lastExtended.getTime() + cooldownMs);
-                const hoursRemaining = Math.ceil((cooldownMs - timeSinceLastExtend) / (1000 * 60 * 60));
+                const hoursRemaining = Math.ceil(
+                    (cooldownMs - timeSinceLastExtend) / (1000 * 60 * 60),
+                );
 
                 logger.info('Free server extension blocked - cooldown active', 'GAME_SERVER', {
                     details: {
@@ -66,7 +70,7 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
                 return {
                     success: false,
                     error: `Please wait ${hoursRemaining} more hour(s) before extending again`,
-                    canExtendAt
+                    canExtendAt,
                 };
             }
         }
@@ -110,7 +114,6 @@ export async function extendFreeServer(serverId: string): Promise<{ success: boo
         return { success: false, error: 'Internal error occurred while extending server' };
     }
 }
-
 
 async function resumeIfSuspended(server: GameServer) {
     if (server.status === 'EXPIRED') {

@@ -22,7 +22,7 @@ interface ConfigSettingItemProps {
 /**
  * A standardized setting item with consistent styling.
  * Provides bordered container with label + description on the left and control on the right.
- * 
+ *
  * Border hierarchy: This component owns the border for individual settings.
  * Parent should NOT add additional borders around this component.
  */
@@ -47,9 +47,7 @@ export function ConfigSettingItem({
                 <Label htmlFor={id} className="text-sm font-medium cursor-pointer">
                     {label}
                 </Label>
-                {description && (
-                    <p className="text-xs text-muted-foreground">{description}</p>
-                )}
+                {description && <p className="text-xs text-muted-foreground">{description}</p>}
             </div>
             <div className="shrink-0">{children}</div>
         </div>

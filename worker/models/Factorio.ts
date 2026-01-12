@@ -1,4 +1,4 @@
-type FactorioBranch = "stable" | "experimental";
+type FactorioBranch = 'stable' | 'experimental';
 export type FactorioVersion = { version: string; branch: FactorioBranch };
 
 export type FactorioGameData = {

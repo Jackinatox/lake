@@ -409,110 +409,112 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const limitReached = backupLimit > 0 && backups.length >= backupLimit;
 
     return (
-        <Card className="space-y-6 sm:p-6 p-2">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h2 className="text-xl font-semibold">Backups</h2>
-                    <p className="text-sm text-muted-foreground">
-                        Create, download, and restore snapshots of your server.
+        <Card className="border-0 shadow-sm p-3 min-h-72 w-full min-w-0">
+            <div className="space-y-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 className="text-base font-semibold">Backups</h2>
+                        <p className="text-xs text-muted-foreground">
+                            Create, download, and restore snapshots of your server.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchBackups({ silent: true })}
+                            disabled={isLoading || isRefreshing}
+                        >
+                            {isRefreshing ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <RefreshCw className="mr-2 h-4 w-4" />
+                            )}
+                            Refresh
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => setIsCreateOpen(true)}
+                            disabled={limitReached || isCreating}
+                        >
+                            {isCreating ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Plus className="mr-2 h-4 w-4" />
+                            )}
+                            New backup
+                        </Button>
+                    </div>
+                </div>
+
+                {backupLimit > 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                        Using {backups.length}/{backupLimit} backup slots · Total size{' '}
+                        {formatBytes(totalSize)}
                     </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fetchBackups({ silent: true })}
-                        disabled={isLoading || isRefreshing}
-                    >
-                        {isRefreshing ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                        )}
-                        Refresh
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={() => setIsCreateOpen(true)}
-                        disabled={limitReached || isCreating}
-                    >
-                        {isCreating ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Plus className="mr-2 h-4 w-4" />
-                        )}
-                        New backup
-                    </Button>
-                </div>
+                ) : (
+                    <p className="text-xs text-muted-foreground">
+                        Unlimited backup slots · Total size {formatBytes(totalSize)}
+                    </p>
+                )}
+
+                {limitReached && (
+                    <Alert>
+                        <AlertTitle>Backup limit reached</AlertTitle>
+                        <AlertDescription>
+                            Delete an existing backup to free up space before creating a new one.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
+                {!ptUrl && (
+                    <Alert variant="destructive">
+                        <AlertTitle>Configuration required</AlertTitle>
+                        <AlertDescription>
+                            Please set NEXT_PUBLIC_PTERODACTYL_URL to enable backup management.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
+                {error && backups.length === 0 && (
+                    <Alert variant="destructive">
+                        <AlertTitle>Unable to load backups</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                {isLoading ? (
+                    <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
+                        {Array.from({ length: 2 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="h-44 rounded-lg border bg-muted/40 animate-pulse"
+                            />
+                        ))}
+                    </div>
+                ) : backups.length === 0 ? (
+                    <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                        No backups yet. Create your first snapshot to protect the server state.
+                    </div>
+                ) : (
+                    <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
+                        {backups.map((backup) => (
+                            <BackupCard
+                                key={backup.uuid}
+                                backup={backup}
+                                server={server}
+                                onDownload={handleDownload}
+                                onRestore={handleRestore}
+                                onDelete={handleDelete}
+                                onUnlock={handleUnlock}
+                                disabled={isRefreshing || isCreating}
+                                isDownloading={downloadingId === backup.uuid}
+                                isUnlocking={unlockingId === backup.uuid}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
-
-            {backupLimit > 0 ? (
-                <p className="text-sm text-muted-foreground">
-                    Using {backups.length}/{backupLimit} backup slots · Total size{' '}
-                    {formatBytes(totalSize)}
-                </p>
-            ) : (
-                <p className="text-sm text-muted-foreground">
-                    Unlimited backup slots · Total size {formatBytes(totalSize)}
-                </p>
-            )}
-
-            {limitReached ? (
-                <Alert>
-                    <AlertTitle>Backup limit reached</AlertTitle>
-                    <AlertDescription>
-                        Delete an existing backup to free up space before creating a new one.
-                    </AlertDescription>
-                </Alert>
-            ) : null}
-
-            {!ptUrl ? (
-                <Alert variant="destructive">
-                    <AlertTitle>Configuration required</AlertTitle>
-                    <AlertDescription>
-                        Please set NEXT_PUBLIC_PTERODACTYL_URL to enable backup management.
-                    </AlertDescription>
-                </Alert>
-            ) : null}
-
-            {error && backups.length === 0 ? (
-                <Alert variant="destructive">
-                    <AlertTitle>Unable to load backups</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                </Alert>
-            ) : null}
-
-            {isLoading ? (
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className="h-52 rounded-lg border bg-muted/40 animate-pulse"
-                        />
-                    ))}
-                </div>
-            ) : backups.length === 0 ? (
-                <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
-                    No backups yet. Create your first snapshot to protect the server state.
-                </div>
-            ) : (
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {backups.map((backup) => (
-                        <BackupCard
-                            key={backup.uuid}
-                            backup={backup}
-                            server={server}
-                            onDownload={handleDownload}
-                            onRestore={handleRestore}
-                            onDelete={handleDelete}
-                            onUnlock={handleUnlock}
-                            disabled={isRefreshing || isCreating}
-                            isDownloading={downloadingId === backup.uuid}
-                            isUnlocking={unlockingId === backup.uuid}
-                        />
-                    ))}
-                </div>
-            )}
 
             <CreateBackupDialog
                 open={isCreateOpen}

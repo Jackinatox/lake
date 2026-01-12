@@ -342,11 +342,14 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                         {isSuccess && (
                             <div className="flex w-full flex-col items-center gap-4">
                                 <p className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-                                    {isRedirecting ? pollerT('redirectingPlain' as any) : pollerT('redirecting', { seconds: countdown })}
+                                    {isRedirecting
+                                        ? pollerT('redirectingPlain' as any)
+                                        : pollerT('redirecting', { seconds: countdown })}
                                 </p>
                                 <div className="flex flex-col gap-2 sm:flex-row">
                                     <Button asChild>
-                                        <Link prefetch={false}
+                                        <Link
+                                            prefetch={false}
                                             href={encodeURI(`/gameserver/${serverId}?start=true`)}
                                         >
                                             {pollerT('successButton')}

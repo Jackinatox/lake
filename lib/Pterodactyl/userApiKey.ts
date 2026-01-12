@@ -22,7 +22,9 @@ async function createUserApiKey(userId: number): Promise<any> {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}, url: ${url}, body: ${JSON.stringify(response.body)}`);
+            throw new Error(
+                `HTTP error! status: ${response.status}, url: ${url}, body: ${JSON.stringify(response.body)}`,
+            );
         }
 
         const responseData = await response.json();
@@ -34,7 +36,9 @@ async function createUserApiKey(userId: number): Promise<any> {
 
         return key;
     } catch (e) {
-        logger.fatal('PTUser API-Key Creation: ', 'SYSTEM', { details: { error: (e as Error).message } });
+        logger.fatal('PTUser API-Key Creation: ', 'SYSTEM', {
+            details: { error: (e as Error).message },
+        });
     }
 }
 

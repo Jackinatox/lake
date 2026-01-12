@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
     return new Response('Use Post method', { status: 405 });

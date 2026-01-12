@@ -3,8 +3,6 @@ import DeleteServerTemplate from '../../email/templates/DeleteInXDays';
 import { prisma } from '../../prisma';
 import { EmailType } from '../../client/generated/enums';
 
-
-
 export const handleServer = async (
     serverId: string,
     days: 1 | 7,

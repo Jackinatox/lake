@@ -101,7 +101,9 @@ export async function runGenerateDeletionEmails(): Promise<{ processed: number }
 
 async function createEmailJob(server: GameServer, days: 1 | 7, jobRun: string, deletionDate: Date) {
     try {
-        console.log(`Generating deletion email for server ${server.id} expires at ${server.expires}, deletes at ${deletionDate}`);
+        console.log(
+            `Generating deletion email for server ${server.id} expires at ${server.expires}, deletes at ${deletionDate}`,
+        );
         await generateEmail(server.id, days, jobRun, deletionDate);
     } catch (serverError) {
         await logError(

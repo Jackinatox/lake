@@ -18,8 +18,8 @@ export default function TwoFactorRemovedTemplate({
             <Heading style={headingStyle}>2FA wurde deaktiviert</Heading>
             <Text style={textStyle}>Hallo {userName || 'Scyed Nutzer'},</Text>
             <Text style={textStyle}>
-                Die Zwei-Faktor-Authentifizierung für dein Konto wurde soeben deaktiviert. Dein Konto
-                ist nun nur noch mit dem Passwort geschützt.
+                Die Zwei-Faktor-Authentifizierung für dein Konto wurde soeben deaktiviert. Dein
+                Konto ist nun nur noch mit dem Passwort geschützt.
             </Text>
             <Section style={{ marginTop: 16 }}>
                 <EmailButton href={manageUrl} variant="secondary">
@@ -27,8 +27,8 @@ export default function TwoFactorRemovedTemplate({
                 </EmailButton>
             </Section>
             <Text style={{ ...textStyle, marginTop: 16 }}>
-                Wenn du diese Änderung nicht selbst vorgenommen hast, setze bitte sofort dein Passwort
-                zurück und aktiviere 2FA erneut.
+                Wenn du diese Änderung nicht selbst vorgenommen hast, setze bitte sofort dein
+                Passwort zurück und aktiviere 2FA erneut.
             </Text>
         </EmailLayout>
     );

@@ -2,7 +2,15 @@
 
 import { GameServerStatus, GameServerType, OrderType } from '@/app/client/generated/browser';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, CheckCircle2, Cog, Receipt, RefreshCw, Settings, XCircle } from 'lucide-react';
+import {
+    AlertCircle,
+    CheckCircle2,
+    Cog,
+    Receipt,
+    RefreshCw,
+    Settings,
+    XCircle,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
@@ -83,22 +91,33 @@ export function PaymentItem({
         <div className="flex justify-between items-center p-2 md:p-3 border rounded-lg gap-2">
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
-                    <p className="font-medium text-sm md:text-base">{t(`orderType.${paymentType}`)}</p>
+                    <p className="font-medium text-sm md:text-base">
+                        {t(`orderType.${paymentType}`)}
+                    </p>
                 </div>
                 <p className="text-xs md:text-sm text-muted-foreground">{formatDate(date)}</p>
                 {/* Status indicator */}
-                <div className={`flex items-center gap-0.5 md:gap-1 mt-0.5 md:mt-1 ${statusConfig.color}`}>
+                <div
+                    className={`flex items-center gap-0.5 md:gap-1 mt-0.5 md:mt-1 ${statusConfig.color}`}
+                >
                     {statusConfig.icon}
                     <span className="text-[10px] md:text-xs">{statusConfig.label}</span>
                 </div>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
                 {!isFreeServer && (
-                    <span className="font-medium text-sm md:text-base whitespace-nowrap">{(amount / 100).toFixed(2)} €</span>
+                    <span className="font-medium text-sm md:text-base whitespace-nowrap">
+                        {(amount / 100).toFixed(2)} €
+                    </span>
                 )}
 
                 {/* Receipt button */}
-                <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9" asChild={!!receiptUrl}>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 md:h-9 md:w-9"
+                    asChild={!!receiptUrl}
+                >
                     {receiptUrl ? (
                         <Link
                             href={receiptUrl}
@@ -124,14 +143,26 @@ export function PaymentItem({
                     <>
                         {statusConfig.showExtendButton ? (
                             // Expired: Show extend/upgrade button
-                            <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9" asChild title={t('extendServer')}>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 md:h-9 md:w-9"
+                                asChild
+                                title={t('extendServer')}
+                            >
                                 <Link href={`${gameServerUrl}/upgrade`}>
                                     <RefreshCw className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Link>
                             </Button>
                         ) : statusConfig.canAccessServer ? (
                             // Active/Created: Show server access button
-                            <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9" asChild title={t('manageServer')}>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 md:h-9 md:w-9"
+                                asChild
+                                title={t('manageServer')}
+                            >
                                 <Link href={gameServerUrl}>
                                     <Settings className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Link>
@@ -153,7 +184,13 @@ export function PaymentItem({
 
                 {/* No server URL - show disabled cog */}
                 {!gameServerUrl && (
-                    <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9" disabled title={t('status.created')}>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 md:h-9 md:w-9"
+                        disabled
+                        title={t('status.created')}
+                    >
                         <Cog className="h-3.5 w-3.5 md:h-4 md:w-4" />
                     </Button>
                 )}

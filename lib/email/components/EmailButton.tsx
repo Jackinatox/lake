@@ -29,7 +29,13 @@ const variantColors: Record<'primary' | 'secondary' | 'success', string> = {
     success: '#0f766e',
 };
 
-export function EmailButton({ href, children, fullWidth = true, variant = 'primary', style }: EmailButtonProps) {
+export function EmailButton({
+    href,
+    children,
+    fullWidth = true,
+    variant = 'primary',
+    style,
+}: EmailButtonProps) {
     return (
         <Button
             href={href}

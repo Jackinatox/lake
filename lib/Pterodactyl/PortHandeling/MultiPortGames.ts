@@ -74,7 +74,7 @@ export async function correctPortsForGame(
             if (attempt < maxRetries) {
                 const delayMs = Math.min(5000 * Math.pow(2, attempt - 1), 10000); // Exponential backoff, max 10s
 
-                await new Promise(resolve => setTimeout(resolve, delayMs));
+                await new Promise((resolve) => setTimeout(resolve, delayMs));
             }
         }
     }
@@ -102,7 +102,10 @@ async function configureServerPorts(
     gameId: number,
     apiKey: string,
 ): Promise<Omit<PortConfigurationResult, 'attemptsMade'>> {
-    logger.trace(`Starting port configuration for server ${ptServerId}, game ${gameId}`, 'GAME_SERVER');
+    logger.trace(
+        `Starting port configuration for server ${ptServerId}, game ${gameId}`,
+        'GAME_SERVER',
+    );
 
     const gameConfig = GAME_PORT_CONFIG[gameId as keyof typeof GAME_PORT_CONFIG];
 
@@ -111,10 +114,7 @@ async function configureServerPorts(
     }
 
     // Step 1: Ensure correct number of allocations
-    logger.info(
-        `Ensuring server has ${gameConfig.requiredAllocations} allocations`,
-        'GAME_SERVER',
-    );
+    logger.info(`Ensuring server has ${gameConfig.requiredAllocations} allocations`, 'GAME_SERVER');
     const allocations = await setAllocationCount(
         ptServerId,
         apiKey,

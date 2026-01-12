@@ -5,7 +5,7 @@ import { cache } from 'react';
 /**
  * Fetches a single key-value string from the database
  * This function is cached per request to avoid duplicate database queries
- * 
+ *
  * @param key - The unique key to fetch from the KeyValue table
  * @returns The string value associated with the key, or null if not found
  */

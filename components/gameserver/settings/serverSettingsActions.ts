@@ -69,7 +69,7 @@ export async function reinstallServer(server: string): Promise<boolean> {
             logger.error(`Reinstall failed for server ${server}`, 'GAME_SERVER', {
                 userId: session.user.id,
                 gameServerId: server,
-                details: { response: JSON.stringify(response) }
+                details: { response: JSON.stringify(response) },
             });
             return false;
         }
@@ -107,13 +107,17 @@ export async function changeServerStartup(server: string, docker_image: string):
 /**
  * Internal server-only function to change server docker image and startup configuration.
  * This function uses admin API key and should NEVER be exposed to client-side code.
- * 
+ *
  * @param ptAdminId - Pterodactyl admin server ID
  * @param docker_image - Docker image to set (null to keep existing)
  * @param skipScripts - Whether to skip install scripts
  * @returns true if successful, false otherwise
  */
-async function changeServerDockerImageInternal(ptAdminId: string, docker_image: string | null, skipScripts: boolean = false): Promise<boolean> {
+async function changeServerDockerImageInternal(
+    ptAdminId: string,
+    docker_image: string | null,
+    skipScripts: boolean = false,
+): Promise<boolean> {
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const ptAdminKey = env('PTERODACTYL_API_KEY');
     try {
@@ -129,7 +133,6 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
             .then((response) => response.json())
             .then((server) => server.attributes);
 
-
         const body = JSON.stringify({
             skip_scripts: skipScripts,
             egg: adminServer.egg,
@@ -139,18 +142,15 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
         });
 
         // Update the server Configuration
-        const response = await fetch(
-            `${ptUrl}/api/application/servers/${ptAdminId}/startup`,
-            {
-                method: 'PATCH',
-                headers: {
-                    Authorization: `Bearer ${ptAdminKey}`,
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body
+        const response = await fetch(`${ptUrl}/api/application/servers/${ptAdminId}/startup`, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${ptAdminKey}`,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
             },
-        );
+            body,
+        });
 
         if (!response.ok) {
             const errorData = await response.text();
@@ -172,13 +172,11 @@ async function changeServerDockerImageInternal(ptAdminId: string, docker_image: 
  * Server-only function to enable install scripts after initial server creation.
  * This is used during provisioning to re-enable scripts after creating server with skipScripts: true.
  * Should only be called from server-side code like provisionServer.ts
- * 
+ *
  * @param ptAdminId - Pterodactyl admin server ID
  * @returns true if successful, false otherwise
  */
-export async function enableServerInstallScripts(
-    ptAdminId: number,
-): Promise<boolean> {
+export async function enableServerInstallScripts(ptAdminId: number): Promise<boolean> {
     logger.info(`Enabling install scripts for server ${ptAdminId}`, 'GAME_SERVER');
 
     const success = await changeServerDockerImageInternal(ptAdminId.toString(), null, false);
@@ -199,24 +197,35 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
     });
 
     if (!session) {
-        logger.warn(`Delete attempt without authentication for server ${ptServerId}`, 'AUTHENTICATION');
+        logger.warn(
+            `Delete attempt without authentication for server ${ptServerId}`,
+            'AUTHENTICATION',
+        );
         return false;
     }
 
-    const server = await prisma.gameServer.findFirst({ where: { ptServerId, userId: session.user.id } });
+    const server = await prisma.gameServer.findFirst({
+        where: { ptServerId, userId: session.user.id },
+    });
 
     if (!server || !server.ptAdminId) {
-        logger.warn(`Delete attempt for unknown server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+        logger.warn(
+            `Delete attempt for unknown server ${ptServerId} by user ${session.user.id}`,
+            'GAME_SERVER',
+        );
         return false;
     }
 
     if (server.type !== 'FREE') {
-        logger.warn(`Delete attempt for non-free server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+        logger.warn(
+            `Delete attempt for non-free server ${ptServerId} by user ${session.user.id}`,
+            'GAME_SERVER',
+        );
         return false;
     }
 
     try {
-        await deleteServerAdmin(server.ptAdminId)
+        await deleteServerAdmin(server.ptAdminId);
         await prisma.gameServer.update({
             where: { id: server.id },
             data: { status: 'DELETED' },
@@ -230,6 +239,9 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
         return false;
     }
 
-    logger.info(`deleteFreeServer requested for server ${ptServerId} by user ${session.user.id}`, 'GAME_SERVER');
+    logger.info(
+        `deleteFreeServer requested for server ${ptServerId} by user ${session.user.id}`,
+        'GAME_SERVER',
+    );
     return true;
 }

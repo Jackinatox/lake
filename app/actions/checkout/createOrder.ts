@@ -1,16 +1,16 @@
-import { CheckoutParams } from "./checkout";
-import { env } from "next-runtime-env";
-import { calculateNew } from "@/lib/GlobalFunctions/paymentLogic";
-import { stripe } from "@/lib/stripe";
-import { logger } from "@/lib/logger";
-import prisma from "@/lib/prisma";
-import { User } from "@/app/client/generated/client";
+import { CheckoutParams } from './checkout';
+import { env } from 'next-runtime-env';
+import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
+import { stripe } from '@/lib/stripe';
+import { logger } from '@/lib/logger';
+import prisma from '@/lib/prisma';
+import { User } from '@/app/client/generated/client';
 
 export default async function upgradeToPayed(params: CheckoutParams, user: User): Promise<string> {
     if (params.type !== 'TO_PAYED') {
         throw new Error('Invalid checkout type for upgradeToPayed');
     }
-    
+
     const { ptServerId, hardwareConfig } = params;
     const { ramMb, cpuPercent, diskMb, durationsDays } = hardwareConfig;
 
@@ -28,7 +28,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
 
     const price = calculateNew(location, cpuPercent, ramMb, durationsDays);
 
-    console.log(JSON.stringify(params))
+    console.log(JSON.stringify(params));
     // 1. Create the ServerOrder
     const order = await prisma.gameServerOrder.create({
         data: {
@@ -76,7 +76,9 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
     });
 
     if (!stripeSession.id || !stripeSession.client_secret) {
-        logger.error('Failed to create Stripe session', "FREE_SERVER_EXTEND", { details: { orderId: order.id } });
+        logger.error('Failed to create Stripe session', 'FREE_SERVER_EXTEND', {
+            details: { orderId: order.id },
+        });
         throw new Error('Failed to create Stripe session');
     }
 

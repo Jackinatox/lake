@@ -1,11 +1,5 @@
 import { Heading, Section, Text } from '@react-email/components';
-import {
-    EmailButton,
-    EmailLayout,
-    headingStyle,
-    mutedTextStyle,
-    textStyle,
-} from '../components';
+import { EmailButton, EmailLayout, headingStyle, mutedTextStyle, textStyle } from '../components';
 
 interface ConfirmEmailTemplateProps {
     url: string;

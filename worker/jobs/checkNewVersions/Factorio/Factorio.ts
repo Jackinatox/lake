@@ -1,5 +1,5 @@
-import type { FactorioGameData, FactorioVersion } from "../../../models/Factorio";
-import { prisma } from "../../../prisma";
+import type { FactorioGameData, FactorioVersion } from '../../../models/Factorio';
+import { prisma } from '../../../prisma';
 import { compareVersions } from 'compare-versions';
 import { logInfo, logError, logFatal, generateJobRunId } from '../../../lib/logger';
 import { WorkerJobType } from '../../../client/generated/enums';
@@ -9,18 +9,16 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
     const jobRun = generateJobRunId(WorkerJobType.CHECK_NEW_VERSIONS);
 
     try {
-        await logInfo(
-            WorkerJobType.CHECK_NEW_VERSIONS,
-            `Job started`,
-            { jobRun },
-            { jobRun },
-        );
+        await logInfo(WorkerJobType.CHECK_NEW_VERSIONS, `Job started`, { jobRun }, { jobRun });
 
         const latestOnlineVersion = await getLatestVersion(jobRun);
         const latestLocalVersion = await getLatestFromDB(jobRun);
 
         if (latestOnlineVersion && latestLocalVersion) {
-            const compare = compareVersions(latestOnlineVersion.version, latestLocalVersion.version);
+            const compare = compareVersions(
+                latestOnlineVersion.version,
+                latestLocalVersion.version,
+            );
             if (compare != 0) {
                 await logInfo(
                     WorkerJobType.CHECK_NEW_VERSIONS,
@@ -28,7 +26,9 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
                     { latestOnlineVersion, latestLocalVersion, jobRun },
                     { jobRun },
                 );
-                console.log(JSON.stringify(compare >= 0 ? latestOnlineVersion : latestLocalVersion));
+                console.log(
+                    JSON.stringify(compare >= 0 ? latestOnlineVersion : latestLocalVersion),
+                );
 
                 // Send notification about new version
                 await notifyNewVersion({
@@ -43,7 +43,11 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
                 await logInfo(
                     WorkerJobType.CHECK_NEW_VERSIONS,
                     `No new version available`,
-                    { local: latestLocalVersion.version, online: latestOnlineVersion.version, jobRun },
+                    {
+                        local: latestLocalVersion.version,
+                        online: latestOnlineVersion.version,
+                        jobRun,
+                    },
                     { jobRun },
                 );
             }
@@ -74,12 +78,12 @@ export async function checkFactorioNewVersion(): Promise<FactorioVersion | null>
 
 async function getLatestVersion(jobRun: string): Promise<FactorioVersion | null> {
     try {
-        const response = await fetch("https://factorio.com/api/latest-releases");
-        const body = await response.json() as any;
+        const response = await fetch('https://factorio.com/api/latest-releases');
+        const body = (await response.json()) as any;
         if (body && body.stable && body.stable.headless) {
             const comp = compareVersions(body.stable.headless, body.experimental.headless);
             return {
-                branch: comp >= 0 ? "stable" : "experimental",
+                branch: comp >= 0 ? 'stable' : 'experimental',
                 version: comp >= 0 ? body.stable.headless : body.experimental.headless,
             };
         } else {
@@ -123,4 +127,3 @@ async function getLatestFromDB(jobRun: string): Promise<FactorioVersion | null> 
 
     return null;
 }
-

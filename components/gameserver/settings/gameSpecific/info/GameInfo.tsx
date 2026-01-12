@@ -1,6 +1,12 @@
 'use client';
 
-import { FabricEggId, ForgeEggId, NeoForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
+import {
+    FabricEggId,
+    ForgeEggId,
+    NeoForgeEggId,
+    PaperEggId,
+    VanillaEggId,
+} from '@/app/GlobalConstants';
 import { GameServer } from '@/models/gameServerModel';
 import MinecraftInfo from './MinecraftInfo';
 
@@ -17,7 +23,7 @@ function GameInfo({ server, apiKey }: GameInfoProps) {
             {server.egg_id === ForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === FabricEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === NeoForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
-             {/* TODO: add satis info */}
+            {/* TODO: add satis info */}
         </>
     );
 }

@@ -1,6 +1,12 @@
 'use client';
 
-import { FabricEggId, ForgeEggId, NeoForgeEggId, PaperEggId, VanillaEggId } from '@/app/GlobalConstants';
+import {
+    FabricEggId,
+    ForgeEggId,
+    NeoForgeEggId,
+    PaperEggId,
+    VanillaEggId,
+} from '@/app/GlobalConstants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GameServer } from '@/models/gameServerModel';
@@ -17,43 +23,45 @@ interface GameServerSettingsProps {
 }
 
 export default function GameServerSettings({ server, apiKey }: GameServerSettingsProps) {
-    const isMinecraftServer = [PaperEggId, VanillaEggId, ForgeEggId, FabricEggId, NeoForgeEggId].includes(
-        server.egg_id,
-    );
+    const isMinecraftServer = [
+        PaperEggId,
+        VanillaEggId,
+        ForgeEggId,
+        FabricEggId,
+        NeoForgeEggId,
+    ].includes(server.egg_id);
 
     return (
-        <div className="w-full mx-auto">
-            <div className="space-y-4 sm:space-y-6">
+        <div className="min-h-72">
+            <div className="space-y-3">
                 {/* Server Settings Card */}
-                <div className="w-full">
-                    <ServerSettingsCard server={server} />
-                </div>
+                <ServerSettingsCard server={server} />
 
                 {/* Game-Specific Settings */}
                 {isMinecraftServer && (
-                    <Card className="w-full">
-                        <CardHeader className="pb-0 md:pb-0">
-                            <CardTitle className="flex items-center gap-2">
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-0 p-3">
+                            <CardTitle className="flex items-center gap-2 text-base">
                                 <Gamepad2 className="h-5 w-5" />
                                 Game-Specific Settings
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="">
+                        <CardContent className="p-3 pt-2">
                             <MinecraftSettings server={server} apiKey={apiKey} />
                         </CardContent>
                     </Card>
                 )}
 
                 {/* Server Management Section */}
-                <Card className="w-full">
-                    <CardHeader className="pb-0 md:pb-0">
-                        <CardTitle className="text-lg sm:text-xl">Server Management</CardTitle>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                <Card className="border-0 shadow-sm">
+                    <CardHeader className="pb-0 p-3">
+                        <CardTitle className="text-base">Server Management</CardTitle>
+                        <p className="text-xs text-muted-foreground">
                             These actions can affect your server's functionality. Please use with
                             caution.
                         </p>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-3 pt-2">
                         <div className="space-y-2">
                             <div className="flex flex-col sm:flex-row gap-2">
                                 <div className="w-full sm:w-1/2">

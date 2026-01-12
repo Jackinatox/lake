@@ -37,7 +37,11 @@ export async function sendResetPasswordEmail(to: string, url: string, token: str
     await sendMail(to, 'Setze dein Passwort zurück', html, 'REQUEST_PASSWORD_RESET');
 }
 
-export async function sendPasswordResetSuccessEmail(to: string, loginUrl: string, userName?: string) {
+export async function sendPasswordResetSuccessEmail(
+    to: string,
+    loginUrl: string,
+    userName?: string,
+) {
     const html = await render(
         PasswordResetSuccessTemplate({
             loginUrl,
@@ -56,7 +60,7 @@ export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) 
             category: ticket.category,
             message: ticket.message,
             ticketId: ticket.ticketId,
-            ticketUrl: `${env("NEXT_PUBLIC_APP_URL")}/support/tickets/${ticket.ticketId}/notImplementedYet`,
+            ticketUrl: `${env('NEXT_PUBLIC_APP_URL')}/support/tickets/${ticket.ticketId}/notImplementedYet`,
         }),
     );
 
@@ -90,7 +94,12 @@ export async function sendSupportTicketResponseEmail(data: SupportTicketResponse
         }),
     );
 
-    await sendMail(data.to, 'Neue Antwort auf dein Support-Ticket', html, 'SUPPORT_TICKET_RESPONSE');
+    await sendMail(
+        data.to,
+        'Neue Antwort auf dein Support-Ticket',
+        html,
+        'SUPPORT_TICKET_RESPONSE',
+    );
 }
 
 interface TwoFactorEmailData {
@@ -98,7 +107,9 @@ interface TwoFactorEmailData {
     userName?: string;
 }
 
-export async function sendTwoFactorCreatedEmail(data: TwoFactorEmailData & { recoveryCodes?: string[]; manageUrl: string }) {
+export async function sendTwoFactorCreatedEmail(
+    data: TwoFactorEmailData & { recoveryCodes?: string[]; manageUrl: string },
+) {
     const html = await render(
         TwoFactorCreatedTemplate({
             userName: data.userName,
@@ -121,7 +132,9 @@ export async function sendTwoFactorRemovedEmail(data: TwoFactorEmailData & { man
     await sendMail(data.to, '2FA wurde deaktiviert', html, 'TWO_FACTOR_REMOVED');
 }
 
-export async function sendTwoFactorOtpEmail(data: TwoFactorEmailData & { code: string; expiresInMinutes?: number; loginUrl?: string }) {
+export async function sendTwoFactorOtpEmail(
+    data: TwoFactorEmailData & { code: string; expiresInMinutes?: number; loginUrl?: string },
+) {
     const html = await render(
         TwoFactorOtpTemplate({
             userName: data.userName,

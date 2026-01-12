@@ -38,45 +38,41 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
         }
     };
     return (
-        <>
-            <div>
-                <Card>
-                    <CardHeader className="pb-0 md:pb-0">
-                        <CardTitle className="flex items-center gap-2">
-                            <Server className="h-5 w-5" />
-                            Server Settings
-                        </CardTitle>
-                        <CardDescription>Configure your game server settings</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {/* Server Name */}
-                        <div className="space-y-2">
-                            <Label htmlFor="server-name">Server Name</Label>
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <Input
-                                    id="server-name"
-                                    value={serverName}
-                                    onChange={(e) => setServerName(e.target.value)}
-                                    placeholder="Enter server name"
-                                    className="flex-1"
-                                    maxLength={64}
-                                />
-                                <Button
-                                    onClick={handleSaveServerName}
-                                    disabled={
-                                        serverName === server.name || serverName.trim() === ''
-                                    }
-                                    size="sm"
-                                    className="w-full sm:w-auto"
-                                >
-                                    <Save className="h-4 w-4 mr-2 sm:mr-0" />
-                                    <span className="sm:hidden">Save</span>
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </>
+        <Card className="border-0 shadow-sm">
+            <CardHeader className="pb-0 p-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                    <Server className="h-5 w-5" />
+                    Server Settings
+                </CardTitle>
+                <CardDescription className="text-sm">
+                    Configure your game server settings
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="p-3 pt-2">
+                {/* Server Name */}
+                <div className="space-y-2">
+                    <Label htmlFor="server-name">Server Name</Label>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <Input
+                            id="server-name"
+                            value={serverName}
+                            onChange={(e) => setServerName(e.target.value)}
+                            placeholder="Enter server name"
+                            className="flex-1"
+                            maxLength={64}
+                        />
+                        <Button
+                            onClick={handleSaveServerName}
+                            disabled={serverName === server.name || serverName.trim() === ''}
+                            size="sm"
+                            className="w-full sm:w-auto"
+                        >
+                            <Save className="h-4 w-4 mr-2 sm:mr-0" />
+                            <span className="sm:hidden">Save</span>
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

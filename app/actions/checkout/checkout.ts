@@ -2,12 +2,13 @@
 
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
-import { JobId, provisionServer, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
-import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import {
-    checkFreeServerEligibility,
-    notifyFreeServerCreated,
-} from '@/lib/freeServer';
+    JobId,
+    provisionServer,
+    provisionServerWithWorker,
+} from '@/lib/Pterodactyl/createServers/provisionServer';
+import { getFreeTierConfigCached } from '@/lib/free-tier/config';
+import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeServer';
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
@@ -21,28 +22,29 @@ import upgradeToPayed from './createOrder';
 
 export type CheckoutParams =
     | {
-        type: 'NEW';
-        locale: 'de' | 'en';
-        creationServerConfig: ServerConfig; // Needed for Server Creation!!!
-    }
+          type: 'NEW';
+          locale: 'de' | 'en';
+          creationServerConfig: ServerConfig; // Needed for Server Creation!!!
+      }
     | {
-        type: 'UPGRADE';
-        locale: 'de' | 'en';
-        upgradeConfig: HardwareConfig;
-        ptServerId: string;
-    }
+          type: 'UPGRADE';
+          locale: 'de' | 'en';
+          upgradeConfig: HardwareConfig;
+          ptServerId: string;
+      }
     | {
-        type: 'TO_PAYED';
-        locale: 'de' | 'en';
-        ptServerId: string;
-        hardwareConfig: HardwareConfig;
-    } | {
-        type: 'PACKAGE';
-        locale: 'de' | 'en';
-        gameConfig: GameConfig;
-        packageId: number;
-        durationDays: number;
-    };
+          type: 'TO_PAYED';
+          locale: 'de' | 'en';
+          ptServerId: string;
+          hardwareConfig: HardwareConfig;
+      }
+    | {
+          type: 'PACKAGE';
+          locale: 'de' | 'en';
+          gameConfig: GameConfig;
+          packageId: number;
+          durationDays: number;
+      };
 
 export async function checkoutAction(params: CheckoutParams) {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
@@ -129,7 +131,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 ],
                 custom_text: {
                     terms_of_service_acceptance: {
-                        message: getTermsMessage(params.locale)
+                        message: getTermsMessage(params.locale),
                     },
                 },
 
@@ -212,7 +214,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
-                        durationsDays * 24 * 60 * 60 * 1000,
+                            durationsDays * 24 * 60 * 60 * 1000,
                     ),
                     status: 'PENDING',
                 },
@@ -268,8 +270,8 @@ export async function checkoutAction(params: CheckoutParams) {
                 where: { id: packageId, enabled: true },
                 include: {
                     location: {
-                        include: { cpu: true, ram: true }
-                    }
+                        include: { cpu: true, ram: true },
+                    },
                 },
             });
 
@@ -290,7 +292,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 packageData.location,
                 packageData.cpuPercent,
                 packageData.ramMB,
-                durationDays
+                durationDays,
             );
 
             // Create the order
@@ -380,8 +382,8 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             status: 'PAID',
             creationGameDataId: gameConfig.gameId,
             gameConfig: gameConfig as any,
-            creationLocationId: locationId
-        }
+            creationLocationId: locationId,
+        },
     });
 
     try {
@@ -393,7 +395,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             logger.error('Failed to run free server notification helper', 'EMAIL', {
                 details: {
                     error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
-                    orderId: order.id
+                    orderId: order.id,
                 },
             });
         }
@@ -401,21 +403,21 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
 
-        logger.fatal("Failed to provision free server", 'GAME_SERVER', {
+        logger.fatal('Failed to provision free server', 'GAME_SERVER', {
             userId: dbUser.id,
             details: {
                 error: errorMessage,
-                orderId: order.id
-            }
+                orderId: order.id,
+            },
         });
-        throw new Error("Interner Fehler - Server konnte nicht erstellt werden");
+        throw new Error('Interner Fehler - Server konnte nicht erstellt werden');
     }
 }
 
 function getTermsMessage(locale: 'de' | 'en') {
     if (locale === 'de') {
-        return 'Ich stimme Scyed\'s AGB und der Widerrufsbelehrung zu [AGB](https://scyed.com/de/legal/agb) (Rückerstattungen nur innerhalb von 2 Tagen nach dem Kauf).';
+        return "Ich stimme Scyed's AGB und der Widerrufsbelehrung zu [AGB](https://scyed.com/de/legal/agb) (Rückerstattungen nur innerhalb von 2 Tagen nach dem Kauf).";
     } else {
-        return 'I agree to Scyed\'s Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/agb) (Refunds only within 2 days of purchase).';
+        return "I agree to Scyed's Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/agb) (Refunds only within 2 days of purchase).";
     }
 }

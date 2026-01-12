@@ -26,8 +26,8 @@ export function TabsComponent({
     const t = useTranslations();
 
     return (
-        <Tabs defaultValue="console" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="console" onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-5 min-w-0">
                 <TabsTrigger value="console" className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
                     <span className="hidden sm:inline">{t('gameserver.tabs.console')}</span>
@@ -78,24 +78,34 @@ export function TabsComponent({
                     <span className="hidden sm:inline">{t('gameserver.tabs.settings')}</span>
                 </TabsTrigger>
             </TabsList>
-            <TabsContent value="console" className="mt-4">
-                {consoleComponent}
+            <TabsContent value="console" className="mt-3">
+                <div className="w-full min-w-0">{consoleComponent}</div>
             </TabsContent>
-            <TabsContent value="files" className="mt-4">
-                {fileManagerComponent}
+            <TabsContent value="files" className="mt-3">
+                <div className="w-full min-w-0">{fileManagerComponent}</div>
             </TabsContent>
-            <TabsContent value="network" className="mt-4">
-                {networkControlComponent || (
-                    <div className="text-center py-8">{t('gameserver.tabs.networkComingSoon')}</div>
-                )}
+            <TabsContent value="network" className="mt-3">
+                <div className="w-full min-w-0">
+                    {networkControlComponent || (
+                        <div className="text-center py-8">{t('gameserver.tabs.networkComingSoon')}</div>
+                    )}
+                </div>
             </TabsContent>
-            <TabsContent value="backups" className="mt-4">
-                {backupManagerComponent || (
-                    <div className="text-center py-8">{t('gameserver.tabs.backupsComingSoon')}</div>
-                )}
+            <TabsContent value="backups" className="mt-3">
+                <div className="w-full min-w-0">
+                    {backupManagerComponent || (
+                        <div className="text-center py-8">{t('gameserver.tabs.backupsComingSoon')}</div>
+                    )}
+                </div>
             </TabsContent>
-            <TabsContent value="settings" className="mt-4">
-                {settingsComponent || <div className="text-center py-8">{t('gameserver.tabs.settingsComingSoon')}</div>}
+            <TabsContent value="settings" className="mt-3">
+                <div className="w-full min-w-0">
+                    {settingsComponent || (
+                        <div className="text-center py-8">
+                            {t('gameserver.tabs.settingsComingSoon')}
+                        </div>
+                    )}
+                </div>
             </TabsContent>
         </Tabs>
     );

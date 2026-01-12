@@ -3,7 +3,6 @@
 import { Game } from '@/models/config';
 import prisma from '@/lib/prisma';
 
-
 export async function fetchPerformanceGroups() {
     const data = await prisma.location.findMany({
         include: {

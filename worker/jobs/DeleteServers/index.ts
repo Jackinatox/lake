@@ -46,7 +46,9 @@ export async function runDeleteServers(): Promise<{ processed: number; total: nu
             for (const server of toDelete) {
                 try {
                     processed += 1;
-                    console.log(`Processing server ${server.id} expired at ${server.expires}, deleting now`);
+                    console.log(
+                        `Processing server ${server.id} expired at ${server.expires}, deleting now`,
+                    );
                     await handleDeleted(server, jobRun);
                 } catch (serverError) {
                     await logError(
@@ -54,7 +56,10 @@ export async function runDeleteServers(): Promise<{ processed: number; total: nu
                         `Failed to process individual server`,
                         {
                             serverId: server.id,
-                            error: serverError instanceof Error ? serverError.message : String(serverError),
+                            error:
+                                serverError instanceof Error
+                                    ? serverError.message
+                                    : String(serverError),
                             stack: serverError instanceof Error ? serverError.stack : undefined,
                             serverDetails: {
                                 id: server.id,

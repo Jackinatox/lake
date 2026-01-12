@@ -6,7 +6,6 @@ import prisma from '@/lib/prisma';
 
 import { headers } from 'next/headers';
 
-
 export async function updateTicketStatusAction(params: { ticketId: number; status: TicketStatus }) {
     const { ticketId, status } = params;
 

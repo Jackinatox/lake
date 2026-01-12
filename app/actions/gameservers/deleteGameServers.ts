@@ -24,14 +24,16 @@ export async function deleteGameServers(ids: string[]) {
         try {
             const gameServer = await prisma.gameServer.findUniqueOrThrow({ where: { id } });
             if (!gameServer.ptAdminId) {
-                logger.warn('GameServer Deletion: ', 'SYSTEM', { details: { error: `Game server with ID ${id} missing ptAdminId` } });
+                logger.warn('GameServer Deletion: ', 'SYSTEM', {
+                    details: { error: `Game server with ID ${id} missing ptAdminId` },
+                });
                 deletedIds.push(id);
                 continue;
             }
             if (gameServer.status === 'DELETED') {
                 continue;
             }
-            
+
             if (gameServer.status === 'CREATION_FAILED') {
                 deletedIds.push(id);
                 continue;
@@ -41,15 +43,12 @@ export async function deleteGameServers(ids: string[]) {
                 await deleteServerAdmin(gameServer.ptAdminId);
                 deletedIds.push(id);
             } catch (error: any) {
-                errors.push(
-                    `Failed to delete server ${id}: ${error.toString()} `
-                );
+                errors.push(`Failed to delete server ${id}: ${error.toString()} `);
             }
-
         } catch (error) {
             errors.push(error instanceof Error ? error.message : String(error));
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     try {

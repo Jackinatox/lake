@@ -14,7 +14,7 @@ import { useRef, useState } from 'react';
 export interface FreeServerStats {
     currentFreeServers: number;
     maxFreeServers: number;
-    creationNotAllowedReason: null | "TOO_MANY_SERVERS" | "NOT_LOGGED_IN"; 
+    creationNotAllowedReason: null | 'TOO_MANY_SERVERS' | 'NOT_LOGGED_IN';
 }
 
 interface FreeGameServerBookingProps {
@@ -71,7 +71,7 @@ export default function FreeGameServerBooking({ game, stats }: FreeGameServerBoo
     const handleCreateFreeServer = () => {
         gameConfigRef.current?.submit();
     };
-    
+
     const imgName = `${game.name.toLowerCase()}.webp`;
     const gameImages = {
         light: `/images/light/games/icons/${imgName}`,

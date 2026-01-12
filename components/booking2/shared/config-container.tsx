@@ -16,7 +16,7 @@ interface ConfigContainerProps {
 /**
  * A standardized container for game configuration settings.
  * Provides consistent spacing between items without adding borders.
- * 
+ *
  * Border hierarchy: This component does NOT add borders.
  * Children (ConfigSettingItem) own their individual borders.
  */

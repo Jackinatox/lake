@@ -5,7 +5,13 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 
 import { cn } from '@/lib/utils';
 
-const Tabs = TabsPrimitive.Root;
+const Tabs = React.forwardRef<
+    React.ElementRef<typeof TabsPrimitive.Root>,
+    React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
+>(({ className, ...props }, ref) => (
+    <TabsPrimitive.Root ref={ref} className={cn('flex flex-col w-full', className)} {...props} />
+));
+Tabs.displayName = 'Tabs';
 
 const TabsList = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.List>,
@@ -44,7 +50,7 @@ const TabsContent = React.forwardRef<
     <TabsPrimitive.Content
         ref={ref}
         className={cn(
-            'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'mt-2 flex-1 w-full ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 data-[state=inactive]:hidden',
             className,
         )}
         {...props}

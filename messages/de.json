@@ -658,6 +658,12 @@
             "memory": {
                 "usage": "Speicherauslastung",
                 "current": "Aktuell:"
+            },
+            "charts": {
+                "current": "Aktuell",
+                "limit": "Limit",
+                "cpuCores": "{cores} {cores, plural, =1 {Kern} other {Kerne}}",
+                "memoryGiB": "{amount} GiB"
             }
         },
         "fileManager": {

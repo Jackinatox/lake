@@ -6,7 +6,7 @@ const ENV_VARS_REQUIRED = [
     'SMTP_PASS',
     'TELEGRAM_CHAT_ID',
     'TELEGRAM_BOT_TOKEN',
-]
+];
 
 export async function verifyEnvVars(): Promise<void> {
     const missingVars: string[] = [];
@@ -33,7 +33,5 @@ ${missingVars.map((v) => `║   • ${v.padEnd(58)} ║`).join('\n')}
 `;
         throw new Error(errorMessage);
     }
-    console.log(
-        `✓ All ${ENV_VARS_REQUIRED.length} required ENV-Vars are present`
-    );
+    console.log(`✓ All ${ENV_VARS_REQUIRED.length} required ENV-Vars are present`);
 }

@@ -11,7 +11,17 @@ import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import type { Game, GameConfig } from '@/models/config';
-import { Cpu, Database, HardDrive, MapPin, MemoryStick, ArrowLeft, Info, Clock, Check } from 'lucide-react';
+import {
+    Cpu,
+    Database,
+    HardDrive,
+    MapPin,
+    MemoryStick,
+    ArrowLeft,
+    Info,
+    Clock,
+    Check,
+} from 'lucide-react';
 import { useRef, useState, useMemo } from 'react';
 
 // Duration options in days
@@ -55,7 +65,7 @@ function calculatePrice(
     ramMB: number,
     durationDays: number,
     cpuPricePerCore: number,
-    ramPricePerGb: number
+    ramPricePerGb: number,
 ): { totalCents: number; discountPercent: number } {
     const cpuPrice = Math.round(((cpuPricePerCore * cpuPercent) / 100 / 30) * durationDays);
     const ramPrice = Math.round(((ramPricePerGb * ramMB) / 1024 / 30) * durationDays);
@@ -78,7 +88,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
     const locale = useLakeLocale();
-    
+
     const [step, setStep] = useState<'config' | 'payment'>('config');
     const [clientSecret, setClientSecret] = useState<string>('');
     const [loading, setLoading] = useState(false);
@@ -93,7 +103,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
             packageData.ramMB,
             selectedDuration,
             pricing.cpuPricePerCore,
-            pricing.ramPricePerGb
+            pricing.ramPricePerGb,
         );
     }, [packageData.cpuPercent, packageData.ramMB, selectedDuration, pricing]);
 
@@ -141,7 +151,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
         gameConfigRef.current?.submit();
     };
 
-    const selectedOption = DURATION_OPTIONS.find(o => o.days === selectedDuration);
+    const selectedOption = DURATION_OPTIONS.find((o) => o.days === selectedDuration);
 
     return (
         <div className="min-h-screen bg-background md:-my-4">
@@ -149,9 +159,7 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between gap-4">
-                        <h1 className="text-xl sm:text-2xl font-bold">
-                            Configure Your Server
-                        </h1>
+                        <h1 className="text-xl sm:text-2xl font-bold">Configure Your Server</h1>
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
                             <span className="text-sm text-muted-foreground hidden sm:inline">
                                 Total:
@@ -160,7 +168,10 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
                                 €{(totalCents / 100).toFixed(2)}
                             </span>
                             {discountPercent > 0 && (
-                                <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-600">
+                                <Badge
+                                    variant="secondary"
+                                    className="text-xs bg-green-500/20 text-green-600"
+                                >
                                     -{discountPercent}%
                                 </Badge>
                             )}
@@ -207,9 +218,9 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
                                             packageData.ramMB,
                                             option.days,
                                             pricing.cpuPricePerCore,
-                                            pricing.ramPricePerGb
+                                            pricing.ramPricePerGb,
                                         );
-                                        
+
                                         return (
                                             <button
                                                 key={option.days}
@@ -218,22 +229,26 @@ export default function PackageBooking({ packageData, game, pricing }: PackageBo
                                                     'relative flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg border transition-all text-sm',
                                                     isSelected
                                                         ? 'border-primary bg-primary/10 text-primary'
-                                                        : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                                                        : 'border-border hover:border-primary/50 hover:bg-muted/50',
                                                 )}
                                             >
                                                 {option.discount && (
-                                                    <Badge 
-                                                        variant="secondary" 
+                                                    <Badge
+                                                        variant="secondary"
                                                         className="absolute -top-2 -right-1 text-[10px] px-1 py-0 bg-green-500/20 text-green-600 border-green-500/30"
                                                     >
                                                         -{option.discount}%
                                                     </Badge>
                                                 )}
-                                                <span className="font-medium whitespace-nowrap">{option.shortLabel}</span>
+                                                <span className="font-medium whitespace-nowrap">
+                                                    {option.shortLabel}
+                                                </span>
                                                 <span className="text-muted-foreground text-xs hidden md:inline">
                                                     €{(optionPrice.totalCents / 100).toFixed(0)}
                                                 </span>
-                                                {isSelected && <Check className="h-3 w-3 shrink-0" />}
+                                                {isSelected && (
+                                                    <Check className="h-3 w-3 shrink-0" />
+                                                )}
                                             </button>
                                         );
                                     })}
@@ -345,15 +360,21 @@ function PackageSummaryCard({ packageData }: PackageSummaryCardProps) {
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                         <Cpu className="h-4 w-4 text-blue-500" />
-                        <span className="font-medium">{(packageData.cpuPercent / 100).toFixed(1)} vCPU</span>
+                        <span className="font-medium">
+                            {(packageData.cpuPercent / 100).toFixed(1)} vCPU
+                        </span>
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                         <MemoryStick className="h-4 w-4 text-purple-500" />
-                        <span className="font-medium">{(packageData.ramMB / 1024).toFixed(1)} GB RAM</span>
+                        <span className="font-medium">
+                            {(packageData.ramMB / 1024).toFixed(1)} GB RAM
+                        </span>
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">
                         <HardDrive className="h-4 w-4 text-green-500" />
-                        <span className="font-medium">{(packageData.diskMB / 1024).toFixed(0)} GB</span>
+                        <span className="font-medium">
+                            {(packageData.diskMB / 1024).toFixed(0)} GB
+                        </span>
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-500/10">
                         <Database className="h-4 w-4 text-orange-500" />

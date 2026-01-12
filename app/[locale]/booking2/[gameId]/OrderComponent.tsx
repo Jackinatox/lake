@@ -26,7 +26,6 @@ export default function GameServerConfig({ performanceGroups, game }: GameServer
     const t = useTranslations('buyGameServer');
     const locale = useLakeLocale();
 
-
     const [clientSecret, setClientSecret] = useState('');
     const [step, setStep] = useState(1);
     const [hardwareConfig, setHardwareConfig] = useState<HardwareConfig | null>(null);

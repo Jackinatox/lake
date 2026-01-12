@@ -32,16 +32,13 @@ export async function listServerAllocations(
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
 
-    const response = await fetch(
-        `${panelUrl}/api/client/servers/${serverId}/network/allocations`,
-        {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                Accept: 'Application/vnd.pterodactyl.v1+json',
-                'Content-Type': 'application/json',
-            },
+    const response = await fetch(`${panelUrl}/api/client/servers/${serverId}/network/allocations`, {
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: 'Application/vnd.pterodactyl.v1+json',
+            'Content-Type': 'application/json',
         },
-    );
+    });
 
     if (!response.ok) {
         const errorData = await response.text();
@@ -73,18 +70,15 @@ export async function assignAllocation(
     if (ip) body.ip = ip;
     if (port) body.port = port;
 
-    const response = await fetch(
-        `${panelUrl}/api/client/servers/${serverId}/network/allocations`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                Accept: 'Application/vnd.pterodactyl.v1+json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
+    const response = await fetch(`${panelUrl}/api/client/servers/${serverId}/network/allocations`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: 'Application/vnd.pterodactyl.v1+json',
+            'Content-Type': 'application/json',
         },
-    );
+        body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
         const errorData = await response.text();
@@ -220,10 +214,7 @@ export async function setAllocationCount(
     const currentCount = currentAllocations.length;
 
     if (currentCount === targetCount) {
-        logger.trace(
-            `Server ${serverId} already has ${targetCount} allocations`,
-            'GAME_SERVER',
-        );
+        logger.trace(`Server ${serverId} already has ${targetCount} allocations`, 'GAME_SERVER');
         return currentAllocations;
     }
 
@@ -287,21 +278,18 @@ export async function updateServerEnvironmentVariable(
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
 
-    const response = await fetch(
-        `${panelUrl}/api/client/servers/${serverId}/startup/variable`,
-        {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                Accept: 'Application/vnd.pterodactyl.v1+json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                key: envVarName,
-                value: String(value),
-            }),
+    const response = await fetch(`${panelUrl}/api/client/servers/${serverId}/startup/variable`, {
+        method: 'PUT',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: 'Application/vnd.pterodactyl.v1+json',
+            'Content-Type': 'application/json',
         },
-    );
+        body: JSON.stringify({
+            key: envVarName,
+            value: String(value),
+        }),
+    });
 
     if (!response.ok) {
         const errorData = await response.text();
