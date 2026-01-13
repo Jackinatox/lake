@@ -232,7 +232,7 @@ export default function ServerLoader({
     }
 
     return (
-        <div className="flex justify-center">
+        <div className="justify-center">
             <div className="max-w-screen-2xl">
                 <GameDashboard server={server} ptApiKey={ptApiKey} />
             </div>
