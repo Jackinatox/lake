@@ -639,6 +639,19 @@
             "cancel": "Abbrechen",
             "accept": "EULA akzeptieren"
         },
+        "connection": {
+            "connecting": "Verbindung zum Server wird hergestellt...",
+            "reconnecting": "Verbindung verloren. Neuverbindung... (Versuch {attempt})",
+            "disconnected": "Verbindung zum Server verloren"
+        },
+        "features": {
+            "hytaleOauth": {
+                "title": "Authentifizierung erforderlich",
+                "description": "Du musst dich mit deinem Hytale-Konto authentifizieren, um Serverdateien herunterzuladen oder zu aktualisieren. Bitte melde dich an, um fortzufahren.",
+                "cancel": "Abbrechen",
+                "login": "Anmelden"
+            }
+        },
         "dashboard": {
             "preparing": "Checkout wird vorbereitet…",
             "header": {

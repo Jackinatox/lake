@@ -82,7 +82,7 @@ export function ServerAddress({ address, port, eggId }: ServerAddressProps) {
                         {copiedIP ? '✓' : 'Copy'}
                     </button>
                 </span>
-                
+
                 <span className="flex items-center gap-2">
                     <span className="font-medium text-xs text-slate-600 dark:text-slate-400">
                         Port:

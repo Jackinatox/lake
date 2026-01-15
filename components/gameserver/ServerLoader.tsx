@@ -134,8 +134,8 @@ export default function ServerLoader({
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <Card className="w-full max-w-md">
+            <div className="min-h-[60vh] pt-[20vh]">
+                <Card className="w-full max-w-md mx-auto">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -149,8 +149,8 @@ export default function ServerLoader({
 
     if (error) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <Card className="w-full max-w-md">
+            <div className="min-h-[60vh] pt-[20vh]">
+                <Card className="w-full max-w-md mx-auto">
                     <CardHeader>
                         <CardTitle className="text-destructive">{t('gameserver.error')}</CardTitle>
                         <CardDescription>{error}</CardDescription>
@@ -162,8 +162,8 @@ export default function ServerLoader({
 
     if (isInstalling && server) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <Card className="w-full max-w-md">
+            <div className="min-h-[60vh] pt-[20vh]">
+                <Card className="w-full max-w-md mx-auto">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -190,8 +190,8 @@ export default function ServerLoader({
 
     if (isRestoring && server) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <Card className="w-full max-w-md">
+            <div className="min-h-[60vh] pt-[20vh]">
+                <Card className="w-full max-w-md mx-auto">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Loader2 className="h-5 w-5 animate-spin" />
@@ -218,8 +218,8 @@ export default function ServerLoader({
 
     if (!server) {
         return (
-            <div className="flex justify-center items-center min-h-[60vh]">
-                <Card className="w-full max-w-md">
+            <div className="min-h-[60vh] pt-[20vh]">
+                <Card className="w-full max-w-md mx-auto">
                     <CardHeader>
                         <CardTitle className="text-destructive">
                             {t('gameserver.serverNotFound')}
@@ -232,10 +232,8 @@ export default function ServerLoader({
     }
 
     return (
-        <div className="justify-center">
-            <div className="max-w-screen-2xl">
-                <GameDashboard server={server} ptApiKey={ptApiKey} />
-            </div>
+        <div className="max-w-screen-2xl mx-auto">
+            <GameDashboard server={server} ptApiKey={ptApiKey} />
         </div>
     );
 }

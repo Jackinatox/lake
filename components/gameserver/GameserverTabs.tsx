@@ -87,14 +87,18 @@ export function TabsComponent({
             <TabsContent value="network" className="mt-3">
                 <div className="w-full min-w-0">
                     {networkControlComponent || (
-                        <div className="text-center py-8">{t('gameserver.tabs.networkComingSoon')}</div>
+                        <div className="text-center py-8">
+                            {t('gameserver.tabs.networkComingSoon')}
+                        </div>
                     )}
                 </div>
             </TabsContent>
             <TabsContent value="backups" className="mt-3">
                 <div className="w-full min-w-0">
                     {backupManagerComponent || (
-                        <div className="text-center py-8">{t('gameserver.tabs.backupsComingSoon')}</div>
+                        <div className="text-center py-8">
+                            {t('gameserver.tabs.backupsComingSoon')}
+                        </div>
                     )}
                 </div>
             </TabsContent>

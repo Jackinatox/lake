@@ -639,6 +639,19 @@
             "cancel": "Cancel",
             "accept": "Accept Eula"
         },
+        "connection": {
+            "connecting": "Connecting to server...",
+            "reconnecting": "Connection lost. Reconnecting... (Attempt {attempt})",
+            "disconnected": "Connection to server lost"
+        },
+        "features": {
+            "hytaleOauth": {
+                "title": "Authentication Required",
+                "description": "You need to authenticate with your Hytale account to download or update server files. Please log in to continue.",
+                "cancel": "Cancel",
+                "login": "Log in"
+            }
+        },
         "dashboard": {
             "preparing": "Preparing checkout…",
             "header": {

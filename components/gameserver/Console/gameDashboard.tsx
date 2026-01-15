@@ -35,25 +35,51 @@ import RAMChart from './graphs/RAMChart';
 import { Status } from './status';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import BackupManager from '../BackupManager/BackupManager';
-import { useWebSocket } from '@/hooks/useWebSocket';
 import { formatMilliseconds } from '@/lib/formatTime';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
+import {
+    useConnectionState,
+    useServerStatus,
+    useServerStats,
+    useConsoleOutput,
+    useSendCommand,
+    useCustomEvent,
+    useInitialContentLoaded,
+} from '@/hooks/useServerWebSocket';
+import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
+import HytaleOauthFeature from '@/components/gameserver/features/HytaleOauthFeature';
 
 interface serverProps {
     server: GameServer;
     ptApiKey: string;
 }
 
+/**
+ * GameDashboard - Wrapper component that provides WebSocket context
+ */
 function GameDashboard({ server, ptApiKey }: serverProps) {
+    return (
+        <WebSocketProvider serverId={server.identifier} apiKey={ptApiKey} debug>
+            <GameDashboardContent server={server} ptApiKey={ptApiKey} />
+            <HytaleOauthFeature />
+        </WebSocketProvider>
+    );
+}
+
+/**
+ * GameDashboardContent - Inner component that consumes WebSocket context via hooks
+ */
+function GameDashboardContent({ server, ptApiKey }: serverProps) {
     const isMobile = useIsMobile();
-    const {
-        wsState,
-        initialContentLoaded,
-        consoleOutput,
-        stats: serverStats,
-        serverStatus,
-        handleCommand,
-        handlePowerAction,
-    } = useWebSocket(server.identifier, ptApiKey, { debug: true });
+
+    // WebSocket hooks - replacing the old useWebSocket hook
+    const { wsState, isConnected, isReconnecting } = useConnectionState();
+    const serverStatus = useServerStatus();
+    const serverStats = useServerStats();
+    const consoleOutput = useConsoleOutput();
+    const initialContentLoaded = useInitialContentLoaded();
+    const { sendCommand, sendPowerAction } = useSendCommand();
+
     const [eulaOpen, setEulaOpen] = useState(false);
     const searchParams = useSearchParams();
     const autoStart = useRef(searchParams.get('start') === 'true');
@@ -61,6 +87,11 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     const t = useTranslations();
 
     const pathname = usePathname();
+
+    // Listen for EULA custom event
+    useCustomEvent('EULA', () => {
+        setEulaOpen(true);
+    });
 
     const defAlloc = server.relationships.allocations.data.find(
         (alloc: any) => alloc.attributes.is_default,
@@ -81,7 +112,12 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         //TODO: Write EULA file to server filesystem
     };
 
-    const loading = wsState !== 'OPEN' && !initialContentLoaded; // TODO: Proper impl
+    // Wrapper functions for power actions
+    const handleCommand = (command: string) => sendCommand(command);
+    const handlePowerAction = (action: 'start' | 'stop' | 'restart' | 'kill') =>
+        sendPowerAction(action);
+
+    const loading = !isConnected && !initialContentLoaded;
     // Compact Mobile Stats Component - all info in one card
     const MobileStatsCard = (
         <Card className="md:hidden border-0 shadow-sm">
@@ -119,11 +155,12 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                             </span>
                         </div>
                         <Progress
-                            value={
-                                Math.min(((serverStats?.memory_bytes ?? 0) /
+                            value={Math.min(
+                                ((serverStats?.memory_bytes ?? 0) /
                                     (server.limits.memory * 1024 * 1024)) *
-                                100, 100)
-                            }
+                                    100,
+                                100,
+                            )}
                             className="h-1.5 bg-purple-500/20"
                         />
                     </div>
@@ -140,11 +177,12 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                             </span>
                         </div>
                         <Progress
-                            value={
-                                Math.min(((serverStats?.disk_bytes ?? 0) /
+                            value={Math.min(
+                                ((serverStats?.disk_bytes ?? 0) /
                                     (server.limits.disk * 1024 * 1024)) *
-                                100, 100)
-                            }
+                                    100,
+                                100,
+                            )}
                             className="h-1.5 bg-emerald-500/20"
                         />
                     </div>
@@ -272,14 +310,6 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                             {loading ? '—' : formatMilliseconds(serverStats?.uptime_seconds ?? 0)}
                         </span>
                     </div>
-
-                    {/* Game Info */}
-                    <div className="flex items-center justify-between text-sm pt-1 border-t">
-                        <span className="text-muted-foreground">
-                            {t('gameserver.dashboard.info')}
-                        </span>
-                        <GameInfo server={server} apiKey={ptApiKey} />
-                    </div>
                 </CardContent>
             </Card>
         </>
@@ -297,12 +327,15 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
     // Charts are now integrated into DesktopSidebar
     //TODO: properly
 
-    const offliney = serverStatus === 'unknown' || serverStatus === 'offline' || wsState !== 'OPEN';
+    const offliney = serverStatus === 'unknown' || serverStatus === 'offline' || !isConnected;
 
     return (
         <TooltipProvider>
             <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
             <div className="space-y-3">
+                {/* Connection Status Banner - shows when disconnected/reconnecting */}
+                <ConnectionStatusBanner />
+
                 {/* Sticky Header Bar */}
                 <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
                     <CardContent className="py-2 px-1 md:px-3">
