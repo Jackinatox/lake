@@ -17,15 +17,14 @@ import {
     Power,
     RefreshCw,
     Square,
-    Terminal,
     Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import EulaDialog from '../EulaDialog';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import FileManager from '../FileManager/FileManager';
-import { writeFile } from '../FileManager/pteroFileApi';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
@@ -37,6 +36,7 @@ import { Status } from './status';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import BackupManager from '../BackupManager/BackupManager';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { formatMilliseconds } from '@/lib/formatTime';
 
 interface serverProps {
     server: GameServer;
@@ -44,6 +44,7 @@ interface serverProps {
 }
 
 function GameDashboard({ server, ptApiKey }: serverProps) {
+    const isMobile = useIsMobile();
     const {
         wsState,
         initialContentLoaded,
@@ -52,7 +53,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         serverStatus,
         handleCommand,
         handlePowerAction,
-    } = useWebSocket(server.identifier, ptApiKey, { debug: true  });
+    } = useWebSocket(server.identifier, ptApiKey, { debug: true });
     const [eulaOpen, setEulaOpen] = useState(false);
     const searchParams = useSearchParams();
     const autoStart = useRef(searchParams.get('start') === 'true');
@@ -80,7 +81,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
         //TODO: Write EULA file to server filesystem
     };
 
-    const loading = wsState !== 'OPEN'; // TODO: Proper impl
+    const loading = wsState !== 'OPEN' && !initialContentLoaded; // TODO: Proper impl
     // Compact Mobile Stats Component - all info in one card
     const MobileStatsCard = (
         <Card className="md:hidden border-0 shadow-sm">
@@ -95,11 +96,13 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                 <span className="text-muted-foreground">CPU</span>
                             </div>
                             <span className="font-medium tabular-nums">
-                                {loading ? '—' : `${serverStats?.cpu_absolute ?? 0}%`}
+                                {loading
+                                    ? '—'
+                                    : `${(((serverStats?.cpu_absolute ?? 0) / server.limits.cpu) * 100).toFixed(1)}%`}
                             </span>
                         </div>
                         <Progress
-                            value={serverStats?.cpu_absolute ?? 0}
+                            value={((serverStats?.cpu_absolute ?? 0) / server.limits.cpu) * 100}
                             className="h-1.5 bg-blue-500/20"
                         />
                     </div>
@@ -117,8 +120,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         </div>
                         <Progress
                             value={
-                                ((serverStats?.memory_bytes ?? 0) / (server.limits.memory * 1024 * 1024)) *
-                                100
+                                Math.min(((serverStats?.memory_bytes ?? 0) /
+                                    (server.limits.memory * 1024 * 1024)) *
+                                100, 100)
                             }
                             className="h-1.5 bg-purple-500/20"
                         />
@@ -137,7 +141,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         </div>
                         <Progress
                             value={
-                                ((serverStats?.disk_bytes ?? 0) / (server.limits.disk / 1024)) * 100
+                                Math.min(((serverStats?.disk_bytes ?? 0) /
+                                    (server.limits.disk * 1024 * 1024)) *
+                                100, 100)
                             }
                             className="h-1.5 bg-emerald-500/20"
                         />
@@ -150,7 +156,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3 text-cyan-500" />
                             <span className="font-medium tabular-nums">
-                                {loading ? '—' : serverStats?.uptime_seconds + 's'}
+                                {loading
+                                    ? '—'
+                                    : formatMilliseconds(serverStats?.uptime_seconds ?? 0)}
                             </span>
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground">
@@ -187,7 +195,10 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <span className="text-sm font-medium">CPU</span>
                     </div>
                     <CPUChart
-                        newData={{ cpu_absolute: serverStats?.cpu_absolute }}
+                        newData={{
+                            cpu_absolute:
+                                ((serverStats?.cpu_absolute || 0) / server.limits.cpu) * 100,
+                        }}
                         cpuLimit={server.limits.cpu / 100}
                     />
                 </CardContent>
@@ -201,7 +212,9 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <span className="text-sm font-medium">RAM</span>
                     </div>
                     <RAMChart
-                        newData={{ memory_bytes: serverStats?.memory_bytes }}
+                        newData={{
+                            memory_bytes: (serverStats?.memory_bytes || 0) / 1024 / 1024 / 1024,
+                        }}
                         memoryLimit={server.limits.memory / 1024}
                     />
                 </CardContent>
@@ -219,11 +232,14 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         <span className="font-medium tabular-nums">
                             {loading
                                 ? '—'
-                                : `${serverStats?.disk_bytes ?? 0}/${server.limits.disk / 1024} GB`}
+                                : `${formatBytes(serverStats?.disk_bytes ?? 0)}/${(server.limits.disk / 1024).toFixed(0)} GB`}
                         </span>
                     </div>
                     <Progress
-                        value={((serverStats?.disk_bytes ?? 0) / (server.limits.disk / 1024)) * 100}
+                        value={
+                            ((serverStats?.disk_bytes ?? 0) / (server.limits.disk * 1024 * 1024)) *
+                            100
+                        }
                         className="h-1.5 bg-emerald-500/20"
                     />
 
@@ -253,7 +269,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         </div>
                         <span className="font-medium tabular-nums">
                             {/* TODO: Format uptime nicely */}
-                            {loading ? '—' : serverStats?.uptime_seconds + 's'}
+                            {loading ? '—' : formatMilliseconds(serverStats?.uptime_seconds ?? 0)}
                         </span>
                     </div>
 
@@ -271,8 +287,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 
     // Console component - now full width in tab content
     const ConsoleComponent = (
-        <Card className="border-0 shadow-sm min-h-72 w-full min-w-0">
-            <CardContent className="p-2 sm:p-3">
+        <Card className="border-0 shadow-sm min-h-72 w-full min-w-0 p-0">
+            <CardContent className="p-0 md:p-4">
                 <ConsoleV2 logs={consoleOutput} handleCommand={handleCommand} />
             </CardContent>
         </Card>
@@ -288,20 +304,21 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
             <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
             <div className="space-y-3">
                 {/* Sticky Header Bar */}
-                <Card className="sticky top-0 z-20 border-0 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-                    <CardContent className="py-2 px-3">
+                <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+                    <CardContent className="py-2 px-1 md:px-3">
                         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             {/* Left: Server Name + Status */}
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2">
                                     {/* Status indicator with pulse when online */}
-                                    <div className="relative">
-                                        {/* TODO: Implement transitioning */}
+                                    {/* <div className="relative">
+                                         TODO: Implement transitioning 
+                                        Websocket state TODO: only show when disconnected 
                                         <div
                                             className={`h-3 w-3 rounded-full ${
-                                                serverStatus === 'running'
+                                                wsState === 'OPEN'
                                                     ? 'bg-emerald-500'
-                                                    : false
+                                                    : wsState === 'CONNECTING'
                                                       ? 'bg-amber-500'
                                                       : 'bg-slate-400'
                                             }`}
@@ -309,7 +326,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                         {serverStatus === 'running' && (
                                             <div className="absolute inset-0 h-3 w-3 animate-ping rounded-full bg-emerald-500 opacity-75" />
                                         )}
-                                    </div>
+                                    </div> */}
                                     <h1 className="text-base font-bold truncate md:max-w-none">
                                         {server.name}
                                     </h1>
@@ -322,14 +339,19 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                                 </Badge>
                             </div>
 
-                            {/* Center: Server Address */}
-                            <div className="flex items-center gap-2 text-sm">
+                            {/* Center: Server Address & Info */}
+                            <div className="flex items-center gap-3 text-sm flex-wrap">
+                                <div className="hidden lg:block">
+                                    <GameInfo server={server} apiKey={ptApiKey} />
+                                </div>
                                 {address && port ? (
-                                    <ServerAddress
-                                        address={address}
-                                        port={port}
-                                        eggId={server.egg_id}
-                                    />
+                                    <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-md border">
+                                        <ServerAddress
+                                            address={address}
+                                            port={port}
+                                            eggId={server.egg_id}
+                                        />
+                                    </div>
                                 ) : (
                                     <span className="text-muted-foreground">
                                         {t('gameserver.dashboard.noAllocation')}
@@ -426,10 +448,8 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                         </div>
                     </CardContent>
                 </Card>
-
                 {/* Mobile Stats Card */}
-                {MobileStatsCard}
-
+                {isMobile && MobileStatsCard}
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-stretch">
                     {/* Main Content Area - Tabs */}
@@ -447,9 +467,11 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
                     </div>
 
                     {/* Desktop Sidebar - Charts + Stats */}
-                    <aside className="hidden md:flex md:col-span-4 flex-col gap-3">
-                        {DesktopSidebar}
-                    </aside>
+                    {!isMobile && (
+                        <aside className="md:col-span-4 flex flex-col gap-3">
+                            {DesktopSidebar}
+                        </aside>
+                    )}
                 </div>
             </div>
         </TooltipProvider>

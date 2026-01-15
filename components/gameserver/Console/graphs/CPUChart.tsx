@@ -65,7 +65,7 @@ function CPUChart({ newData, cpuLimit }: CPUChartProps) {
         return `${Math.floor(secondsAgo / 60)}m`;
     };
 
-    const currentUsage = newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute}%` : 'N/A';
+    const currentUsage = newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute.toFixed(1)}%` : 'N/A';
     const coresLabel = t('gameserver.dashboard.charts.cpuCores', { cores: cpuLimit });
 
     return (

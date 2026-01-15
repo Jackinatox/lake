@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { env } from 'next-runtime-env';
-import useOnlineStatus from './useOnlineStatus';
-import { auth } from '@/auth';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 type ReadyState = 'CONNECTING' | 'AUTHENTICATING' | 'OPEN' | 'CLOSING' | 'CLOSED';
@@ -27,6 +25,7 @@ type UseWebSocketOptions = {
     onCustomEvent?: (evt: { event: CustomEvents; args: any[] }) => void;
     onEvent?: (evt: { event: string; args: any[] }) => void;
     debug?: boolean;
+    maxReconnectAttempts?: number;
 };
 
 interface UseWebSocketReturn {
@@ -45,6 +44,7 @@ export function useWebSocket(
     options: UseWebSocketOptions,
 ): UseWebSocketReturn {
     const [wsState, setWsState] = useState<ReadyState>('CONNECTING');
+    const [serverStatus, setServerStatus] = useState<ServerStatus>('unknown');
     const [initialContentLoaded, setInitialContentLoaded] = useState(false);
     const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
     const [stats, setStats] = useState<StatsPayload>({
@@ -62,6 +62,9 @@ export function useWebSocket(
     const wsRef = useRef<WebSocket | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const reconnectCountRef = useRef<number>(0);
+    const isReconnectingRef = useRef<boolean>(false);
+    const maxReconnectAttempts = options?.maxReconnectAttempts ?? 10;
+    const connectRef = useRef<(() => void) | null>(null);
 
     const handleMessage = useCallback(
         async (data: { event: string; args: any[] }) => {
@@ -72,14 +75,16 @@ export function useWebSocket(
             switch (data.event) {
                 case 'auth success':
                     setWsState('OPEN');
-                    if (!initialContentLoaded) {
-                        wsRef.current?.send(
-                            JSON.stringify({
-                                event: 'send logs',
-                            }),
-                        );
-                        setInitialContentLoaded(true);
-                    }
+                    setInitialContentLoaded((loaded) => {
+                        if (!loaded) {
+                            wsRef.current?.send(
+                                JSON.stringify({
+                                    event: 'send logs',
+                                }),
+                            );
+                        }
+                        return true;
+                    });
                     break;
                 case 'console output':
                     const consoleLine: string = data.args[0];
@@ -105,13 +110,49 @@ export function useWebSocket(
                     const wsCreds = await webSocketCreds(serverId, apiKey);
                     wsRef.current?.send(JSON.stringify({ event: 'auth', args: [wsCreds.token] }));
                     break;
+                case 'status': {
+                    const status = data.args[0];
+                    const validStatuses: ServerStatus[] = [
+                        'offline',
+                        'starting',
+                        'stopping',
+                        'running',
+                    ];
+                    setServerStatus(
+                        validStatuses.includes(status) ? (status as ServerStatus) : 'unknown',
+                    );
+                    break;
+                }
             }
             options.onEvent?.(data);
         },
-        [options],
+        [options, serverId, apiKey],
     );
 
+    const scheduleReconnect = useCallback(() => {
+        if (isReconnectingRef.current || reconnectTimeoutRef.current) return;
+
+        isReconnectingRef.current = true;
+        reconnectCountRef.current += 1;
+        const delay = getReconnectDelay(reconnectCountRef.current);
+
+        if (options?.debug) {
+            console.log(
+                `Reconnecting in ${delay}ms (attempt ${reconnectCountRef.current}/${maxReconnectAttempts})`,
+            );
+        }
+
+        reconnectTimeoutRef.current = setTimeout(() => {
+            isReconnectingRef.current = false;
+            reconnectTimeoutRef.current = null;
+            connectRef.current?.();
+        }, delay);
+    }, [maxReconnectAttempts, options]);
+
     const connect = useCallback(async () => {
+        // Prevent multiple simultaneous connection attempts
+        if (isReconnectingRef.current) return;
+
         // cleanup existing connection
         if (wsRef.current) {
             wsRef.current.onopen = null;
@@ -136,6 +177,7 @@ export function useWebSocket(
                 console.log('WebSocket credentials obtained:', { socket, token });
             }
             const ws = new WebSocket(socket);
+            wsRef.current = ws;
             setWsState('CONNECTING');
 
             const auth = () => {
@@ -153,6 +195,7 @@ export function useWebSocket(
                 setWsState('AUTHENTICATING');
 
                 reconnectCountRef.current = 0;
+                isReconnectingRef.current = false;
                 if (reconnectTimeoutRef.current) {
                     clearTimeout(reconnectTimeoutRef.current);
                     reconnectTimeoutRef.current = null;
@@ -164,42 +207,117 @@ export function useWebSocket(
 
             ws.onmessage = (message) => {
                 const data = JSON.parse(message.data);
-
                 handleMessage(data);
             };
-        } catch (error) {}
-    }, []);
 
+            ws.onclose = (event) => {
+                setWsState('CLOSED');
+                if (options?.debug) {
+                    console.log('WebSocket closed:', event.code, event.reason);
+                }
 
-  useEffect(() => {
-    connect();
+                // Attempt to reconnect if not a clean close and under max attempts
+                if (
+                    event.code !== 1000 &&
+                    reconnectCountRef.current < maxReconnectAttempts &&
+                    !isReconnectingRef.current &&
+                    !reconnectTimeoutRef.current
+                ) {
+                    scheduleReconnect();
+                }
+            };
 
-    // Cleanup on unmount
-    return () => {
-      
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      
-      if (wsRef.current) {
-        wsRef.current.onopen = null;
-        wsRef.current.onclose = null;
-        wsRef.current.onerror = null;
-        wsRef.current.onmessage = null;
-        
-        if (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING) {
-          wsRef.current.close();
+            ws.onerror = (error) => {
+                if (options?.debug) {
+                    console.error('WebSocket error:', error);
+                }
+                setWsState('CLOSED');
+            };
+        } catch (error) {
+            if (options?.debug) {
+                console.error('Failed to connect:', error);
+            }
+            setWsState('CLOSED');
+            // Retry connection on error
+            if (
+                reconnectCountRef.current < maxReconnectAttempts &&
+                !isReconnectingRef.current &&
+                !reconnectTimeoutRef.current
+            ) {
+                scheduleReconnect();
+            }
         }
-      }
-    };
-  }, [connect]);
+    }, [serverId, apiKey, options, handleMessage, maxReconnectAttempts, scheduleReconnect]);
+
+    // Store connect in ref to break circular dependency
+    useEffect(() => {
+        connectRef.current = connect;
+    }, [connect]);
+
+    useEffect(() => {
+        // Initial connection
+        let mounted = true;
+
+        if (mounted) {
+            connect();
+        }
+
+        // Handle page visibility changes
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && mounted) {
+                // Page became visible, check WebSocket state
+                if (
+                    wsRef.current?.readyState !== WebSocket.OPEN &&
+                    wsRef.current?.readyState !== WebSocket.CONNECTING &&
+                    !isReconnectingRef.current &&
+                    !reconnectTimeoutRef.current
+                ) {
+                    if (options?.debug) {
+                        console.log('Page became visible, reconnecting WebSocket...');
+                    }
+                    // Reset reconnect count when user returns to tab
+                    reconnectCountRef.current = 0;
+                    connect();
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Cleanup on unmount
+        return () => {
+            mounted = false;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+            if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+                reconnectTimeoutRef.current = null;
+            }
+
+            isReconnectingRef.current = false;
+
+            if (wsRef.current) {
+                wsRef.current.onopen = null;
+                wsRef.current.onclose = null;
+                wsRef.current.onerror = null;
+                wsRef.current.onmessage = null;
+
+                if (
+                    wsRef.current.readyState === WebSocket.OPEN ||
+                    wsRef.current.readyState === WebSocket.CONNECTING
+                ) {
+                    wsRef.current.close(1000, 'Component unmounting');
+                }
+            }
+        };
+    }, [serverId, apiKey]);
 
     return {
         wsState,
         initialContentLoaded,
         consoleOutput,
         stats,
-        serverStatus: 'unknown',
+        serverStatus,
         handleCommand: (command: string) => {
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
                 wsRef.current.send(
@@ -208,18 +326,22 @@ export function useWebSocket(
                         args: [command],
                     }),
                 );
+            } else if (options?.debug) {
+                console.warn('Cannot send command: WebSocket not connected');
             }
         },
         handlePowerAction: (action: 'start' | 'stop' | 'restart' | 'kill') => {
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
                 wsRef.current.send(
                     JSON.stringify({
-                        event: 'send power',
+                        event: 'set state',
                         args: [action],
                     }),
                 );
+            } else if (options?.debug) {
+                console.warn('Cannot send power action: WebSocket not connected');
             }
-        }
+        },
     };
 }
 
@@ -261,7 +383,7 @@ function parseStatsPayload(data: any): StatsPayload {
 
     return {
         memory_bytes: data.memory_bytes,
-        cpu_absolute: data.cpu_absolute,
+        cpu_absolute: parseFloat(Number(data.cpu_absolute).toFixed(1)),
         disk_bytes: data.disk_bytes,
         memory_limit_bytes: data.memory_limit_bytes,
         network: {
@@ -273,4 +395,10 @@ function parseStatsPayload(data: any): StatsPayload {
         formated_memory_limit: formatBytes(data.memory_limit_bytes),
         formated_disk: formatBytes(data.disk_bytes),
     };
+}
+
+function getReconnectDelay(attempt: number): number {
+    const maxDelay = 30000; // 30 seconds
+    const delay = Math.min(1000 * 2 ** attempt, maxDelay);
+    return delay;
 }

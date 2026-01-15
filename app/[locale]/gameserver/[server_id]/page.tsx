@@ -63,12 +63,14 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         };
 
         return (
-            <ServerLoader
-                serverId={serverId}
-                ptApiKey={ptApiKey}
-                baseUrl={baseUrl}
-                initialServer={initialServer}
-            />
+            <div className="">
+                <ServerLoader
+                    serverId={serverId}
+                    ptApiKey={ptApiKey}
+                    baseUrl={baseUrl}
+                    initialServer={initialServer}
+                />
+            </div>
         );
     } catch (error) {
         return <> Error from pt API {error} </>;

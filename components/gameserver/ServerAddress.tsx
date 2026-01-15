@@ -66,7 +66,7 @@ export function ServerAddress({ address, port, eggId }: ServerAddressProps) {
     // Satisfactory: separate buttons for IP and Port
     if (isSatisfactory) {
         return (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <span className="flex items-center gap-2">
                     <span className="font-medium text-xs text-slate-600 dark:text-slate-400">
                         IP:
@@ -82,6 +82,7 @@ export function ServerAddress({ address, port, eggId }: ServerAddressProps) {
                         {copiedIP ? '✓' : 'Copy'}
                     </button>
                 </span>
+                
                 <span className="flex items-center gap-2">
                     <span className="font-medium text-xs text-slate-600 dark:text-slate-400">
                         Port:
