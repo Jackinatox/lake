@@ -54,6 +54,17 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     try {
         const pt = createPtClient();
         const adminServer = await pt.getServer(isServerValid.ptAdminId.toString());
+        const gameDataFeatures = await prisma.gameDataFeature.findMany({
+            where: {
+                gameDataId: isServerValid.gameDataId,
+            },
+            include: {
+                feature: true,
+            },
+        });
+
+        // Extract just the EggFeature objects
+        const features = gameDataFeatures.map((gdf) => gdf.feature);
 
         const initialServer = {
             egg_id: adminServer.egg,
@@ -69,6 +80,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
                     ptApiKey={ptApiKey}
                     baseUrl={baseUrl}
                     initialServer={initialServer}
+                    features={features}
                 />
             </div>
         );

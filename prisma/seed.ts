@@ -10,6 +10,11 @@ import {
     FREE_TIER_RAM_MB,
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
+    FREE_SERVERS_LOCATION_ID,
+    FREE_TIER_MAX_SERVERS,
+    EGG_FEATURE_MINECRAFT_EULA,
+    EGG_FEATURE_JAVA_VERSION,
+    EGG_FEATURE_HYTALE_OAUTH,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -33,6 +38,16 @@ async function main() {
         },
     });
 
+    await prisma.gameData.create({
+        data: {
+            name: 'Factorio',
+            data: JSON.parse(
+                '{"eggId": 22, "versions": [{"branch": "experimental", "version": "2.0.71"}, {"branch": "experimental", "version": "2.0.70"}, {"branch": "stable", "version": "2.0.69"}, {"branch": "experimental", "version": "2.0.68"}, {"branch": "experimental", "version": "2.0.67"}, {"branch": "stable", "version": "2.0.66"}, {"branch": "experimental", "version": "2.0.65"}, {"branch": "experimental", "version": "2.0.64"}, {"branch": "experimental", "version": "2.0.63"}, {"branch": "experimental", "version": "2.0.62"}, {"branch": "experimental", "version": "2.0.61"}, {"branch": "stable", "version": "2.0.60"}, {"branch": "experimental", "version": "2.0.59"}, {"branch": "experimental", "version": "2.0.58"}, {"branch": "experimental", "version": "2.0.57"}, {"branch": "experimental", "version": "2.0.56"}, {"branch": "stable", "version": "2.0.55"}, {"branch": "experimental", "version": "2.0.54"}, {"branch": "experimental", "version": "2.0.53"}, {"branch": "experimental", "version": "2.0.52"}, {"branch": "experimental", "version": "2.0.51"}, {"branch": "experimental", "version": "2.0.50"}, {"branch": "experimental", "version": "2.0.49"}, {"branch": "experimental", "version": "2.0.48"}, {"branch": "stable", "version": "2.0.47"}, {"branch": "experimental", "version": "2.0.46"}, {"branch": "experimental", "version": "2.0.45"}, {"branch": "experimental", "version": "2.0.44"}, {"branch": "stable", "version": "2.0.43"}, {"branch": "stable", "version": "2.0.42"}, {"branch": "stable", "version": "2.0.41"}, {"branch": "experimental", "version": "2.0.40"}, {"branch": "stable", "version": "2.0.39"}, {"branch": "experimental", "version": "2.0.38"}, {"branch": "experimental", "version": "2.0.37"}, {"branch": "experimental", "version": "2.0.36"}, {"branch": "experimental", "version": "2.0.35"}, {"branch": "experimental", "version": "2.0.34"}, {"branch": "experimental", "version": "2.0.33"}, {"branch": "stable", "version": "2.0.32"}, {"branch": "experimental", "version": "2.0.31"}, {"branch": "stable", "version": "2.0.30"}, {"branch": "experimental", "version": "2.0.29"}, {"branch": "stable", "version": "2.0.28"}, {"branch": "experimental", "version": "2.0.27"}, {"branch": "experimental", "version": "2.0.26"}, {"branch": "experimental", "version": "2.0.25"}, {"branch": "experimental", "version": "2.0.24"}, {"branch": "stable", "version": "2.0.23"}, {"branch": "experimental", "version": "2.0.22"}, {"branch": "stable", "version": "2.0.21"}, {"branch": "stable", "version": "2.0.20"}, {"branch": "experimental", "version": "2.0.19"}, {"branch": "experimental", "version": "2.0.18"}, {"branch": "experimental", "version": "2.0.17"}, {"branch": "experimental", "version": "2.0.16"}, {"branch": "stable", "version": "2.0.15"}, {"branch": "stable", "version": "2.0.14"}, {"branch": "stable", "version": "2.0.13"}, {"branch": "stable", "version": "2.0.12"}, {"branch": "stable", "version": "2.0.11"}, {"branch": "stable", "version": "2.0.10"}, {"branch": "stable", "version": "2.0.9"}, {"branch": "stable", "version": "2.0.8"}, {"branch": "stable", "version": "2.0.7"}, {"branch": "stable", "version": "1.1.110"}, {"branch": "stable", "version": "1.1.109"}, {"branch": "experimental", "version": "1.1.108"}, {"branch": "stable", "version": "1.1.107"}, {"branch": "experimental", "version": "1.1.106"}, {"branch": "experimental", "version": "1.1.105"}, {"branch": "stable", "version": "1.1.104"}, {"branch": "experimental", "version": "1.1.103"}, {"branch": "experimental", "version": "1.1.102"}, {"branch": "stable", "version": "1.1.101"}, {"branch": "stable", "version": "1.1.100"}, {"branch": "experimental", "version": "1.1.99"}, {"branch": "experimental", "version": "1.1.98"}, {"branch": "experimental", "version": "1.1.97"}, {"branch": "experimental", "version": "1.1.96"}, {"branch": "experimental", "version": "1.1.95"}, {"branch": "stable", "version": "1.1.94"}, {"branch": "experimental", "version": "1.1.93"}, {"branch": "experimental", "version": "1.1.92"}, {"branch": "stable", "version": "1.1.91"}, {"branch": "experimental", "version": "1.1.90"}, {"branch": "experimental", "version": "1.1.89"}, {"branch": "experimental", "version": "1.1.88"}, {"branch": "stable", "version": "1.1.87"}, {"branch": "experimental", "version": "1.1.86"}, {"branch": "stable", "version": "1.1.69"}, {"branch": "stable", "version": "1.1.60"}, {"branch": "stable", "version": "1.1.59"}, {"branch": "stable", "version": "1.1.58"}, {"branch": "stable", "version": "1.1.57"}, {"branch": "stable", "version": "1.0.0"}, {"branch": "stable", "version": "0.17.79"}, {"branch": "stable", "version": "0.16.51"}, {"branch": "stable", "version": "0.15.40"}, {"branch": "stable", "version": "0.15.36"}, {"branch": "stable", "version": "0.14.23"}, {"branch": "stable", "version": "0.13.20"}, {"branch": "stable", "version": "0.12.35"}, {"branch": "stable", "version": "0.11.22"}, {"branch": "stable", "version": "0.10.12"}, {"branch": "stable", "version": "0.9.8"}, {"branch": "stable", "version": "0.8.8"}, {"branch": "stable", "version": "0.7.5"}, {"branch": "stable", "version": "0.6.4"}], "dockerImage": "ghcr.io/ptero-eggs/yolks:debian"}',
+            ),
+            enabled: false,
+        },
+    });
+
     const cpu1 = await prisma.cPU.create({
         data: {
             name: 'R9-5900X',
@@ -49,6 +64,19 @@ async function main() {
     const cpu2 = await prisma.cPU.create({
         data: {
             name: 'R5-7600',
+            cores: 6,
+            threads: 12,
+            singleScore: 100,
+            multiScore: 1000,
+            maxThreads: 10,
+            minThreads: 1,
+            pricePerCore: 85,
+        },
+    });
+
+    const cpu3 = await prisma.cPU.create({
+        data: {
+            name: 'Proliant',
             cores: 6,
             threads: 12,
             singleScore: 100,
@@ -91,6 +119,7 @@ async function main() {
             ram: { connect: { id: ram1.id } },
         },
     });
+
     await prisma.location.create({
         data: {
             name: 'Besser - Ryzen 5 7600',
@@ -104,86 +133,102 @@ async function main() {
         },
     });
 
+    await prisma.location.create({
+        data: {
+            name: 'Free - Proliant',
+            diskPrice: 0.5,
+            portsLimit: 3,
+            backupsLimit: 16,
+            enabled: true,
+            ptLocationId: 1,
+            freeServer: true,
+            cpu: { connect: { id: cpu3.id } },
+            ram: { connect: { id: ram2.id } },
+        },
+    });
+
     // Legal Content Keys
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_IMPRESSUM_DE,
-            string: '# Impressum\n\nBitte fügen Sie hier Ihre Impressum-Informationen ein.',
-            note: 'German Impressum (legal imprint) content',
-        },
+    await prisma.keyValue.createMany({
+        data: [
+            {
+                key: LEGAL_IMPRESSUM_DE,
+                string: '# Impressum\n\nBitte fügen Sie hier Ihre Impressum-Informationen ein.',
+                note: 'German Impressum (legal imprint) content',
+            },
+            {
+                key: LEGAL_IMPRESSUM_EN,
+                string: '# Imprint\n\nPlease add your imprint information here.',
+                note: 'English Imprint (legal imprint) content',
+            },
+            {
+                key: LEGAL_AGB_DE,
+                string: '# Allgemeine Geschäftsbedingungen\n\nBitte fügen Sie hier Ihre AGB ein.',
+                note: 'German Terms and Conditions (AGB) content',
+            },
+            {
+                key: LEGAL_AGB_EN,
+                string: '# Terms and Conditions\n\nPlease add your terms and conditions here.',
+                note: 'English Terms and Conditions content',
+            },
+            {
+                key: LEGAL_DATENSCHUTZ_DE,
+                string: '# Datenschutzerklärung\n\nBitte fügen Sie hier Ihre Datenschutzerklärung ein.',
+                note: 'German Privacy Policy (Datenschutz) content',
+            },
+            {
+                key: LEGAL_DATENSCHUTZ_EN,
+                string: '# Privacy Policy\n\nPlease add your privacy policy here.',
+                note: 'English Privacy Policy content',
+            },
+            {
+                key: FREE_TIER_CPU_PERCENT,
+                number: 200,
+                note: 'CPU allocation for free tier servers',
+            },
+            {
+                key: FREE_TIER_RAM_MB,
+                number: 2048,
+                note: 'RAM allocation for free tier servers',
+            },
+            {
+                key: FREE_TIER_STORAGE_MB,
+                number: 10240,
+                note: 'Storage allocation for free tier servers',
+            },
+            {
+                key: FREE_TIER_DURATION_DAYS,
+                number: 7,
+                note: 'Duration for free tier servers',
+            },
+            {
+                key: FREE_SERVERS_LOCATION_ID,
+                number: 3,
+                note: 'Location ID for free tier servers in this Database, not Pterodactyl -  maybe this is useless',
+            },
+            {
+                key: FREE_TIER_MAX_SERVERS,
+                number: 10,
+                note: 'Maximum number of free tier servers',
+            },
+        ],
+        skipDuplicates: true,
     });
 
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_IMPRESSUM_EN,
-            string: '# Imprint\n\nPlease add your imprint information here.',
-            note: 'English Imprint (legal imprint) content',
-        },
+    await prisma.eggFeature.createMany({
+        data: [
+            { name: EGG_FEATURE_MINECRAFT_EULA },
+            { name: EGG_FEATURE_JAVA_VERSION },
+            { name: EGG_FEATURE_HYTALE_OAUTH },
+        ],
     });
 
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_AGB_DE,
-            string: '# Allgemeine Geschäftsbedingungen\n\nBitte fügen Sie hier Ihre AGB ein.',
-            note: 'German Terms and Conditions (AGB) content',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_AGB_EN,
-            string: '# Terms and Conditions\n\nPlease add your terms and conditions here.',
-            note: 'English Terms and Conditions content',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_DATENSCHUTZ_DE,
-            string: '# Datenschutzerklärung\n\nBitte fügen Sie hier Ihre Datenschutzerklärung ein.',
-            note: 'German Privacy Policy (Datenschutz) content',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: LEGAL_DATENSCHUTZ_EN,
-            string: '# Privacy Policy\n\nPlease add your privacy policy here.',
-            note: 'English Privacy Policy content',
-        },
-    });
-
-    // Free Tier Configuration
-    await prisma.keyValue.create({
-        data: {
-            key: FREE_TIER_CPU_PERCENT,
-            number: 200,
-            note: 'CPU allocation for free tier servers',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: FREE_TIER_RAM_MB,
-            number: 2048,
-            note: 'RAM allocation for free tier servers',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: FREE_TIER_STORAGE_MB,
-            number: 10240,
-            note: 'Storage allocation for free tier servers',
-        },
-    });
-
-    await prisma.keyValue.create({
-        data: {
-            key: FREE_TIER_DURATION_DAYS,
-            number: 7,
-            note: 'Duration for free tier servers',
-        },
+    await prisma.gameDataFeature.createMany({
+        data: [
+            {
+                featureId: 1,
+                gameDataId: 1,
+            },
+        ],
     });
 }
 

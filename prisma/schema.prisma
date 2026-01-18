@@ -22,7 +22,8 @@ model GameData {
 
   GameServer GameServer[]
 
-  ServerOrder GameServerOrder[]
+  ServerOrder      GameServerOrder[]
+  gameDataFeatures GameDataFeature[]
 }
 
 model Location {
@@ -166,7 +167,6 @@ enum OrderStatus {
   PAYMENT_FAILED // Stripe weebhook said order failed   
   EXPIRED // Just to keep the entry, i dont know why yet
 }
-
 
 enum OrderType {
   NEW
@@ -473,4 +473,20 @@ model TwoFactor {
   @@index([secret])
   @@index([userId])
   @@map("twoFactor")
+}
+
+model EggFeature {
+  id               Int               @id @default(autoincrement())
+  name             String
+  gameDataFeatures GameDataFeature[]
+}
+
+model GameDataFeature {
+  gameDataId Int
+  gameData   GameData   @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+  featureId  Int
+  feature    EggFeature @relation(fields: [featureId], references: [id], onDelete: Restrict)
+
+  @@id([gameDataId, featureId])
+  @@index([gameDataId])
 }

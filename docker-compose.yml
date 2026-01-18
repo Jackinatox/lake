@@ -24,7 +24,7 @@ services:
 
     valkey:
         container_name: valkey
-        restart: unless-stopped
+        restart: always
         environment:
             - VALKEY_EXTRA_FLAGS=--save 60 1 --loglevel warning
         image: valkey/valkey

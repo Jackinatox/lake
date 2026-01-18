@@ -547,6 +547,7 @@ function getConnectionManager(
 interface WebSocketContextValue {
     manager: ServerConnectionManager;
     serverId: string;
+    apiKey: string;
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
@@ -586,7 +587,7 @@ export function WebSocketProvider({
         };
     }, [manager]);
 
-    const value = useMemo(() => ({ manager, serverId }), [manager, serverId]);
+    const value = useMemo(() => ({ manager, serverId, apiKey }), [manager, serverId, apiKey]);
 
     return <WebSocketContext.Provider value={value}>{children}</WebSocketContext.Provider>;
 }
@@ -601,4 +602,9 @@ export function useWebSocketContext(): WebSocketContextValue {
         throw new Error('useWebSocketContext must be used within a WebSocketProvider');
     }
     return context;
+}
+
+export function useCreds() {
+    const context = useWebSocketContext();
+    return { serverId: context.serverId, apiKey: context.apiKey };
 }

@@ -46,6 +46,8 @@ export default function HytaleOauthFeature() {
 
     const handleLogin = useCallback(() => {
         if (oauthUrl) {
+            // TODO: Implement proper OAuth redirect/handling
+            // For now, open in new tab
             window.open(oauthUrl, '_blank', 'noopener,noreferrer');
             setVisible(false);
             setOauthUrl('');

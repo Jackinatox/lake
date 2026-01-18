@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
+import { EggFeature } from '@/app/client/generated/browser';
 
 interface ServerLoaderProps {
     serverId: string;
@@ -19,6 +20,7 @@ interface ServerLoaderProps {
         gameData: any;
         type: GameServerType;
     };
+    features: EggFeature[];
 }
 
 export default function ServerLoader({
@@ -26,6 +28,7 @@ export default function ServerLoader({
     ptApiKey,
     baseUrl,
     initialServer,
+    features,
 }: ServerLoaderProps) {
     const [server, setServer] = useState<GameServer | null>(null);
     const [isInstalling, setIsInstalling] = useState(false);
@@ -233,7 +236,7 @@ export default function ServerLoader({
 
     return (
         <div className="max-w-screen-2xl mx-auto">
-            <GameDashboard server={server} ptApiKey={ptApiKey} />
+            <GameDashboard server={server} ptApiKey={ptApiKey} features={features} />
         </div>
     );
 }

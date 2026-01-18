@@ -37,3 +37,8 @@ export const FTP_PASSWORD_MAX_LENGTH = 64;
 
 export const MAX_EDITABLE_FILE_SIZE = 2 * 1024 * 1024;
 export const MAX_EDITABLE_FILE_SIZE_LABEL = '2 MB';
+
+// Egg Features
+export const EGG_FEATURE_MINECRAFT_EULA = 'Minecraft Eula';
+export const EGG_FEATURE_JAVA_VERSION = 'Java Version';
+export const EGG_FEATURE_HYTALE_OAUTH = 'HytaleOAuth';

@@ -119,7 +119,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                             </span>
                             <span className="flex items-center gap-1">
                                 <HardDrive className="w-4 h-4 text-green-500" />
-                                <span>{server.diskMB / 1024} GB</span>
+                                <span>{server.diskMB} GB</span>
                             </span>
                         </div>
                     </div>

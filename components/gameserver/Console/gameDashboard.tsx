@@ -22,7 +22,6 @@ import {
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useRef, useState, useEffect } from 'react';
-import EulaDialog from '../EulaDialog';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import FileManager from '../FileManager/FileManager';
 import { TabsComponent } from '../GameserverTabs';
@@ -47,21 +46,23 @@ import {
     useInitialContentLoaded,
 } from '@/hooks/useServerWebSocket';
 import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
-import HytaleOauthFeature from '@/components/gameserver/features/HytaleOauthFeature';
+import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
+import { EggFeature } from '@/app/client/generated/browser';
 
 interface serverProps {
     server: GameServer;
     ptApiKey: string;
+    features: EggFeature[];
 }
 
 /**
  * GameDashboard - Wrapper component that provides WebSocket context
  */
-function GameDashboard({ server, ptApiKey }: serverProps) {
+function GameDashboard({ server, ptApiKey, features }: serverProps) {
     return (
         <WebSocketProvider serverId={server.identifier} apiKey={ptApiKey} debug>
-            <GameDashboardContent server={server} ptApiKey={ptApiKey} />
-            <HytaleOauthFeature />
+            <GameDashboardContent server={server} ptApiKey={ptApiKey} features={features} />
+            <DynamicFeatures features={features} />
         </WebSocketProvider>
     );
 }
@@ -69,7 +70,7 @@ function GameDashboard({ server, ptApiKey }: serverProps) {
 /**
  * GameDashboardContent - Inner component that consumes WebSocket context via hooks
  */
-function GameDashboardContent({ server, ptApiKey }: serverProps) {
+function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     const isMobile = useIsMobile();
 
     // WebSocket hooks - replacing the old useWebSocket hook
@@ -80,18 +81,12 @@ function GameDashboardContent({ server, ptApiKey }: serverProps) {
     const initialContentLoaded = useInitialContentLoaded();
     const { sendCommand, sendPowerAction } = useSendCommand();
 
-    const [eulaOpen, setEulaOpen] = useState(false);
     const searchParams = useSearchParams();
     const autoStart = useRef(searchParams.get('start') === 'true');
     const router = useRouter();
     const t = useTranslations();
 
     const pathname = usePathname();
-
-    // Listen for EULA custom event
-    useCustomEvent('EULA', () => {
-        setEulaOpen(true);
-    });
 
     const defAlloc = server.relationships.allocations.data.find(
         (alloc: any) => alloc.attributes.is_default,
@@ -106,10 +101,6 @@ function GameDashboardContent({ server, ptApiKey }: serverProps) {
         if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
         if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
         return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
-    };
-
-    const handleAcceptEula = async () => {
-        //TODO: Write EULA file to server filesystem
     };
 
     // Wrapper functions for power actions
@@ -331,14 +322,13 @@ function GameDashboardContent({ server, ptApiKey }: serverProps) {
 
     return (
         <TooltipProvider>
-            <EulaDialog isOpen={eulaOpen} onAcceptEula={handleAcceptEula} setOpen={setEulaOpen} />
             <div className="space-y-3">
                 {/* Connection Status Banner - shows when disconnected/reconnecting */}
                 <ConnectionStatusBanner />
 
                 {/* Sticky Header Bar */}
                 <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-                    <CardContent className="py-2 px-1 md:px-3">
+                    <CardContent className="py-1 px-1 md:py-2 md:px-5">
                         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             {/* Left: Server Name + Status */}
                             <div className="flex items-center gap-3">

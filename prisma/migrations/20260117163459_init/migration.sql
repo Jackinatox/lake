@@ -320,6 +320,22 @@ CREATE TABLE "twoFactor" (
     CONSTRAINT "twoFactor_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "EggFeature" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "EggFeature_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "GameDataFeature" (
+    "gameDataId" INTEGER NOT NULL,
+    "featureId" INTEGER NOT NULL,
+
+    CONSTRAINT "GameDataFeature_pkey" PRIMARY KEY ("gameDataId","featureId")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "GameServerOrder_stripeSessionId_key" ON "GameServerOrder"("stripeSessionId");
 
@@ -404,6 +420,9 @@ CREATE INDEX "twoFactor_secret_idx" ON "twoFactor"("secret");
 -- CreateIndex
 CREATE INDEX "twoFactor_userId_idx" ON "twoFactor"("userId");
 
+-- CreateIndex
+CREATE INDEX "GameDataFeature_gameDataId_idx" ON "GameDataFeature"("gameDataId");
+
 -- AddForeignKey
 ALTER TABLE "Location" ADD CONSTRAINT "Location_cpuId_fkey" FOREIGN KEY ("cpuId") REFERENCES "CPU"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -460,3 +479,9 @@ ALTER TABLE "Package" ADD CONSTRAINT "Package_locationId_fkey" FOREIGN KEY ("loc
 
 -- AddForeignKey
 ALTER TABLE "twoFactor" ADD CONSTRAINT "twoFactor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "GameDataFeature" ADD CONSTRAINT "GameDataFeature_gameDataId_fkey" FOREIGN KEY ("gameDataId") REFERENCES "GameData"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "GameDataFeature" ADD CONSTRAINT "GameDataFeature_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "EggFeature"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
