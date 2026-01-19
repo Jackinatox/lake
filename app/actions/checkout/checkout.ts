@@ -369,6 +369,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     if (!userAllowed) {
         throw new Error('Maximale Anzahl kostenloser Server erreicht');
     }
+    
 
     const order = await prisma.gameServerOrder.create({
         data: {

@@ -45,6 +45,7 @@
         "@tsmx/human-readable": "^2.0.4",
         "@xterm/addon-fit": "^0.10.0",
         "@xterm/xterm": "^5.5.0",
+        "ansi-to-react": "^6.1.6",
         "autoprefixer": "^10.4.23",
         "better-auth": "^1.4.7",
         "class-variance-authority": "^0.7.1",

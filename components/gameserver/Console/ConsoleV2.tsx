@@ -1,183 +1,193 @@
 'use client';
 
-import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import '@xterm/xterm/css/xterm.css'; // Import CSS statically (safe for SSR)
-// Remove top-level xterm JS imports to avoid SSR issues
-// import { Terminal } from "@xterm/xterm"
-// import { FitAddon } from "@xterm/addon-fit"
+import { useEffect, useRef, useState, useCallback, KeyboardEvent } from 'react';
+import { Send, Terminal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ConsoleV2Props {
     logs: string[];
     handleCommand: (command: string) => void;
+    disabled?: boolean;
 }
 
-const ConsoleV2 = ({ handleCommand, logs }: ConsoleV2Props) => {
-    // Reference to the container for xterm
-    const terminalRef = useRef<HTMLDivElement>(null);
-    const lastLogRef = useRef<string[]>([]);
-
-    // State for terminal and fitAddon, initialized after dynamic import
-    const [terminal, setTerminal] = useState<any>(null);
-    const [fitAddon, setFitAddon] = useState<any>(null);
-
-    // Command history state for arrow-key navigation
+const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) => {
+    const [inputValue, setInputValue] = useState('');
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
+    const [tempInput, setTempInput] = useState(''); // Store current input when navigating history
+    const [isAtBottom, setIsAtBottom] = useState(true);
 
-    // Dynamically import xterm and FitAddon only on client
-    useEffect(() => {
-        let term: any;
-        let fit: any;
-        let isMounted = true;
-        const loadTerminal = async () => {
-            const xtermPkg = await import('@xterm/xterm');
-            const fitPkg = await import('@xterm/addon-fit');
-            term = new xtermPkg.Terminal({
-                cursorBlink: false,
-                fontSize: 14,
-                scrollback: 400,
-                fontFamily: '"Fira Code", monospace',
-                fontWeight: 'normal',
-                lineHeight: 1.2,
-                letterSpacing: 0,
-                allowTransparency: true,
-                theme: {
-                    background: '#1e1e1e',
-                    foreground: '#f0f0f0',
-                    cursor: '#ffffff',
-                    cursorAccent: '#000000',
-                    black: '#000000',
-                    red: '#cd3131',
-                    green: '#0dbc79',
-                    yellow: '#e5e510',
-                    blue: '#2472c8',
-                    magenta: '#bc3fbc',
-                    cyan: '#11a8cd',
-                    white: '#e5e5e5',
-                    brightBlack: '#666666',
-                    brightRed: '#f14c4c',
-                    brightGreen: '#23d18b',
-                    brightYellow: '#f5f543',
-                    brightBlue: '#3b8eea',
-                    brightMagenta: '#d670d6',
-                    brightCyan: '#29b8db',
-                    brightWhite: '#e5e5e5',
-                },
-            });
-            fit = new fitPkg.FitAddon();
-            if (isMounted) {
-                setTerminal(term);
-                setFitAddon(fit);
-            }
-        };
-        loadTerminal();
-        return () => {
-            isMounted = false;
-            if (term) term.dispose();
-        };
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Check if user is scrolled to bottom (with small threshold for tolerance)
+    const checkIfAtBottom = useCallback(() => {
+        const container = scrollAreaRef.current;
+        if (!container) return true;
+
+        const threshold = 50; // px tolerance
+        const isBottom =
+            container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+        return isBottom;
     }, []);
 
-    const handleCommandKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        const input = e.currentTarget;
-        // Navigate history: ArrowUp
+    // Handle scroll events to track if user is at bottom
+    const handleScroll = useCallback(() => {
+        setIsAtBottom(checkIfAtBottom());
+    }, [checkIfAtBottom]);
+
+    // Auto-scroll to bottom when new logs arrive, only if already at bottom
+    useEffect(() => {
+        const container = scrollAreaRef.current;
+        if (isAtBottom && container) {
+            // Use scrollTop instead of scrollIntoView to avoid scrolling the whole page
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [logs, isAtBottom]);
+
+    const handleSubmit = useCallback(() => {
+        const trimmedCommand = inputValue.trim();
+        if (!trimmedCommand || disabled) return;
+
+        handleCommand(trimmedCommand);
+
+        // Add to history (avoid duplicates of the last command)
+        setCommandHistory((prev) => {
+            if (prev[prev.length - 1] === trimmedCommand) return prev;
+            return [...prev, trimmedCommand];
+        });
+
+        setInputValue('');
+        setHistoryIndex(-1);
+        setTempInput('');
+    }, [inputValue, handleCommand, disabled]);
+
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        // Don't intercept Ctrl+C - let the browser handle copy
+        if (e.ctrlKey && e.key === 'c') {
+            return;
+        }
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit();
+            return;
+        }
+
         if (e.key === 'ArrowUp') {
-            const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
-            setHistoryIndex(newIndex);
-            input.value = commandHistory[newIndex] || '';
             e.preventDefault();
+            if (commandHistory.length === 0) return;
+
+            if (historyIndex === -1) {
+                // Save current input before navigating
+                setTempInput(inputValue);
+                setHistoryIndex(commandHistory.length - 1);
+                setInputValue(commandHistory[commandHistory.length - 1]);
+            } else if (historyIndex > 0) {
+                setHistoryIndex(historyIndex - 1);
+                setInputValue(commandHistory[historyIndex - 1]);
+            }
+            return;
         }
-        // Navigate history: ArrowDown
+
         if (e.key === 'ArrowDown') {
-            const newIndex = Math.max(historyIndex - 1, -1);
-            setHistoryIndex(newIndex);
-            input.value = commandHistory[newIndex] || '';
             e.preventDefault();
-        }
-        // When Enter is pressed, capture and process the command
-        if (e.key === 'Enter' && input.value.trim().length > 0) {
-            const command = input.value.trim();
-            // Write the command in a bold, colored style (emulating the prelude in the original)
-            //   terminal.write(`\u001b[1m\u001b[33m>`);
-            // Output a custom log message (you can customize this as desired)
-            //   terminal.writeln(`Custom Log: Command received -> ${command}`);
-            handleCommand(command);
-            // terminal.write(`\u001b[0m`);
-            // Update command history (limit to last 32 commands)
-            setCommandHistory((prev) => [command, ...prev].slice(0, 32));
-            setHistoryIndex(-1);
-            // Clear the input for the next command
-            input.value = '';
+            if (historyIndex === -1) return;
+
+            if (historyIndex < commandHistory.length - 1) {
+                setHistoryIndex(historyIndex + 1);
+                setInputValue(commandHistory[historyIndex + 1]);
+            } else {
+                // Return to the temp input
+                setHistoryIndex(-1);
+                setInputValue(tempInput);
+            }
+            return;
         }
     };
 
-    // Initialize and display the terminal once the container is ready
-    useEffect(() => {
-        if (terminal && fitAddon && terminalRef.current) {
-            terminal.loadAddon(fitAddon);
-            terminal.open(terminalRef.current);
-            fitAddon.fit();
+    // Focus input when clicking on console area
+    const handleConsoleClick = () => {
+        if (!disabled) {
+            inputRef.current?.focus();
         }
-    }, [terminal, fitAddon]);
-
-    // Resize terminal on window resize
-    useEffect(() => {
-        if (!fitAddon) return;
-        const handleResize = () => {
-            fitAddon.fit();
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [fitAddon]);
-
-    useEffect(() => {
-        if (!terminal) return;
-        const newLogs = logs.slice(lastLogRef.current.length).filter((log) => log.trim() !== ''); // Get only new logs and filter out empty strings
-        if (newLogs.length > 0) {
-            newLogs.forEach((log) => terminal.writeln(log)); // Append each log entry
-            lastLogRef.current = logs; // Update the last known log state
-        }
-    }, [logs, terminal]);
+    };
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="flex flex-col h-full rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
+            {/* Terminal Header */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border-b border-zinc-800">
+                <Terminal className="h-4 w-4 text-emerald-500" />
+                <span className="text-xs font-medium text-zinc-400">Console</span>
+                <div className="ml-auto flex items-center gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+                    <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
+                    <div
+                        className={cn(
+                            'h-2.5 w-2.5 rounded-full',
+                            disabled ? 'bg-zinc-600' : 'bg-emerald-500/80',
+                        )}
+                    />
+                </div>
+            </div>
+
+            {/* Log Output Area */}
             <div
-                ref={terminalRef}
-                style={{
-                    flex: 1,
-                    minHeight: 0,
-                    height: '400px', // Set a fixed or max height as needed
-                    width: '100%',
-                    backgroundColor: '#1e1e1e',
-                    padding: '10px',
-                    borderTopRightRadius: '5px',
-                    borderTopLeftRadius: '5px',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    overflow: 'hidden', // Prevent scrolling inside the terminal
-                }}
-                onWheel={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }}
-            />
-            <input
-                type="text"
-                placeholder="Type a command..."
-                onKeyDown={handleCommandKeyDown}
-                style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '16px',
-                    backgroundColor: '#2a2a2a',
-                    color: '#f0f0f0',
-                    border: 'none',
-                    borderTop: '1px solid #3a3a3a',
-                    outline: 'none',
-                    fontFamily: '"Fira Code", monospace',
-                    borderBottomRightRadius: '5px',
-                    borderBottomLeftRadius: '5px',
-                }}
-            />
+                ref={scrollAreaRef}
+                onClick={handleConsoleClick}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text min-h-50 max-h-75 md:max-h-100"
+            >
+                {logs.length === 0 ? (
+                    <div className="text-zinc-600 italic">No output yet...</div>
+                ) : (
+                    logs.map((log, index) => (
+                        <div
+                            key={index}
+                            className="text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text"
+                        >
+                            {log}
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Input Area */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/50 border-t border-zinc-800">
+                <span className="text-emerald-500 font-mono text-sm select-none">&gt;</span>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => {
+                        setInputValue(e.target.value);
+                        // Reset history navigation when user types
+                        if (historyIndex !== -1) {
+                            setHistoryIndex(-1);
+                            setTempInput('');
+                        }
+                    }}
+                    onKeyDown={handleKeyDown}
+                    disabled={disabled}
+                    placeholder={disabled ? 'Console disabled...' : 'Enter command...'}
+                    className={cn(
+                        'flex-1 bg-transparent border-none outline-none font-mono text-sm text-zinc-200 placeholder:text-zinc-600',
+                        disabled && 'cursor-not-allowed opacity-50',
+                    )}
+                    autoComplete="off"
+                    spellCheck={false}
+                />
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={handleSubmit}
+                    disabled={disabled || !inputValue.trim()}
+                    className="h-7 w-7 text-zinc-400 hover:text-emerald-500 hover:bg-zinc-800"
+                >
+                    <Send className="h-3.5 w-3.5" />
+                </Button>
+            </div>
         </div>
     );
 };

@@ -309,8 +309,12 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     // Console component - now full width in tab content
     const ConsoleComponent = (
         <Card className="border-0 shadow-sm min-h-72 w-full min-w-0 p-0">
-            <CardContent className="p-0 md:p-4">
-                <ConsoleV2 logs={consoleOutput} handleCommand={handleCommand} />
+            <CardContent className="p-0 md:p-2">
+                <ConsoleV2
+                    logs={consoleOutput}
+                    handleCommand={handleCommand}
+                    disabled={!isConnected}
+                />
             </CardContent>
         </Card>
     );
@@ -328,28 +332,11 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
 
                 {/* Sticky Header Bar */}
                 <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-                    <CardContent className="py-1 px-1 md:py-2 md:px-5">
+                    <CardContent className="py-1 px-1 md:py-2 md:px-2">
                         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                             {/* Left: Server Name + Status */}
                             <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-2">
-                                    {/* Status indicator with pulse when online */}
-                                    {/* <div className="relative">
-                                         TODO: Implement transitioning 
-                                        Websocket state TODO: only show when disconnected 
-                                        <div
-                                            className={`h-3 w-3 rounded-full ${
-                                                wsState === 'OPEN'
-                                                    ? 'bg-emerald-500'
-                                                    : wsState === 'CONNECTING'
-                                                      ? 'bg-amber-500'
-                                                      : 'bg-slate-400'
-                                            }`}
-                                        />
-                                        {serverStatus === 'running' && (
-                                            <div className="absolute inset-0 h-3 w-3 animate-ping rounded-full bg-emerald-500 opacity-75" />
-                                        )}
-                                    </div> */}
                                     <h1 className="text-base font-bold truncate md:max-w-none">
                                         {server.name}
                                     </h1>
@@ -368,7 +355,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                                     <GameInfo server={server} apiKey={ptApiKey} />
                                 </div>
                                 {address && port ? (
-                                    <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-md border">
+                                    <div className="flex items-center gap-2 pl-2 px-1 py-1 bg-muted/50 rounded-md border">
                                         <ServerAddress
                                             address={address}
                                             port={port}
