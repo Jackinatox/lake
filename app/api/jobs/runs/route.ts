@@ -16,11 +16,11 @@ export async function GET() {
 
     try {
         // Fetch recent job runs from database using JobRun table
-        const runs = await (prisma as any).jobRun.findMany({
+        const runs = await prisma.jobRun.findMany({
+            distinct: ['jobType'],
             orderBy: {
                 startedAt: 'desc',
             },
-            take: 50, // Get last 50 runs
         });
 
         return NextResponse.json({
@@ -40,8 +40,11 @@ export async function GET() {
     } catch (error) {
         console.error('Failed to fetch job runs from database:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch job runs', details: error instanceof Error ? error.message : 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'Failed to fetch job runs',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 },
         );
     }
 }

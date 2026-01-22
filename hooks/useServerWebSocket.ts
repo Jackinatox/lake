@@ -59,7 +59,7 @@ export function useConnectionState(): ConnectionState {
 
 export function useServerStatus(): ServerStatus {
     const { manager } = useWebSocketContext();
-    const [status, setStatus] = useState<ServerStatus>(manager.state.serverStatus);
+    const [status, setStatus] = useState<ServerStatus>(() => manager.state.serverStatus);
 
     useEffect(() => {
         // Sync initial state
@@ -78,12 +78,9 @@ export function useServerStatus(): ServerStatus {
 
 export function useServerStats(): StatsPayload {
     const { manager } = useWebSocketContext();
-    const [stats, setStats] = useState<StatsPayload>(manager.state.stats);
+    const [stats, setStats] = useState<StatsPayload>(() => manager.state.stats);
 
     useEffect(() => {
-        // Sync initial state
-        setStats(manager.state.stats);
-
         const unsubscribe = manager.emitter.addListener('STATS_UPDATE', setStats);
         return unsubscribe;
     }, [manager]);
@@ -209,11 +206,9 @@ export function useSendCommand(): SendCommandActions {
 
 export function useInitialContentLoaded(): boolean {
     const { manager } = useWebSocketContext();
-    const [loaded, setLoaded] = useState(manager.state.initialContentLoaded);
+    const [loaded, setLoaded] = useState(() => manager.state.initialContentLoaded);
 
     useEffect(() => {
-        setLoaded(manager.state.initialContentLoaded);
-
         const unsubscribe = manager.emitter.addListener('AUTH_SUCCESS', () => {
             // Small delay to allow logs to arrive
             setTimeout(() => setLoaded(true), 100);

@@ -21,7 +21,7 @@ export async function GET(
         const { id } = await params;
         
         // Fetch job run with logs from database
-        const jobRun = await (prisma as any).jobRun.findUnique({
+        const jobRun = await prisma.jobRun.findUnique({
             where: { id },
             include: {
                 logs: {

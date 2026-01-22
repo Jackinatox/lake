@@ -23,7 +23,6 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useRef, useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
-import FileManager from '../FileManager/FileManager';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
@@ -48,6 +47,7 @@ import {
 import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
 import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
 import { EggFeature } from '@/app/client/generated/browser';
+import dynamic from 'next/dynamic';
 
 interface serverProps {
     server: GameServer;
@@ -466,7 +466,9 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                     <div className="w-full md:col-span-8 min-w-0">
                         <TabsComponent
                             consoleComponent={ConsoleComponent}
-                            fileManagerComponent={<FileManager server={server} apiKey={ptApiKey} />}
+                            fileManagerComponent={
+                                <LazyFileManager server={server} apiKey={ptApiKey} />
+                            }
                             backupManagerComponent={
                                 <BackupManager server={server} apiKey={ptApiKey} />
                             }
@@ -487,5 +489,18 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
         </TooltipProvider>
     );
 }
+
+const LazyFileManager = dynamic(() => import('../FileManager/FileManager'), {
+    loading: () => (
+        <div
+            role="status"
+            aria-busy="true"
+            className="p-4 w-full border rounded-md shadow-sm bg-background/50 animate-pulse"
+        >
+            <div className="text-sm text-muted-foreground">Loading file manager…</div>
+        </div>
+    ),
+    ssr: false
+});
 
 export default GameDashboard;

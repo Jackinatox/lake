@@ -49,3 +49,5 @@ lgtm/
 generated/
 dist/
 prismaTesting.ts
+.agents/skills/*
+.github/skills/*
