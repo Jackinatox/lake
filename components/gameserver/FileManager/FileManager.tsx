@@ -225,7 +225,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 setLoading(false);
             }
         },
-        [apiKey, canInteract, server, toast],
+        [apiKey, canInteract, server.identifier, t, toast],
     );
 
     useEffect(() => {

@@ -62,7 +62,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
     const displayData = useMemo(() => {
         if (data.length === 0) return [];
 
-        const now = Date.now() / 1000;
+        const now = new Date().getTime() / 1000;
         const fiveMinAgo = now - FIVE_MINUTES;
 
         const result: DataPoint[] = [];

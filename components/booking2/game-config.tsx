@@ -7,7 +7,8 @@ import type { Game, GameConfig } from '@/models/config';
 import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
 import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
 import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
-import { FactorioGameId } from '@/app/GlobalConstants';
+import { FactorioGameId, HytaleGameId, MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
+import { HytaleConfigComponent } from './GameInstallConfig/HytaleConfig';
 
 interface GameConfigProps {
     game: Game;
@@ -16,7 +17,7 @@ interface GameConfigProps {
 }
 
 export const GameConfigComponent = forwardRef(
-    ({ game, onSubmit, fullWidth = false }: GameConfigProps, ref) => {
+    function GameConfigComponent({ game, onSubmit, fullWidth = false }: GameConfigProps, ref) {
         const t = useTranslations('buyGameServer.gameConfig');
         const configRef = useRef<any>(null);
 
@@ -32,7 +33,7 @@ export const GameConfigComponent = forwardRef(
             <div className="w-full">
                 {(() => {
                     switch (game.id) {
-                        case 1: // Minecraft
+                        case MinecraftGameId: // Minecraft
                             return (
                                 <MinecraftConfigComponent
                                     ref={configRef}
@@ -40,7 +41,7 @@ export const GameConfigComponent = forwardRef(
                                     game={game}
                                 />
                             );
-                        case 2: // Satisfactory
+                        case SatisfactoryGameId: // Satisfactory
                             return (
                                 <SatisfactoryConfigComponent
                                     ref={configRef}
@@ -51,6 +52,14 @@ export const GameConfigComponent = forwardRef(
                         case FactorioGameId: // Factorio
                             return (
                                 <FactorioConfigComponent
+                                    ref={configRef}
+                                    onSubmit={onSubmit}
+                                    game={game}
+                                />
+                            );
+                        case HytaleGameId: // Hytale
+                            return (
+                                <HytaleConfigComponent
                                     ref={configRef}
                                     onSubmit={onSubmit}
                                     game={game}

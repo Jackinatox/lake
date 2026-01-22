@@ -14,8 +14,7 @@ interface TerrariaConfigProps {
     onChange: (config: Record<string, any>) => void;
 }
 
-export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
-    const [config, setConfig] = useState({
+const defConfig = {
         serverName: 'My Terraria Server',
         maxPlayers: 8,
         worldSize: 'medium',
@@ -25,7 +24,10 @@ export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
         banlistEnabled: true,
         seed: '',
         password: '',
-    });
+    }
+    
+export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
+    const [config, setConfig] = useState(defConfig);
 
     const handleChange = (key: string, value: any) => {
         const newConfig = { ...config, [key]: value };

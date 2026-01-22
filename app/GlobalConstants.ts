@@ -11,6 +11,7 @@ export const FactorioEggId = 22;
 export const MinecraftGameId = 1;
 export const SatisfactoryGameId = 2;
 export const FactorioGameId = 3;
+export const HytaleGameId = 4;
 
 // Legal Content Keys
 export const LEGAL_IMPRESSUM_DE = 'legal_impressum_de';

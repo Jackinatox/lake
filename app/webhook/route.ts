@@ -16,14 +16,28 @@ export async function POST(req: NextRequest) {
 
     const signature = req.headers.get('stripe-signature');
     if (!signature) {
+        logger.error('Missing stripe-signature header', 'PAYMENT_LOG');
         throw new Error('Missing signature header');
     }
 
+    logger.info('Webhook request received', 'PAYMENT_LOG', {
+        details: {
+            bodyLength: body.length,
+            hasSignature: !!signature,
+            secretPrefix: endpointSecret.substring(0, 7), // Log first 7 chars to verify it's the right type
+        },
+    });
+
     try {
         event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
-        console.log(`Webhook event: ${event}`);
+        logger.info(`Webhook event: ${event}`, 'PAYMENT_LOG', { details: { event: event } });
     } catch (error) {
-        console.error('Webhook signature failed: ', error);
+        logger.error('Webhook signature failed: ', 'PAYMENT_LOG', {
+            details: {
+                error: error,
+                secretType: endpointSecret.startsWith('whsec_') ? 'webhook' : 'unknown',
+            },
+        });
         return new Response('Webhook signature verification failed', {
             status: 400,
         });
@@ -50,7 +64,9 @@ export async function POST(req: NextRequest) {
 
         case 'checkout.session.expired':
             const expiredSession = event.data.object as Stripe.Checkout.Session;
-            console.log(`Session expired: `, expiredSession);
+            logger.info('Session expired', 'PAYMENT_LOG', {
+                details: { session: expiredSession },
+            });
             await prisma.gameServerOrder.updateMany({
                 where: {
                     stripeSessionId: expiredSession.id,

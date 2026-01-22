@@ -8,14 +8,10 @@ import type { Game, GameConfig } from '@/models/config';
 import { SatisfactoryConfig } from '@/models/gameSpecificConfig/SatisfactoryConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
-
-interface SatisfactoryConfigProps {
-    game: Game;
-    onSubmit: (config: GameConfig) => void;
-}
+import { GameConfigProps } from './minecraft-config';
 
 export const SatisfactoryConfigComponent = forwardRef(
-    ({ game, onSubmit }: SatisfactoryConfigProps, ref) => {
+    function SatisfactoryConfigComponent({ game, onSubmit }: GameConfigProps, ref) {
         const t = useTranslations('buyGameServer.gameConfig');
         const [config, setConfig] = useState<SatisfactoryConfig>({
             version: 'release',

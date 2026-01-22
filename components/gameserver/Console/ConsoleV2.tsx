@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback, KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, useCallback, KeyboardEvent, useMemo } from 'react';
 import { Send, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import AnsiToHtml from 'ansi-to-html';
 
 interface ConsoleV2Props {
     logs: string[];
@@ -20,6 +21,19 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
 
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Initialize ANSI to HTML converter
+    const ansiConverter = useMemo(
+        () =>
+            new AnsiToHtml({
+                fg: '#e4e4e7', // zinc-200
+                bg: '#18181b', // zinc-950
+                newline: false,
+                escapeXML: true,
+                stream: false,
+            }),
+        [],
+    );
 
     // Check if user is scrolled to bottom (with small threshold for tolerance)
     const checkIfAtBottom = useCallback(() => {
@@ -146,9 +160,8 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
                         <div
                             key={index}
                             className="text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text"
-                        >
-                            {log}
-                        </div>
+                            dangerouslySetInnerHTML={{ __html: ansiConverter.toHtml(log) }}
+                        />
                     ))
                 )}
             </div>

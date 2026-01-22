@@ -30,11 +30,7 @@ import {
 } from '@/models/gameSpecificConfig/FactorioConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
-
-interface FactorioConfigProps {
-    game: Game;
-    onSubmit: (config: GameConfig) => void;
-}
+import { GameConfigProps } from './minecraft-config';
 
 const DLC_OPTIONS: { id: FactorioDLC; label: string }[] = [
     { id: 'elevated-rails', label: 'Elevated Rails' },
@@ -43,7 +39,7 @@ const DLC_OPTIONS: { id: FactorioDLC; label: string }[] = [
 ];
 
 export const FactorioConfigComponent = forwardRef(
-    ({ game, onSubmit }: FactorioConfigProps, ref) => {
+    function FactorioConfig({ game, onSubmit }: GameConfigProps, ref) {
         const t = useTranslations('buyGameServer.gameConfig');
 
         const [config, setConfig] = useState<FactorioConfig>({

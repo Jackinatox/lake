@@ -51,7 +51,6 @@ export async function GET(
         }
 
         const data: JobStatusResponse = await response.json();
-        console.log(data);
         return NextResponse.json(data);
     } catch (error) {
         console.error('Error fetching job status:', error);

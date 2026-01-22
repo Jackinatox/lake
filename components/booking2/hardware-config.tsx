@@ -28,7 +28,7 @@ interface HardwareConfigProps {
 }
 
 export const HardwareConfigComponent = forwardRef(
-    ({ initialConfig, performanceOptions, onNext, onPriceChange }: HardwareConfigProps, ref) => {
+    function HardwareConfig({ initialConfig, performanceOptions, onNext, onPriceChange }: HardwareConfigProps, ref) {
         const t = useTranslations('buyGameServer.hardware');
         const tp = useTranslations('buyGameServer.hardware.price');
         const tl = useTranslations('buyGameServer.hardware.labels');
@@ -65,7 +65,7 @@ export const HardwareConfigComponent = forwardRef(
         useEffect(() => {
             setPriceToSmall(totalPrice.totalCents < 100);
             onPriceChange(totalPrice);
-        }, [totalPrice]);
+        }, [onPriceChange, totalPrice]);
 
         // Calculate total price whenever configuration changes
         useEffect(() => {
@@ -73,7 +73,7 @@ export const HardwareConfigComponent = forwardRef(
             if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
                 setTotalPrice(calculateNew(selectedPFGroup, cpuCores * 100, ramGb * 1024, days));
             }
-        }, [selectedPFGroup, cpuCores, ramGb, days]);
+        }, [selectedPFGroup, cpuCores, ramGb, days, totalPrice.totalCents]);
 
         useImperativeHandle(ref, () => ({
             submit: () => {
