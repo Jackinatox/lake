@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         details: {
             bodyLength: body.length,
             hasSignature: !!signature,
-            secretPrefix: endpointSecret.substring(0, 7), // Log first 7 chars to verify it's the right type
         },
     });
 

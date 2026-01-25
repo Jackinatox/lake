@@ -1,16 +1,16 @@
-import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
-import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
-import prisma from '@/lib/prisma';
-import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { GameServerOrder, GameServerType, OrderType } from '@/app/client/generated/browser';
+import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { enableServerInstallScripts } from '@/components/gameserver/settings/serverSettingsActions';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { logger } from '@/lib/logger';
+import prisma from '@/lib/prisma';
 import { reinstallPTServerOnly } from '@/lib/Pterodactyl/Functions/ReinstallPTServerOnly';
+import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { NewServerOptions, Server } from '@avionrx/pterodactyl-js';
+import { env } from 'next-runtime-env';
 import { correctPortsForGame } from '../PortHandeling/MultiPortGames';
 import { buildMC_ENVs_and_startup } from './buildMinecraftENVs';
 import createSatisStartup from './createSatisENVs';
-import { env } from 'next-runtime-env';
 
 export async function provisionServer(order: GameServerOrder): Promise<string> {
     const serverOrder = await prisma.gameServerOrder.findUnique({

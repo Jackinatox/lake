@@ -386,7 +386,10 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                                                     handlePowerAction('start');
                                                 }}
                                                 disabled={
-                                                    loading || serverStatus === 'running' || false
+                                                    loading ||
+                                                    serverStatus === 'running' ||
+                                                    serverStatus === 'stopping' ||
+                                                    false
                                                 }
                                                 className="h-8 w-8"
                                             >
@@ -500,7 +503,7 @@ const LazyFileManager = dynamic(() => import('../FileManager/FileManager'), {
             <div className="text-sm text-muted-foreground">Loading file manager…</div>
         </div>
     ),
-    ssr: false
+    ssr: false,
 });
 
 export default GameDashboard;

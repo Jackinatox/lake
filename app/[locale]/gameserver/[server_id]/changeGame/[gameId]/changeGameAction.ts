@@ -59,7 +59,7 @@ export async function changeGame({
     if (!newGameData) {
         throw new Error('Selected game not found');
     }
-
+    
     await PTUserServerPowerAction(serverId, session.user.ptKey, 'kill');
 
     const newBody = await buildBody(gameConfig, newGameData);

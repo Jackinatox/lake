@@ -40,7 +40,7 @@ export type SocketEvent =
     | 'AUTH_SUCCESS'
     | 'CUSTOM_EVENT';
 
-export type CustomEventType = 'EULA' | 'HYTALE_OAUTH';
+export type CustomEventType = 'EULA' | 'HYTALE_OAUTH' | 'HYTALE_NO_TOKEN';
 
 export interface SocketEventPayload {
     CONSOLE_OUTPUT: string;
@@ -329,6 +329,18 @@ class ServerConnectionManager {
         if (hytaleMatch) {
             this.emitter.emit('CUSTOM_EVENT', { type: 'HYTALE_OAUTH', data: { url: line } });
         }
+
+        if (line.includes('No server tokens configured. Use /auth login to authenticate')) {
+            this.emitter.emit('CUSTOM_EVENT', { type: 'HYTALE_NO_TOKEN', data: null });
+        }
+
+        const orVisitMatch = line.match(
+            /Or visit:\s*(https?:\/\/oauth\.accounts\.hytale\.com\/oauth2\/device\/verify\?user_code=([A-Za-z0-9_-]+))/i,
+        );
+        if (orVisitMatch) {
+            const [, url, user_code] = orVisitMatch;
+            this.emitter.emit('CUSTOM_EVENT', { type: 'HYTALE_OAUTH', data: { url, user_code } });
+        }
     }
 
     private async refreshToken(): Promise<void> {
@@ -337,12 +349,18 @@ class ServerConnectionManager {
             this.ws?.send(JSON.stringify({ event: 'auth', args: [token] }));
         } catch (error) {
             if (this.debug) {
-                console.error(`[WS ${this.serverId}] Token refresh failed, forcing reconnect:`, error);
+                console.error(
+                    `[WS ${this.serverId}] Token refresh failed, forcing reconnect:`,
+                    error,
+                );
             }
             // Token refresh failed - close connection and let reconnect logic handle it
             this.cleanupWebSocket();
             this.updateState({ wsState: 'CLOSED' });
-            if (this.subscriberCount > 0 && this.state.reconnectAttempt < this.maxReconnectAttempts) {
+            if (
+                this.subscriberCount > 0 &&
+                this.state.reconnectAttempt < this.maxReconnectAttempts
+            ) {
                 this.scheduleReconnect();
             }
         }

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useCustomEvent } from '@/hooks/useServerWebSocket';
+import { useCustomEvent, useSendCommand } from '@/hooks/useServerWebSocket';
 import { useServerStatus } from '@/hooks/useServerWebSocket';
 import {
     Dialog,
@@ -28,6 +28,7 @@ export default function HytaleOauthFeature() {
     const serverStatus = useServerStatus();
     const serverStatusRef = useRef(serverStatus);
     const t = useTranslations('gameserver');
+    const command = useSendCommand();
 
     // Keep ref in sync with latest serverStatus
     useEffect(() => {
@@ -42,6 +43,10 @@ export default function HytaleOauthFeature() {
             setOauthUrl(data.url);
             setVisible(true);
         }
+    });
+
+    useCustomEvent('HYTALE_NO_TOKEN', () => {
+        command.sendCommand("/auth login device");
     });
 
     const handleLogin = useCallback(() => {
