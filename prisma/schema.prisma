@@ -136,6 +136,8 @@ model GameServerOrder {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict) // Restrict deletion to preserve order history for compliance/auditing
 
+  workerJobId String? // Job that processed this order
+
   type       OrderType
   ramMB      Int
   cpuPercent Int

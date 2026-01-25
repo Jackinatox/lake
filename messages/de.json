@@ -210,35 +210,16 @@
     "checkout": {
         "return": {
             "poller": {
-                "headline": "Kurz noch, wir bereiten deinen Server vor",
-                "subheadline": "Diese Seite aktualisiert sich automatisch, sobald die Bereitstellung abgeschlossen ist.",
-                "statusUnknown": "Status wird geprüft...",
-                "statusUnknownDescription": "Wir bestätigen gerade deine Zahlung und die Bereitstellungsdetails.",
-                "networkErrorTitle": "Verbindungsproblem",
-                "networkErrorMessage": "Wir konnten unseren Bereitstellungsdienst nicht erreichen. Versuch es gleich noch einmal.",
                 "unknownError": "Unbekannter Fehler",
+                "waitingForPayment": "Warten auf Zahlung",
+                "paymentProcessing": "Bitte warten, während wir deine Zahlung bestätigen...",
+                "networkHeadline": "Verbindungsproblem",
+                "networkSubheadline": "Wir konnten unseren Zahlungsdienst nicht erreichen. Versuch es gleich noch einmal.",
+                "paymentFailedTitle": "Zahlung fehlgeschlagen",
+                "paymentFailedSubtitle": "Es gab ein Problem mit deiner Zahlung",
                 "retry": "Erneut versuchen",
                 "contactSupport": "Support kontaktieren",
-                "returnToDashboard": "Zur Übersicht",
-                "successButton": "Server jetzt öffnen",
-                "redirecting": "Weiterleitung in {seconds}s...",
-                "redirectingPlain": "Weiterleitung...",
-                "errorHeadline": "Etwas ist schiefgelaufen",
-                "errorSubheadline": "Wir konnten deinen Server nicht bereitstellen. Prüfe die Details unten oder kontaktiere den Support.",
-                "networkHeadline": "Kurzzeitiges Verbindungsproblem",
-                "networkSubheadline": "Die Verbindung zum Bereitstellungsdienst ist unterbrochen. Du kannst es erneut versuchen oder den Support kontaktieren.",
-                "successHeadline": "Server bereit zum Start",
-                "successSubheadline": "Starte jetzt direkt oder warte auf die automatische Weiterleitung.",
-                "errorBannerTitle": "Bereitstellung gestoppt",
-                "errorBannerDescription": "Aktueller Status: {status}. Bitte kontaktiere den Support, falls das weiterhin passiert.",
-                "networkBannerTitle": "Status vorübergehend nicht erreichbar",
-                "networkBannerDescription": "Wir können den Bereitstellungsdienst gerade nicht erreichen. Wir versuchen es gleich erneut.",
-                "feature1Title": "Automatische Bereitstellung",
-                "feature1Description": "Wir erledigen die Einrichtung im Hintergrund und informieren dich, sobald alles bereit ist.",
-                "feature2Title": "Optimierte Performance",
-                "feature2Description": "Server starten mit Best-Practice-Defaults, damit du sofort loslegen kannst.",
-                "feature3Title": "Support in Bereitschaft",
-                "feature3Description": "Brauchst du Hilfe? Unser Team unterstützt dich, falls etwas nicht klappt."
+                "returnHome": "Zur Startseite"
             }
         }
     },

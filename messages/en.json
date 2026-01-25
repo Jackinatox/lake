@@ -210,35 +210,16 @@
     "checkout": {
         "return": {
             "poller": {
-                "headline": "Hang tight, we're preparing your server",
-                "subheadline": "This page updates automatically once provisioning finishes.",
-                "statusUnknown": "Checking status...",
-                "statusUnknownDescription": "We're confirming your payment and provisioning details.",
-                "networkErrorTitle": "Connection issue",
-                "networkErrorMessage": "We couldn't reach our provisioning service. Please try again in a moment.",
                 "unknownError": "Unknown error",
+                "waitingForPayment": "Waiting for payment",
+                "paymentProcessing": "Please wait while we confirm your payment...",
+                "networkHeadline": "Connection issue",
+                "networkSubheadline": "We couldn't reach our payment service. Please try again in a moment.",
+                "paymentFailedTitle": "Payment Failed",
+                "paymentFailedSubtitle": "There was a problem with your payment",
                 "retry": "Retry",
                 "contactSupport": "Contact support",
-                "returnToDashboard": "Back to dashboard",
-                "successButton": "Open server now",
-                "redirecting": "Redirecting in {seconds}s...",
-                "redirectingPlain": "Redirecting...",
-                "errorHeadline": "Something went wrong",
-                "errorSubheadline": "We couldn't finish provisioning your server. Check the details below or reach out to support.",
-                "networkHeadline": "Temporary connection issue",
-                "networkSubheadline": "We lost contact with the provisioning service. You can retry or contact our support team.",
-                "successHeadline": "Server ready to launch",
-                "successSubheadline": "Jump in right away or let us redirect you automatically.",
-                "errorBannerTitle": "Provisioning stopped",
-                "errorBannerDescription": "Current status: {status}. Reach out to support if this persists.",
-                "networkBannerTitle": "Status temporarily unavailable",
-                "networkBannerDescription": "We can't reach the provisioning service right now. We'll automatically retry shortly.",
-                "feature1Title": "Automatic provisioning",
-                "feature1Description": "We handle the setup behind the scenes and let you know the moment it's ready.",
-                "feature2Title": "Optimized performance",
-                "feature2Description": "Servers launch with best-practice defaults so you can start playing immediately.",
-                "feature3Title": "Support on standby",
-                "feature3Description": "Need help? Our team is ready to assist if you run into any issues."
+                "returnHome": "Return Home"
             }
         }
     },

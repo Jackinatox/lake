@@ -1,5 +1,8 @@
 import { logger } from '@/lib/logger';
-import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
+import {
+    provisionServer,
+    provisionServerWithWorker,
+} from '@/lib/Pterodactyl/createServers/provisionServer';
 import upgradeGameServer from '@/lib/Pterodactyl/upgradeServer/upgradeServer';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
@@ -18,7 +21,7 @@ export default async function handleCheckoutSessionCompleted(
     try {
         const serverOrderId = parseInt(checkoutSession.metadata?.orderId || '0');
 
-        const orderUnprocessed = await prisma.gameServerOrder.findUnique({
+        const orderUnprocessed = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: serverOrderId },
         });
 
@@ -43,34 +46,42 @@ export default async function handleCheckoutSessionCompleted(
             receiptUrl = session.payment_intent.latest_charge.receipt_url;
         }
 
-        await prisma.gameServerOrder.update({
-            where: {
-                id: serverOrderId,
-            },
-            data: {
-                stripeSessionId: checkoutSession.id,
-                status: 'PAID',
-                receipt_url: receiptUrl,
-            },
-        });
-
-        const serverOrder = await prisma.gameServerOrder.findUniqueOrThrow({
-            where: { id: serverOrderId },
-        });
-        switch (serverOrder.type) {
-            case 'NEW':
-            case 'PACKAGE':
-                await provisionServer(serverOrder);
-                break;
-            case 'UPGRADE':
-                await upgradeGameServer(serverOrder);
-                break;
-            case 'TO_PAYED':
-                throw new Error('Feature not implemented yet.');
-                await upgradeFromFreeGameServer(serverOrder);
-                break;
-            default:
-                console.error(`Unhandled server order type: ${serverOrder.type}`);
+        try {
+            switch (orderUnprocessed.type) {
+                case 'NEW':
+                case 'PACKAGE': {
+                    const jobId = await provisionServerWithWorker(orderUnprocessed);
+                    await prisma.gameServerOrder.update({
+                        where: { id: orderUnprocessed.id },
+                        data: {
+                            workerJobId: jobId,
+                            status: 'PAID',
+                        },
+                    });
+                    return;
+                }
+                case 'UPGRADE':
+                    await upgradeGameServer(orderUnprocessed);
+                    break;
+                case 'TO_PAYED':
+                    throw new Error('Feature not implemented yet.');
+                    await upgradeFromFreeGameServer(orderUnprocessed);
+                    break;
+                default:
+                    console.error(`Unhandled server order type: ${orderUnprocessed.type}`);
+            }
+        } catch (error) {
+            // Moive status update to later so the new wait/jobId page can get shown
+            await prisma.gameServerOrder.update({
+                where: {
+                    id: serverOrderId,
+                },
+                data: {
+                    stripeSessionId: checkoutSession.id,
+                    status: 'PAID',
+                    receipt_url: receiptUrl,
+                },
+            });
         }
 
         // Fetch updated order with all relations after provisioning

@@ -4,6 +4,8 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';
 import ServerReadyPoller from './ServerReadyPoller';
+import prisma from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 export default async function ReturnPage({
     searchParams,
@@ -19,6 +21,10 @@ export default async function ReturnPage({
     }
 
     const session_id = (await searchParams).session_id as string;
+    
+    if (!session_id) {
+        return <div>Invalid session ID.</div>;
+    }
     return (
         <div>
             <ServerReadyPoller sessionId={session_id} />
