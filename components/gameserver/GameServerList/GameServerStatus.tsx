@@ -11,37 +11,41 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
     const [status, setStatus] = useState('Loading');
 
     useEffect(() => {
-        // Only fetch data if server status is not expired
-        if (server.status === 'EXPIRED') {
-            setLoading(false);
-            setStatus('expired');
-            return;
-        }
+        const fetchStatus = async () => {
+            // Only fetch data if server  status is not expired
+            if (server.status === 'EXPIRED') {
+                setLoading(false);
+                setStatus('expired');
+                return;
+            }
 
-        if (server.status === 'CREATION_FAILED') {
-            setLoading(false);
-            setStatus('Error');
-            return;
-        }
+            if (server.status === 'CREATION_FAILED') {
+                setLoading(false);
+                setStatus('Error');
+                return;
+            }
 
-        fetch(
-            `${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`,
-            {
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${apiKey}`,
+            const response = await fetch(
+                `${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`,
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${apiKey}`,
+                    },
                 },
-            },
-        )
-            .then((res) => res.json())
-            .then((data) => {
+            );
+            if (response.ok) {
+                const data = await response.json();
+
                 console.log(data);
                 setLoading(false);
-                setStatus(
-                    data.attributes.current_state ? data.attributes.current_state : 'Loading',
-                ); // Handle installing state
-            });
+                setStatus(data.attributes.current_state || 'Loading'); // Handle installing state
+            } else if(response.status === 409) {
+                setStatus('installing');
+            }
+        };
 
+        fetchStatus();
         const timer = setTimeout(() => setLoading(false), 5000);
         return () => clearTimeout(timer);
     }, [server.status, server.ptServerId, apiKey]);
