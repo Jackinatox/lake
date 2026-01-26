@@ -12,19 +12,3 @@ export type FileEntry = {
 
 export type SortColumn = 'name' | 'size' | 'modifiedAt' | 'createdAt';
 export type SortDirection = 'asc' | 'desc';
-
-export type DirectoryState = {
-    path: string;
-    entries: FileEntry[];
-    loading: boolean;
-    error: string | null;
-};
-
-export type FileEditorState = {
-    path: string | null;
-    content: string;
-    loading: boolean;
-    saving: boolean;
-    isOpen: boolean;
-    isBinary: boolean;
-};

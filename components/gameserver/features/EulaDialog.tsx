@@ -15,6 +15,7 @@ import {
     DialogTitle,
 } from '../../ui/dialog';
 import { writeFile } from '../FileManager/pteroFileApi';
+import { Spinner } from '@/components/ui/spinner';
 
 /**
  * EulaDialog - Self-contained Minecraft EULA acceptance feature
@@ -26,6 +27,7 @@ import { writeFile } from '../FileManager/pteroFileApi';
  */
 function EulaDialog() {
     const [isOpen, setIsOpen] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const t = useTranslations();
     const { apiKey, serverId } = useCreds();
     const { sendPowerAction } = useSendCommand();
@@ -37,10 +39,16 @@ function EulaDialog() {
 
     const handleAcceptEula = async () => {
         console.log('EULA acceptance API call');
-        await writeFile(serverId, '/eula.txt', 'eula=true', apiKey);
-        await sendPowerAction('kill');
-        await sendPowerAction('start');
-        setIsOpen(false);
+        setSubmitting(true);
+        try {
+            await writeFile(serverId, '/eula.txt', 'eula=true', apiKey);
+            await sendPowerAction('kill');
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            await sendPowerAction('start');
+        } finally {
+            setSubmitting(false);
+            setIsOpen(false);
+        }
     };
 
     return (
@@ -65,7 +73,10 @@ function EulaDialog() {
                     <Button variant="outline" onClick={() => setIsOpen(false)}>
                         {t('gameserver.eula.cancel')}
                     </Button>
-                    <Button onClick={handleAcceptEula}>{t('gameserver.eula.accept')}</Button>
+                    <Button onClick={handleAcceptEula}>
+                        {submitting && <Spinner className='mr-2'/>}
+                        {t('gameserver.eula.accept')}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -4,7 +4,6 @@ import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
 import {
     JobId,
-    provisionServer,
     provisionServerWithWorker,
 } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';

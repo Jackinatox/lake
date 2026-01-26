@@ -1,6 +1,7 @@
 'use server';
 import { auth } from '@/auth';
-import { provisionServer } from '@/lib/Pterodactyl/createServers/provisionServer';
+import { provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
+import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 
 import { headers } from 'next/headers';
@@ -21,7 +22,13 @@ export async function testProvisionServer(orderId: string) {
 
         if (!order) return { success: false, error: { message: 'Order not found' } };
 
-        await provisionServer(order);
+        const id = await provisionServerWithWorker(order);
+        await logger.info(`Manual Provisioned server with job ID: ${id}`, 'SYSTEM', {
+            details: {
+                order: order,
+                jobId: id,
+            },
+        });
         return { success: true };
     } catch (err: any) {
         let payload: any = { message: undefined };

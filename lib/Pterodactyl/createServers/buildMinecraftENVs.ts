@@ -6,6 +6,7 @@ import {
     VanillaEggId,
 } from '@/app/GlobalConstants';
 
+// noch verwendet in changeGameAction.ts
 export function buildMC_ENVs_and_startup(id: number, minecraftVersion: string) {
     let startAndVars;
 

@@ -6,7 +6,6 @@ import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
 import PasswordResetSuccessTemplate from './templates/PasswordResetSuccessTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
-import ServerBookingConfirmationTemplate from './templates/ServerBookingConfirmationTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
 import SupportTicketResponseTemplate from './templates/SupportTicketResponseTemplate';
 import TwoFactorCreatedTemplate from './templates/TwoFactorCreatedTemplate';
@@ -160,31 +159,6 @@ interface ServerBookingEmailData {
     price: number;
     expiresAt: Date;
     serverUrl: string;
-}
-
-export async function sendServerBookingConfirmationEmail(data: ServerBookingEmailData) {
-    const html = await render(
-        ServerBookingConfirmationTemplate({
-            userName: data.userName,
-            gameName: data.gameName,
-            gameImageUrl: data.gameImageUrl,
-            serverName: data.serverName,
-            ramMB: data.ramMB,
-            cpuVCores: percentToVCores(data.cpuPercent),
-            diskMB: data.diskMB,
-            location: data.location,
-            price: data.price,
-            expiresAt: data.expiresAt,
-            serverUrl: data.serverUrl,
-        }),
-    );
-
-    await sendMail(
-        data.userEmail,
-        `Dein ${data.gameName} Server wurde erfolgreich gebucht!`,
-        html,
-        'SERVER_BOOKING_CONFIRMATION',
-    );
 }
 
 interface InvoiceEmailData {
