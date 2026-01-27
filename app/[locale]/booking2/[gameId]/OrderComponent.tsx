@@ -1,6 +1,7 @@
 'use client';
 
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
+import { HardwareRecommendation } from '@/app/client/generated/browser';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { HardwareConfigComponent } from '@/components/booking2/hardware-config';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
@@ -19,6 +20,7 @@ import { useRef, useState } from 'react';
 interface GameServerConfigProps {
     performanceGroups: PerformanceGroup[];
     game: Game;
+    hardwareRecommendation: HardwareRecommendation[];
 }
 
 export default function GameServerConfig({ performanceGroups, game }: GameServerConfigProps) {

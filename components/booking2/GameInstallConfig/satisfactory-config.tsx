@@ -49,7 +49,7 @@ export const SatisfactoryConfigComponent = forwardRef(
         return (
             <ConfigContainer>
                 {/* Early Access Toggle */}
-                <ConfigSettingItem
+                {/* <ConfigSettingItem
                     id="isEarlyAccess"
                     label="Use Early Access (Experimental)"
                     description="Enable experimental features and latest updates"
@@ -61,7 +61,7 @@ export const SatisfactoryConfigComponent = forwardRef(
                             handleChange('version', checked ? 'experimental' : 'release')
                         }
                     />
-                </ConfigSettingItem>
+                </ConfigSettingItem> */}
 
                 {/* MAX_PLAYERS */}
                 <ConfigSettingItem

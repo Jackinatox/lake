@@ -790,7 +790,7 @@
     },
     "freeServerUpgrade": {
         "title": "Kostenlosen Server verlängern oder upgraden",
-        "description": "Wähle, wie du mit deinem kostenlosen Gameserver fortfahren möchtest",
+        "description": "Wähle, wie du mit deinem kostenlosen Gameserver fortfahren möchtest.",
         "backToOptions": "Zurück zu Optionen",
         "badge": {
             "freeServer": "Kostenloser Server"
@@ -807,7 +807,7 @@
         "extend": {
             "badge": "GRATIS",
             "title": "Kostenlos verlängern",
-            "description": "Halte deinen kostenlosen Server für weiter am Laufen",
+            "description": "Halte deinen kostenlosen Server weiter am Laufen",
             "feature1": "100% kostenlos, keine Zahlung erforderlich",
             "feature2": "Verlängere bis zu {days} Tage in die Zukunft",
             "feature3": "Behalte deine aktuelle Hardware und Einstellungen",

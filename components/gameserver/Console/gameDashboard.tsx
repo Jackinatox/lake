@@ -130,7 +130,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                         </div>
                         <Progress
                             value={((serverStats?.cpu_absolute ?? 0) / server.limits.cpu) * 100}
-                            className="h-1.5 bg-blue-500/20"
+                            className="bg-blue-500/20 [&>div]:bg-blue-500 [&>div]:rounded-full h-1.5"
                         />
                     </div>
 
@@ -152,7 +152,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                                     100,
                                 100,
                             )}
-                            className="h-1.5 bg-purple-500/20"
+                            className="bg-purple-500/20 [&>div]:bg-purple-500 [&>div]:rounded-full h-1.5"
                         />
                     </div>
 
@@ -174,7 +174,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                                     100,
                                 100,
                             )}
-                            className="h-1.5 bg-emerald-500/20"
+                            className="bg-emerald-500/20 [&>div]:bg-emerald-500 [&>div]:rounded-full h-1.5"
                         />
                     </div>
                 </div>

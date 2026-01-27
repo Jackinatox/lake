@@ -234,7 +234,7 @@ export default async function LandingPage() {
                                         asChild
                                     >
                                         <Link
-                                            href="/products/packages"
+                                            href="/products/free-gameserver"
                                             className="flex items-center justify-center gap-2 text-secondary-foreground"
                                         >
                                             <Gift className="h-4 w-4" />

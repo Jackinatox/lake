@@ -22,8 +22,9 @@ model GameData {
 
   GameServer GameServer[]
 
-  ServerOrder      GameServerOrder[]
-  gameDataFeatures GameDataFeature[]
+  ServerOrder             GameServerOrder[]
+  gameDataFeatures        GameDataFeature[]
+  hardwareRecommendations HardwareRecommendation[]
 }
 
 model Location {
@@ -496,8 +497,9 @@ model Package {
   discountPercent Float    @default(0)
   enabled         Boolean  @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  hardwareRecommendations HardwareRecommendation[]
 }
 
 model TwoFactor {
@@ -526,4 +528,22 @@ model GameDataFeature {
 
   @@id([gameDataId, featureId])
   @@index([gameDataId])
+}
+
+model HardwareRecommendation {
+  id                   Int      @id @default(autoincrement())
+  eggId                Int? // Optinal egg id for games like minecraft which uses many eggs
+  gameDataId           Int
+  gameData             GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+  minCpuPercent        Int
+  recCpuPercent        Int
+  minramMb             Int
+  recRamMb             Int
+  preselectedPackageId Int?
+  preselectedPackage   Package? @relation(fields: [preselectedPackageId], references: [id], onDelete: SetNull)
+  note                 String?
+  sorting              Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

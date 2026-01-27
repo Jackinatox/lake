@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import GameNotFound from '@/components/booking2/GameNotFound';
 import LoadingError from '@/components/booking2/LoadingError';
 import GameServerConfig from './OrderComponent';
+import prisma from '@/lib/prisma';
 
 export type ServerConfig = {
     hardwareConfig: HardwareConfig;
@@ -18,9 +19,17 @@ export default async function page({ params }: { params: Promise<{ gameId: strin
     const gameId = Number.parseInt(rawGameId, 10);
     const safeGameId = Number.isNaN(gameId) ? -1 : gameId;
 
-    const [performanceGroupData, game] = await Promise.all([
+    const [performanceGroupData, game, hardwareRecommendations] = await Promise.all([
         fetchPerformanceGroups(),
         fetchGame(safeGameId),
+        prisma.hardwareRecommendation.findMany({
+            where: {
+                gameDataId: safeGameId,
+            },
+            orderBy: {
+                sorting: 'asc',
+            },
+        }),
     ]);
 
     if (!game) {
@@ -33,7 +42,7 @@ export default async function page({ params }: { params: Promise<{ gameId: strin
 
     return (
         <>
-            <GameServerConfig performanceGroups={performanceGroupData} game={game} />
+            <GameServerConfig performanceGroups={performanceGroupData} game={game} hardwareRecommendation={hardwareRecommendations} />
         </>
     );
 }

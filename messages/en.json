@@ -790,7 +790,7 @@
     },
     "freeServerUpgrade": {
         "title": "Extend or Upgrade Your Free Server",
-        "description": "Choose how you want to continue with your free game server",
+        "description": "Choose how you want to continue with your free game server.",
         "backToOptions": "Back to options",
         "badge": {
             "freeServer": "Free Server"
