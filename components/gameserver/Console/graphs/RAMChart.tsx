@@ -29,8 +29,8 @@ const config = {
     ram: {
         label: 'RAM',
         theme: {
-            light: 'hsl(160 60% 45%)',
-            dark: 'hsl(160 60% 50%)',
+            light: 'hsl(273 100% 63.7%)',
+            dark: 'hsl(273 100% 63.7%)',
         },
     },
 } satisfies ChartConfig;
@@ -63,7 +63,7 @@ export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
     const displayData = useMemo(() => {
         if (data.length === 0) return [];
 
-        const now = Date.now() / 1000;
+        const now = new Date().getTime() / 1000;
         const fiveMinAgo = now - FIVE_MINUTES;
 
         const result: DataPoint[] = [];

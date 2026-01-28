@@ -41,8 +41,6 @@ interface CompactServerAddressProps {
     allocations?: Allocation[];
     /** Compact mode - always use dropdown even for simple addresses */
     compact?: boolean;
-    /** Show IP and Port separately with individual copy buttons (when space allows) */
-    showSeparate?: boolean;
     className?: string;
 }
 
@@ -96,7 +94,6 @@ export function CompactServerAddress({
     eggId,
     allocations = [],
     compact = false,
-    showSeparate = false,
     className,
 }: CompactServerAddressProps) {
     const t = useTranslations();
@@ -106,8 +103,8 @@ export function CompactServerAddress({
     const isMinecraft = minecraftEggs.includes(eggId);
     const isSatisfactory = eggId === SatisfactoryEggId;
     
-    // For games that need separate IP/Port (like Satisfactory), or when explicitly requested
-    const needsSeparateDisplay = isSatisfactory || showSeparate;
+    // For games that need separate IP/Port (like Satisfactory) - determined by egg type
+    const needsSeparateDisplay = isSatisfactory;
 
     const ipPortCombo = `${address}:${port}`;
 
@@ -129,52 +126,12 @@ export function CompactServerAddress({
         }
     }, []);
 
-    // Inline separate IP/Port display (shown on larger screens) - as JSX element, not component
-    const separateIPPortInline = (
-        <div className="flex items-center gap-3 text-xs font-mono">
-            <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">IP:</span>
-                <span className="truncate max-w-32">{address}</span>
-                <button
-                    type="button"
-                    onClick={() => handleCopy(address, 'ip-inline')}
-                    className="p-1 rounded hover:bg-muted transition-colors"
-                >
-                    {copiedKey === 'ip-inline' ? (
-                        <Check className="h-3 w-3 text-green-500" />
-                    ) : (
-                        <Copy className="h-3 w-3 text-muted-foreground" />
-                    )}
-                </button>
-            </div>
-            <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">Port:</span>
-                <span>{port}</span>
-                <button
-                    type="button"
-                    onClick={() => handleCopy(port.toString(), 'port-inline')}
-                    className="p-1 rounded hover:bg-muted transition-colors"
-                >
-                    {copiedKey === 'port-inline' ? (
-                        <Check className="h-3 w-3 text-green-500" />
-                    ) : (
-                        <Copy className="h-3 w-3 text-muted-foreground" />
-                    )}
-                </button>
-            </div>
-        </div>
-    );
-
-    // Handle games that need separate IP/Port display (Satisfactory, etc.)
-    if (needsSeparateDisplay) {
-        return (
-            <div className={cn('flex items-center gap-1 text-sm', className)}>
-                {/* On larger screens, show inline separate display */}
-                <div className="hidden lg:block">
-                    {separateIPPortInline}
-                </div>
-                {/* On smaller screens, use dropdown */}
-                <div className="lg:hidden">
+    // COMPACT MODE: Always show in dropdown/tooltip
+    if (compact) {
+        if (needsSeparateDisplay) {
+            // Satisfactory: Dropdown with separate IP and Port items
+            return (
+                <div className={cn('flex items-center gap-1 text-sm', className)}>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -183,9 +140,7 @@ export function CompactServerAddress({
                                 className="h-auto py-1 px-2 font-mono text-xs gap-1"
                             >
                                 <Server className="h-3 w-3 text-muted-foreground" />
-                                <span className="max-w-20 sm:max-w-28 truncate">
-                                    {address}
-                                </span>
+                                <span className="max-w-20 sm:max-w-28 truncate">{address}</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -196,9 +151,7 @@ export function CompactServerAddress({
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs text-muted-foreground w-8">IP:</span>
-                                        <span className="font-mono text-sm truncate max-w-35">
-                                            {address}
-                                        </span>
+                                        <span className="font-mono text-sm truncate max-w-35">{address}</span>
                                     </div>
                                     <CopyButton
                                         text={address}
@@ -227,11 +180,112 @@ export function CompactServerAddress({
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+            );
+        } else {
+            // Other games: Dropdown with combined IP:Port
+            return (
+                <div className={cn('flex items-center gap-1 text-sm', className)}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto py-1 px-2 font-mono text-xs gap-1"
+                            >
+                                <Server className="h-3 w-3 text-muted-foreground" />
+                                <span className="max-w-24 sm:max-w-32 truncate">{ipPortCombo}</span>
+                                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-64">
+                            <DropdownMenuLabel className="text-xs">Connection Address</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <div className="p-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-mono text-sm">{ipPortCombo}</span>
+                                    <CopyButton
+                                        text={ipPortCombo}
+                                        copyKey="address"
+                                        label="Address"
+                                        iconOnly
+                                        isCopied={copiedKey === 'address'}
+                                        onCopy={handleCopy}
+                                    />
+                                </div>
+                            </div>
+                            {allocations.length > 1 && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel className="text-xs">Additional Allocations</DropdownMenuLabel>
+                                    {allocations
+                                        .filter((alloc) => !alloc.is_default)
+                                        .map((alloc) => {
+                                            const allocCombo = `${alloc.ip_alias || alloc.ip}:${alloc.port}`;
+                                            return (
+                                                <div key={alloc.id} className="px-2 py-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="font-mono text-xs">{allocCombo}</span>
+                                                        <CopyButton
+                                                            text={allocCombo}
+                                                            copyKey={`alloc-${alloc.id}`}
+                                                            label="Copy"
+                                                            iconOnly
+                                                            isCopied={copiedKey === `alloc-${alloc.id}`}
+                                                            onCopy={handleCopy}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            );
+        }
+    }
+
+    // NON-COMPACT MODE: Show inline directly
+    if (needsSeparateDisplay) {
+        // Satisfactory: Show IP and Port separately inline
+        return (
+            <div className={cn('flex items-center gap-3 text-xs font-mono', className)}>
+                <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground">IP:</span>
+                    <span className="truncate max-w-32">{address}</span>
+                    <button
+                        type="button"
+                        onClick={() => handleCopy(address, 'ip-inline')}
+                        className="p-1 rounded hover:bg-muted transition-colors"
+                    >
+                        {copiedKey === 'ip-inline' ? (
+                            <Check className="h-3 w-3 text-green-500" />
+                        ) : (
+                            <Copy className="h-3 w-3 text-muted-foreground" />
+                        )}
+                    </button>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground">Port:</span>
+                    <span>{port}</span>
+                    <button
+                        type="button"
+                        onClick={() => handleCopy(port.toString(), 'port-inline')}
+                        className="p-1 rounded hover:bg-muted transition-colors"
+                    >
+                        {copiedKey === 'port-inline' ? (
+                            <Check className="h-3 w-3 text-green-500" />
+                        ) : (
+                            <Copy className="h-3 w-3 text-muted-foreground" />
+                        )}
+                    </button>
+                </div>
             </div>
         );
     }
 
-    // Standard display for Minecraft and other games
+    // Standard display for other games - inline combined format
     // Multiple allocations: show dropdown
     if (allocations.length > 1) {
         const defaultAlloc = allocations.find((a) => a.is_default) || allocations[0];
@@ -325,26 +379,17 @@ export function CompactServerAddress({
         );
     }
 
-    // Non-compact single allocation - shows IP:Port with separate inline display on larger screens
+    // Single allocation - simple combined IP:Port display inline
     return (
-        <div className={cn('flex items-center text-sm', className)}>
-            {/* On larger screens, show inline separate display */}
-            <div className="hidden lg:block">
-                {separateIPPortInline}
-            </div>
-            {/* On smaller screens, show combined with copy button */}
-            <div className="lg:hidden flex items-center gap-1">
-                <span className="font-mono text-xs max-w-24 sm:max-w-36 truncate">
-                    {ipPortCombo}
-                </span>
-                <CopyButton
-                    text={ipPortCombo}
-                    copyKey="main"
-                    label={t('gameserver.dashboard.copyIPPort')}
-                    isCopied={copiedKey === 'main'}
-                    onCopy={handleCopy}
-                />
-            </div>
+        <div className={cn('flex items-center gap-1 text-sm', className)}>
+            <span className="font-mono text-xs truncate max-w-32">{ipPortCombo}</span>
+            <CopyButton
+                text={ipPortCombo}
+                copyKey="main"
+                label={t('gameserver.dashboard.copyIPPort')}
+                isCopied={copiedKey === 'main'}
+                onCopy={handleCopy}
+            />
         </div>
     );
 }

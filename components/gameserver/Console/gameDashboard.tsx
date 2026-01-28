@@ -41,6 +41,7 @@ import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
 import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
 import { EggFeature } from '@/app/client/generated/browser';
 import dynamic from 'next/dynamic';
+import DebugPanel from './DebugPanel';
 
 interface serverProps {
     server: GameServer;
@@ -253,7 +254,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                             ((serverStats?.disk_bytes ?? 0) / (server.limits.disk * 1024 * 1024)) *
                             100
                         }
-                        className="h-1.5 bg-emerald-500/20"
+                        className="bg-emerald-500/20 [&>div]:bg-emerald-500 [&>div]:rounded-full h-1.5"
                     />
 
                     {/* Network */}
@@ -351,6 +352,8 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                     )}
                 </div>
             </div>
+
+            <DebugPanel data={{ server, ptApiKey, features }} />
         </TooltipProvider>
     );
 }
