@@ -307,7 +307,6 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         if (entry.isFile) {
             const entryKey = `${currentPath}${entry.name}`;
             if (!isTextLikeFile(entry)) {
-                setOpenMenuKey(entryKey);
                 return;
             }
             if ((entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE) {

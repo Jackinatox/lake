@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ContactForm() {
     const session = authClient.useSession();
@@ -177,8 +178,14 @@ export default function ContactForm() {
                     <CardFooter className="flex flex-col items-end gap-2 p-0 md:p-0">
                         <div className="flex flex-row justify-between w-full items-center gap-4">
                             {!(session.isPending || session.data?.user) && (
-                                <p className="text-foreground font-bold">
-                                    {t('loginRequiredTitle')}
+                                <p className="text-foreground">
+                                    {t.rich('loginRequiredTitle', {
+                                strong: (chunks) => (
+                                    <Link href="/login" className="underline underline-offset-4">
+                                        <strong>{chunks}</strong>
+                                    </Link>
+                                ),
+                            })}
                                 </p>
                             )}
                             <Button

@@ -1,10 +1,9 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { GameServer } from '@/models/gameServerModel';
 import {
     ArrowDownToLine,
@@ -13,25 +12,19 @@ import {
     Cpu,
     HardDrive,
     MemoryStickIcon as Memory,
-    Play,
-    Power,
-    RefreshCw,
-    Square,
     Zap,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
-import { ServerAddress } from '../ServerAddress';
 import ConsoleV2 from './ConsoleV2';
 import CPUChart from './graphs/CPUChart';
 import RAMChart from './graphs/RAMChart';
-import { Status } from './status';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { DashboardHeader } from './DashboardHeader';
+import { useRouter, useSearchParams } from 'next/navigation';
 import BackupManager from '../BackupManager/BackupManager';
 import { formatMilliseconds } from '@/lib/formatTime';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
@@ -86,21 +79,12 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     const router = useRouter();
     const t = useTranslations();
 
-    const pathname = usePathname();
-
-    const defAlloc = server.relationships.allocations.data.find(
-        (alloc: any) => alloc.attributes.is_default,
-    );
-
-    const address = defAlloc?.attributes.ip_alias || defAlloc?.attributes.ip || '';
-    const port = defAlloc?.attributes.port || 0;
-
     // Helper to format bytes
     const formatBytes = (bytes: number) => {
         if (bytes < 1024) return `${bytes} B`;
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
+        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GiB`;
     };
 
     // Wrapper functions for power actions
@@ -261,7 +245,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                         <span className="font-medium tabular-nums">
                             {loading
                                 ? '—'
-                                : `${formatBytes(serverStats?.disk_bytes ?? 0)}/${(server.limits.disk / 1024).toFixed(0)} GB`}
+                                : `${formatBytes(serverStats?.disk_bytes ?? 0)}/${(server.limits.disk / 1024).toFixed(0)} GiB`}
                         </span>
                     </div>
                     <Progress
@@ -330,137 +314,15 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                 {/* Connection Status Banner - shows when disconnected/reconnecting */}
                 <ConnectionStatusBanner />
 
-                {/* Sticky Header Bar */}
-                <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-                    <CardContent className="py-1 px-1 md:py-2 md:px-2">
-                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                            {/* Left: Server Name + Status */}
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2">
-                                    <h1 className="text-base font-bold truncate md:max-w-none">
-                                        {server.name}
-                                    </h1>
-                                </div>
-                                <Badge
-                                    variant={serverStatus === 'running' ? 'default' : 'outline'}
-                                    className="hidden md:flex"
-                                >
-                                    <Status state={serverStatus} />
-                                </Badge>
-                            </div>
-
-                            {/* Center: Server Address & Info */}
-                            <div className="flex items-center gap-3 text-sm flex-wrap">
-                                <div className="hidden lg:block">
-                                    <GameInfo server={server} apiKey={ptApiKey} />
-                                </div>
-                                {address && port ? (
-                                    <div className="flex items-center gap-2 pl-2 px-1 py-1 bg-muted/50 rounded-md border">
-                                        <ServerAddress
-                                            address={address}
-                                            port={port}
-                                            eggId={server.egg_id}
-                                        />
-                                    </div>
-                                ) : (
-                                    <span className="text-muted-foreground">
-                                        {t('gameserver.dashboard.noAllocation')}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Right: Power Controls + Upgrade */}
-                            <div className="flex justify-between gap-2">
-                                {/* Power Buttons */}
-                                <div className="flex items-center gap-1">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant={
-                                                    serverStatus === 'running'
-                                                        ? 'outline'
-                                                        : 'default'
-                                                }
-                                                size="icon"
-                                                onClick={() => {
-                                                    handlePowerAction('start');
-                                                }}
-                                                disabled={
-                                                    loading ||
-                                                    serverStatus === 'running' ||
-                                                    serverStatus === 'stopping' ||
-                                                    false
-                                                }
-                                                className="h-8 w-8"
-                                            >
-                                                <Play className="h-4 w-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Start</TooltipContent>
-                                    </Tooltip>
-
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                onClick={() => {
-                                                    handlePowerAction('stop');
-                                                }}
-                                                disabled={loading || offliney}
-                                                className="h-8 w-8"
-                                            >
-                                                <Square className="h-4 w-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Stop</TooltipContent>
-                                    </Tooltip>
-
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                onClick={() => {
-                                                    handlePowerAction('restart');
-                                                }}
-                                                disabled={loading || offliney}
-                                                className="h-8 w-8"
-                                            >
-                                                <RefreshCw className="h-4 w-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Restart</TooltipContent>
-                                    </Tooltip>
-
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="destructive"
-                                                size="icon"
-                                                onClick={() => {
-                                                    handlePowerAction('kill');
-                                                }}
-                                                disabled={loading || offliney}
-                                                className="h-8 w-8"
-                                            >
-                                                <Power className="h-4 w-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Kill</TooltipContent>
-                                    </Tooltip>
-                                </div>
-
-                                {/* Upgrade Button */}
-                                <Button asChild variant="outline" size="sm">
-                                    <Link href={`${pathname}/upgrade`}>
-                                        {t('gameserver.dashboard.header.upgrade')}
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                {/* New Responsive Header */}
+                <DashboardHeader
+                    server={server}
+                    ptApiKey={ptApiKey}
+                    serverStatus={serverStatus}
+                    loading={loading}
+                    isConnected={isConnected}
+                    onPowerAction={handlePowerAction}
+                />
                 {/* Mobile Stats Card */}
                 {isMobile && MobileStatsCard}
                 {/* Main Content Grid */}

@@ -19,6 +19,7 @@ import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface FreeServerUpgradeClientProps {
@@ -261,7 +262,13 @@ export default function FreeServerUpgradeClient({
             {/* Help Text */}
             <Card className="bg-muted/50">
                 <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground text-center">{t('helpText')}</p>
+                    <p className="text-sm text-muted-foreground text-center">
+                        {t('helpText.pre')}{' '}
+                        <Link href="/support" className="font-medium underline">
+                            {t('helpText.link')}
+                        </Link>{' '}
+                        {t('helpText.post')}
+                    </p>
                 </CardContent>
             </Card>
         </div>

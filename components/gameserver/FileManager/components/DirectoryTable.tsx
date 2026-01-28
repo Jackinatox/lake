@@ -31,6 +31,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { MAX_EDITABLE_FILE_SIZE } from '@/app/GlobalConstants';
 
 interface DirectoryTableProps {
     entries: FileEntry[];
@@ -70,6 +71,34 @@ function formatDate(value: string) {
     }).format(date);
 }
 
+function SortableHeader({
+    column,
+    active,
+    direction,
+    onSort,
+    label,
+}: {
+    column: SortColumn;
+    active: boolean;
+    direction: SortDirection;
+    onSort: (column: SortColumn) => void;
+    label: string;
+}) {
+    return (
+        <button
+            type="button"
+            className={cn(
+                'inline-flex items-center gap-2 font-medium',
+                active ? 'text-foreground' : 'text-muted-foreground',
+            )}
+            onClick={() => onSort(column)}
+        >
+            {label}
+            {active && <span className="text-xs">{direction === 'asc' ? '▲' : '▼'}</span>}
+        </button>
+    );
+}
+
 const DirectoryTableComponent = ({
     entries,
     currentPath,
@@ -96,32 +125,6 @@ const DirectoryTableComponent = ({
         createdAt: t('columns.createdAt'),
     };
 
-    function SortableHeader({
-        column,
-        active,
-        direction,
-        onSort,
-    }: {
-        column: SortColumn;
-        active: boolean;
-        direction: SortDirection;
-        onSort: (column: SortColumn) => void;
-    }) {
-        return (
-            <button
-                type="button"
-                className={cn(
-                    'inline-flex items-center gap-2 font-medium',
-                    active ? 'text-foreground' : 'text-muted-foreground',
-                )}
-                onClick={() => onSort(column)}
-            >
-                {sortLabel[column]}
-                {active && <span className="text-xs">{direction === 'asc' ? '▲' : '▼'}</span>}
-            </button>
-        );
-    }
-
     const handleRowClick = (event: MouseEvent<HTMLTableRowElement>, entry: FileEntry) => {
         const target = event.target as HTMLElement | null;
         if (target?.closest('[data-row-action="true"]')) {
@@ -141,6 +144,7 @@ const DirectoryTableComponent = ({
                                 active={sortColumn === 'name'}
                                 direction={sortDirection}
                                 onSort={onSort}
+                                label={sortLabel.name}
                             />
                         </TableHead>
                         <TableHead className="hidden sm:table-cell sm:w-32">
@@ -149,6 +153,7 @@ const DirectoryTableComponent = ({
                                 active={sortColumn === 'size'}
                                 direction={sortDirection}
                                 onSort={onSort}
+                                label={sortLabel.size}
                             />
                         </TableHead>
                         <TableHead className="hidden md:table-cell md:w-48">
@@ -157,6 +162,7 @@ const DirectoryTableComponent = ({
                                 active={sortColumn === 'modifiedAt'}
                                 direction={sortDirection}
                                 onSort={onSort}
+                                label={sortLabel.modifiedAt}
                             />
                         </TableHead>
                         <TableHead className="hidden lg:table-cell lg:w-48">
@@ -165,6 +171,7 @@ const DirectoryTableComponent = ({
                                 active={sortColumn === 'createdAt'}
                                 direction={sortDirection}
                                 onSort={onSort}
+                                label={sortLabel.createdAt}
                             />
                         </TableHead>
                         <TableHead className="w-16" />
@@ -217,11 +224,17 @@ const DirectoryTableComponent = ({
                             const Icon = entry.isFile ? FileText : Folder;
                             const OpenIcon = entry.isFile ? FileText : FolderOpen;
                             const entryKey = `${currentPath}${entry.name}`;
+                            const fileTooBig = (entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE;
 
                             return (
                                 <TableRow
                                     key={`${currentPath}${entry.name}`}
-                                    className="group cursor-pointer text-sm"
+                                    className={cn(
+                                        'group text-sm',
+                                        fileTooBig
+                                            ? 'cursor-not-allowed hover:bg-transparent'
+                                            : 'cursor-pointer',
+                                    )}
                                     onDoubleClick={() => onOpen(entry)}
                                     onClick={(event) => handleRowClick(event, entry)}
                                     style={{ height: '40px' }}

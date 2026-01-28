@@ -150,7 +150,7 @@
         "ticketCreatedDescription": "Thanks! We'll get back to you via email soon.",
         "ticketCreationFailed": "Support ticket could not be created",
         "ticketCreationFailedDescription": "Please try again or drop us an email instead.",
-        "loginRequiredTitle": "Sign in to contact support",
+        "loginRequiredTitle": "<strong>Sign in</strong> to contact support",
         "loginRequiredDescription": "Log in so we can tie your ticket to your account and follow up by email.",
         "messageRequired": "Add a short description so we can help.",
         "messageTooLong": "The message is a bit long. Shorten it and try again.",
@@ -638,17 +638,10 @@
             "header": {
                 "upgrade": "Upgrade/Extend"
             },
-            "status": "Status:",
-            "serverIP": "Server IP:",
             "noAllocation": "No Allocation found",
             "copyIPPort": "Copy",
-            "info": "Info:",
             "uptime": "Uptime:",
             "serverControls": "Server Controls",
-            "cpu": {
-                "usage": "CPU Usage",
-                "cores": "Kerne"
-            },
             "memory": {
                 "usage": "Memory Usage",
                 "current": "Current:"
@@ -656,7 +649,7 @@
             "charts": {
                 "current": "Current",
                 "limit": "Limit",
-                "cpuCores": "{cores} {cores, plural, =1 {Core} other {Cores}}",
+                "cpuCores": "{cores} {cores, plural, =1 {vCPU} other {vCPUs}}",
                 "memoryGiB": "{amount} GiB"
             }
         },
@@ -837,7 +830,11 @@
                 "description": "Pay only for what you use, starting from €1.00"
             }
         },
-        "helpText": "Need help deciding? Contact our support team for personalized advice."
+        "helpText": {
+            "link": "Contact our support-team",
+            "post": "if you need help.",
+            "pre": "Not sure?"
+        }
     },
     "provisioning": {
         "title": "Setting Up Your Server",
