@@ -20,21 +20,21 @@ export async function GET() {
         });
 
         const data = await response.json();
-        
+
         if (!response.ok) {
             console.error('Worker API error:', data);
-            return NextResponse.json(
-                data,
-                { status: response.status }
-            );
+            return NextResponse.json(data, { status: response.status });
         }
 
         return NextResponse.json(data);
     } catch (error) {
         console.error('Failed to fetch job status:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch job status', details: error instanceof Error ? error.message : 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'Failed to fetch job status',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 },
         );
     }
 }

@@ -57,8 +57,8 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                     <CardHeader className="pb-0 p-3">
                         <CardTitle className="text-base">Server Management</CardTitle>
                         <p className="text-xs text-muted-foreground">
-                            These actions can affect your server&apos;s functionality. Please use with
-                            caution.
+                            These actions can affect your server&apos;s functionality. Please use
+                            with caution.
                         </p>
                     </CardHeader>
                     <CardContent className="p-3 pt-2">
@@ -71,7 +71,11 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                                     />
                                 </div>
                                 <div className="w-full sm:w-1/2">
-                                    <Button asChild className="w-full border border-red-600 bg-red-600/20" variant="secondary">
+                                    <Button
+                                        asChild
+                                        className="w-full border border-red-600 bg-red-600/20"
+                                        variant="secondary"
+                                    >
                                         <Link href={`/gameserver/${server.identifier}/changeGame`}>
                                             <Gamepad2 className="h-4 w-4 mr-2" />
                                             Change game

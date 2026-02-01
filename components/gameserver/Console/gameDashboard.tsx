@@ -305,9 +305,6 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     );
 
     // Charts are now integrated into DesktopSidebar
-    //TODO: properly
-
-    const offliney = serverStatus === 'unknown' || serverStatus === 'offline' || !isConnected;
 
     return (
         <TooltipProvider>

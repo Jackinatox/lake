@@ -1,4 +1,6 @@
-import { marked } from 'marked';
+'use server';
+
+import Bun from 'bun';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getTranslations } from 'next-intl/server';
 import {
@@ -10,6 +12,7 @@ import {
     LEGAL_DATENSCHUTZ_EN,
 } from '@/app/GlobalConstants';
 import { getKeyValueString } from '@/lib/keyValue';
+import { renderToHtml } from './renderLegalMarkdown';
 
 export type LegalPageType = 'agb' | 'datenschutz' | 'impressum';
 
@@ -50,7 +53,7 @@ export async function LegalPageTemplate({ pageType, locale }: LegalPageTemplateP
     }
 
     // Parse markdown to HTML
-    const htmlContent = await marked(content);
+    const htmlContent = renderToHtml(content);
 
     return (
         <div className="w-full max-w-4xl mx-auto">

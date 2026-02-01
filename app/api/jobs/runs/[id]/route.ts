@@ -4,10 +4,7 @@ import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import type { WorkerJobType, JobRunStatus } from '@/types/jobs';
 
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     // Check admin auth
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -19,7 +16,7 @@ export async function GET(
 
     try {
         const { id } = await params;
-        
+
         // Fetch job run with logs from database
         const jobRun = await prisma.jobRun.findUnique({
             where: { id },
@@ -81,8 +78,11 @@ export async function GET(
     } catch (error) {
         console.error('Failed to fetch job run details from database:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch job run details', details: error instanceof Error ? error.message : 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'Failed to fetch job run details',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 },
         );
     }
 }

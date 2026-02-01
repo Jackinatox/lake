@@ -29,12 +29,7 @@ interface EditServerDialogProps {
     onSuccess: () => void;
 }
 
-export function EditServerDialog({
-    server,
-    open,
-    onOpenChange,
-    onSuccess,
-}: EditServerDialogProps) {
+export function EditServerDialog({ server, open, onOpenChange, onSuccess }: EditServerDialogProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({

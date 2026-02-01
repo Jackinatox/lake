@@ -1,15 +1,11 @@
 import { logger } from '@/lib/logger';
-import {
-    provisionServerWithWorker,
-} from '@/lib/Pterodactyl/createServers/provisionServer';
+import { provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import upgradeGameServer from '@/lib/Pterodactyl/upgradeServer/upgradeServer';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
 import { Stripe } from 'stripe';
-import {
-    sendInvoiceEmail,
-} from '@/lib/email/sendEmailEmailsFromLake';
+import { sendInvoiceEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { env } from 'next-runtime-env';
 import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
@@ -95,14 +91,10 @@ export default async function handleCheckoutSessionCompleted(
                 creationGameData: true,
                 creationLocation: true,
             },
-            
         });
 
         // Send emails only if we have the necessary data
-        if (
-            updatedOrder.creationGameData &&
-            updatedOrder.creationLocation
-        ) {
+        if (updatedOrder.creationGameData && updatedOrder.creationLocation) {
             const appUrl = env('NEXT_PUBLIC_APP_URL');
             const gameName = updatedOrder.creationGameData.name;
             const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
@@ -124,7 +116,7 @@ export default async function handleCheckoutSessionCompleted(
                     location: updatedOrder.creationLocation.name || 'Unknown',
                     price: updatedOrder.price,
                     expiresAt: updatedOrder.expiresAt,
-                    receiptUrl: receiptUrl || "",
+                    receiptUrl: receiptUrl || '',
                 });
 
                 logger.info('Sent booking confirmation and invoice emails', 'EMAIL', {

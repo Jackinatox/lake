@@ -11,6 +11,7 @@ import {
     FREE_TIER_DURATION_DAYS,
     FREE_SERVERS_LOCATION_ID,
     FREE_TIER_MAX_SERVERS,
+    FREE_TIER_BACKUP_COUNT,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
 import { env } from 'next-runtime-env';
@@ -33,6 +34,7 @@ const REQUIRED_DB_CONSTANTS = [
     FREE_TIER_DURATION_DAYS,
     FREE_SERVERS_LOCATION_ID,
     FREE_TIER_MAX_SERVERS,
+    FREE_TIER_BACKUP_COUNT,
 ];
 
 const ENV_VARS_REQUIRED = [

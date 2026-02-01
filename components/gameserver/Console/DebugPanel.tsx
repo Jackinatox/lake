@@ -80,7 +80,21 @@ export default function DebugPanel({ data }: DebugPanelProps) {
                             <Code className="h-5 w-5 text-muted-foreground mt-0.5" />
                             <div>
                                 <div className="text-sm font-semibold">Debug: Props Snapshot</div>
-                                <div className="text-xs text-muted-foreground mt-0.5">Press <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">Ctrl</span> + <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">Alt</span> + <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">D</span> to toggle</div>
+                                <div className="text-xs text-muted-foreground mt-0.5">
+                                    Press{' '}
+                                    <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">
+                                        Ctrl
+                                    </span>{' '}
+                                    +{' '}
+                                    <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">
+                                        Alt
+                                    </span>{' '}
+                                    +{' '}
+                                    <span className="px-1.5 py-0.5 rounded bg-muted-foreground/10 text-xs">
+                                        D
+                                    </span>{' '}
+                                    to toggle
+                                </div>
                             </div>
                         </div>
 
@@ -92,15 +106,24 @@ export default function DebugPanel({ data }: DebugPanelProps) {
                                     <Clipboard className="h-4 w-4" />
                                 )}
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setDebugOpen(false)} aria-label="Close debug panel">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDebugOpen(false)}
+                                aria-label="Close debug panel"
+                            >
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
                     </div>
 
                     <div className="p-3">
-                        <pre className="whitespace-pre-wrap max-h-[60vh] overflow-auto text-xs font-mono bg-slate-900/80 text-white p-3 rounded-md">{propsJson}</pre>
-                        {copyStatus && <div className="text-sm mt-2 text-muted-foreground">{copyStatus}</div>}
+                        <pre className="whitespace-pre-wrap max-h-[60vh] overflow-auto text-xs font-mono bg-slate-900/80 text-white p-3 rounded-md">
+                            {propsJson}
+                        </pre>
+                        {copyStatus && (
+                            <div className="text-sm mt-2 text-muted-foreground">{copyStatus}</div>
+                        )}
                     </div>
                 </div>
             </div>

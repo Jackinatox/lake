@@ -29,14 +29,19 @@ interface JobStatusCardNewProps {
 
 // Map frontend job names to backend job names
 const JOB_NAME_MAP: Record<string, string> = {
-    'ExpireServers': 'ExpireServers',
-    'DeleteServers': 'DeleteServers',
-    'SendEmails': 'SendEmails',
-    'GenerateExpiryEmails': 'GenerateExpiryEmails',
-    'GenerateDeletionEmails': 'GenerateDeletionEmails',
+    ExpireServers: 'ExpireServers',
+    DeleteServers: 'DeleteServers',
+    SendEmails: 'SendEmails',
+    GenerateExpiryEmails: 'GenerateExpiryEmails',
+    GenerateDeletionEmails: 'GenerateDeletionEmails',
 };
 
-export function JobStatusCardNew({ jobName, isRunning, lastRun, onTriggerSuccess }: JobStatusCardNewProps) {
+export function JobStatusCardNew({
+    jobName,
+    isRunning,
+    lastRun,
+    onTriggerSuccess,
+}: JobStatusCardNewProps) {
     const { triggerJob, isTriggering } = useTriggerJob();
     const { toast } = useToast();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -71,10 +76,7 @@ export function JobStatusCardNew({ jobName, isRunning, lastRun, onTriggerSuccess
                 <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-lg font-medium">{jobName}</CardTitle>
-                        <Badge
-                            variant={isRunning ? 'default' : 'secondary'}
-                            className="shrink-0"
-                        >
+                        <Badge variant={isRunning ? 'default' : 'secondary'} className="shrink-0">
                             {isRunning ? (
                                 <>
                                     <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -102,15 +104,23 @@ export function JobStatusCardNew({ jobName, isRunning, lastRun, onTriggerSuccess
                                     Last run
                                 </span>
                                 <Badge
-                                    variant={lastRun.status === 'FAILED' ? 'destructive' : hasWarning ? 'outline' : 'secondary'}
+                                    variant={
+                                        lastRun.status === 'FAILED'
+                                            ? 'destructive'
+                                            : hasWarning
+                                              ? 'outline'
+                                              : 'secondary'
+                                    }
                                     className="text-xs"
                                 >
                                     {lastRun.status}
                                 </Badge>
                             </div>
-                            
+
                             <div className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(lastRun.startedAt), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(lastRun.startedAt), {
+                                    addSuffix: true,
+                                })}
                             </div>
 
                             <div className="flex items-center justify-between text-xs">
@@ -170,14 +180,13 @@ export function JobStatusCardNew({ jobName, isRunning, lastRun, onTriggerSuccess
                     <AlertDialogHeader>
                         <AlertDialogTitle>Trigger Job: {jobName}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Are you sure you want to manually trigger this job? This will run the job immediately.
+                            Are you sure you want to manually trigger this job? This will run the
+                            job immediately.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleTrigger}>
-                            Trigger Job
-                        </AlertDialogAction>
+                        <AlertDialogAction onClick={handleTrigger}>Trigger Job</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

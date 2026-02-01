@@ -11,10 +11,7 @@ const VALID_JOB_NAMES = [
     'GenerateDeletionEmails',
 ] as const;
 
-export async function POST(
-    request: Request,
-    { params }: { params: Promise<{ jobName: string }> }
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ jobName: string }> }) {
     // Check admin auth
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -28,10 +25,7 @@ export async function POST(
         const { jobName } = await params;
 
         if (!VALID_JOB_NAMES.includes(jobName as any)) {
-            return NextResponse.json(
-                { error: 'Invalid job name' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Invalid job name' }, { status: 400 });
         }
 
         const workerUrl = env('WORKER_IP');
@@ -40,21 +34,21 @@ export async function POST(
         });
 
         const data = await response.json();
-        
+
         if (!response.ok) {
             console.error('Worker API error:', data);
-            return NextResponse.json(
-                data,
-                { status: response.status }
-            );
+            return NextResponse.json(data, { status: response.status });
         }
 
         return NextResponse.json(data);
     } catch (error) {
         console.error('Failed to trigger job:', error);
         return NextResponse.json(
-            { error: 'Failed to trigger job', details: error instanceof Error ? error.message : 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'Failed to trigger job',
+                details: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 },
         );
     }
 }

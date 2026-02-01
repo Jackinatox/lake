@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, Check, ChevronDown, Server } from 'lucide-react';
+import { Copy, Check, ChevronDown, EthernetPort } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
@@ -102,7 +102,7 @@ export function CompactServerAddress({
     const minecraftEggs = [PaperEggId, VanillaEggId, ForgeEggId, FabricEggId, NeoForgeEggId];
     const isMinecraft = minecraftEggs.includes(eggId);
     const isSatisfactory = eggId === SatisfactoryEggId;
-    
+
     // For games that need separate IP/Port (like Satisfactory) - determined by egg type
     const needsSeparateDisplay = isSatisfactory;
 
@@ -139,19 +139,25 @@ export function CompactServerAddress({
                                 size="sm"
                                 className="h-auto py-1 px-2 font-mono text-xs gap-1"
                             >
-                                <Server className="h-3 w-3 text-muted-foreground" />
+                                <EthernetPort className="h-3 w-3 text-muted-foreground" />
                                 <span className="max-w-20 sm:max-w-28 truncate">{address}</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-64">
-                            <DropdownMenuLabel className="text-xs">Connection Details</DropdownMenuLabel>
+                            <DropdownMenuLabel className="text-xs">
+                                Connection Details
+                            </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <div className="p-2 space-y-2">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground w-8">IP:</span>
-                                        <span className="font-mono text-sm truncate max-w-35">{address}</span>
+                                        <span className="text-xs text-muted-foreground w-8">
+                                            IP:
+                                        </span>
+                                        <span className="font-mono text-sm truncate max-w-35">
+                                            {address}
+                                        </span>
                                     </div>
                                     <CopyButton
                                         text={address}
@@ -164,7 +170,9 @@ export function CompactServerAddress({
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground w-8">Port:</span>
+                                        <span className="text-xs text-muted-foreground w-8">
+                                            Port:
+                                        </span>
                                         <span className="font-mono text-sm">{port}</span>
                                     </div>
                                     <CopyButton
@@ -192,13 +200,15 @@ export function CompactServerAddress({
                                 size="sm"
                                 className="h-auto py-1 px-2 font-mono text-xs gap-1"
                             >
-                                <Server className="h-3 w-3 text-muted-foreground" />
+                                <EthernetPort className="h-3 w-3 text-muted-foreground" />
                                 <span className="max-w-24 sm:max-w-32 truncate">{ipPortCombo}</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-64">
-                            <DropdownMenuLabel className="text-xs">Connection Address</DropdownMenuLabel>
+                            <DropdownMenuLabel className="text-xs">
+                                Connection Address
+                            </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <div className="p-2">
                                 <div className="flex items-center justify-between">
@@ -216,7 +226,9 @@ export function CompactServerAddress({
                             {allocations.length > 1 && (
                                 <>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuLabel className="text-xs">Additional Allocations</DropdownMenuLabel>
+                                    <DropdownMenuLabel className="text-xs">
+                                        Additional Allocations
+                                    </DropdownMenuLabel>
                                     {allocations
                                         .filter((alloc) => !alloc.is_default)
                                         .map((alloc) => {
@@ -224,13 +236,17 @@ export function CompactServerAddress({
                                             return (
                                                 <div key={alloc.id} className="px-2 py-1">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="font-mono text-xs">{allocCombo}</span>
+                                                        <span className="font-mono text-xs">
+                                                            {allocCombo}
+                                                        </span>
                                                         <CopyButton
                                                             text={allocCombo}
                                                             copyKey={`alloc-${alloc.id}`}
                                                             label="Copy"
                                                             iconOnly
-                                                            isCopied={copiedKey === `alloc-${alloc.id}`}
+                                                            isCopied={
+                                                                copiedKey === `alloc-${alloc.id}`
+                                                            }
                                                             onCopy={handleCopy}
                                                         />
                                                     </div>
@@ -301,7 +317,7 @@ export function CompactServerAddress({
                             size="sm"
                             className="h-auto py-1 px-2 font-mono text-xs gap-1"
                         >
-                            <Server className="h-3 w-3 text-muted-foreground" />
+                            <EthernetPort className="h-3 w-3 text-muted-foreground" />
                             <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
                                 {defaultCombo}
                             </span>
@@ -309,7 +325,9 @@ export function CompactServerAddress({
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-72">
-                        <DropdownMenuLabel className="text-xs">Server Allocations</DropdownMenuLabel>
+                        <DropdownMenuLabel className="text-xs">
+                            Server Allocations
+                        </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {allocations.map((alloc) => {
                             const allocAddress = alloc.ip_alias || alloc.ip;
@@ -360,7 +378,7 @@ export function CompactServerAddress({
                             onClick={() => handleCopy(ipPortCombo, 'main')}
                             className="inline-flex items-center gap-1.5 font-mono text-xs px-2 py-1 rounded bg-muted/50 hover:bg-muted transition-colors"
                         >
-                            <Server className="h-3 w-3 text-muted-foreground" />
+                            <EthernetPort className="h-3 w-3 text-muted-foreground" />
                             <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
                                 {ipPortCombo}
                             </span>

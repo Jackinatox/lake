@@ -74,7 +74,7 @@ function EulaDialog() {
                         {t('gameserver.eula.cancel')}
                     </Button>
                     <Button onClick={handleAcceptEula}>
-                        {submitting && <Spinner className='mr-2'/>}
+                        {submitting && <Spinner className="mr-2" />}
                         {t('gameserver.eula.accept')}
                     </Button>
                 </DialogFooter>

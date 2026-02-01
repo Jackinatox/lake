@@ -42,7 +42,11 @@ export default async function page({ params }: { params: Promise<{ gameId: strin
 
     return (
         <>
-            <GameServerConfig performanceGroups={performanceGroupData} game={game} hardwareRecommendation={hardwareRecommendations} />
+            <GameServerConfig
+                performanceGroups={performanceGroupData}
+                game={game}
+                hardwareRecommendation={hardwareRecommendations}
+            />
         </>
     );
 }

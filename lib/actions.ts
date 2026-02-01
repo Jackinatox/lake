@@ -25,8 +25,8 @@ export async function fetchGames(gameId: number): Promise<Game | null> {
     const game = await prisma.gameData.findUnique({
         where: {
             id: gameId,
-            enabled: true
-         },
+            enabled: true,
+        },
         select: {
             id: true,
             name: true,

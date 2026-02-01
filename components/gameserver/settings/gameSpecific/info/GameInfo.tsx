@@ -17,14 +17,14 @@ interface GameInfoProps {
 
 function GameInfo({ server, apiKey }: GameInfoProps) {
     return (
-        <>
+        <div className="pr-2">
             {server.egg_id === PaperEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === VanillaEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === ForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === FabricEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {server.egg_id === NeoForgeEggId && <MinecraftInfo server={server} apiKey={apiKey} />}
             {/* TODO: add satis info */}
-        </>
+        </div>
     );
 }
 

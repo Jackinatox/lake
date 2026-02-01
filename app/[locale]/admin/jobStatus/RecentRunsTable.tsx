@@ -22,7 +22,13 @@ const STATUS_CONFIG: Record<
     CANCELLED: { variant: 'outline', icon: XCircle, label: 'Cancelled' },
 };
 
-function RunRow({ run, onViewDetails }: { run: JobRunSummary; onViewDetails: (id: string) => void }) {
+function RunRow({
+    run,
+    onViewDetails,
+}: {
+    run: JobRunSummary;
+    onViewDetails: (id: string) => void;
+}) {
     const statusConfig = STATUS_CONFIG[run.status];
     const Icon = statusConfig.icon;
     const duration = run.endedAt
@@ -54,7 +60,9 @@ function RunRow({ run, onViewDetails }: { run: JobRunSummary; onViewDetails: (id
                         Progress: {run.itemsProcessed}/{run.itemsTotal}
                     </span>
                     {run.itemsFailed > 0 && (
-                        <span className="text-destructive font-medium">Failed: {run.itemsFailed}</span>
+                        <span className="text-destructive font-medium">
+                            Failed: {run.itemsFailed}
+                        </span>
                     )}
                 </div>
 
@@ -115,7 +123,8 @@ export function RecentRunsTable({ onViewDetails }: RecentRunsTableProps) {
             <CardHeader>
                 <CardTitle>Recent Job Runs</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                    Last updated: {data?.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+                    Last updated:{' '}
+                    {data?.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
                 </p>
             </CardHeader>
             <CardContent>

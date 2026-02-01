@@ -15,6 +15,7 @@ import {
     EGG_FEATURE_MINECRAFT_EULA,
     EGG_FEATURE_JAVA_VERSION,
     EGG_FEATURE_HYTALE_OAUTH,
+    FREE_TIER_BACKUP_COUNT,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -51,10 +52,10 @@ async function main() {
         data: {
             data: {
                 docker_image: 'ghcr.io/pterodactyl/games:hytale',
-                eggId: 23
+                eggId: 23,
             },
             name: 'Hytale',
-            enabled: false
+            enabled: false,
         },
     });
 
@@ -219,6 +220,11 @@ async function main() {
                 key: FREE_TIER_MAX_SERVERS,
                 number: 10,
                 note: 'Maximum number of free tier servers',
+            },
+            {
+                key: FREE_TIER_BACKUP_COUNT,
+                number: 3,
+                note: 'Number of backups allowed for free tier servers',
             },
         ],
         skipDuplicates: true,

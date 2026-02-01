@@ -15,17 +15,17 @@ interface TerrariaConfigProps {
 }
 
 const defConfig = {
-        serverName: 'My Terraria Server',
-        maxPlayers: 8,
-        worldSize: 'medium',
-        difficulty: 'classic',
-        enablePvp: false,
-        autoSave: true,
-        banlistEnabled: true,
-        seed: '',
-        password: '',
-    }
-    
+    serverName: 'My Terraria Server',
+    maxPlayers: 8,
+    worldSize: 'medium',
+    difficulty: 'classic',
+    enablePvp: false,
+    autoSave: true,
+    banlistEnabled: true,
+    seed: '',
+    password: '',
+};
+
 export function TerrariaConfigComponent({ onChange }: TerrariaConfigProps) {
     const [config, setConfig] = useState(defConfig);
 

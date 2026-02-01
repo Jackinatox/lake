@@ -2,10 +2,7 @@
 
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
-import {
-    JobId,
-    provisionServerWithWorker,
-} from '@/lib/Pterodactyl/createServers/provisionServer';
+import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeServer';
 import { getKeyValueNumber } from '@/lib/keyValue';
@@ -18,6 +15,7 @@ import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
 import { ServerConfig } from '../../[locale]/booking2/[gameId]/page';
 import upgradeToPayed from './createOrder';
+import { calcBackups } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 export type CheckoutParams =
     | {
@@ -87,6 +85,7 @@ export async function checkoutAction(params: CheckoutParams) {
             const cpuPercent = hardwareConfig.cpuPercent;
             const ramMB = hardwareConfig.ramMb;
             const diskMB = hardwareConfig.diskMb;
+            const backupCount = calcBackups(cpuPercent, ramMB);
             const duration = hardwareConfig.durationsDays;
 
             const price = calculateNew(location, cpuPercent, ramMB, duration);
@@ -101,6 +100,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     ramMB,
                     cpuPercent,
                     diskMB,
+                    backupCount,
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
@@ -209,6 +209,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     userId: user.id,
                     ramMB: ramMb,
                     cpuPercent: cpuPercent,
+                    backupCount: server.backupCount,
                     diskMB: diskMb,
                     price: price.totalCents,
                     expiresAt: new Date(
@@ -303,6 +304,7 @@ export async function checkoutAction(params: CheckoutParams) {
                     ramMB: packageData.ramMB,
                     cpuPercent: packageData.cpuPercent,
                     diskMB: packageData.diskMB,
+                    backupCount: packageData.backups,
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
@@ -368,7 +370,6 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     if (!userAllowed) {
         throw new Error('Maximale Anzahl kostenloser Server erreicht');
     }
-    
 
     const order = await prisma.gameServerOrder.create({
         data: {
@@ -377,6 +378,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             ramMB: freeServerStats.ram,
             cpuPercent: freeServerStats.cpu,
             diskMB: freeServerStats.storage,
+            backupCount: freeServerStats.backupCount,
             price: 0,
             expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
             status: 'PAID',

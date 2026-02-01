@@ -16,11 +16,7 @@ interface SearchParams {
     status?: GameServerStatus;
 }
 
-async function Gameservers({
-    searchParams,
-}: {
-    searchParams: Promise<SearchParams>;
-}) {
+async function Gameservers({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const session = await auth.api.getSession({
         headers: await headers(),
     });

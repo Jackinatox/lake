@@ -21,7 +21,7 @@ export default async function ReturnPage({
     }
 
     const session_id = (await searchParams).session_id as string;
-    
+
     if (!session_id) {
         return <div>Invalid session ID.</div>;
     }

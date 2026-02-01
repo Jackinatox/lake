@@ -46,7 +46,7 @@ export default function HytaleOauthFeature() {
     });
 
     useCustomEvent('HYTALE_NO_TOKEN', () => {
-        command.sendCommand("/auth login device");
+        command.sendCommand('/auth login device');
     });
 
     const handleLogin = useCallback(() => {

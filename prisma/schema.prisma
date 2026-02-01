@@ -139,11 +139,12 @@ model GameServerOrder {
 
   workerJobId String? // Job that processed this order
 
-  type       OrderType
-  ramMB      Int
-  cpuPercent Int
-  diskMB     Int
-  price      Float
+  type        OrderType
+  ramMB       Int
+  cpuPercent  Int
+  diskMB      Int
+  price       Float
+  backupCount Int
 
   receipt_url     String?
   stripeSessionId String?     @unique

@@ -32,10 +32,7 @@ const STATUS_CONFIG: Record<
     CANCELLED: { variant: 'outline', icon: XCircle },
 };
 
-const LOG_LEVEL_CONFIG: Record<
-    LogLevel,
-    { color: string; bgColor: string; label: string }
-> = {
+const LOG_LEVEL_CONFIG: Record<LogLevel, { color: string; bgColor: string; label: string }> = {
     TRACE: { color: 'text-gray-600', bgColor: 'bg-gray-100', label: 'TRACE' },
     INFO: { color: 'text-blue-600', bgColor: 'bg-blue-50', label: 'INFO' },
     WARN: { color: 'text-yellow-600', bgColor: 'bg-yellow-50', label: 'WARN' },
@@ -155,7 +152,9 @@ export function JobRunDetailsModal({ runId, isOpen, onClose }: JobRunDetailsModa
                                     {format(new Date(data.startedAt), 'PPpp')}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    {formatDistanceToNow(new Date(data.startedAt), { addSuffix: true })}
+                                    {formatDistanceToNow(new Date(data.startedAt), {
+                                        addSuffix: true,
+                                    })}
                                 </p>
                             </div>
                             {data.endedAt && (
@@ -169,7 +168,7 @@ export function JobRunDetailsModal({ runId, isOpen, onClose }: JobRunDetailsModa
                                         {Math.round(
                                             (new Date(data.endedAt).getTime() -
                                                 new Date(data.startedAt).getTime()) /
-                                                1000
+                                                1000,
                                         )}
                                         s
                                     </p>
@@ -180,7 +179,9 @@ export function JobRunDetailsModal({ runId, isOpen, onClose }: JobRunDetailsModa
                         {/* Error Message */}
                         {data.errorMessage && (
                             <div className="p-3 bg-destructive/10 border border-destructive/50 rounded-lg">
-                                <p className="text-sm font-medium text-destructive mb-1">Error Message</p>
+                                <p className="text-sm font-medium text-destructive mb-1">
+                                    Error Message
+                                </p>
                                 <p className="text-sm">{data.errorMessage}</p>
                                 {data.errorStack && (
                                     <details className="mt-2">

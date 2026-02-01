@@ -180,12 +180,15 @@ export default function ContactForm() {
                             {!(session.isPending || session.data?.user) && (
                                 <p className="text-foreground">
                                     {t.rich('loginRequiredTitle', {
-                                strong: (chunks) => (
-                                    <Link href="/login" className="underline underline-offset-4">
-                                        <strong>{chunks}</strong>
-                                    </Link>
-                                ),
-                            })}
+                                        strong: (chunks) => (
+                                            <Link
+                                                href="/login"
+                                                className="underline underline-offset-4"
+                                            >
+                                                <strong>{chunks}</strong>
+                                            </Link>
+                                        ),
+                                    })}
                                 </p>
                             )}
                             <Button

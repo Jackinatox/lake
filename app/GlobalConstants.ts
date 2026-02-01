@@ -28,6 +28,7 @@ export const FREE_TIER_STORAGE_MB = 'free_tier_storage_mb';
 export const FREE_TIER_DURATION_DAYS = 'free_tier_duration_days';
 export const FREE_SERVERS_LOCATION_ID = 'free_servers_location_id';
 export const FREE_TIER_MAX_SERVERS = 'free_tier_max_servers';
+export const FREE_TIER_BACKUP_COUNT = 'free_tier_backup_count';
 
 // Free tier extension cooldown (in hours) - how often users can extend their server
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;

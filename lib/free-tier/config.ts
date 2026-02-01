@@ -4,6 +4,7 @@ import {
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
     FREE_TIER_MAX_SERVERS,
+    FREE_TIER_BACKUP_COUNT,
 } from '@/app/GlobalConstants';
 import prisma from '@/lib/prisma';
 
@@ -13,6 +14,7 @@ export interface FreeTierConfig {
     cpu: number;
     ram: number;
     storage: number;
+    backupCount: number;
     duration: number;
     maxServers: number;
 }
@@ -49,18 +51,20 @@ export async function getFreeTierConfig(): Promise<FreeTierConfig> {
         return entry?.number || 0;
     };
 
-    const [cpu, ram, storage, duration, maxServers] = await Promise.all([
+    const [cpu, ram, storage, duration, maxServers, backupCount] = await Promise.all([
         getKeyValueNumber(FREE_TIER_CPU_PERCENT),
         getKeyValueNumber(FREE_TIER_RAM_MB),
         getKeyValueNumber(FREE_TIER_STORAGE_MB),
         getKeyValueNumber(FREE_TIER_DURATION_DAYS),
         getKeyValueNumber(FREE_TIER_MAX_SERVERS),
+        getKeyValueNumber(FREE_TIER_BACKUP_COUNT),
     ]);
 
     return {
         cpu: cpu,
         ram: ram,
         storage: storage,
+        backupCount: backupCount,
         duration: duration,
         maxServers: maxServers,
     };

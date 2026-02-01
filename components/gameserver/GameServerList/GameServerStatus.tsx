@@ -40,7 +40,7 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
                 console.log(data);
                 setLoading(false);
                 setStatus(data.attributes.current_state || 'Loading'); // Handle installing state
-            } else if(response.status === 409) {
+            } else if (response.status === 409) {
                 setStatus('installing');
             }
         };

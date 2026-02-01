@@ -8,16 +8,21 @@ import type { WorkerJobType } from '@/types/jobs';
 
 // Map frontend job names to backend job types
 const JOB_TYPE_MAP: Record<string, WorkerJobType> = {
-    'ExpireServers': 'EXPIRE_SERVERS',
-    'DeleteServers': 'DELETE_SERVERS',
-    'SendEmails': 'SEND_EMAILS',
-    'GenerateExpiryEmails': 'GENERATE_EMAILS',
-    'GenerateDeletionEmails': 'GENERATE_DELETION_EMAILS',
-    'CheckNewVersions': 'CHECK_NEW_VERSIONS',
+    ExpireServers: 'EXPIRE_SERVERS',
+    DeleteServers: 'DELETE_SERVERS',
+    SendEmails: 'SEND_EMAILS',
+    GenerateExpiryEmails: 'GENERATE_EMAILS',
+    GenerateDeletionEmails: 'GENERATE_DELETION_EMAILS',
+    CheckNewVersions: 'CHECK_NEW_VERSIONS',
 };
 
 export function JobStatusGrid() {
-    const { data: statusData, error: statusError, isLoading: statusLoading, refetch: refetchStatus } = useJobStatus();
+    const {
+        data: statusData,
+        error: statusError,
+        isLoading: statusLoading,
+        refetch: refetchStatus,
+    } = useJobStatus();
     const { data: runsData, error: runsError, refetch: refetchRuns } = useRecentRuns();
 
     const handleTriggerSuccess = () => {
@@ -33,7 +38,9 @@ export function JobStatusGrid() {
         return (
             <div className="p-4 border border-destructive/50 rounded-lg bg-destructive/10 flex items-center gap-2">
                 <AlertCircle className="h-5 w-5 text-destructive" />
-                <span className="text-destructive">Failed to fetch job statuses: {statusError}</span>
+                <span className="text-destructive">
+                    Failed to fetch job statuses: {statusError}
+                </span>
             </div>
         );
     }
@@ -51,7 +58,7 @@ export function JobStatusGrid() {
             {Object.entries(statusData.jobs).map(([jobName, jobData]) => {
                 // Find the most recent run for this job
                 const jobType = JOB_TYPE_MAP[jobName];
-                const lastRun = runsData?.runs?.find(run => run.jobType === jobType);
+                const lastRun = runsData?.runs?.find((run) => run.jobType === jobType);
 
                 return (
                     <JobStatusCardNew
