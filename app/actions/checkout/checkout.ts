@@ -183,6 +183,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 cpuPercent: server.cpuPercent,
                 ramMb: server.ramMB,
                 diskMb: server.diskMB,
+                backupCount: server.backupCount,
                 durationsDays: Math.max(
                     0,
                     Math.round(
@@ -196,6 +197,7 @@ export async function checkoutAction(params: CheckoutParams) {
                 cpuPercent: cpuPercent - oldConfig.cpuPercent,
                 ramMb: ramMb - oldConfig.ramMb,
                 diskMb: diskMb - oldConfig.diskMb,
+                backupCount: oldConfig.backupCount, // TODO: check this when custom servers allow for disk and backup config. Then the backup count may increase the price and is important here. but then also during inittial buy
                 durationsDays: durationsDays,
                 pfGroupId: server.locationId,
             };

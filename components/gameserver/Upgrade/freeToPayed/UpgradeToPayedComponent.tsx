@@ -15,7 +15,7 @@ import { Slider } from '@/components/ui/slider';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
-import { calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
@@ -87,6 +87,7 @@ export function UpgradeHardwareConfigToPayed({
             cpuPercent,
             ramMb,
             diskMb: calcDiskSize(cpuPercent, ramMb),
+            backupCount: calcBackups(cpuPercent, ramMb),
             durationsDays: days,
         };
         onNext(config);

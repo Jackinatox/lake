@@ -14,6 +14,7 @@ export interface HardwareConfig {
     cpuPercent: number;
     ramMb: number;
     diskMb: number;
+    backupCount: number;
     durationsDays: number;
 }
 

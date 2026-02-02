@@ -203,8 +203,8 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                         className={cn(
                                             'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
                                             isActive('/gameserver')
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'bg-primary/10 hover:bg-primary/20',
+                                                ? 'bg-primary/20 text-primary font-semibold'
+                                                : 'hover:text-primary',
                                         )}
                                     >
                                         <LayoutDashboard className="h-6 w-6 mr-3" />

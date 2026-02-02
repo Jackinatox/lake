@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 
 import { HardwareConfig } from '@/models/config';
 
+// Helper funcion that fetches the current hardware conf of a game server - used to calc upgrade prioce or show current hardware
 export async function getGameServerConfig(
     server_id: string,
     userId: string,
@@ -13,7 +14,7 @@ export async function getGameServerConfig(
             userId: userId,
             ptServerId: server_id,
             status: {
-                notIn: ['CREATION_FAILED', 'DELETED'],
+                notIn: ['CREATION_FAILED', 'DELETED', 'EXPIRED'],
             },
         },
         include: {
@@ -32,8 +33,9 @@ export async function getGameServerConfig(
         cpuPercent: server.cpuPercent,
         ramMb: server.ramMB,
         diskMb: server.diskMB,
+        backupCount: server.backupCount,
         durationsDays,
         pfGroupId: server.locationId,
         // TODO: Check if this needs ptId or dbId
-    } satisfies HardwareConfig;
+    };
 }

@@ -15,7 +15,7 @@ import { Slider } from '@/components/ui/slider';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calculateUpgradeCost, UpgradePriceDef } from '@/lib/GlobalFunctions/paymentLogic';
-import { calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { Info } from 'lucide-react';
@@ -76,13 +76,14 @@ export function UpgradeHardwareConfig({
                 cpuPercent: upgradeByCPU,
                 ramMb: upgradeByRAM,
                 durationsDays: days,
+                backupCount: initialConfig.backupCount,
                 pfGroupId: selectedPFGroup.id,
                 diskMb: initialConfig.diskMb,
             };
 
             setTotalPrice(calculateUpgradeCost(initialConfig, upgradeBy, selectedPFGroup));
         }
-    }, [selectedPFGroup, cpuCores, ramGb, days]);
+    }, [selectedPFGroup, cpuCores, ramGb, days, initialConfig]);
 
     if (!selectedPFGroup) {
         return <Loading />;
@@ -386,6 +387,7 @@ export function UpgradeHardwareConfig({
                                         const config: HardwareConfig = {
                                             pfGroupId: selectedPFGroup.id,
                                             cpuPercent,
+                                            backupCount: calcBackups(cpuPercent, ramMb),
                                             ramMb,
                                             diskMb: calcDiskSize(cpuPercent, ramMb),
                                             durationsDays: days,

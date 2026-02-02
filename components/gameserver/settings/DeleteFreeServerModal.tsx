@@ -65,9 +65,8 @@ export default function DeleteFreeServerModal({ ptServerId }: DeleteFreeServerMo
     return (
         <>
             <Button variant="destructive" onClick={() => setOpen(true)} className="w-full">
-                <Bone className="h-4 w-4 text-red-700 mr-2" />
+                <Trash className="h-4 w-4 mr-2" />
                 {t('button')}
-                <TriangleAlert className="ml-2 h-4 w-4 text-red-700" />
             </Button>
 
             <Dialog open={open} onOpenChange={handleOpenChange}>

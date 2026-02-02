@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { GameServer } from '@/models/gameServerModel';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
@@ -37,7 +37,7 @@ export default function ServerLoader({
     const [loading, setLoading] = useState(true);
     const t = useTranslations();
 
-    const fetchServerData = async () => {
+    const fetchServerData = useCallback(async () => {
         try {
             const response = await fetch(`${baseUrl}/api/client/servers/${serverId}`, {
                 method: 'GET',
@@ -79,11 +79,20 @@ export default function ServerLoader({
         } finally {
             setLoading(false);
         }
-    };
+    }, [
+        baseUrl,
+        initialServer.egg_id,
+        initialServer.gameData,
+        initialServer.gameDataId,
+        initialServer.type,
+        ptApiKey,
+        serverId,
+        t,
+    ]);
 
     useEffect(() => {
         fetchServerData();
-    }, []);
+    }, [fetchServerData]);
 
     // Listen for manual restore/reinstall start/stop events from other components
     useEffect(() => {
@@ -122,7 +131,7 @@ export default function ServerLoader({
             offReinstallStart();
             offReinstallStop();
         };
-    }, [serverId]);
+    }, [fetchServerData, serverId]);
 
     // Auto-refresh every 2 seconds while installing or restoring
     useEffect(() => {
@@ -133,7 +142,7 @@ export default function ServerLoader({
 
             return () => clearInterval(interval);
         }
-    }, [isInstalling, isRestoring]);
+    }, [fetchServerData, isInstalling, isRestoring]);
 
     if (loading) {
         return (

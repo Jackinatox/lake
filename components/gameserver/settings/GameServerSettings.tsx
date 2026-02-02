@@ -16,6 +16,8 @@ import ReinstallDialog from './ReinstallDialog';
 import DeleteFreeServerModal from './DeleteFreeServerModal';
 import ServerSettingsCard from './ServerSettingsCard';
 import MinecraftSettings from './gameSpecific/settings/MinecraftSettings';
+import ActionItem from './ActionItem';
+import { useTranslations } from 'next-intl';
 
 interface GameServerSettingsProps {
     server: GameServer;
@@ -30,6 +32,8 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
         FabricEggId,
         NeoForgeEggId,
     ].includes(server.egg_id);
+
+    const t = useTranslations('gameserverSettings');
 
     return (
         <div className="min-h-72">
@@ -55,37 +59,42 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                 {/* Server Management Section */}
                 <Card className="border-0 shadow-sm">
                     <CardHeader className="pb-0 p-3">
-                        <CardTitle className="text-base">Server Management</CardTitle>
+                        <CardTitle className="text-base">{t('management.title' as any)}</CardTitle>
                         <p className="text-xs text-muted-foreground">
-                            These actions can affect your server&apos;s functionality. Please use
-                            with caution.
+                            {t('management.description' as any)}
                         </p>
                     </CardHeader>
                     <CardContent className="p-3 pt-2">
-                        <div className="space-y-2">
-                            <div className="flex flex-col sm:flex-row gap-2">
-                                <div className="w-full sm:w-1/2">
-                                    <ReinstallDialog
-                                        apiKey={apiKey}
-                                        server_id={server.identifier}
-                                    />
-                                </div>
-                                <div className="w-full sm:w-1/2">
-                                    <Button
-                                        asChild
-                                        className="w-full border border-red-600 bg-red-600/20"
-                                        variant="secondary"
-                                    >
-                                        <Link href={`/gameserver/${server.identifier}/changeGame`}>
-                                            <Gamepad2 className="h-4 w-4 mr-2" />
-                                            Change game
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
+                        <div className="space-y-4">
+                            <ActionItem
+                                title={t('management.reinstall.title' as any)}
+                                description={t('management.reinstall.description' as any)}
+                            >
+                                <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
+                            </ActionItem>
+
+                            <ActionItem
+                                title={t('management.changeGame.title' as any)}
+                                description={t('management.changeGame.description' as any)}
+                            >
+                                <Button asChild variant="destructive" className="w-full">
+                                    <Link href={`/gameserver/${server.identifier}/changeGame`}>
+                                        <Gamepad2 className="h-4 w-4 mr-2" />
+                                        {t('management.changeGame.button' as any)}
+                                    </Link>
+                                </Button>
+                            </ActionItem>
+
                             {/* Delete Free Server (only for free servers) */}
                             {server.type === 'FREE' && (
-                                <DeleteFreeServerModal ptServerId={server.identifier} />
+                                <ActionItem
+                                    title={t('management.deleteFreeServerAction.title' as any)}
+                                    description={t(
+                                        'management.deleteFreeServerAction.description' as any,
+                                    )}
+                                >
+                                    <DeleteFreeServerModal ptServerId={server.identifier} />
+                                </ActionItem>
                             )}
                         </div>
                     </CardContent>

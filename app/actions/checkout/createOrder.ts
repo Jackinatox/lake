@@ -12,7 +12,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
     }
 
     const { ptServerId, hardwareConfig } = params;
-    const { ramMb, cpuPercent, diskMb, durationsDays } = hardwareConfig;
+    const { ramMb, cpuPercent, diskMb, durationsDays, backupCount } = hardwareConfig;
 
     const location = await prisma.location.findFirstOrThrow({
         where: { id: hardwareConfig.pfGroupId },
@@ -36,6 +36,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
             gameServerId: server.id,
             userId: user.id,
             ramMB: ramMb,
+            backupCount: backupCount,
             cpuPercent,
             diskMB: diskMb,
             price: price.totalCents,

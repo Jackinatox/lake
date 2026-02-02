@@ -18,7 +18,7 @@ import { PerformanceGroup } from '@/models/prisma';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import InfoButton from '../InfoButton';
-import { calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface HardwareConfigProps {
     performanceOptions: PerformanceGroup[];
@@ -85,6 +85,7 @@ export const HardwareConfigComponent = forwardRef(function HardwareConfig(
                 pfGroupId: selectedPFGroup.id,
                 cpuPercent: cpuCores * 100,
                 ramMb: ramGb * 1024,
+                backupCount: calcBackups(cpuCores * 100, ramGb * 1024),
                 diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024),
                 durationsDays: days,
             };
@@ -371,6 +372,7 @@ export const HardwareConfigComponent = forwardRef(function HardwareConfig(
                                             cpuPercent: cpuCores * 100,
                                             ramMb: ramGb * 1024,
                                             diskMb: calcDiskSize(cpuCores * 100, ramGb * 1024),
+                                            backupCount: calcBackups(cpuCores * 100, ramGb * 1024),
                                             durationsDays: days,
                                         };
                                         onNext(config);

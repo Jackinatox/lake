@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import { notifyReinstallStarted } from '../serverEvents';
 
@@ -21,6 +22,7 @@ interface ReinstallDialogProps {
 }
 
 const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
+    const t = useTranslations('gameserverSettings');
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [deleteAllFiles, setDeleteAllFiles] = useState(false);
@@ -48,22 +50,16 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
 
     return (
         <>
-            <Button
-                variant="secondary"
-                onClick={() => setOpen(true)}
-                className="w-full border border-red-600 bg-red-600/20"
-            >
+            <Button variant="destructive" onClick={() => setOpen(true)} className="w-full">
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Reinstall Server
+                {t('management.reinstall.button' as any)}
             </Button>
             <Dialog open={open} onOpenChange={handleOpenChange}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Reinstall Server?</DialogTitle>
+                        <DialogTitle>{t('management.reinstall.confirmTitle' as any)}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to reinstall your server? This will reinstall the
-                            server software. All data will be preserved unless you choose to delete
-                            all files below.
+                            {t('management.reinstall.confirmDescription' as any)}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center gap-2 pt-4">
@@ -74,13 +70,13 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                             disabled={isLoading}
                         />
                         <Label htmlFor="delete-all-files" className="text-sm font-normal">
-                            Delete all files before reinstalling
+                            {t('management.reinstall.deleteFilesLabel' as any)}
                         </Label>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline" disabled={isLoading}>
-                                Cancel
+                                {t('deleteFreeServer.cancel' as any)}
                             </Button>
                         </DialogClose>
                         <Button
@@ -88,7 +84,9 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                             onClick={handleReinstall}
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Reinstalling...' : 'Reinstall'}
+                            {isLoading
+                                ? t('management.reinstall.reinstalling' as any)
+                                : t('management.reinstall.button' as any)}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
