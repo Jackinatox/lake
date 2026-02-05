@@ -106,37 +106,39 @@ export function PaymentItem({
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
                 {!isFreeServer && (
-                    <span className="font-medium text-sm md:text-base whitespace-nowrap">
-                        {(amount / 100).toFixed(2)} €
-                    </span>
-                )}
-
-                {/* Receipt button */}
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 md:h-9 md:w-9"
-                    asChild={!!receiptUrl}
-                >
-                    {receiptUrl ? (
-                        <Link
-                            href={receiptUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={t('viewReceipt')}
-                        >
-                            <Receipt className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                        </Link>
-                    ) : (
-                        <span
-                            title={t('noReceipt')}
-                            className="inline-flex items-center justify-center opacity-50 cursor-not-allowed"
-                            aria-disabled
-                        >
-                            <Receipt className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <>
+                        <span className="font-medium text-sm md:text-base whitespace-nowrap">
+                            {(amount / 100).toFixed(2)} €
                         </span>
-                    )}
-                </Button>
+
+                        {/* Receipt button */}
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 md:h-9 md:w-9"
+                            asChild={!!receiptUrl}
+                        >
+                            {receiptUrl ? (
+                                <Link
+                                    href={receiptUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title={t('viewReceipt')}
+                                >
+                                    <Receipt className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                </Link>
+                            ) : (
+                                <span
+                                    title={t('noReceipt')}
+                                    className="inline-flex items-center justify-center opacity-50 cursor-not-allowed"
+                                    aria-disabled
+                                >
+                                    <Receipt className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                </span>
+                            )}
+                        </Button>
+                    </>
+                )}
 
                 {/* Server action buttons */}
                 {gameServerUrl && (

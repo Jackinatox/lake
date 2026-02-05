@@ -137,10 +137,12 @@ export function CompactServerAddress({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto py-1 px-2 font-mono text-xs gap-1"
+                                className="h-8 px-2 font-mono text-xs gap-1"
+                                aria-label={`Connection details for ${address}`}
                             >
                                 <EthernetPort className="h-3 w-3 text-muted-foreground" />
-                                <span className="max-w-20 sm:max-w-28 truncate">{address}</span>
+                                {/* Show a "Connect" label when there's space (md+), otherwise keep icon-only */}
+                                <span className="hidden md:inline ml-1">Connect</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -198,10 +200,12 @@ export function CompactServerAddress({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto py-1 px-2 font-mono text-xs gap-1"
+                                className="h-8 px-2 font-mono text-xs gap-1"
+                                aria-label={`Connection address ${ipPortCombo}`}
                             >
                                 <EthernetPort className="h-3 w-3 text-muted-foreground" />
-                                <span className="max-w-24 sm:max-w-32 truncate">{ipPortCombo}</span>
+                                {/* Show IP:Port earlier on small screens for Minecraft (sm+), otherwise show at md+ */}
+                                <span className={cn(isMinecraft ? 'hidden sm:inline' : 'hidden md:inline', 'ml-1 font-mono truncate max-w-32')}>{ipPortCombo}</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -315,7 +319,7 @@ export function CompactServerAddress({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-auto py-1 px-2 font-mono text-xs gap-1"
+                            className="h-8 px-2 font-mono text-xs gap-1"
                         >
                             <EthernetPort className="h-3 w-3 text-muted-foreground" />
                             <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
@@ -373,13 +377,16 @@ export function CompactServerAddress({
             <div className={cn('flex items-center gap-1 text-sm', className)}>
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <button
-                            type="button"
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 px-2 font-mono text-xs gap-1 bg-muted/50 hover:bg-muted"
+                            aria-label={`Copy connection ${ipPortCombo}`}
                             onClick={() => handleCopy(ipPortCombo, 'main')}
-                            className="inline-flex items-center gap-1.5 font-mono text-xs px-2 py-1 rounded bg-muted/50 hover:bg-muted transition-colors"
                         >
                             <EthernetPort className="h-3 w-3 text-muted-foreground" />
-                            <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
+                            {/* Hide the IP:Port on very small screens; show at sm+ for Minecraft, md+ for others */}
+                            <span className={cn(isMinecraft ? 'hidden sm:inline' : 'hidden md:inline', 'ml-1 max-w-20 sm:max-w-28 lg:max-w-40 truncate')}>
                                 {ipPortCombo}
                             </span>
                             {copiedKey === 'main' ? (
@@ -387,7 +394,7 @@ export function CompactServerAddress({
                             ) : (
                                 <Copy className="h-3 w-3 text-muted-foreground" />
                             )}
-                        </button>
+                        </Button>
                     </TooltipTrigger>
                     <TooltipContent>
                         {copiedKey === 'main' ? 'Copied!' : 'Click to copy'}

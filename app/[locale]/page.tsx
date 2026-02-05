@@ -153,7 +153,7 @@ export default async function LandingPage() {
 
     return (
         <main className="flex flex-col min-h-screen -mx-2 md:-mx-8 -my-5">
-            {/* Hero Section - Completely Redesigned */}
+            {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Animated Background Gradient */}
                 <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-primary/5 dark:from-primary/5 dark:via-background dark:to-primary/10" />
@@ -205,29 +205,33 @@ export default async function LandingPage() {
                             </div>
 
                             {/* CTA Buttons */}
-                            <div className="flex flex-col sm:flex-row gap-2 justify-center lg:justify-start pt-4">
-                                <Button
-                                    size="lg"
-                                    className="w-full sm:w-auto px-8 text-base group"
-                                    asChild
-                                >
-                                    <Link
-                                        href="/products/gameserver"
-                                        className="w-full sm:w-auto text-secondary-foreground"
+                            <div className="pt-4 space-y-3">
+                                <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:gap-2 justify-center lg:justify-start">
+                                    <Button
+                                        size="lg"
+                                        className="w-full sm:w-auto px-8 text-base group"
+                                        asChild
                                     >
-                                        {t('buttonStartNow')}
-                                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </Button>
-                                <Button
-                                    size="lg"
-                                    variant="outline"
-                                    className="w-full sm:w-auto px-8 text-base"
-                                    asChild
-                                >
-                                    <Link href="/products/packages">{t('buttonComparePlans')}</Link>
-                                </Button>
-                                <div className="md:hidden">
+                                        <Link
+                                            href="/products/gameserver"
+                                            className="w-full sm:w-auto text-secondary-foreground"
+                                        >
+                                            {t('buttonStartNow')}
+                                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        variant="outline"
+                                        className="w-full sm:w-auto px-8 text-base"
+                                        asChild
+                                    >
+                                        <Link href="/products/packages">
+                                            {t('buttonComparePlans')}
+                                        </Link>
+                                    </Button>
+                                </div>
+                                <div>
                                     <Button
                                         size="lg"
                                         className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700"

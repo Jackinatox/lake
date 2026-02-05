@@ -10,6 +10,7 @@ import { PaymentItem } from './paymentItem';
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import { FreeServerSection } from './FreeServerSection';
+import { Separator } from '@/components/ui/separator';
 
 async function PaymentList() {
     const session = await auth.api.getSession({
@@ -80,7 +81,10 @@ async function PaymentList() {
 
                 {/* Free server section - collapsible */}
                 {freeServerPayments.length > 0 && (
-                    <FreeServerSection payments={freeServerPayments} />
+                    <>
+                        <Separator />
+                        <FreeServerSection payments={freeServerPayments} />
+                    </>
                 )}
             </CardContent>
         </Card>

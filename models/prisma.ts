@@ -26,3 +26,7 @@ export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
         gameServer: { select: { id: true; name: true } };
     };
 }>;
+
+export type FreeServerPayment = Prisma.GameServerOrderGetPayload<{
+    include: { gameServer: { select: { ptServerId: true; status: true; type: true; id: true } } };
+}>;

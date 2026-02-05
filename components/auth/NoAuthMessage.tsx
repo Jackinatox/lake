@@ -2,6 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import Link from 'next/link';
 
 export default async function NotLoggedIn() {
     const t = await getTranslations('NotLoggedIn');
@@ -22,7 +23,7 @@ export default async function NotLoggedIn() {
 
                 <CardFooter className="flex justify-center">
                     <Button asChild>
-                        <a href="/login">{t('login')}</a>
+                        <Link href="/login">{t('login')}</Link>
                     </Button>
                 </CardFooter>
             </Card>

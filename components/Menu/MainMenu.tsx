@@ -28,6 +28,7 @@ import {
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './language-switcher';
+import { authClient } from '@/lib/auth-client';
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
 type SubItem = { label: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };
@@ -63,6 +64,7 @@ interface MainMenuInterface {
 }
 
 export default function MainMenu({ locale }: MainMenuInterface) {
+    const auth = authClient.useSession().data;
     const [open, setOpen] = React.useState(false);
     const pathname = usePathname();
     const t = useTranslations('freeServer');
@@ -197,19 +199,21 @@ export default function MainMenu({ locale }: MainMenuInterface) {
 
                                 <nav className="flex flex-col space-y-2 mt-6">
                                     {/* Dashboard prominently at the top */}
-                                    <Link
-                                        href="/gameserver"
-                                        onClick={() => setOpen(false)}
-                                        className={cn(
-                                            'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
-                                            isActive('/gameserver')
-                                                ? 'bg-primary/20 text-primary font-semibold'
-                                                : 'hover:text-primary',
-                                        )}
-                                    >
-                                        <LayoutDashboard className="h-6 w-6 mr-3" />
-                                        Dashboard
-                                    </Link>
+                                    { auth?.session &&                                       
+                                        <Link
+                                            href="/gameserver"
+                                            onClick={() => setOpen(false)}
+                                            className={cn(
+                                                'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
+                                                isActive('/gameserver')
+                                                    ? 'bg-primary/20 text-primary font-semibold'
+                                                    : 'hover:text-primary',
+                                            )}
+                                        >
+                                            <LayoutDashboard className="h-6 w-6 mr-3" />
+                                            Dashboard
+                                        </Link>
+                                    }
 
                                     {/* Free Server Button - Mobile */}
                                     <Link

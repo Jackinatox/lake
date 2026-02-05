@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { GameServer } from '@/models/gameServerModel';
-import { ChevronDown, Play, Power, RefreshCw, Square, Zap } from 'lucide-react';
+import { ChevronDown, Gauge, Play, Power, RefreshCw, Square, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
@@ -241,7 +241,7 @@ export function DashboardHeader({
                         />
                         <Button asChild variant="outline" size="sm" className="h-8 px-2">
                             <Link href={`${pathname}/upgrade`}>
-                                <Zap className="h-4 w-4" />
+                                <Gauge className="h-4 w-4" />
                             </Link>
                         </Button>
                     </div>
