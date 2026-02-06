@@ -35,14 +35,16 @@ export async function sendMail(to: string, subject: string, html: string, type: 
         },
     });
 
-    const mailer = type === 'SUPPORT_TICKET_CREATED' ? supportMailer : noReplyMailer;
+    // TODO: Setup all credentials tto properly send mails from support and no-reply and use the correct one based on the type
+    // const mailer = type === 'SUPPORT_TICKET_CREATED' ? supportMailer : noReplyMailer;
+    const mailer = noReplyMailer;
 
     try {
         const res = await mailer.sendMail({
             from: `"Scyed" <${env('SMTP_USER')}>`,
             to,
-            subject,
-            html,
+            subject: subject,
+            html: html,
         });
 
         // save everything for now - Debugging purposes

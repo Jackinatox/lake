@@ -213,6 +213,8 @@ export async function checkoutAction(params: CheckoutParams) {
                     cpuPercent: cpuPercent,
                     backupCount: server.backupCount,
                     diskMB: diskMb,
+                    creationLocationId: server.locationId,
+                    creationGameDataId: server.gameDataId,
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
     useWebSocketContext,
     ReadyState,
@@ -252,6 +253,33 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
     const consoleOutput = useConsoleOutput();
     const initialContentLoaded = useInitialContentLoaded();
     const { sendCommand, sendPowerAction } = useSendCommand();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+    const autoStart = useRef(searchParams?.get('start') === 'true');
+
+    const clearAutoStartParam = useCallback(() => {
+        if (!searchParams?.has('start')) return;
+        const nextParams = new URLSearchParams(searchParams.toString());
+        nextParams.delete('start');
+        const nextQuery = nextParams.toString();
+        router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
+    }, [pathname, router, searchParams]);
+
+    useEffect(() => {
+        if (!autoStart.current) return;
+        if (!connection.isConnected) return;
+        if (serverStatus === 'running' || serverStatus === 'starting') {
+            autoStart.current = false;
+            clearAutoStartParam();
+            return;
+        }
+        if (serverStatus !== 'offline') return;
+
+        autoStart.current = false;
+        sendPowerAction('start');
+        clearAutoStartParam();
+    }, [clearAutoStartParam, connection.isConnected, serverStatus, sendPowerAction]);
 
     return {
         wsState: connection.wsState,

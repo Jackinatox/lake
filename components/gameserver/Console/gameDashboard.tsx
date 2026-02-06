@@ -1,9 +1,14 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { EggFeature } from '@/app/client/generated/browser';
+import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { useServerWebSocket } from '@/hooks/useServerWebSocket';
+import { formatMilliseconds } from '@/lib/formatTime';
 import { GameServer } from '@/models/gameServerModel';
 import {
     ArrowDownToLine,
@@ -11,37 +16,21 @@ import {
     Clock,
     Cpu,
     HardDrive,
-    MemoryStickIcon as Memory,
+    MemoryStickIcon,
     Zap,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRef } from 'react';
-import { useIsMobile } from '@/hooks/useIsMobile';
+import dynamic from 'next/dynamic';
+import BackupManager from '../BackupManager/BackupManager';
+import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
 import { TabsComponent } from '../GameserverTabs';
 import GameServerSettings from '../settings/GameServerSettings';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
 import ConsoleV2 from './ConsoleV2';
+import { DashboardHeader } from './DashboardHeader';
+import DebugPanel from './DebugPanel';
 import CPUChart from './graphs/CPUChart';
 import RAMChart from './graphs/RAMChart';
-import { DashboardHeader } from './DashboardHeader';
-import { useRouter, useSearchParams } from 'next/navigation';
-import BackupManager from '../BackupManager/BackupManager';
-import { formatMilliseconds } from '@/lib/formatTime';
-import { WebSocketProvider } from '@/contexts/WebSocketContext';
-import {
-    useConnectionState,
-    useServerStatus,
-    useServerStats,
-    useConsoleOutput,
-    useSendCommand,
-    useCustomEvent,
-    useInitialContentLoaded,
-} from '@/hooks/useServerWebSocket';
-import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
-import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
-import { EggFeature } from '@/app/client/generated/browser';
-import dynamic from 'next/dynamic';
-import DebugPanel from './DebugPanel';
 
 interface serverProps {
     server: GameServer;
@@ -68,16 +57,15 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     const isMobile = useIsMobile();
 
     // WebSocket hooks - replacing the old useWebSocket hook
-    const { wsState, isConnected, isReconnecting } = useConnectionState();
-    const serverStatus = useServerStatus();
-    const serverStats = useServerStats();
-    const consoleOutput = useConsoleOutput();
-    const initialContentLoaded = useInitialContentLoaded();
-    const { sendCommand, sendPowerAction } = useSendCommand();
-
-    const searchParams = useSearchParams();
-    const autoStart = useRef(searchParams.get('start') === 'true');
-    const router = useRouter();
+    const {
+        isConnected,
+        serverStatus,
+        stats: serverStats,
+        consoleOutput,
+        initialContentLoaded,
+        sendCommand,
+        sendPowerAction,
+    } = useServerWebSocket();
     const t = useTranslations();
 
     // Helper to format bytes
@@ -123,7 +111,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                     <div className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1">
-                                <Memory className="h-3 w-3 text-purple-500" />
+                                <MemoryStickIcon className="h-3 w-3 text-purple-500" />
                                 <span className="text-muted-foreground">RAM</span>
                             </div>
                             <span className="font-medium tabular-nums">
@@ -222,7 +210,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
             <Card className="border-0 shadow-sm">
                 <CardContent className="p-2 md:p-3">
                     <div className="flex items-center gap-2 mb-2">
-                        <Memory className="h-4 w-4 text-purple-500" />
+                        <MemoryStickIcon className="h-4 w-4 text-purple-500" />
                         <span className="text-sm font-medium">RAM</span>
                     </div>
                     <RAMChart

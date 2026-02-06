@@ -132,10 +132,10 @@ model GameServerOrder {
   id Int @id @default(autoincrement())
 
   gameServerId String? // Null if Creation event
-  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
+  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull) // onDelete: SetNull to preserve order history for compliance/auditing
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict) // Restrict deletion to preserve order history for compliance/auditing
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade deletion for compliance with the EU
 
   workerJobId String? // Job that processed this order
 
@@ -153,11 +153,11 @@ model GameServerOrder {
   expiresAt DateTime // New expiry date *if* order succeeds
 
   gameConfig         Json? // This is the same as the GameConfig in models
-  creationGameDataId Int?
-  creationGameData   GameData? @relation(fields: [creationGameDataId], references: [id], onDelete: Restrict)
+  creationGameDataId Int
+  creationGameData   GameData @relation(fields: [creationGameDataId], references: [id], onDelete: Restrict)
 
-  creationLocationId Int?
-  creationLocation   Location? @relation(fields: [creationLocationId], references: [id], onDelete: Restrict)
+  creationLocationId Int
+  creationLocation   Location @relation(fields: [creationLocationId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -364,11 +364,11 @@ model WorkerLog {
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Relation to JobRun
   jobRunId     String?
-  jobRunRecord JobRun? @relation(fields: [jobRunId], references: [id], onDelete: SetNull)
+  jobRunRecord JobRun? @relation(fields: [jobRunId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -405,7 +405,7 @@ model ApplicationLog {
 
   // User context (optional)
   userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   gameServerId String?
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)

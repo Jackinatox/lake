@@ -146,21 +146,6 @@ export async function sendTwoFactorOtpEmail(
     await sendMail(data.to, 'Dein Sicherheitscode', html, 'TWO_FAKTOR_OPT_SEND');
 }
 
-interface ServerBookingEmailData {
-    userName: string;
-    userEmail: string;
-    gameName: string;
-    gameImageUrl: string;
-    serverName: string;
-    ramMB: number;
-    cpuPercent: number;
-    diskMB: number;
-    location: string;
-    price: number;
-    expiresAt: Date;
-    serverUrl: string;
-}
-
 interface InvoiceEmailData {
     userName: string;
     userEmail: string;

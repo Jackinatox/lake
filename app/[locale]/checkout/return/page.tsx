@@ -4,8 +4,6 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';
 import ServerReadyPoller from './ServerReadyPoller';
-import prisma from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 
 export default async function ReturnPage({
     searchParams,

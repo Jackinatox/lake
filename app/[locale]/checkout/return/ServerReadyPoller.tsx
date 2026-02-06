@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import checkPaymentStatus from './checkPaymentStatus';
 import { OrderStatus } from '@/app/client/generated/enums';
 
@@ -79,85 +81,73 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     };
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center bg-linear-to-b from-background via-background to-muted/70 py-16 md:px-4">
-            <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.12),transparent_45%)]" />
-            <div className="relative z-10 w-full max-w-2xl">
-                <div className="rounded-3xl border border-border/60 bg-card/80 p-8 shadow-2xl backdrop-blur-md md:p-10">
-                    <div className="flex flex-col items-center gap-6 text-center">
-                        {!networkError && !isError ? (
-                            <>
-                                <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                    <Loader2 className="h-8 w-8 animate-spin" />
-                                </span>
-                                <div className="space-y-2">
-                                    <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                                        {pollerT('waitingForPayment')}
-                                    </h1>
-                                    <p className="text-sm text-muted-foreground md:text-base">
-                                        {pollerT('paymentProcessing')}
-                                    </p>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-destructive/15 text-destructive">
-                                    {networkError ? (
-                                        <WifiOff className="h-8 w-8" />
-                                    ) : (
-                                        <AlertTriangle className="h-8 w-8" />
-                                    )}
-                                </span>
-                                <div className="space-y-2">
-                                    <h1 className="text-2xl font-semibold tracking-tight text-destructive md:text-3xl">
-                                        {networkError
-                                            ? pollerT('networkHeadline')
-                                            : pollerT('paymentFailedTitle')}
-                                    </h1>
-                                    <p className="text-sm text-destructive md:text-base">
-                                        {networkError
-                                            ? pollerT('networkSubheadline')
-                                            : pollerT('paymentFailedSubtitle')}
-                                    </p>
-                                </div>
-
-                                {networkError && (
-                                    <div className="w-full rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-left">
-                                        <p className="wrap-break-word text-xs text-destructive/80">
-                                            {networkError}
-                                        </p>
-                                    </div>
+        <div className="flex min-h-screen items-center justify-center p-4">
+            <Card className="w-full max-w-md">
+                {!networkError && !isError ? (
+                    <>
+                        <CardHeader className="text-center">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                            <CardTitle>{pollerT('waitingForPayment')}</CardTitle>
+                            <CardDescription>{pollerT('paymentProcessing')}</CardDescription>
+                        </CardHeader>
+                    </>
+                ) : (
+                    <>
+                        <CardHeader className="text-center">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                                {networkError ? (
+                                    <WifiOff className="h-8 w-8 text-destructive" />
+                                ) : (
+                                    <AlertTriangle className="h-8 w-8 text-destructive" />
                                 )}
+                            </div>
+                            <CardTitle className="text-destructive">
+                                {networkError
+                                    ? pollerT('networkHeadline')
+                                    : pollerT('paymentFailedTitle')}
+                            </CardTitle>
+                            <CardDescription>
+                                {networkError
+                                    ? pollerT('networkSubheadline')
+                                    : pollerT('paymentFailedSubtitle')}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {networkError && (
+                                <Alert variant="destructive">
+                                    <AlertDescription className="break-words text-sm">
+                                        {networkError}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
 
-                                <div className="flex flex-col gap-2 sm:flex-row">
-                                    {networkError ? (
-                                        <>
-                                            <Button onClick={handleRetry}>
-                                                {pollerT('retry')}
-                                            </Button>
-                                            <Button asChild variant="outline">
-                                                <Link href="/support">
-                                                    {pollerT('contactSupport')}
-                                                </Link>
-                                            </Button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Button asChild>
-                                                <Link href="/support">
-                                                    {pollerT('contactSupport')}
-                                                </Link>
-                                            </Button>
-                                            <Button asChild variant="outline">
-                                                <Link href="/">{pollerT('returnHome')}</Link>
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                                {networkError ? (
+                                    <>
+                                        <Button onClick={handleRetry} className="flex-1">
+                                            {pollerT('retry')}
+                                        </Button>
+                                        <Button asChild variant="outline" className="flex-1">
+                                            <Link href="/support">{pollerT('contactSupport')}</Link>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Button asChild className="flex-1">
+                                            <Link href="/support">{pollerT('contactSupport')}</Link>
+                                        </Button>
+                                        <Button asChild variant="outline" className="flex-1">
+                                            <Link href="/">{pollerT('returnHome')}</Link>
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        </CardContent>
+                    </>
+                )}
+            </Card>
         </div>
     );
 }
