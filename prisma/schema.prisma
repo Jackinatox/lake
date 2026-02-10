@@ -15,6 +15,7 @@ generator worker {
 model GameData {
   id       Int     @id @default(autoincrement())
   name     String
+  slug     String?  @unique
   data     Json?
   enabled  Boolean @default(false)
   featured Boolean @default(false)
