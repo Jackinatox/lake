@@ -19,6 +19,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import InfoButton from '../InfoButton';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 
 interface HardwareConfigProps {
     performanceOptions: PerformanceGroup[];
@@ -233,7 +234,7 @@ export const HardwareConfigComponent = forwardRef(function HardwareConfig(
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
                                     <div className="flex items-center gap-2">
                                         <div className="text-base sm:text-lg font-semibold">
-                                            {cpuCores} {tl('vcpuUnit')}
+                                            {formatVCores(cpuCores)}
                                         </div>
                                         <span className="text-xs sm:text-sm text-muted-foreground">
                                             {selectedPFGroup.cpu.name}
@@ -321,7 +322,7 @@ export const HardwareConfigComponent = forwardRef(function HardwareConfig(
                                                 {tp('resources')}
                                             </TableCell>
                                             <TableCell>
-                                                {cpuCores} vCore{cpuCores > 1 ? 's' : ''}
+                                                {formatVCores(cpuCores)}
                                             </TableCell>
                                             <TableCell>{ramGb} GiB</TableCell>
                                         </TableRow>

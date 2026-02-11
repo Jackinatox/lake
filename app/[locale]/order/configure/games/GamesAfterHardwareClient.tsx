@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Cpu, MemoryStick, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 
 interface GameInfo {
     id: number;
@@ -64,7 +65,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
                         <span className="font-semibold text-muted-foreground">Your Config:</span>
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                             <Cpu className="h-4 w-4 text-blue-500" />
-                            <span className="font-medium">{cpu} vCPU</span>
+                            <span className="font-medium">{formatVCores(parseFloat(cpu))}</span>
                         </div>
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                             <MemoryStick className="h-4 w-4 text-purple-500" />

@@ -9,6 +9,7 @@ import GameServerStatus from './GameServerStatus';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 
 function formatExpirationDate(date: Date) {
     const now = new Date();
@@ -112,7 +113,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                         <div className="flex items-center gap-4 sm:gap-5 mt-1.5 text-sm text-slate-600 dark:text-slate-400">
                             <span className="flex items-center gap-1">
                                 <Cpu className="w-4 h-4 text-blue-500" />
-                                <span>{server.cpuPercent / 100}</span> VCores
+                                {formatVCoresFromPercent(server.cpuPercent)}
                             </span>
                             <span className="flex items-center gap-1">
                                 <MemoryStick className="w-4 h-4 text-purple-500" />

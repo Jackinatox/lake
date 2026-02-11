@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
@@ -240,7 +241,7 @@ export function UpgradeHardwareConfigToPayed({
                                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
                                         <div className="flex items-center gap-2">
                                             <div className="text-base sm:text-lg font-semibold">
-                                                {cpuCores} {t('config.cpu.label-suffix')}
+                                                {formatVCores(cpuCores)}
                                             </div>
                                             <span className="text-xs sm:text-sm text-muted-foreground">
                                                 {selectedPFGroup.cpu.name}

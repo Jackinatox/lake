@@ -265,7 +265,6 @@
             },
             "little-info": "Info",
             "cpu": {
-                "label-suffix": "vCore(s)",
                 "price-suffix": "€ / vCore"
             },
             "ram": {
@@ -346,7 +345,6 @@
                 "minOrderHint": "Mindestbestellwert ist 1,00 €"
             },
             "labels": {
-                "vcpuUnit": "vCore(s)",
                 "ramUnit": "GiB RAM",
                 "perVcore": "€ / vCore",
                 "perGiB": "€ / GiB"
@@ -376,7 +374,6 @@
             },
             "little-info": "Info",
             "cpu": {
-                "label-suffix": "vCore(s)",
                 "price-suffix": "€ / vCore"
             },
             "ram": {
@@ -672,7 +669,6 @@
             "charts": {
                 "current": "Aktuell",
                 "limit": "Limit",
-                "cpuCores": "{cores} {cores, plural, =1 {vCPU} other {vCPUs}}",
                 "memoryGiB": "{amount} GiB"
             }
         },

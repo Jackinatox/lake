@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import type { Game, GameConfig } from '@/models/config';
 import {
     Cpu,
@@ -269,7 +270,7 @@ export default function PackageBookingClient({
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                                     <Cpu className="h-4 w-4 text-blue-500" />
                                     <span className="font-medium">
-                                        {(packageData.cpuPercent / 100).toFixed(0)} vCPU
+                                        {formatVCoresFromPercent(packageData.cpuPercent)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">

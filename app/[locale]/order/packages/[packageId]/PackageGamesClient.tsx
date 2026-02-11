@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Cpu, Database, HardDrive, MapPin, MemoryStick } from 'lucide-react';
 import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 
 interface PackageSummary {
     id: number;
@@ -74,7 +75,7 @@ export default function PackageGamesClient({ packageSummary, games }: PackageGam
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                                 <Cpu className="h-4 w-4 text-blue-500" />
                                 <span className="font-medium">
-                                    {(packageSummary.cpuPercent / 100).toFixed(0)} vCPU
+                                    {formatVCoresFromPercent(packageSummary.cpuPercent)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">

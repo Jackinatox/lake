@@ -4,7 +4,7 @@ export const formatVCores = (vcores: number) => {
         maximumFractionDigits: 1,
     };
     const num = new Intl.NumberFormat('de-DE', opts).format(vcores);
-    return `${num} ${Math.abs(vcores - 1) < 1e-9 ? 'VCore' : 'VCores'}`;
+    return `${num} ${Math.abs(vcores - 1) < 1e-9 ? 'vCore' : 'vCores'}`;
 };
 
 export default formatVCores;

@@ -18,6 +18,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { fetchOrderForRestore } from '@/lib/orderUtils';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 
 interface SetupPageClientProps {
     game: Game;
@@ -59,7 +60,7 @@ export default function SetupPageClient({
         }
 
         restoreOrder();
-    }, [orderIdParam]);
+    }, [orderIdParam, toast]);
 
     const isLoggedIn = Boolean(session.data?.user);
 
@@ -210,7 +211,7 @@ export default function SetupPageClient({
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                                 <Cpu className="h-4 w-4 text-blue-500" />
                                 <span className="font-medium">
-                                    {hardwareConfig.cpuPercent / 100} vCPU
+                                    {formatVCoresFromPercent(hardwareConfig.cpuPercent)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useTranslations } from 'next-intl';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import {
     ChartConfig,
     ChartContainer,
@@ -129,7 +130,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
 
     const currentCpu =
         newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute.toFixed(0)}%` : 'N/A';
-    const limitLabel = t('gameserver.dashboard.charts.cpuCores', { cores: cpuLimit });
+    const limitLabel = formatVCores(cpuLimit);
 
     return (
         <div className="space-y-2">

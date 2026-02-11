@@ -6,6 +6,7 @@ import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 
 import Image from 'next/image';
 import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 
 export interface PackageDisplay {
     id: number;
@@ -77,9 +78,8 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                             <Cpu className="h-5 w-5 text-blue-500" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    {(pkg.cpuPercent / 100).toFixed(0)}
+                                    {formatVCoresFromPercent(pkg.cpuPercent)}
                                 </div>
-                                <div className="text-xs text-muted-foreground">vCPU</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2.5 p-2.5 rounded-lg backdrop-blur-sm border bg-purple-500/10 border-purple-500/30">
