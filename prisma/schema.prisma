@@ -15,7 +15,7 @@ generator worker {
 model GameData {
   id       Int     @id @default(autoincrement())
   name     String
-  slug     String?  @unique
+  slug     String  @unique
   data     Json?
   enabled  Boolean @default(false)
   featured Boolean @default(false)
@@ -130,7 +130,7 @@ enum GameServerStatus {
 }
 
 model GameServerOrder {
-  id Int @id @default(autoincrement())
+  id String @id @default(cuid(2))
 
   gameServerId String? // Null if Creation event
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull) // onDelete: SetNull to preserve order history for compliance/auditing
@@ -147,9 +147,10 @@ model GameServerOrder {
   price       Float
   backupCount Int
 
-  receipt_url     String?
-  stripeSessionId String?     @unique
-  status          OrderStatus @default(PENDING)
+  receipt_url        String?
+  stripeSessionId    String?     @unique
+  stripeClientSecret String?
+  status             OrderStatus @default(PENDING)
 
   expiresAt DateTime // New expiry date *if* order succeeds
 

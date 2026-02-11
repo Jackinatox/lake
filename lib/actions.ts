@@ -42,3 +42,25 @@ export async function fetchGames(gameId: number): Promise<Game | null> {
         name: game.name,
     };
 }
+
+export async function fetchGameBySlug(slug: string): Promise<Game | null> {
+    const game = await prisma.gameData.findUnique({
+        where: {
+            slug: slug,
+            enabled: true,
+        },
+        select: {
+            id: true,
+            name: true,
+            data: true,
+        },
+    });
+
+    if (!game) return null;
+
+    return {
+        data: game.data,
+        id: game.id,
+        name: game.name,
+    };
+}

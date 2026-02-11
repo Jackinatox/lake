@@ -25,3 +25,8 @@ export interface GameConfig {
     dockerImage: string;
     gameSpecificConfig: SatisfactoryConfig | MinecraftConfig | FactorioConfig | HytaleConfig;
 }
+
+export type ServerConfig = {
+    hardwareConfig: HardwareConfig;
+    gameConfig: GameConfig;
+};

@@ -68,7 +68,7 @@ export default async function GameServersPage() {
                     <NoServersMessage />
                 )}
                 <div className="mt-8 text-center">
-                    <Link href={'/products/gameserver'}>
+                    <Link href={'/order'}>
                         <Button size="lg" variant="outline">
                             Add New Server
                         </Button>

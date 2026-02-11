@@ -83,11 +83,12 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
         throw new Error('Failed to create Stripe session');
     }
 
-    // 3. Save Stripe Session ID
+    const client_secret = stripeSession.client_secret;
+    // 3. Save Stripe Session ID and Client Secret
     await prisma.gameServerOrder.update({
         where: { id: order.id },
-        data: { stripeSessionId: stripeSession.id },
+        data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
     });
 
-    return stripeSession.client_secret;
+    return client_secret;
 }

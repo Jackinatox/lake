@@ -45,7 +45,7 @@ const MENU: MenuItem[] = [
     {
         label: 'Games',
         Icon: Gamepad2,
-        href: '/products/gameserver',
+        href: '/order',
     },
     {
         label: 'Dashboard',
@@ -142,7 +142,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg"
                                 >
                                     <Link
-                                        href="/products/free-gameserver"
+                                        href="/order"
                                         className="flex items-center"
                                     >
                                         <Gift className="h-4 w-4 mr-1.5" />
@@ -217,7 +217,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
 
                                     {/* Free Server Button - Mobile */}
                                     <Link
-                                        href="/products/free-gameserver"
+                                        href="/order"
                                         onClick={() => setOpen(false)}
                                         className="flex items-center px-4 py-3 text-lg font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all"
                                     >

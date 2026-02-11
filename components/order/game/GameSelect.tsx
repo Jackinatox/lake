@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 
 async function GameSelect() {
     const data = await prisma.gameData.findMany({
-        select: { id: true, name: true },
+        select: { id: true, name: true, slug: true },
         where: { enabled: true },
         orderBy: { sorting: 'asc' },
     });
@@ -33,7 +33,7 @@ async function GameSelect() {
                         <GameCard
                             key={game.id}
                             card={{
-                                link: `/booking2/${game.id.toString()}`,
+                                link: `/order/${game.slug}`,
                                 name: game.name ?? '',
                             }}
                             images={game.images}

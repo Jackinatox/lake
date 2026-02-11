@@ -9,11 +9,10 @@ import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
-import { GameConfig, HardwareConfig } from '@/models/config';
+import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
-import { ServerConfig } from '../../[locale]/booking2/[gameId]/page';
 import upgradeToPayed from './createOrder';
 import { calcBackups } from '@/lib/GlobalFunctions/ptResourceLogic';
 
@@ -43,7 +42,7 @@ export type CheckoutParams =
           durationDays: number;
       };
 
-export async function checkoutAction(params: CheckoutParams) {
+export async function checkoutAction(params: CheckoutParams): Promise<{ client_secret: string | null, orderId: number }> {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({
@@ -53,8 +52,8 @@ export async function checkoutAction(params: CheckoutParams) {
     if (!session) throw new Error('Not authenticated');
     const user = session.user;
 
-    const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-    let stripeUserId = dbUser?.stripeUserId ?? null;
+    // const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    let stripeUserId = session.user.stripeUserId;
 
     if (!stripeUserId) {
         const newCustomer = await stripe.customers.create({
@@ -148,13 +147,14 @@ export async function checkoutAction(params: CheckoutParams) {
                 // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
             });
 
-            // 3. Save Stripe Session ID
+            const client_secret = stripeSession.client_secret;
+            // 3. Save Stripe Session ID and Client Secret
             await prisma.gameServerOrder.update({
                 where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id },
+                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
             });
 
-            return { client_secret: stripeSession.client_secret };
+            return { client_secret, orderId: order.id };
         }
         case 'UPGRADE': {
             const { ptServerId, upgradeConfig } = params;
@@ -253,18 +253,20 @@ export async function checkoutAction(params: CheckoutParams) {
                 // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
             });
 
-            // 3. Save Stripe Session ID
+            const client_secret = stripeSession.client_secret;
+
+            // 3. Save Stripe Session ID and Client Secret
             await prisma.gameServerOrder.update({
                 where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id },
+                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
             });
 
-            return { client_secret: stripeSession.client_secret };
+            return { client_secret, orderId: order.id };
         }
         case 'TO_PAYED': {
             throw new Error('Feature not implemented yet.');
-            const client_secret = await upgradeToPayed(params, dbUser);
-            return { client_secret: client_secret };
+            // const client_secret = await upgradeToPayed(params, dbUser);
+            // return { client_secret: client_secret };
         }
         case 'PACKAGE': {
             const { gameConfig, packageId } = params;
@@ -346,13 +348,14 @@ export async function checkoutAction(params: CheckoutParams) {
                 return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
             });
 
-            // Save Stripe Session ID
+            const client_secret = stripeSession.client_secret;
+            // Save Stripe Session ID and Client Secret
             await prisma.gameServerOrder.update({
                 where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id },
+                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
             });
 
-            return { client_secret: stripeSession.client_secret };
+            return { client_secret, orderId: order.id };
         }
     }
 }

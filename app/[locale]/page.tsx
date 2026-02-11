@@ -12,7 +12,7 @@ import { Game, SupportedGamesList } from './SupportedGamesList';
 export default async function LandingPage() {
     const t = await getTranslations('landingpage');
     const games = await prisma.gameData.findMany({
-        select: { id: true, name: true },
+        select: { id: true, name: true, slug: true },
         where: { enabled: true, featured: true },
         take: 4,
         orderBy: { sorting: 'asc' },
@@ -24,6 +24,7 @@ export default async function LandingPage() {
         return {
             id: String(game.id),
             name: game.name,
+            slug: game.slug,
             images: {
                 light: `/images/light/games/icons/${imgName}`,
                 dark: `/images/dark/games/icons/${imgName}`,
@@ -213,7 +214,7 @@ export default async function LandingPage() {
                                         asChild
                                     >
                                         <Link
-                                            href="/products/gameserver"
+                                            href="/order"
                                             className="w-full sm:w-auto text-secondary-foreground"
                                         >
                                             {t('buttonStartNow')}
@@ -226,7 +227,7 @@ export default async function LandingPage() {
                                         className="w-full sm:w-auto px-8 text-base"
                                         asChild
                                     >
-                                        <Link href="/products/packages">
+                                        <Link href="/order">
                                             {t('buttonComparePlans')}
                                         </Link>
                                     </Button>
@@ -238,7 +239,7 @@ export default async function LandingPage() {
                                         asChild
                                     >
                                         <Link
-                                            href="/products/free-gameserver"
+                                            href="/order"
                                             className="flex items-center justify-center gap-2 text-secondary-foreground"
                                         >
                                             <Gift className="h-4 w-4" />
@@ -299,13 +300,13 @@ export default async function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                         <Button size="lg" asChild>
-                            <Link href="/products/gameserver">
+                            <Link href="/order">
                                 {t('ctaButton')}
                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>
-                            <Link href="/products/packages">{t('buttonComparePlans')}</Link>
+                            <Link href="/order">{t('buttonComparePlans')}</Link>
                         </Button>
                     </div>
                 </Card>
