@@ -3,10 +3,7 @@ import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ orderId: string }> },
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (!session?.user) {

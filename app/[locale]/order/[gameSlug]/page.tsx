@@ -45,12 +45,7 @@ export default async function GameLandingPage({
 
     // Precompute package prices for display
     const packagesWithPrices = packages.map((pkg) => {
-        const price = calculateNew(
-            pkg.location,
-            pkg.cpuPercent,
-            pkg.ramMB,
-            PACKAGE_DISPLAY_DAYS,
-        );
+        const price = calculateNew(pkg.location, pkg.cpuPercent, pkg.ramMB, PACKAGE_DISPLAY_DAYS);
         return {
             id: pkg.id,
             name: pkg.name,

@@ -94,9 +94,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
     // Restore version when gameVersions are loaded and initialConfig is present
     useEffect(() => {
         if (!initialConfig?.version || gameVersions.length === 0) return;
-        const matchingVersion = gameVersions.find(
-            (v) => v.version === initialConfig.version,
-        );
+        const matchingVersion = gameVersions.find((v) => v.version === initialConfig.version);
         if (matchingVersion) {
             setSelectedVersion(matchingVersion);
         }

@@ -12,10 +12,7 @@ interface ConfigurePageClientProps {
     game: { id: number; name: string; slug: string };
 }
 
-export default function ConfigurePageClient({
-    performanceGroups,
-    game,
-}: ConfigurePageClientProps) {
+export default function ConfigurePageClient({ performanceGroups, game }: ConfigurePageClientProps) {
     const imgName = `${game.name.toLowerCase()}.webp`;
 
     return (
@@ -44,9 +41,7 @@ export default function ConfigurePageClient({
                             />
                         </div>
                         <div>
-                            <h1 className="text-xl sm:text-2xl font-bold">
-                                Custom Hardware
-                            </h1>
+                            <h1 className="text-xl sm:text-2xl font-bold">Custom Hardware</h1>
                             <p className="text-sm text-muted-foreground">{game.name}</p>
                         </div>
                     </div>

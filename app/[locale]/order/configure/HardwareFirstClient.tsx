@@ -10,9 +10,7 @@ interface HardwareFirstClientProps {
     performanceGroups: PerformanceGroup[];
 }
 
-export default function HardwareFirstClient({
-    performanceGroups,
-}: HardwareFirstClientProps) {
+export default function HardwareFirstClient({ performanceGroups }: HardwareFirstClientProps) {
     return (
         <div className="md:-my-4">
             {/* Header */}
@@ -28,9 +26,7 @@ export default function HardwareFirstClient({
                             <Wrench className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                            <h1 className="text-xl sm:text-2xl font-bold">
-                                Custom Hardware
-                            </h1>
+                            <h1 className="text-xl sm:text-2xl font-bold">Custom Hardware</h1>
                             <p className="text-sm text-muted-foreground">
                                 Configure your hardware, then choose a game
                             </p>
@@ -59,11 +55,10 @@ export default function HardwareFirstClient({
                                 <Layers className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1">
-                                <span className="font-semibold">
-                                    Prefer a ready-made package?
-                                </span>
+                                <span className="font-semibold">Prefer a ready-made package?</span>
                                 <p className="text-sm text-muted-foreground mt-0.5">
-                                    Browse pre-configured packages with instant setup — no hardware decisions needed.
+                                    Browse pre-configured packages with instant setup — no hardware
+                                    decisions needed.
                                 </p>
                             </div>
                         </div>

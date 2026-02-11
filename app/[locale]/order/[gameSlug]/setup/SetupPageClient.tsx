@@ -11,15 +11,7 @@ import { authClient } from '@/lib/auth-client';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import type { Game, GameConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
-import {
-    ArrowLeft,
-    ArrowRight,
-    Clock,
-    Cpu,
-    Info,
-    MemoryStick,
-    Pencil,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Clock, Cpu, Info, MemoryStick, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -74,9 +66,7 @@ export default function SetupPageClient({
     const hardwareConfig = hardwareConfigFromParams(searchParams);
 
     // Find the matching performance group for price display
-    const performanceGroup = performanceGroups.find(
-        (pg) => pg.id === hardwareConfig?.pfGroupId,
-    );
+    const performanceGroup = performanceGroups.find((pg) => pg.id === hardwareConfig?.pfGroupId);
 
     // Calculate price
     const price = useMemo(() => {
@@ -184,9 +174,7 @@ export default function SetupPageClient({
                                 />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-2xl font-bold">
-                                    Game Setup
-                                </h1>
+                                <h1 className="text-xl sm:text-2xl font-bold">Game Setup</h1>
                                 <p className="text-sm text-muted-foreground">{game.name}</p>
                             </div>
                         </div>

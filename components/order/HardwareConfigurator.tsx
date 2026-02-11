@@ -48,16 +48,10 @@ export default function HardwareConfigurator({
     // Read initial state from URL params, or use defaults
     const initialPfId = searchParams.get('pf')
         ? Number(searchParams.get('pf'))
-        : performanceOptions[0]?.id ?? null;
-    const initialCpu = searchParams.get('cpu')
-        ? Number(searchParams.get('cpu'))
-        : 4;
-    const initialRam = searchParams.get('ram')
-        ? Number(searchParams.get('ram'))
-        : 4;
-    const initialDays = searchParams.get('days')
-        ? Number(searchParams.get('days'))
-        : 30;
+        : (performanceOptions[0]?.id ?? null);
+    const initialCpu = searchParams.get('cpu') ? Number(searchParams.get('cpu')) : 4;
+    const initialRam = searchParams.get('ram') ? Number(searchParams.get('ram')) : 4;
+    const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
 
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(
         performanceOptions.find((pf) => pf.id === initialPfId) ?? performanceOptions[0] ?? null,
@@ -70,7 +64,10 @@ export default function HardwareConfigurator({
     useEffect(() => {
         if (selectedPFGroup) {
             setCpuCores((prev) =>
-                Math.max(selectedPFGroup.cpu.minThreads, Math.min(prev, selectedPFGroup.cpu.maxThreads)),
+                Math.max(
+                    selectedPFGroup.cpu.minThreads,
+                    Math.min(prev, selectedPFGroup.cpu.maxThreads),
+                ),
             );
             setRamGb((prev) =>
                 Math.max(selectedPFGroup.ram.minGb, Math.min(prev, selectedPFGroup.ram.maxGb)),
@@ -403,9 +400,7 @@ export default function HardwareConfigurator({
 }
 
 /** Build a HardwareConfig object from URL search params */
-export function hardwareConfigFromParams(
-    searchParams: URLSearchParams,
-): HardwareConfig | null {
+export function hardwareConfigFromParams(searchParams: URLSearchParams): HardwareConfig | null {
     const pf = searchParams.get('pf');
     const cpu = searchParams.get('cpu');
     const ram = searchParams.get('ram');

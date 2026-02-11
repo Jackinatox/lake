@@ -69,10 +69,7 @@ export default async function PackageGamesPage({
 
     return (
         <Suspense>
-            <PackageGamesClient
-                packageSummary={packageSummary}
-                games={gameCards}
-            />
+            <PackageGamesClient packageSummary={packageSummary} games={gameCards} />
         </Suspense>
     );
 }

@@ -3,14 +3,7 @@
 import GameCard from '@/components/order/game/gameCard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-    ArrowLeft,
-    Cpu,
-    Database,
-    HardDrive,
-    MapPin,
-    MemoryStick,
-} from 'lucide-react';
+import { ArrowLeft, Cpu, Database, HardDrive, MapPin, MemoryStick } from 'lucide-react';
 import Link from 'next/link';
 
 interface PackageSummary {
@@ -36,10 +29,7 @@ interface PackageGamesClientProps {
     games: GameInfo[];
 }
 
-export default function PackageGamesClient({
-    packageSummary,
-    games,
-}: PackageGamesClientProps) {
+export default function PackageGamesClient({ packageSummary, games }: PackageGamesClientProps) {
     return (
         <div className="md:-my-4">
             {/* Header */}

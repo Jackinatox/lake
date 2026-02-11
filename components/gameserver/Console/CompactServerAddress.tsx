@@ -205,7 +205,14 @@ export function CompactServerAddress({
                             >
                                 <EthernetPort className="h-3 w-3 text-muted-foreground" />
                                 {/* Show IP:Port earlier on small screens for Minecraft (sm+), otherwise show at md+ */}
-                                <span className={cn(isMinecraft ? 'hidden sm:inline' : 'hidden md:inline', 'ml-1 font-mono truncate max-w-32')}>{ipPortCombo}</span>
+                                <span
+                                    className={cn(
+                                        isMinecraft ? 'hidden sm:inline' : 'hidden md:inline',
+                                        'ml-1 font-mono truncate max-w-32',
+                                    )}
+                                >
+                                    {ipPortCombo}
+                                </span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -386,7 +393,12 @@ export function CompactServerAddress({
                         >
                             <EthernetPort className="h-3 w-3 text-muted-foreground" />
                             {/* Hide the IP:Port on very small screens; show at sm+ for Minecraft, md+ for others */}
-                            <span className={cn(isMinecraft ? 'hidden sm:inline' : 'hidden md:inline', 'ml-1 max-w-20 sm:max-w-28 lg:max-w-40 truncate')}>
+                            <span
+                                className={cn(
+                                    isMinecraft ? 'hidden sm:inline' : 'hidden md:inline',
+                                    'ml-1 max-w-20 sm:max-w-28 lg:max-w-40 truncate',
+                                )}
+                            >
                                 {ipPortCombo}
                             </span>
                             {copiedKey === 'main' ? (

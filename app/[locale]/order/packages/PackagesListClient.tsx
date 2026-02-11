@@ -3,11 +3,7 @@
 import PackageCard, { PackageDisplay } from '@/components/order/PackageCard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-    ArrowLeft,
-    Layers,
-    Wrench,
-} from 'lucide-react';
+import { ArrowLeft, Layers, Wrench } from 'lucide-react';
 import Link from 'next/link';
 
 interface PackagesListClientProps {
@@ -85,9 +81,7 @@ export default function PackagesListClient({ packages }: PackagesListClientProps
                                 </div>
                             </div>
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-2xl font-bold mb-2">
-                                    Need More Control?
-                                </h2>
+                                <h2 className="text-2xl font-bold mb-2">Need More Control?</h2>
                                 <p className="text-muted-foreground">
                                     Configure your own server from scratch. Choose CPU, RAM,
                                     duration, and more — then pick a game.

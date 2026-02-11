@@ -82,8 +82,8 @@ export default async function OrderPage() {
                             <div className="flex-1 text-center md:text-left">
                                 <h2 className="text-2xl font-bold mb-2">Compare Packages</h2>
                                 <p className="text-muted-foreground">
-                                    Browse pre-configured packages with instant setup. Pick a
-                                    plan, choose your game, and you&apos;re ready to go.
+                                    Browse pre-configured packages with instant setup. Pick a plan,
+                                    choose your game, and you&apos;re ready to go.
                                 </p>
                             </div>
                             <Button asChild size="lg" className="shrink-0">

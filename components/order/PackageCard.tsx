@@ -2,15 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-    ArrowRight,
-    Cpu,
-    Database,
-    HardDrive,
-    MapPin,
-    MemoryStick,
-    Star,
-} from 'lucide-react';
+import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 

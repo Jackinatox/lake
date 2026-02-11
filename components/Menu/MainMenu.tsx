@@ -141,10 +141,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     size="default"
                                     className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg"
                                 >
-                                    <Link
-                                        href="/order"
-                                        className="flex items-center"
-                                    >
+                                    <Link href="/order" className="flex items-center">
                                         <Gift className="h-4 w-4 mr-1.5" />
                                         {t('buttonText')}
                                     </Link>
@@ -199,7 +196,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
 
                                 <nav className="flex flex-col space-y-2 mt-6">
                                     {/* Dashboard prominently at the top */}
-                                    { auth?.session &&                                       
+                                    {auth?.session && (
                                         <Link
                                             href="/gameserver"
                                             onClick={() => setOpen(false)}
@@ -213,7 +210,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             <LayoutDashboard className="h-6 w-6 mr-3" />
                                             Dashboard
                                         </Link>
-                                    }
+                                    )}
 
                                     {/* Free Server Button - Mobile */}
                                     <Link

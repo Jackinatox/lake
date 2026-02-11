@@ -42,7 +42,9 @@ export type CheckoutParams =
           durationDays: number;
       };
 
-export async function checkoutAction(params: CheckoutParams): Promise<{ client_secret: string | null, orderId: number }> {
+export async function checkoutAction(
+    params: CheckoutParams,
+): Promise<{ client_secret: string | null; orderId: number }> {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({

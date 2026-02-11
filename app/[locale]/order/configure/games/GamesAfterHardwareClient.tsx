@@ -41,9 +41,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-xl sm:text-2xl font-bold">
-                                Choose a Game
-                            </h1>
+                            <h1 className="text-xl sm:text-2xl font-bold">Choose a Game</h1>
                             <p className="text-sm text-muted-foreground">
                                 Your hardware is configured — now pick a game.
                             </p>

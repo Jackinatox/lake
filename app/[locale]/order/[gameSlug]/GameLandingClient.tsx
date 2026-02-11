@@ -6,12 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import PackageCard, { PackageDisplay } from '@/components/order/PackageCard';
-import {
-    ArrowLeft,
-    ArrowRight,
-    Gift,
-    Wrench,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Gift, Wrench } from 'lucide-react';
 
 interface GameLandingProps {
     game: { id: number; name: string; slug: string };

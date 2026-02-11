@@ -3,11 +3,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import SetupPageClient from './SetupPageClient';
 
-export default async function SetupPage({
-    params,
-}: {
-    params: Promise<{ gameSlug: string }>;
-}) {
+export default async function SetupPage({ params }: { params: Promise<{ gameSlug: string }> }) {
     const { gameSlug } = await params;
 
     const [game, performanceGroups] = await Promise.all([
