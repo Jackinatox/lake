@@ -2,6 +2,7 @@ import { Heading, Hr, Img, Section, Text } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
+import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
 import { OrderType } from '@/app/client/generated/enums';
 import {
     EmailButton,
@@ -181,8 +182,8 @@ export default function InvoiceTemplate({
                         <tr>
                             <td style={smallLabelStyle}>Konfiguration:</td>
                             <td style={smallValueStyle}>
-                                {(ramMB / 1024).toFixed(0)} GB RAM, {formatVCores(cpuVCores)},{' '}
-                                {(diskMB / 1024).toFixed(0)} GB Speicher
+                                {formatMBToGiB(ramMB)} RAM, {formatVCores(cpuVCores)},{' '}
+                                {formatMBToGiB(diskMB)} Speicher
                             </td>
                         </tr>
                         <tr>

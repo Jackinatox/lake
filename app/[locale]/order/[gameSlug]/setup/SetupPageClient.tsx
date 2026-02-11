@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { fetchOrderForRestore } from '@/lib/orderUtils';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface SetupPageClientProps {
     game: Game;
@@ -215,7 +216,7 @@ export default function SetupPageClient({
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                                 <MemoryStick className="h-4 w-4 text-purple-500" />
                                 <span className="font-medium">
-                                    {hardwareConfig.ramMb / 1024} GB RAM
+                                    {formatMBToGiB(hardwareConfig.ramMb)} RAM
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted">

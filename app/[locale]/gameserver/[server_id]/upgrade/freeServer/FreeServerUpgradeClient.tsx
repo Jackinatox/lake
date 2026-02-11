@@ -21,6 +21,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface FreeServerUpgradeClientProps {
     server: ClientServer;
@@ -122,7 +123,7 @@ export default function FreeServerUpgradeClient({
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.ram')}</p>
-                            <p className="font-semibold">{(server.ramMB / 1024).toFixed(0)} GB</p>
+                            <p className="font-semibold">{formatMBToGiB(server.ramMB)}</p>
                         </div>
                     </div>
                 </CardContent>

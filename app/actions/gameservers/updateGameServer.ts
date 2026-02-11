@@ -37,14 +37,14 @@ export async function updateGameServer(input: UpdateGameServerInput) {
     if (ramMB < 512 || ramMB > 32768) {
         return {
             success: false,
-            error: 'RAM must be between 512 MB and 32 GB',
+            error: 'RAM must be between 512 MiB and 32 GiB',
         };
     }
 
     if (diskMB < 1024 || diskMB > 512000) {
         return {
             success: false,
-            error: 'Disk must be between 1 GB and 500 GB',
+            error: 'Disk must be between 1 GiB and 500 GiB',
         };
     }
 

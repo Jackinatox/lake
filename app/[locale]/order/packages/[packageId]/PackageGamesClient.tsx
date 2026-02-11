@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Cpu, Database, HardDrive, MapPin, MemoryStick } from 'lucide-react';
 import Link from 'next/link';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface PackageSummary {
     id: number;
@@ -79,13 +80,13 @@ export default function PackageGamesClient({ packageSummary, games }: PackageGam
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                                 <MemoryStick className="h-4 w-4 text-purple-500" />
                                 <span className="font-medium">
-                                    {(packageSummary.ramMB / 1024).toFixed(0)} GB RAM
+                                    {formatMBToGiB(packageSummary.ramMB)} RAM
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">
                                 <HardDrive className="h-4 w-4 text-green-500" />
                                 <span className="font-medium">
-                                    {(packageSummary.diskMB / 1024).toFixed(0)} GB
+                                    {formatMBToGiB(packageSummary.diskMB)}
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-500/10">

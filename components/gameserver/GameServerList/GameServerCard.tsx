@@ -8,7 +8,7 @@ import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
-import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 function formatExpirationDate(date: Date) {
     const now = new Date();
@@ -116,7 +116,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                             </span>
                             <span className="flex items-center gap-1">
                                 <MemoryStick className="w-4 h-4 text-purple-500" />
-                                <span>{server.ramMB / 1024} GB</span>
+                                <span>{formatMBToGiB(server.ramMB)}</span>
                             </span>
                             <span className="flex items-center gap-1">
                                 <HardDrive className="w-4 h-4 text-green-500" />

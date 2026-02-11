@@ -170,7 +170,7 @@ function formatUptime(seconds: number): string {
 }
 
 function formatBytes(bytes: number): string {
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
     let unitIndex = 0;
     let size = bytes;
 

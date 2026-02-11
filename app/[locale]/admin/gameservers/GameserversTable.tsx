@@ -25,6 +25,7 @@ import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EditServerDialog } from './EditServerDialog';
 import { Pencil } from 'lucide-react';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface GameServerWithRelations {
     id: string;
@@ -112,13 +113,6 @@ const ServersTable: React.FC<GameserversTableProps> = ({
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', page.toString());
         router.push(`?${params.toString()}`);
-    };
-
-    const formatBytes = (mb: number, toUnit: 'GB' | 'MB' = 'GB') => {
-        if (toUnit === 'GB') {
-            return `${(mb / 1024).toFixed(2)} GB`;
-        }
-        return `${mb} MB`;
     };
 
     return (
@@ -297,8 +291,8 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                                           : 'N/A'}
                                 </TableCell>
                                 <TableCell>{gameserver.cpuPercent}%</TableCell>
-                                <TableCell>{formatBytes(gameserver.ramMB)}</TableCell>
-                                <TableCell>{formatBytes(gameserver.diskMB)}</TableCell>
+                                <TableCell>{formatMBToGiB(gameserver.ramMB, 2)}</TableCell>
+                                <TableCell>{formatMBToGiB(gameserver.diskMB, 2)}</TableCell>
                                 <TableCell>{gameserver.backupCount}</TableCell>
                                 <TableCell>{gameserver.location.name}</TableCell>
                                 <TableCell>

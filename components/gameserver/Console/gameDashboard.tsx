@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
+import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import BackupManager from '../BackupManager/BackupManager';
 import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
 import { TabsComponent } from '../GameserverTabs';
@@ -67,14 +68,6 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
         sendPowerAction,
     } = useServerWebSocket();
     const t = useTranslations();
-
-    // Helper to format bytes
-    const formatBytes = (bytes: number) => {
-        if (bytes < 1024) return `${bytes} B`;
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KiB`;
-        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(0)} MiB`;
-        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GiB`;
-    };
 
     // Wrapper functions for power actions
     const handleCommand = (command: string) => sendCommand(command);
@@ -234,7 +227,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                         <span className="font-medium tabular-nums">
                             {loading
                                 ? '—'
-                                : `${formatBytes(serverStats?.disk_bytes ?? 0)}/${(server.limits.disk / 1024).toFixed(0)} GiB`}
+                                : `${formatBytes(serverStats?.disk_bytes ?? 0)}/${formatMBToGiB(server.limits.disk)}`}
                         </span>
                     </div>
                     <Progress

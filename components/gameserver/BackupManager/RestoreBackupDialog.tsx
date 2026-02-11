@@ -64,7 +64,7 @@ export function RestoreBackupDialog({
     const formatSize = (bytes: number) => {
         if (bytes === undefined || bytes === null) return 'Unknown';
         if (bytes === 0) return '0 B';
-        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
         let size = bytes;
         let unitIndex = 0;
         while (size >= 1024 && unitIndex < units.length - 1) {

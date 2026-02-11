@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 export interface PackageDisplay {
     id: number;
@@ -85,7 +86,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                             <MemoryStick className="h-5 w-5 text-purple-500" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    {(pkg.ramMB / 1024).toFixed(0)} GB
+                                    {formatMBToGiB(pkg.ramMB)}
                                 </div>
                                 <div className="text-xs text-muted-foreground">RAM</div>
                             </div>
@@ -94,7 +95,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                             <HardDrive className="h-5 w-5 text-green-500" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    {(pkg.diskMB / 1024).toFixed(0)} GB
+                                    {formatMBToGiB(pkg.diskMB)}
                                 </div>
                                 <div className="text-xs text-muted-foreground">Storage</div>
                             </div>

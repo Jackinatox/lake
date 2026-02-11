@@ -298,8 +298,8 @@ export default function HardwareConfigurator({
                                         className="w-full"
                                     />
                                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                        <span>{ramOption.minGb} GB</span>
-                                        <span>{ramOption.maxGb} GB</span>
+                                        <span>{ramOption.minGb} GiB</span>
+                                        <span>{ramOption.maxGb} GiB</span>
                                     </div>
                                 </div>
                             </div>

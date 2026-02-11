@@ -2,6 +2,7 @@ import { Heading, Hr, Img, Section, Text } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
+import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
 import {
     EmailButton,
     EmailCard,
@@ -135,7 +136,7 @@ export default function FreeServerCreatedTemplate({
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>RAM:</td>
-                            <td style={cellValueStyle}>{(ramMB / 1024).toFixed(0)} GB</td>
+                            <td style={cellValueStyle}>{formatMBToGiB(ramMB)}</td>
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>CPU:</td>
@@ -143,7 +144,7 @@ export default function FreeServerCreatedTemplate({
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>Speicher:</td>
-                            <td style={cellValueStyle}>{(diskMB / 1024).toFixed(0)} GB</td>
+                            <td style={cellValueStyle}>{formatMBToGiB(diskMB)}</td>
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>Performance-Level:</td>

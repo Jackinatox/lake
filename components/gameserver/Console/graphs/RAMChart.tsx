@@ -9,6 +9,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from '@/components/ui/chart';
+import { formatGiBValue } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface RAMChartProps {
     newData: {
@@ -109,13 +110,8 @@ export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
         return `${Math.floor(diff / 60)}m`;
     };
 
-    const formatMemory = (gb: number): string => {
-        if (gb >= 1) return `${gb.toFixed(1)} GiB`;
-        return `${(gb * 1024).toFixed(0)} MiB`;
-    };
-
     const currentRam =
-        newData?.memory_bytes !== undefined ? formatMemory(newData.memory_bytes) : 'N/A';
+        newData?.memory_bytes !== undefined ? formatGiBValue(newData.memory_bytes) : 'N/A';
     const limitLabel = t('gameserver.dashboard.charts.memoryGiB', { amount: memoryLimit });
 
     return (
@@ -175,7 +171,7 @@ export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
                                 labelFormatter={(_, p) =>
                                     p?.[0] ? formatTime(p[0].payload.timestamp) : ''
                                 }
-                                formatter={(v) => [formatMemory(Number(v)), 'RAM']}
+                                formatter={(v) => [formatGiBValue(Number(v)), 'RAM']}
                             />
                         }
                     />

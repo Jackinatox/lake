@@ -68,7 +68,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
                         </div>
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                             <MemoryStick className="h-4 w-4 text-purple-500" />
-                            <span className="font-medium">{ram} GB RAM</span>
+                            <span className="font-medium">{ram} GiB RAM</span>
                         </div>
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted">
                             <Clock className="h-4 w-4 text-muted-foreground" />

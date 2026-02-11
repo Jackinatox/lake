@@ -14,7 +14,7 @@ import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
 import upgradeToPayed from './createOrder';
-import { calcBackups } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { calcBackups, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 export type CheckoutParams =
     | {
@@ -336,7 +336,7 @@ export async function checkoutAction(
                             currency: 'eur',
                             product_data: {
                                 name: `${packageData.name} - Game Server Package`,
-                                description: `${packageData.cpuPercent / 100} vCPU, ${packageData.ramMB / 1024}GB RAM, ${packageData.diskMB / 1024}GB Storage`,
+                                description: `${packageData.cpuPercent / 100} vCPU, ${formatMBToGiB(packageData.ramMB)} RAM, ${formatMBToGiB(packageData.diskMB)} Storage`,
                             },
                             unit_amount: Math.round(price.totalCents),
                         },

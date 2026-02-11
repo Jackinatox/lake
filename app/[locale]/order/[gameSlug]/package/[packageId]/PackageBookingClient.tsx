@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { fetchOrderForRestore, calculateOrderDuration } from '@/lib/orderUtils';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 const DURATION_OPTIONS: { days: number; label: string; shortLabel: string; discount?: number }[] = [
     { days: 7, label: '1 Week', shortLabel: '1W' },
@@ -274,13 +275,13 @@ export default function PackageBookingClient({
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                                     <MemoryStick className="h-4 w-4 text-purple-500" />
                                     <span className="font-medium">
-                                        {(packageData.ramMB / 1024).toFixed(0)} GB RAM
+                                        {formatMBToGiB(packageData.ramMB)} RAM
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">
                                     <HardDrive className="h-4 w-4 text-green-500" />
                                     <span className="font-medium">
-                                        {(packageData.diskMB / 1024).toFixed(0)} GB
+                                        {formatMBToGiB(packageData.diskMB)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-500/10">

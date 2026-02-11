@@ -52,7 +52,7 @@ interface DirectoryTableProps {
 
 function formatBytes(bytes: number) {
     if (!Number.isFinite(bytes) || bytes <= 0) return '—';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
     const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
     const size = bytes / Math.pow(1024, exponent);
     return `${size.toFixed(size >= 10 || size === Math.floor(size) ? 0 : 1)} ${units[exponent]}`;
