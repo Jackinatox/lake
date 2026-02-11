@@ -19,10 +19,11 @@ interface GameConfigProps {
     game: Game;
     onSubmit: (config: GameConfig) => void;
     fullWidth?: boolean;
+    initialConfig?: GameConfig | null;
 }
 
 export const GameConfigComponent = forwardRef(function GameConfigComponent(
-    { game, onSubmit, fullWidth = false }: GameConfigProps,
+    { game, onSubmit, fullWidth = false, initialConfig }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -46,6 +47,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 ref={configRef}
                                 onSubmit={onSubmit}
                                 game={game}
+                                initialConfig={initialConfig}
                             />
                         );
                     case SatisfactoryGameId: // Satisfactory
@@ -54,6 +56,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 ref={configRef}
                                 onSubmit={onSubmit}
                                 game={game}
+                                initialConfig={initialConfig}
                             />
                         );
                     case FactorioGameId: // Factorio
@@ -62,6 +65,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 ref={configRef}
                                 onSubmit={onSubmit}
                                 game={game}
+                                initialConfig={initialConfig}
                             />
                         );
                     case HytaleGameId: // Hytale
@@ -70,6 +74,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 ref={configRef}
                                 onSubmit={onSubmit}
                                 game={game}
+                                initialConfig={initialConfig}
                             />
                         );
                     default:

@@ -3,7 +3,7 @@
 import HardwareConfigurator from '@/components/order/HardwareConfigurator';
 import { Button } from '@/components/ui/button';
 import { PerformanceGroup } from '@/models/prisma';
-import { ArrowLeft, Wrench } from 'lucide-react';
+import { ArrowLeft, Layers, Wrench } from 'lucide-react';
 import Link from 'next/link';
 
 interface HardwareFirstClientProps {
@@ -48,6 +48,28 @@ export default function HardwareFirstClient({
 
             {/* Configurator */}
             <div className="w-full pt-4 pb-8 max-w-7xl mx-auto">
+                {/* Package alternative banner */}
+                <div className="mb-6 mx-auto max-w-7xl">
+                    <Link
+                        href="/order/packages"
+                        className="block rounded-xl border border-primary/20 bg-primary/5 p-4 transition-colors hover:bg-primary/10"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <Layers className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                                <span className="font-semibold">
+                                    Prefer a ready-made package?
+                                </span>
+                                <p className="text-sm text-muted-foreground mt-0.5">
+                                    Browse pre-configured packages with instant setup — no hardware decisions needed.
+                                </p>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+
                 <HardwareConfigurator
                     performanceOptions={performanceGroups}
                     continueHref={(params) => `/order/configure/games?${params}`}

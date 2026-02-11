@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -28,11 +28,20 @@ const defConfig: HytaleConfig = {
 };
 
 export const HytaleConfigComponent = forwardRef(function HytaleConfigComponent(
-    { game, onSubmit }: GameConfigProps,
+    { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
     const [config, setConfig] = useState<HytaleConfig>(defConfig);
+
+    // Restore from initialConfig when returning from checkout
+    useEffect(() => {
+        if (!initialConfig) return;
+        const saved = initialConfig.gameSpecificConfig as HytaleConfig;
+        if (saved) {
+            setConfig(saved);
+        }
+    }, [initialConfig]);
 
     const handleChange = <K extends keyof HytaleConfig>(key: K, value: HytaleConfig[K]) => {
         setConfig({ ...config, [key]: value });

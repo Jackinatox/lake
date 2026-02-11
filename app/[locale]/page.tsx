@@ -214,7 +214,7 @@ export default async function LandingPage() {
                                         asChild
                                     >
                                         <Link
-                                            href="/order"
+                                            href="/order/configure"
                                             className="w-full sm:w-auto text-secondary-foreground"
                                         >
                                             {t('buttonStartNow')}
@@ -227,7 +227,7 @@ export default async function LandingPage() {
                                         className="w-full sm:w-auto px-8 text-base"
                                         asChild
                                     >
-                                        <Link href="/order">
+                                        <Link href="/order/packages">
                                             {t('buttonComparePlans')}
                                         </Link>
                                     </Button>
@@ -300,13 +300,13 @@ export default async function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                         <Button size="lg" asChild>
-                            <Link href="/order">
+                            <Link href="/order/configure">
                                 {t('ctaButton')}
                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>
-                            <Link href="/order">{t('buttonComparePlans')}</Link>
+                            <Link href="/order/packages">{t('buttonComparePlans')}</Link>
                         </Button>
                     </div>
                 </Card>

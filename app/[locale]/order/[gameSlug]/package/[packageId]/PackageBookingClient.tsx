@@ -26,6 +26,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef, useState, useMemo, useEffect } from 'react';
+import { fetchOrderForRestore, calculateOrderDuration } from '@/lib/orderUtils';
 
 const DURATION_OPTIONS: { days: number; label: string; shortLabel: string; discount?: number }[] = [
     { days: 7, label: '1 Week', shortLabel: '1W' },
@@ -96,6 +97,10 @@ export default function PackageBookingClient({
 
     const [loading, setLoading] = useState(false);
 
+    // Order restoration state
+    const orderIdParam = searchParams.get('orderId');
+    const [initialGameConfig, setInitialGameConfig] = useState<GameConfig | null>(null);
+
     // Persist duration in URL
     const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
     const [selectedDuration, setSelectedDuration] = useState(initialDays);
@@ -109,6 +114,22 @@ export default function PackageBookingClient({
             window.history.replaceState(null, '', `?${params.toString()}`);
         }
     }, [selectedDuration, searchParams]);
+
+    // Fetch order data for restoration when coming back from checkout
+    useEffect(() => {
+        if (!orderIdParam) return;
+
+        async function restoreOrder() {
+            const orderData = await fetchOrderForRestore(orderIdParam!);
+            if (orderData?.gameConfig) {
+                setInitialGameConfig(orderData.gameConfig);
+                const duration = calculateOrderDuration(orderData.expiresAt, orderData.createdAt);
+                setSelectedDuration(duration);
+            }
+        }
+
+        restoreOrder();
+    }, [orderIdParam]);
 
     const isLoggedIn = Boolean(session.data?.user);
 
@@ -334,6 +355,7 @@ export default function PackageBookingClient({
                             ref={gameConfigRef}
                             game={game}
                             onSubmit={handleGameConfigSubmit}
+                            initialConfig={initialGameConfig}
                         />
                     </Card>
                 </div>

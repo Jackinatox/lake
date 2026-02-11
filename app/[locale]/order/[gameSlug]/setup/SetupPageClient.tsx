@@ -23,7 +23,8 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
+import { fetchOrderForRestore } from '@/lib/orderUtils';
 
 interface SetupPageClientProps {
     game: Game;
@@ -43,6 +44,29 @@ export default function SetupPageClient({
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
     const [loading, setLoading] = useState(false);
+
+    // Order restoration state
+    const orderIdParam = searchParams.get('orderId');
+    const [initialGameConfig, setInitialGameConfig] = useState<GameConfig | null>(null);
+
+    // Fetch order data for restoration when coming back from checkout
+    useEffect(() => {
+        if (!orderIdParam) return;
+
+        async function restoreOrder() {
+            const orderData = await fetchOrderForRestore(orderIdParam!);
+            if (orderData?.gameConfig) {
+                setInitialGameConfig(orderData.gameConfig);
+            } else {
+                toast({
+                    title: 'Unable to restore game configuration',
+                    description: 'Please configure your game settings.',
+                });
+            }
+        }
+
+        restoreOrder();
+    }, [orderIdParam]);
 
     const isLoggedIn = Boolean(session.data?.user);
 
@@ -81,8 +105,7 @@ export default function SetupPageClient({
     const imgName = `${game.name.toLowerCase()}.webp`;
     const hwParamsStr = searchParams.toString();
 
-    // Determine the back link: if user came from hardware-first flow
-    // (/order/configure/games), go back there; otherwise go to /order/{slug}/configure
+    // Preserve orderId in back link when restoring
     const backHref = `/order/${gameSlug}/configure?${hwParamsStr}`;
 
     const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
@@ -254,6 +277,7 @@ export default function SetupPageClient({
                         ref={gameConfigRef}
                         game={game}
                         onSubmit={handleGameConfigSubmit}
+                        initialConfig={initialGameConfig}
                     />
                 </Card>
             </div>

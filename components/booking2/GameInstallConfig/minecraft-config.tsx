@@ -18,10 +18,11 @@ import { ConfigSettingItem } from '../shared/config-setting-item';
 export interface GameConfigProps {
     game: Game;
     onSubmit: (config: GameConfig) => void;
+    initialConfig?: GameConfig | null;
 }
 
 export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
-    { game, onSubmit }: GameConfigProps,
+    { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -76,6 +77,30 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
         allowFlight: false,
         flavor: 'Vanilla',
     });
+
+    // Restore from initialConfig when returning from checkout
+    useEffect(() => {
+        if (!initialConfig) return;
+        const saved = initialConfig.gameSpecificConfig as MinecraftConfig;
+        if (saved) {
+            setConfig(saved);
+        }
+        if (initialConfig.eggId) {
+            setSelectedFlavorId(initialConfig.eggId);
+        }
+        // Version will be restored once the flavor's versions are loaded
+    }, [initialConfig]);
+
+    // Restore version when gameVersions are loaded and initialConfig is present
+    useEffect(() => {
+        if (!initialConfig?.version || gameVersions.length === 0) return;
+        const matchingVersion = gameVersions.find(
+            (v) => v.version === initialConfig.version,
+        );
+        if (matchingVersion) {
+            setSelectedVersion(matchingVersion);
+        }
+    }, [gameVersions, initialConfig]);
 
     useImperativeHandle(ref, () => ({
         submit: () => {

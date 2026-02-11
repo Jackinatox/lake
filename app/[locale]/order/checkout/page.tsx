@@ -28,6 +28,11 @@ export default async function OrderCheckoutPage({
             ramMB: true,
             cpuPercent: true,
             diskMB: true,
+            backupCount: true,
+            gameConfig: true,
+            expiresAt: true,
+            createdAt: true,
+            creationLocationId: true,
             creationGameData: {
                 select: {
                     slug: true,
@@ -39,6 +44,11 @@ export default async function OrderCheckoutPage({
     if (!order || !order.stripeClientSecret) {
         return NotFoundComp();
     }
+
+    // Calculate duration from order dates
+    const durationDays = Math.round(
+        (order.expiresAt.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24),
+    );
 
     // Build back link based on order type
     let backHref = `/order/${order.creationGameData.slug}`;
@@ -56,11 +66,13 @@ export default async function OrderCheckoutPage({
         });
 
         if (matchingPackage) {
-            backHref = `/order/${order.creationGameData.slug}/package/${matchingPackage.id}`;
+            backHref = `/order/${order.creationGameData.slug}/package/${matchingPackage.id}?days=${durationDays}&orderId=${orderId}`;
         }
     } else if (order.type === 'NEW') {
-        // Go back to setup page - hardware params will be lost but that's acceptable
-        backHref = `/order/${order.creationGameData.slug}/configure`;
+        // Reverse-engineer URL params from order data
+        const cpuCores = order.cpuPercent / 100;
+        const ramGb = order.ramMB / 1024;
+        backHref = `/order/${order.creationGameData.slug}/setup?pf=${order.creationLocationId}&cpu=${cpuCores}&ram=${ramGb}&days=${durationDays}&orderId=${orderId}`;
     }
 
     return (

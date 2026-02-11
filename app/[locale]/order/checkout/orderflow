@@ -1,0 +1,446 @@
+# Checkout Back Navigation - Configuration Preservation Plan
+
+Based on my research, here's a comprehensive implementation plan for preserving user configuration when navigating back from checkout:
+
+## Research Summary
+
+### Current Data Flow
+
+**PACKAGE Flow:**
+- User selects package → duration → game config
+- URL params: `days` (persisted via `useEffect`)
+- Order stores: `ramMB`, `cpuPercent`, `diskMB`, `backupCount`, `gameConfig` (JSON), `creationLocationId`, `expiresAt`, `createdAt`
+- Current back link: tries to reverse-engineer packageId from hardware specs
+
+**NEW Flow:**
+- User selects hardware (pf, cpu, ram, days) → game config  
+- URL params: `pf` (pfGroupId), `cpu` (vCPU cores), `ram` (GB), `days`
+- Decoded by `hardwareConfigFromParams`: multiplies cpu×100, ram×1024, calculates disk/backups
+- Current back link: `/order/{slug}/configure` without hardware params ❌
+
+### GameConfig Structure
+```typescript
+{
+  gameId: number,
+  eggId: number,
+  version: string,
+  dockerImage: string,
+  gameSpecificConfig: MinecraftConfig | SatisfactoryConfig | FactorioConfig | HytaleConfig
+}
+```
+
+---
+
+## Implementation Plan
+
+### Phase 1: Enhanced Back URL Generation in Checkout Page
+
+**File:** `app/[locale]/order/checkout/page.tsx`
+
+**Changes:**
+1. Expand order query to fetch additional fields:
+   ```typescript
+   select: {
+     stripeClientSecret: true,
+     type: true,
+     ramMB: true,
+     cpuPercent: true,
+     diskMB: true,
+     backupCount: true,
+     creationLocationId: true,
+     gameConfig: true,      // ADD
+     expiresAt: true,       // ADD
+     createdAt: true,       // ADD
+     creationGameData: {
+       select: { slug: true }
+     }
+   }
+   ```
+
+2. Create duration calculation helper:
+   ```typescript
+   function calculateDurationDays(expiresAt: Date, createdAt: Date): number {
+     return Math.round(
+       (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+     );
+   }
+   ```
+
+3. Build smarter back URLs by order type:
+
+   **For PACKAGE:**
+   ```typescript
+   if (order.type === 'PACKAGE') {
+     const matchingPackage = await prisma.package.findFirst({
+       where: {
+         ramMB: order.ramMB,
+         cpuPercent: order.cpuPercent,
+         diskMB: order.diskMB,
+         enabled: true
+       },
+       select: { id: true }
+     });
+     
+     if (matchingPackage) {
+       const durationDays = calculateDurationDays(order.expiresAt, order.createdAt);
+       backHref = `/order/${order.creationGameData.slug}/package/${matchingPackage.id}?days=${durationDays}&orderId=${orderId}`;
+     }
+   }
+   ```
+
+   **For NEW:**
+   ```typescript
+   else if (order.type === 'NEW') {
+     const durationDays = calculateDurationDays(order.expiresAt, order.createdAt);
+     // Convert back to URL format (cpu in cores, ram in GB)
+     const cpuCores = order.cpuPercent / 100;
+     const ramGb = order.ramMB / 1024;
+     
+     backHref = `/order/${order.creationGameData.slug}/setup?pf=${order.creationLocationId}&cpu=${cpuCores}&ram=${ramGb}&days=${durationDays}&orderId=${orderId}`;
+   }
+   ```
+
+---
+
+### Phase 2: PackageBookingClient enhancements
+
+**File:** `app/[locale]/order/[gameSlug]/package/[packageId]/PackageBookingClient.tsx`
+
+**Changes:**
+
+1. **Add order fetching logic** (add near top of component):
+   ```typescript
+   const orderIdParam = searchParams.get('orderId');
+   const [orderData, setOrderData] = useState<{
+     gameConfig: GameConfig | null;
+     durationDays: number | null;
+   } | null>(null);
+   const [orderLoading, setOrderLoading] = useState(!!orderIdParam);
+   ```
+
+2. **Create order fetch hook**:
+   ```typescript
+   useEffect(() => {
+     if (!orderIdParam) return;
+     
+     async function fetchOrderData() {
+       try {
+         const response = await fetch(`/api/orders/${orderIdParam}`);
+         if (!response.ok) throw new Error('Order not found');
+         
+         const order = await response.json();
+         const duration = Math.round(
+           (new Date(order.expiresAt).getTime() - new Date(order.createdAt).getTime()) 
+           / (1000 * 60 * 60 * 24)
+         );
+         
+         setOrderData({
+           gameConfig: order.gameConfig,
+           durationDays: duration
+         });
+         
+         // Update duration state if different from URL
+         if (duration !== selectedDuration) {
+           setSelectedDuration(duration);
+         }
+       } catch (error) {
+         console.error('Failed to fetch order:', error);
+         toast({
+           title: 'Unable to restore configuration',
+           description: 'Starting fresh configuration.',
+           variant: 'default'
+         });
+       } finally {
+         setOrderLoading(false);
+       }
+     }
+     
+     fetchOrderData();
+   }, [orderIdParam]);
+   ```
+
+3. **Pass initial gameConfig to GameConfigComponent**:
+   ```typescript
+   <GameConfigComponent
+     ref={gameConfigRef}
+     game={game}
+     onSubmit={handleGameConfigSubmit}
+     initialConfig={orderData?.gameConfig}  // NEW PROP
+   />
+   ```
+
+4. **Show loading state** if fetching order:
+   ```typescript
+   if (orderLoading) {
+     return <div>Loading configuration...</div>; // Add proper loading UI
+   }
+   ```
+
+---
+
+### Phase 3: SetupPageClient enhancements
+
+**File:** `app/[locale]/order/[gameSlug]/setup/SetupPageClient.tsx`
+
+**Changes:**
+
+1. **Add order state** (similar to PackageBookingClient):
+   ```typescript
+   const orderIdParam = searchParams.get('orderId');
+   const [orderGameConfig, setOrderGameConfig] = useState<GameConfig | null>(null);
+   const [orderLoading, setOrderLoading] = useState(!!orderIdParam);
+   ```
+
+2. **Fetch order data** (similar pattern but focus on gameConfig only):
+   ```typescript
+   useEffect(() => {
+     if (!orderIdParam) return;
+     
+     async function fetchOrderData() {
+       try {
+         const response = await fetch(`/api/orders/${orderIdParam}`);
+         if (!response.ok) throw new Error('Order not found');
+         
+         const order = await response.json();
+         setOrderGameConfig(order.gameConfig);
+       } catch (error) {
+         console.error('Failed to fetch order:', error);
+         toast({
+           title: 'Unable to restore game configuration',
+           description: 'Please configure your game settings.',
+           variant: 'default'
+         });
+       } finally {
+         setOrderLoading(false);
+       }
+     }
+     
+     fetchOrderData();
+   }, [orderIdParam]);
+   ```
+
+3. **Pass initial config to GameConfigComponent**:
+   ```typescript
+   <GameConfigComponent
+     ref={gameConfigRef}
+     game={game}
+     onSubmit={handleGameConfigSubmit}
+     initialConfig={orderGameConfig}  // NEW PROP
+   />
+   ```
+
+4. **Update back link** to preserve orderId:
+   ```typescript
+   const backHref = orderIdParam 
+     ? `/order/${gameSlug}/configure?${hwParamsStr}&orderId=${orderIdParam}`
+     : `/order/${gameSlug}/configure?${hwParamsStr}`;
+   ```
+
+---
+
+### Phase 4: API Route for Order Fetching
+
+**New File:** `app/api/orders/[orderId]/route.ts`
+
+```typescript
+import { auth } from '@/auth';
+import prisma from '@/lib/prisma';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ orderId: string }> }
+) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  const { orderId } = await params;
+  
+  try {
+    const order = await prisma.gameServerOrder.findUnique({
+      where: { 
+        id: orderId,
+        userId: session.user.id  // Security: only fetch user's own orders
+      },
+      select: {
+        gameConfig: true,
+        expiresAt: true,
+        createdAt: true,
+        ramMB: true,
+        cpuPercent: true,
+        diskMB: true,
+        creationLocationId: true,
+        type: true
+      }
+    });
+    
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+    
+    return NextResponse.json(order);
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' }, 
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+### Phase 5: GameConfigComponent enhancements
+
+**File:** `components/booking2/game-config.tsx`
+
+**Changes:**
+
+1. **Add optional initialConfig prop**:
+   ```typescript
+   interface GameConfigProps {
+     game: Game;
+     onSubmit: (config: GameConfig) => void;
+     fullWidth?: boolean;
+     initialConfig?: GameConfig | null;  // NEW
+   }
+   ```
+
+2. **Pass initialConfig to each game-specific component**:
+   ```typescript
+   <MinecraftConfigComponent
+     ref={configRef}
+     onSubmit={onSubmit}
+     game={game}
+     initialConfig={initialConfig}  // PASS DOWN
+   />
+   ```
+
+3. **Update each game config component** (Minecraft, Satisfactory, Factorio, Hytale):
+
+   **Example for MinecraftConfig:**
+   ```typescript
+   interface GameConfigProps {
+     game: Game;
+     onSubmit: (config: GameConfig) => void;
+     initialConfig?: GameConfig | null;  // NEW
+   }
+   
+   // In component body:
+   useEffect(() => {
+     if (initialConfig?.gameSpecificConfig) {
+       // Type-safe cast
+       const savedConfig = initialConfig.gameSpecificConfig as MinecraftConfig;
+       setConfig(savedConfig);
+       setSelectedEggId(initialConfig.eggId);
+       // ... set other fields from initialConfig
+     }
+   }, [initialConfig]);
+   ```
+
+   **Repeat similar pattern for:**
+   - `components/booking2/GameInstallConfig/satisfactory-config.tsx`
+   - `components/booking2/GameInstallConfig/FactorioConfig.tsx`
+   - `components/booking2/GameInstallConfig/HytaleConfig.tsx`
+
+---
+
+### Phase 6: Edge Case Handling
+
+**Scenarios to handle:**
+
+1. **Invalid/deleted order:**
+   - API returns 404
+   - Show toast notification
+   - Continue with empty state (don't block user)
+
+2. **Expired Stripe session:**
+   - Order exists but payment timed out
+   - Allow user to modify and retry (creates new order)
+
+3. **Mismatched package:**
+   - Package was disabled/removed after order created
+   - Fallback to game selection page
+
+4. **Corrupt gameConfig:**
+   - Validate gameConfig structure in API
+   - Fall back to defaults if invalid
+
+5. **Network errors:**
+   - Show retry option
+   - Allow continuing without restored data
+
+**Implementation:** Add try-catch blocks and graceful fallbacks in all fetch operations (already shown in above code).
+
+---
+
+## Code Duplication Minimization
+
+Create **shared utilities:**
+
+**File:** `lib/orderUtils.ts`
+```typescript
+export function calculateOrderDuration(expiresAt: Date, createdAt: Date): number {
+  return Math.round(
+    (expiresAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+  );
+}
+
+export async function fetchOrderForRestore(orderId: string): Promise<OrderRestoreData | null> {
+  try {
+    const response = await fetch(`/api/orders/${orderId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+export interface OrderRestoreData {
+  gameConfig: GameConfig;
+  expiresAt: string;
+  createdAt: string;
+  ramMB: number;
+  cpuPercent: number;
+  diskMB: number;
+  creationLocationId: number;
+  type: string;
+}
+```
+
+Use in both PackageBookingClient and SetupPageClient to reduce duplication.
+
+---
+
+## Testing Checklist
+
+- [ ] PACKAGE flow: Navigate back from checkout, verify duration and game config restored
+- [ ] NEW flow: Navigate back from checkout, verify hardware params and game config restored
+- [ ] Invalid orderId: Verify graceful fallback
+- [ ] Network error: Verify toast and continue with empty state
+- [ ] Package deleted: Verify fallback behavior
+- [ ] Different games: Test all 4 game configs (Minecraft, Satisfactory, Factorio, Hytale)
+- [ ] Duration edge cases: 7, 30, 90, 180 days
+- [ ] URL manipulation: Verify orderId is properly scoped to user (security)
+
+---
+
+## Summary of Files to Modify
+
+1. **app/[locale]/order/checkout/page.tsx** - Enhanced back URLs with orderId
+2. **app/[locale]/order/[gameSlug]/package/[packageId]/PackageBookingClient.tsx** - Order fetching + restoration
+3. **app/[locale]/order/[gameSlug]/setup/SetupPageClient.tsx** - Order fetching + restoration
+4. **app/api/orders/[orderId]/route.ts** - NEW: API endpoint for secure order fetching
+5. **components/booking2/game-config.tsx** - Accept and propagate initialConfig
+6. **components/booking2/GameInstallConfig/minecraft-config.tsx** - Restore from initialConfig
+7. **components/booking2/GameInstallConfig/satisfactory-config.tsx** - Restore from initialConfig
+8. **components/booking2/GameInstallConfig/FactorioConfig.tsx** - Restore from initialConfig
+9. **components/booking2/GameInstallConfig/HytaleConfig.tsx** - Restore from initialConfig
+10. **lib/orderUtils.ts** - NEW: Shared utilities to reduce duplication
+
+This plan preserves all necessary state, provides graceful fallbacks, and maintains security by scoping orders to authenticated users.

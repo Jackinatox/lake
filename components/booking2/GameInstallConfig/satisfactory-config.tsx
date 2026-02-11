@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -11,7 +11,7 @@ import { ConfigSettingItem } from '../shared/config-setting-item';
 import { GameConfigProps } from './minecraft-config';
 
 export const SatisfactoryConfigComponent = forwardRef(function SatisfactoryConfigComponent(
-    { game, onSubmit }: GameConfigProps,
+    { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -22,6 +22,15 @@ export const SatisfactoryConfigComponent = forwardRef(function SatisfactoryConfi
         upload_crash_report: true,
         autosave_interval: 300,
     });
+
+    // Restore from initialConfig when returning from checkout
+    useEffect(() => {
+        if (!initialConfig) return;
+        const saved = initialConfig.gameSpecificConfig as SatisfactoryConfig;
+        if (saved) {
+            setConfig(saved);
+        }
+    }, [initialConfig]);
 
     const handleChange = <K extends keyof SatisfactoryConfig>(
         key: K,

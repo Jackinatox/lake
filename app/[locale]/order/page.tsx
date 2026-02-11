@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { Gamepad2, Wrench } from 'lucide-react';
+import { Gamepad2, Layers, Wrench } from 'lucide-react';
 import GameCard from '@/components/order/game/gameCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -69,7 +69,33 @@ export default async function OrderPage() {
 
             {/* Custom Hardware CTA */}
             <section className="py-12 md:py-16">
-                <div className="mx-auto max-w-4xl px-2 md:px-6">
+                <div className="mx-auto max-w-4xl px-2 md:px-6 space-y-4">
+                    {/* Compare Plans CTA */}
+                    <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
+                        <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                            <div className="shrink-0">
+                                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                    <Layers className="h-8 w-8 text-primary" />
+                                </div>
+                            </div>
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className="text-2xl font-bold mb-2">Compare Packages</h2>
+                                <p className="text-muted-foreground">
+                                    Browse pre-configured packages with instant setup. Pick a
+                                    plan, choose your game, and you&apos;re ready to go.
+                                </p>
+                            </div>
+                            <Button asChild size="lg" className="shrink-0">
+                                <Link href="/order/packages">
+                                    <Layers className="h-4 w-4 mr-2" />
+                                    Compare Plans
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Custom Hardware CTA */}
                     <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
                         <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
@@ -85,7 +111,7 @@ export default async function OrderPage() {
                                     duration, and more — then pick a game.
                                 </p>
                             </div>
-                            <Button asChild size="lg" className="shrink-0">
+                            <Button asChild size="lg" variant="outline" className="shrink-0">
                                 <Link href="/order/configure">
                                     <Wrench className="h-4 w-4 mr-2" />
                                     Configure Hardware

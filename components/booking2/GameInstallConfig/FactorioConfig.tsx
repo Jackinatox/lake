@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -39,7 +39,7 @@ const DLC_OPTIONS: { id: FactorioDLC; label: string }[] = [
 ];
 
 export const FactorioConfigComponent = forwardRef(function FactorioConfig(
-    { game, onSubmit }: GameConfigProps,
+    { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -55,6 +55,15 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
         afkKick: false,
         enabledDLCs: ['elevated-rails', 'quality', 'space-age'],
     });
+
+    // Restore from initialConfig when returning from checkout
+    useEffect(() => {
+        if (!initialConfig) return;
+        const saved = initialConfig.gameSpecificConfig as FactorioConfig;
+        if (saved) {
+            setConfig(saved);
+        }
+    }, [initialConfig]);
 
     const handleChange = <K extends keyof FactorioConfig>(key: K, value: FactorioConfig[K]) => {
         setConfig({ ...config, [key]: value });
