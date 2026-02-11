@@ -23,7 +23,6 @@ export function calculateNew(
     duration: number,
 ): NewPriceDef {
     const baseCalc = calculateBase(pf, cpuPercent, ramMB, duration);
-    console.log('base: ', baseCalc);
 
     const { cents, percent } = calculateDiscount(duration, baseCalc.totalCents);
     const totalPrice: NewPriceDef = {

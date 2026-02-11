@@ -71,8 +71,8 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     // Helper to format bytes
     const formatBytes = (bytes: number) => {
         if (bytes < 1024) return `${bytes} B`;
-        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
-        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KiB`;
+        if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(0)} MiB`;
         return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GiB`;
     };
 
@@ -98,7 +98,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                             <span className="font-medium tabular-nums">
                                 {loading
                                     ? '—'
-                                    : `${(((serverStats?.cpu_absolute ?? 0) / server.limits.cpu) * 100).toFixed(1)}%`}
+                                    : `${(((serverStats?.cpu_absolute ?? 0) / server.limits.cpu) * 100).toFixed(0)}%`}
                             </span>
                         </div>
                         <Progress

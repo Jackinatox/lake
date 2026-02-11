@@ -235,12 +235,13 @@ export default async function LandingPage() {
                                 <div>
                                     <Button
                                         size="lg"
-                                        className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700"
+                                        variant="secondary"
+                                        className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700 text-white"
                                         asChild
                                     >
                                         <Link
                                             href="/order"
-                                            className="flex items-center justify-center gap-2 text-secondary-foreground"
+                                            className="flex items-center justify-center gap-2"
                                         >
                                             <Gift className="h-4 w-4" />
                                             {t('getFreeServer')}

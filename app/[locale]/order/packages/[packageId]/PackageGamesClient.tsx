@@ -73,13 +73,13 @@ export default function PackageGamesClient({ packageSummary, games }: PackageGam
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
                                 <Cpu className="h-4 w-4 text-blue-500" />
                                 <span className="font-medium">
-                                    {(packageSummary.cpuPercent / 100).toFixed(1)} vCPU
+                                    {(packageSummary.cpuPercent / 100).toFixed(0)} vCPU
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
                                 <MemoryStick className="h-4 w-4 text-purple-500" />
                                 <span className="font-medium">
-                                    {(packageSummary.ramMB / 1024).toFixed(1)} GB RAM
+                                    {(packageSummary.ramMB / 1024).toFixed(0)} GB RAM
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">

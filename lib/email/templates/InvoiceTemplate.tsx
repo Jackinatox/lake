@@ -181,8 +181,8 @@ export default function InvoiceTemplate({
                         <tr>
                             <td style={smallLabelStyle}>Konfiguration:</td>
                             <td style={smallValueStyle}>
-                                {(ramMB / 1024).toFixed(1)} GB RAM, {formatVCores(cpuVCores)},{' '}
-                                {(diskMB / 1024).toFixed(1)} GB Speicher
+                                {(ramMB / 1024).toFixed(0)} GB RAM, {formatVCores(cpuVCores)},{' '}
+                                {(diskMB / 1024).toFixed(0)} GB Speicher
                             </td>
                         </tr>
                         <tr>

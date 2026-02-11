@@ -76,7 +76,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                             <Cpu className="h-5 w-5 text-blue-500" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    {(pkg.cpuPercent / 100).toFixed(1)}
+                                    {(pkg.cpuPercent / 100).toFixed(0)}
                                 </div>
                                 <div className="text-xs text-muted-foreground">vCPU</div>
                             </div>
@@ -85,7 +85,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                             <MemoryStick className="h-5 w-5 text-purple-500" />
                             <div>
                                 <div className="text-sm font-semibold">
-                                    {(pkg.ramMB / 1024).toFixed(1)} GB
+                                    {(pkg.ramMB / 1024).toFixed(0)} GB
                                 </div>
                                 <div className="text-xs text-muted-foreground">RAM</div>
                             </div>

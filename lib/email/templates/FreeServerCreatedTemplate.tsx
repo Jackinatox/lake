@@ -135,7 +135,7 @@ export default function FreeServerCreatedTemplate({
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>RAM:</td>
-                            <td style={cellValueStyle}>{(ramMB / 1024).toFixed(1)} GB</td>
+                            <td style={cellValueStyle}>{(ramMB / 1024).toFixed(0)} GB</td>
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>CPU:</td>
@@ -143,7 +143,7 @@ export default function FreeServerCreatedTemplate({
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>Speicher:</td>
-                            <td style={cellValueStyle}>{(diskMB / 1024).toFixed(1)} GB</td>
+                            <td style={cellValueStyle}>{(diskMB / 1024).toFixed(0)} GB</td>
                         </tr>
                         <tr>
                             <td style={cellLabelStyle}>Performance-Level:</td>

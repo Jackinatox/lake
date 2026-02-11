@@ -128,7 +128,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
     };
 
     const currentCpu =
-        newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute.toFixed(1)}%` : 'N/A';
+        newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute.toFixed(0)}%` : 'N/A';
     const limitLabel = t('gameserver.dashboard.charts.cpuCores', { cores: cpuLimit });
 
     return (
@@ -188,7 +188,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
                                 labelFormatter={(_, p) =>
                                     p?.[0] ? formatTime(p[0].payload.timestamp) : ''
                                 }
-                                formatter={(v) => [`${Number(v).toFixed(1)}%`, 'CPU']}
+                                formatter={(v) => [`${Number(v).toFixed(0)}%`, 'CPU']}
                             />
                         }
                     />

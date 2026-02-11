@@ -122,7 +122,7 @@ export default function FreeServerUpgradeClient({
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.ram')}</p>
-                            <p className="font-semibold">{(server.ramMB / 1024).toFixed(1)} GB</p>
+                            <p className="font-semibold">{(server.ramMB / 1024).toFixed(0)} GB</p>
                         </div>
                     </div>
                 </CardContent>

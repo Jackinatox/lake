@@ -139,7 +139,8 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                 <Button
                                     asChild
                                     size="default"
-                                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg"
+                                    variant="secondary"
+                                    className="bg-green-600 hover:bg-green-700 text-white"
                                 >
                                     <Link href="/order" className="flex items-center">
                                         <Gift className="h-4 w-4 mr-1.5" />
@@ -213,14 +214,17 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     )}
 
                                     {/* Free Server Button - Mobile */}
-                                    <Link
-                                        href="/order"
+                                    <Button
+                                        asChild
+                                        variant="secondary"
+                                        className="w-full justify-start px-4 py-3 h-auto text-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center px-4 py-3 text-lg font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all"
                                     >
-                                        <Gift className="h-6 w-6 mr-3" />
-                                        {t('buttonText')}
-                                    </Link>
+                                        <Link href="/order" className="flex items-center">
+                                            <Gift className="h-6 w-6 mr-3" />
+                                            {t('buttonText')}
+                                        </Link>
+                                    </Button>
 
                                     {/* Divider */}
                                     <div className="border-t my-2" />
