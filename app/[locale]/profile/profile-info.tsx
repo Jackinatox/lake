@@ -62,7 +62,7 @@ function ProfileInfo() {
                 <div className="flex gap-2 pt-2">
                     {wasEmail ? (
                         <Button asChild variant="outline" size="sm">
-                            <Link href={`forgot-password?email=${encodeURI(user?.email ?? '')}`}>
+                            <Link href="/profile/change-password">
                                 <Lock className="h-4 w-4 mr-2" />
                                 {t('changePassword')}
                             </Link>

@@ -1,884 +1,903 @@
 {
-    "NotLoggedIn": {
-        "title": "You're not logged in",
-        "description": "Please log in to access your account and see personalized content.",
-        "login": "Log In"
+  "NotLoggedIn": {
+    "title": "You're not logged in",
+    "description": "Please log in to access your account and see personalized content.",
+    "login": "Log In"
+  },
+  "NotAllowed": {
+    "title": "Access Denied",
+    "description": "You do not have permission to view this page. Please contact support.",
+    "home": "Go to Home"
+  },
+  "ServerDeleted": {
+    "title": "Server Deleted",
+    "description": "This server has been permanently deleted. If you believe this was a mistake or need access to a backup, please reach out to our support team. We may still have a backup available that we can restore for you.",
+    "contactSupport": "Contact Support",
+    "home": "Go to Home"
+  },
+  "gameserverSettings": {
+    "deleteFreeServer": {
+      "button": "Delete Server",
+      "title": "Delete Server?",
+      "description": "This will permanently delete your free server. This action is irreversible.",
+      "checkbox": "I understand this action is irreversible",
+      "cancel": "Cancel",
+      "delete": "Delete Server",
+      "deleting": "Deleting...",
+      "success": {
+        "title": "Server deleted",
+        "description": "Your server has been deleted. If you need help, contact support."
+      },
+      "error": {
+        "title": "Could not delete",
+        "description": "The server could not be deleted. Please try again or contact support."
+      }
     },
-    "NotAllowed": {
-        "title": "Access Denied",
-        "description": "You do not have permission to view this page. Please contact support.",
-        "home": "Go to Home"
+    "management": {
+      "title": "Server Management",
+      "description": "These actions can affect your server's functionality. Please use with caution.",
+      "reinstall": {
+        "title": "Reinstall Server",
+        "description": "Reinstall the server software. All data will be preserved unless you choose to delete all files during the process.",
+        "button": "Reinstall",
+        "reinstalling": "Reinstalling...",
+        "confirmTitle": "Reinstall Server?",
+        "confirmDescription": "Are you sure you want to reinstall your server? This will reinstall the server software. All data will be preserved unless you choose to delete all files.",
+        "deleteFilesLabel": "Delete all files before reinstalling"
+      },
+      "changeGame": {
+        "title": "Change Game",
+        "description": "Switch to a different game. Your server will be reconfigured with new settings and the old data may be lost.",
+        "button": "Change Game"
+      },
+      "deleteFreeServerAction": {
+        "title": "Delete Free Server",
+        "description": "Permanently delete this free server and all its data. This action cannot be undone.",
+        "button": "Delete Free Server"
+      }
+    }
+  },
+  "ServerExpired": {
+    "title": "Server Expired",
+    "description": "Your server subscription has expired. To continue using your server, please extend your subscription. All your data is still safe and will be available once you renew.",
+    "extendServer": "Extend Server",
+    "home": "Go to Home"
+  },
+  "ServerCreationFailed": {
+    "title": "Server creation failed",
+    "description": "We're sorry — creating your server failed. Our team has been notified and will resolve this as soon as possible. If you'd like immediate help, please contact support.",
+    "contactSupport": "Contact Support",
+    "home": "Home"
+  },
+  "landingpage": {
+    "heroBadge": "Simple Game Hosting",
+    "header1": "Game Server Hosting",
+    "header2": "made easy",
+    "heroSubtitle": "Launch your game server in seconds — reliable hardware and a friendly control panel.",
+    "statUptime": "99.0%",
+    "statUptimeLabel": "Uptime",
+    "statSupport": "Fast",
+    "statSupportLabel": "Support",
+    "statSetup": "<60s",
+    "statSetupLabel": "Setup",
+    "boxLabel1": "Simple",
+    "boxDesc1": "Get online fast",
+    "boxLabel2": "Secure",
+    "boxDesc2": "Protected infrastructure",
+    "boxLabel3": "Reliable",
+    "boxDesc3": "High availability",
+    "buttonStartNow": "Get Started",
+    "buttonComparePlans": "Compare Plans",
+    "supportedGames": "Supported Games",
+    "showAllGames": "Show all games",
+    "toolsHeader": "Our tools",
+    "panelTitle": "Control Panel",
+    "panelDesc": "Manage your server with simple controls — start, stop, restart, and monitor performance without the fuss.",
+    "panelFeature1": "One-click deployment",
+    "panelFeature2": "Live performance view",
+    "panelFeature3": "Server console",
+    "fileManagerTitle": "Files in your browser",
+    "fileManagerDesc": "Open, edit and download files directly in your browser. Or connect via FTP.",
+    "fileManagerFeature1": "Edit files in-browser",
+    "fileManagerFeature2": "Upload & download",
+    "fileManagerFeature3": "Advanced actions via FTP",
+    "backupTitle": "Backups you can trust",
+    "backupDesc": "Automatic backups of your entire game server. (Coming soon :))",
+    "backupFeature1": "Automatic scheduled backups",
+    "backupFeature2": "One-click restore",
+    "backupFeature3": "Download backups",
+    "ctaHeader": "Ready to host?",
+    "ctaDesc": "Choose a game and get your server online in minutes.",
+    "ctaButton": "Get started",
+    "getFreeServer": "Create a free server"
+  },
+  "notAdmin": "You are not an admin",
+  "notAdminDescription": "You do not have admin rights to view this page.",
+  "freeServer": {
+    "buttonText": "Free Server",
+    "buttonDescription": "Create a free gameserver with limited hardware",
+    "pageTitle": "Free Server",
+    "featuresTitle": "Free Tier Features",
+    "featuresDescription": "Limited hardware, unlimited fun!",
+    "chooseGame": "Choose Your Game",
+    "cpuLabel": "{cores} {cores, plural, =1 {Core} other {Cores}}",
+    "cpuDescription": "Enough for small servers",
+    "ramLabel": "{amount} GiB RAM",
+    "ramDescription": "Perfect for getting started",
+    "storageLabel": "{amount} GiB Storage",
+    "storageDescription": "Sufficient for most game files",
+    "durationLabel": "{days} {days, plural, =1 {Day} other {Days}} Duration",
+    "durationDescription": "Renewable or upgrade anytime",
+    "noCreditCard": "No credit card required • No hidden fees • 100% Free",
+    "serverUsageTitle": "Free Server Slots",
+    "serverUsageDescription": "Create more free servers",
+    "limitReached": "Maximum free servers reached",
+    "serversLabel": "servers",
+    "disabledReasons": {
+      "tooMany": "You have reached the maximum number of free servers.",
+      "notLoggedIn": "You must be logged in to create a free server.",
+      "default": "Server creation is currently not allowed."
+    }
+  },
+  "hardware-config": {
+    "duration": "Duration",
+    "select-duration": "Select duration",
+    "durations": {
+      "week": "1 Week",
+      "month": "1 Month",
+      "three-months": "3 Months",
+      "five-months": "5 Months"
+    }
+  },
+  "info-buttons": {
+    "cpu": "Explaination of the CPU",
+    "ram": "Explaination of the RAM"
+  },
+  "getHelp": {
+    "title1": "We don't have a FAQ yet, but you can ",
+    "title2": "contact us",
+    "title3": "for help",
+    "contactUsTitle": "Contact Us",
+    "contactIntro": "Pick the category that fits best so we can get the right person on it.",
+    "writeDirectly": "Write to us directly",
+    "answerToEmail": "We will still reply to the email from your account, it's easier :)",
+    "yourProblem": "Your Problem",
+    "submit": "Submit",
+    "submitting": "Sending...",
+    "describeProblemPlaceholder": "Describe your problem here...",
+    "yourProblemTitle": "Your Problem",
+    "writeEmail": "Write us an email",
+    "writeEmailTo": "Write an email to",
+    "weWillAnswer": "and we will answer as quickly as possible",
+    "ticketCreated": "Support ticket #{id} created",
+    "ticketCreatedDescription": "Thanks! We'll get back to you via email soon.",
+    "ticketCreationFailed": "Support ticket could not be created",
+    "ticketCreationFailedDescription": "Please try again or drop us an email instead.",
+    "loginRequiredTitle": "<strong>Sign in</strong> to contact support",
+    "loginRequiredDescription": "Log in so we can tie your ticket to your account and follow up by email.",
+    "messageRequired": "Add a short description so we can help.",
+    "messageTooLong": "The message is a bit long. Shorten it and try again.",
+    "messageLabel": "Tell us the details",
+    "messageHelper": "We normally respond within 24 hours.",
+    "messageLength": "{current}/{max} characters",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Choose a category",
+    "categoryHelper": "This helps us route your ticket to the right teammate.",
+    "subjectLabel": "Subject",
+    "subjectPlaceholder": "Short summary (optional)",
+    "categories": {
+      "general": "General question",
+      "technical": "Technical issue",
+      "billing": "Billing & payments",
+      "account": "Account & access"
     },
-    "ServerDeleted": {
-        "title": "Server Deleted",
-        "description": "This server has been permanently deleted. If you believe this was a mistake or need access to a backup, please reach out to our support team. We may still have a backup available that we can restore for you.",
-        "contactSupport": "Contact Support",
-        "home": "Go to Home"
+    "copyEmail": "Copy email",
+    "copyEmailSuccess": "Email copied to clipboard",
+    "copyEmailError": "Couldn't copy email",
+    "openMail": "Open email app"
+  },
+  "status": {
+    "PROVISIONING": {
+      "title": "Server is being created",
+      "message": "Your server is currently being provisioned."
     },
-    "gameserverSettings": {
-        "deleteFreeServer": {
-            "button": "Delete Server",
-            "title": "Delete Server?",
-            "description": "This will permanently delete your free server. This action is irreversible.",
-            "checkbox": "I understand this action is irreversible",
-            "cancel": "Cancel",
-            "delete": "Delete Server",
-            "deleting": "Deleting...",
-            "success": {
-                "title": "Server deleted",
-                "description": "Your server has been deleted. If you need help, contact support."
-            },
-            "error": {
-                "title": "Could not delete",
-                "description": "The server could not be deleted. Please try again or contact support."
-            }
-        },
-        "management": {
-            "title": "Server Management",
-            "description": "These actions can affect your server's functionality. Please use with caution.",
-            "reinstall": {
-                "title": "Reinstall Server",
-                "description": "Reinstall the server software. All data will be preserved unless you choose to delete all files during the process.",
-                "button": "Reinstall",
-                "reinstalling": "Reinstalling...",
-                "confirmTitle": "Reinstall Server?",
-                "confirmDescription": "Are you sure you want to reinstall your server? This will reinstall the server software. All data will be preserved unless you choose to delete all files.",
-                "deleteFilesLabel": "Delete all files before reinstalling"
-            },
-            "changeGame": {
-                "title": "Change Game",
-                "description": "Switch to a different game. Your server will be reconfigured with new settings and the old data may be lost.",
-                "button": "Change Game"
-            },
-            "deleteFreeServerAction": {
-                "title": "Delete Free Server",
-                "description": "Permanently delete this free server and all its data. This action cannot be undone.",
-                "button": "Delete Free Server"
-            }
-        }
+    "CREATION_FAILED": {
+      "title": "Server creation failed",
+      "message": "We couldn't create your server. Please contact support or try again."
     },
-    "ServerExpired": {
-        "title": "Server Expired",
-        "description": "Your server subscription has expired. To continue using your server, please extend your subscription. All your data is still safe and will be available once you renew.",
-        "extendServer": "Extend Server",
-        "home": "Go to Home"
+    "ACTIVE": {
+      "title": "Server is ready",
+      "message": "Your server is up and running. You can connect now."
     },
-    "ServerCreationFailed": {
-        "title": "Server creation failed",
-        "description": "We're sorry — creating your server failed. Our team has been notified and will resolve this as soon as possible. If you'd like immediate help, please contact support.",
-        "contactSupport": "Contact Support",
-        "home": "Home"
+    "DOES_NOT_EXIST": {
+      "title": "Server not found",
+      "message": "We couldn't find this server. If this persists, contact support."
     },
-    "landingpage": {
-        "heroBadge": "Simple Game Hosting",
-        "header1": "Game Server Hosting",
-        "header2": "made easy",
-        "heroSubtitle": "Launch your game server in seconds — reliable hardware and a friendly control panel.",
-        "statUptime": "99.0%",
-        "statUptimeLabel": "Uptime",
-        "statSupport": "Fast",
-        "statSupportLabel": "Support",
-        "statSetup": "<60s",
-        "statSetupLabel": "Setup",
-        "boxLabel1": "Simple",
-        "boxDesc1": "Get online fast",
-        "boxLabel2": "Secure",
-        "boxDesc2": "Protected infrastructure",
-        "boxLabel3": "Reliable",
-        "boxDesc3": "High availability",
-        "buttonStartNow": "Custom Config",
-        "buttonComparePlans": "Compare Plans",
-        "supportedGames": "Supported Games",
-        "showAllGames": "Show all games",
-        "toolsHeader": "Our tools",
-        "panelTitle": "Control Panel",
-        "panelDesc": "Manage your server with simple controls — start, stop, restart, and monitor performance without the fuss.",
-        "panelFeature1": "One-click deployment",
-        "panelFeature2": "Live performance view",
-        "panelFeature3": "Server console",
-        "fileManagerTitle": "Files in your browser",
-        "fileManagerDesc": "Open, edit and download files directly in your browser. Or connect via FTP.",
-        "fileManagerFeature1": "Edit files in-browser",
-        "fileManagerFeature2": "Upload & download",
-        "fileManagerFeature3": "Advanced actions via FTP",
-        "backupTitle": "Backups you can trust",
-        "backupDesc": "Automatic backups of your entire game server. (Coming soon :))",
-        "backupFeature1": "Automatic scheduled backups",
-        "backupFeature2": "One-click restore",
-        "backupFeature3": "Download backups",
-        "ctaHeader": "Ready to host?",
-        "ctaDesc": "Choose a game and get your server online in minutes.",
-        "ctaButton": "Get started",
-        "getFreeServer": "Create a free server"
+    "PAYMENT_FAILED": {
+      "title": "Payment failed",
+      "message": "Your payment did not go through. Please try again."
     },
-    "notAdmin": "You are not an admin",
-    "notAdminDescription": "You do not have admin rights to view this page.",
-    "freeServer": {
-        "buttonText": "Free Server",
-        "buttonDescription": "Create a free gameserver with limited hardware",
-        "pageTitle": "Free Server",
-        "featuresTitle": "Free Tier Features",
-        "featuresDescription": "Limited hardware, unlimited fun!",
-        "chooseGame": "Choose Your Game",
-        "cpuLabel": "{cores} {cores, plural, =1 {Core} other {Cores}}",
-        "cpuDescription": "Enough for small servers",
-        "ramLabel": "{amount} GiB RAM",
-        "ramDescription": "Perfect for getting started",
-        "storageLabel": "{amount} GiB Storage",
-        "storageDescription": "Sufficient for most game files",
-        "durationLabel": "{days} {days, plural, =1 {Day} other {Days}} Duration",
-        "durationDescription": "Renewable or upgrade anytime",
-        "noCreditCard": "No credit card required • No hidden fees • 100% Free",
-        "serverUsageTitle": "Free Server Slots",
-        "serverUsageDescription": "Create more free servers",
-        "limitReached": "Maximum free servers reached",
-        "serversLabel": "servers",
-        "disabledReasons": {
-            "tooMany": "You have reached the maximum number of free servers.",
-            "notLoggedIn": "You must be logged in to create a free server.",
-            "default": "Server creation is currently not allowed."
-        }
+    "PAYMENT_PROCESSING": {
+      "title": "Processing payment",
+      "message": "We're processing your payment. This should only take a moment."
     },
-    "hardware-config": {
-        "duration": "Duration",
-        "select-duration": "Select duration",
-        "durations": {
-            "week": "1 Week",
-            "month": "1 Month",
-            "three-months": "3 Months",
-            "five-months": "5 Months"
-        }
+    "EXPIRED": {
+      "title": "Server expired",
+      "message": "This server has expired. Please renew to continue."
     },
-    "info-buttons": {
-        "cpu": "Explaination of the CPU",
-        "ram": "Explaination of the RAM"
+    "DELETED": {
+      "title": "Server deleted",
+      "message": "This server was deleted and is no longer available."
+    }
+  },
+  "checkout": {
+    "return": {
+      "poller": {
+        "unknownError": "Unknown error",
+        "waitingForPayment": "Waiting for payment",
+        "paymentProcessing": "Please wait while we confirm your payment...",
+        "networkHeadline": "Connection issue",
+        "networkSubheadline": "We couldn't reach our payment service. Please try again in a moment.",
+        "paymentFailedTitle": "Payment Failed",
+        "paymentFailedSubtitle": "There was a problem with your payment",
+        "retry": "Retry",
+        "contactSupport": "Contact support",
+        "returnHome": "Return Home"
+      }
+    }
+  },
+  "upgrade": {
+    "info": {
+      "title": "Upgrade Information",
+      "description": "Here you can only extend or upgrade your server. Downgrades aren't possible yet."
     },
-    "getHelp": {
-        "title1": "We don't have a FAQ yet, but you can ",
-        "title2": "contact us",
-        "title3": "for help",
-        "contactUsTitle": "Contact Us",
-        "contactIntro": "Pick the category that fits best so we can get the right person on it.",
-        "writeDirectly": "Write to us directly",
-        "answerToEmail": "We will still reply to the email from your account, it's easier :)",
-        "yourProblem": "Your Problem",
-        "submit": "Submit",
-        "submitting": "Sending...",
-        "describeProblemPlaceholder": "Describe your problem here...",
-        "yourProblemTitle": "Your Problem",
-        "writeEmail": "Write us an email",
-        "writeEmailTo": "Write an email to",
-        "weWillAnswer": "and we will answer as quickly as possible",
-        "ticketCreated": "Support ticket #{id} created",
-        "ticketCreatedDescription": "Thanks! We'll get back to you via email soon.",
-        "ticketCreationFailed": "Support ticket could not be created",
-        "ticketCreationFailedDescription": "Please try again or drop us an email instead.",
-        "loginRequiredTitle": "<strong>Sign in</strong> to contact support",
-        "loginRequiredDescription": "Log in so we can tie your ticket to your account and follow up by email.",
-        "messageRequired": "Add a short description so we can help.",
-        "messageTooLong": "The message is a bit long. Shorten it and try again.",
-        "messageLabel": "Tell us the details",
-        "messageHelper": "We normally respond within 24 hours.",
-        "messageLength": "{current}/{max} characters",
-        "categoryLabel": "Category",
-        "categoryPlaceholder": "Choose a category",
-        "categoryHelper": "This helps us route your ticket to the right teammate.",
-        "subjectLabel": "Subject",
-        "subjectPlaceholder": "Short summary (optional)",
-        "categories": {
-            "general": "General question",
-            "technical": "Technical issue",
-            "billing": "Billing & payments",
-            "account": "Account & access"
-        },
-        "copyEmail": "Copy email",
-        "copyEmailSuccess": "Email copied to clipboard",
-        "copyEmailError": "Couldn't copy email",
-        "openMail": "Open email app"
+    "config": {
+      "title": "Performance Configuration",
+      "description": "Customize your server hardware.",
+      "performance-tier": "Performance Tier",
+      "extend-title": "Extend Server",
+      "duration": {
+        "none": "None",
+        "week": "1 Week",
+        "month": "1 Month",
+        "three-months": "3 Months",
+        "discount-10": "-10%"
+      },
+      "little-info": "Info",
+      "cpu": {
+        "price-suffix": "€ / vCore"
+      },
+      "ram": {
+        "label-suffix": "GiB RAM",
+        "price-suffix": "€ / GiB"
+      }
     },
-    "status": {
-        "PROVISIONING": {
-            "title": "Server is being created",
-            "message": "Your server is currently being provisioned."
-        },
-        "CREATION_FAILED": {
-            "title": "Server creation failed",
-            "message": "We couldn't create your server. Please contact support or try again."
-        },
-        "ACTIVE": {
-            "title": "Server is ready",
-            "message": "Your server is up and running. You can connect now."
-        },
-        "DOES_NOT_EXIST": {
-            "title": "Server not found",
-            "message": "We couldn't find this server. If this persists, contact support."
-        },
-        "PAYMENT_FAILED": {
-            "title": "Payment failed",
-            "message": "Your payment did not go through. Please try again."
-        },
-        "PAYMENT_PROCESSING": {
-            "title": "Processing payment",
-            "message": "We're processing your payment. This should only take a moment."
-        },
-        "EXPIRED": {
-            "title": "Server expired",
-            "message": "This server has expired. Please renew to continue."
-        },
-        "DELETED": {
-            "title": "Server deleted",
-            "message": "This server was deleted and is no longer available."
-        }
-    },
-    "checkout": {
-        "return": {
-            "poller": {
-                "unknownError": "Unknown error",
-                "waitingForPayment": "Waiting for payment",
-                "paymentProcessing": "Please wait while we confirm your payment...",
-                "networkHeadline": "Connection issue",
-                "networkSubheadline": "We couldn't reach our payment service. Please try again in a moment.",
-                "paymentFailedTitle": "Payment Failed",
-                "paymentFailedSubtitle": "There was a problem with your payment",
-                "retry": "Retry",
-                "contactSupport": "Contact support",
-                "returnHome": "Return Home"
-            }
-        }
-    },
-    "upgrade": {
-        "info": {
-            "title": "Upgrade Information",
-            "description": "Here you can only extend or upgrade your server. Downgrades aren't possible yet."
-        },
-        "config": {
-            "title": "Performance Configuration",
-            "description": "Customize your server hardware.",
-            "performance-tier": "Performance Tier",
-            "extend-title": "Extend Server",
-            "duration": {
-                "none": "None",
-                "week": "1 Week",
-                "month": "1 Month",
-                "three-months": "3 Months",
-                "discount-10": "-10%"
-            },
-            "little-info": "Info",
-            "cpu": {
-                "price-suffix": "€ / vCore"
-            },
-            "ram": {
-                "label-suffix": "GiB RAM",
-                "price-suffix": "€ / GiB"
-            }
-        },
-        "pricing": {
-            "title": "Price Overview",
-            "description": "Summary of your configuration.",
-            "headers": {
-                "vcpu": "vCPU",
-                "ram": "RAM"
-            },
-            "rows": {
-                "upgrade-for-days": "Upgrade for {days} days",
-                "extend-for-days": "Extend for {days} days"
-            },
-            "discount-with-amount": "(plus {amount} € discount)"
-        },
-        "footer": {
-            "total": "Total",
-            "min-price-hint": "Minimum price €1",
-            "continue": "Continue to Payment"
-        }
-    },
-    "buyGameServer": {
-        "errors": {
-            "gameNotFound": {
-                "title": "Game Not Found",
-                "description": "The game you're looking for doesn't exist or is no longer available. Please choose from our available games.",
-                "browseGames": "Browse Games",
-                "home": "Go to Home"
-            },
-            "loadingError": {
-                "title": "Something Went Wrong",
-                "description": "We couldn't load the configuration options. Please try again or contact support if the problem persists.",
-                "retry": "Try Again",
-                "home": "Go to Home"
-            }
-        },
-        "header": {
-            "title": "Configure Your Server",
-            "step": "Step {current} of {total}"
-        },
-        "loading": {
-            "configOptions": "Loading configuration options..."
-        },
-        "nav": {
-            "back": "Back",
-            "continue": "Continue"
-        },
-        "auth": {
-            "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings"
-        },
-        "payment": {
-            "title": "Complete Your Payment",
-            "footerHint": "Complete payment above to create your server"
-        },
-        "hardware": {
-            "title": "Performance Configuration",
-            "description": "Customize your server hardware.",
-            "performanceTier": "Performance Tier",
-            "billingPeriod": "Billing Period",
-            "durations": {
-                "week": "1 Week",
-                "month": "1 Month",
-                "threeMonths": "3 Months",
-                "sixMonths": "6 Months",
-                "days": "{days} days"
-            },
-            "price": {
-                "overviewTitle": "Price Overview",
-                "overviewDescription": "Summary of your configuration.",
-                "resources": "Resources",
-                "discount": "Discount (-{percent}%)",
-                "total": "Total",
-                "minOrderHint": "Minimum order value is 1.00 €"
-            },
-            "labels": {
-                "ramUnit": "GiB RAM",
-                "perVcore": "€ / vCore",
-                "perGiB": "€ / GiB",
-                "diskSpace": "Disk Space",
-                "diskUnit": "GiB Storage",
-                "backupCount": "Backup Slots",
-                "backupUnit": "Backups",
-                "allocations": "Port Allocations",
-                "allocationsUnit": "Ports"
-            },
-            "button": {
-                "continue": "Continue"
-            }
-        },
-        "gameConfig": {
-            "title": "{game} Configuration",
-            "description": "Select your preferred game settings",
-            "noSpecific": "No specific configuration options available for this game."
-        }
-    },
-    "extendServer": {
-        "config": {
-            "title": "Performance Configuration",
-            "description": "Customize your server hardware.",
-            "performance-tier": "Performance Tier",
-            "extend-title": "Extend for",
-            "duration": {
-                "none": "None",
-                "week": "1 Week",
-                "month": "1 Month",
-                "three-months": "3 Months",
-                "discount-10": "-10%"
-            },
-            "little-info": "Info",
-            "cpu": {
-                "price-suffix": "€ / vCore"
-            },
-            "ram": {
-                "label-suffix": "GiB RAM",
-                "price-suffix": "€ / GiB"
-            }
-        },
-        "pricing": {
-            "title": "Price Overview",
-            "description": "Summary of your configuration.",
-            "headers": {
-                "vcpu": "vCPU",
-                "ram": "RAM"
-            },
-            "rows": {
-                "upgrade-for-days": "Upgrade for {days} days",
-                "extend-for-days": "Extend for {days} days"
-            },
-            "discount-with-amount": "(plus {amount} € discount)"
-        },
-        "footer": {
-            "total": "Total",
-            "min-price-hint": "Minimum price €1",
-            "continue": "Continue to Payment"
-        }
-    },
-    "RegisterLogin": {
-        "title": "Welcome",
-        "subtitle": "Register with your Discord or Google account",
-        "oauth": {
-            "discord": "Register with Discord",
-            "google": "Register with Google"
-        },
-        "alreadyAccount": {
-            "text": "Already have an account?",
-            "login": "Login"
-        },
-        "login": {
-            "title": "Welcome back",
-            "subtitle": "Login with your Discord or Google account",
-            "oauthDiscord": "Login with Discord",
-            "oauthGoogle": "Login with Google",
-            "orContinueWith": "Or continue with",
-            "fields": {
-                "email": "Email",
-                "emailPlaceholder": "mail@example.com",
-                "password": "Password",
-                "forgot": "Forgot your password?"
-            },
-            "button": {
-                "loggingIn": "Logging in...",
-                "login": "Login"
-            },
-            "noAccount": {
-                "text": "Don't have an account?",
-                "signUp": "Sign up"
-            },
-            "errors": {
-                "loginFailed": "Login failed",
-                "unexpected": "Unexpected error"
-            }
-        },
-        "forgotPassword": {
-            "title": "Forgot your password?",
-            "subtitle": "Enter your email address and we'll send you a reset link.",
-            "button": {
-                "send": "Send reset link",
-                "sending": "Sending..."
-            },
-            "success": {
-                "request": "If an account exists for that email, we've sent reset instructions."
-            },
-            "errors": {
-                "requestFailed": "We couldn't send the reset email. Please try again."
-            }
-        },
-        "resetPassword": {
-            "title": "Reset your password",
-            "subtitle": "Set a new password to regain access to your account.",
-            "button": {
-                "reset": "Reset password",
-                "resetting": "Resetting..."
-            },
-            "success": {
-                "reset": "Your password has been updated. You can now log in."
-            },
-            "errors": {
-                "tokenMissing": "The reset token is missing. Please use the link from your email.",
-                "tokenInvalid": "This reset link is invalid or has expired. Request a new one.",
-                "resetFailed": "We couldn't reset your password. Please try again.",
-                "generic": "Something went wrong while validating your reset link."
-            },
-            "backToLogin": "Back to login"
-        },
-        "verifyEmail": {
-            "title": "Verify your email",
-            "titleVerified": "Email confirmed",
-            "subtitle": "We sent a verification link to <strong>{email}</strong>.",
-            "subtitleFallback": "We sent a verification link to your email address.",
-            "description": "Open the link in that email to activate your account.",
-            "resend": {
-                "button": "Resend email",
-                "sending": "Sending..."
-            },
-            "status": {
-                "sent": "Verification email sent. Please check your inbox.",
-                "error": "We couldn't resend the email. Please try again.",
-                "missingEmail": "We need an email address to resend the verification link.",
-                "alreadyVerified": "Your email <strong>{email}</strong> is already verified.",
-                "verifiedInfo": "You're all set. Head back to your dashboard to keep going."
-            },
-            "tips": {
-                "checkSpam": "Check your spam or junk folder if you don't see the email.",
-                "contact": "Still nothing? Contact support and we'll help you out.",
-                "typo": "Used the wrong email during sign up? Register again with the correct address."
-            },
-            "cta": {
-                "dashboard": "Go to dashboard"
-            },
-            "backToLogin": "Back to login"
-        },
-        "orContinueWith": "Or continue with",
-        "fields": {
-            "username": "Username",
-            "usernamePlaceholder": "your username",
-            "email": "Email",
-            "emailPlaceholder": "mail@example.com",
-            "password": "Password",
-            "passwordPlaceholder": "password",
-            "newPassword": "New password",
-            "newPasswordPlaceholder": "Enter a new password",
-            "confirmPassword": "Confirm Password",
-            "confirmPasswordPlaceholder": "confirm password"
-        },
-        "validation": {
-            "passwordMin": "Password must be at least {min} characters",
-            "passwordsDontMatch": "Passwords do not match",
-            "emailRequired": "Email is required"
-        },
-        "errors": {
-            "registrationFailedTryAgain": "Registration failed. Please try again.",
-            "registrationFailed": "Registration failed"
-        },
-        "success": {
-            "registration": "Registration successful!"
-        },
-        "button": {
-            "registering": "Registering...",
-            "register": "Register"
-        },
-        "disclaimer": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
-    },
-    "payments": {
-        "orderType": {
-            "NEW": "New server",
-            "UPGRADE": "Upgrade",
-            "DOWNGRADE": "Downgrade",
-            "RENEW": "Renewal",
-            "FREE_SERVER": "Free server",
-            "TO_PAYED": "From Free to Paid",
-            "PACKAGE": "Package"
-        },
-        "status": {
-            "created": "Active",
-            "active": "Online",
-            "creationFailed": "Creation failed",
-            "expired": "Expired",
-            "deleted": "Deleted",
-            "provisioning": "Provisioning..."
-        },
-        "freeServers": {
-            "title": "Free Servers"
-        },
-        "supportInfo": {
-            "text": "Questions about a payment, gameserver or refund? Contact our",
-            "link": "support team"
-        },
-        "serverExpired": "Server expired",
-        "extendServer": "Extend server",
-        "manageServer": "Manage server",
-        "serverInaccessible": "Server no longer accessible",
-        "viewReceipt": "View receipt",
-        "historyTitle": "Payment History",
-        "totalSpend": "Total spent",
-        "noPayments": "No payments",
-        "profileTitle": "Profile",
-        "loggedInVia": "Logged in via",
-        "changePassword": "Change Password",
-        "loadingPayments": "Loading payment history...",
-        "oauthPasswordChangeNotice1": "Since you signed in via",
-        "oauthPasswordChangeNotice2": ", you can't change your password here.",
-        "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email.",
-        "noReceipt": "No receipt"
-    },
-    "changeGame": {
-        "flavorChangeTitle": "Changing game flavor",
-        "flavorChangeDesc": "You're switching between different versions of the same game. Your world data will be preserved unless you choose to delete all files.",
-        "flavorChangeCheckbox": "Delete all files (fresh install)",
-        "gameChangeTitle": "Warning: All files will be deleted!",
-        "gameChangeDesc": "Switching to a different game requires a clean installation. All existing files will be permanently deleted. Make sure to backup anything important before continuing!",
-        "gameChangeCheckbox": "Delete all files (required for game changes)",
-        "filesKeptTitle": "Files will be preserved",
-        "filesKeptDesc": "Your current server files and world data will be kept during the reinstallation. This is recommended for flavor changes within the same game.",
-        "filesDeletedTitle": "All files will be deleted!",
-        "filesDeletedDesc": "Your current server files and world data will be permanently deleted before reinstalling. This ensures a clean installation but you will lose all existing data."
-    },
-    "legal": {
-        "impressum": "Imprint",
-        "agb": "Terms and Conditions",
-        "datenschutz": "Privacy Policy"
+    "pricing": {
+      "title": "Price Overview",
+      "description": "Summary of your configuration.",
+      "headers": {
+        "vcpu": "vCPU",
+        "ram": "RAM"
+      },
+      "rows": {
+        "upgrade-for-days": "Upgrade for {days} days",
+        "extend-for-days": "Extend for {days} days"
+      },
+      "discount-with-amount": "(plus {amount} € discount)"
     },
     "footer": {
-        "impressum": "Imprint",
-        "agb": "Terms",
-        "datenschutz": "Privacy",
-        "support_center": "Support-Center",
-        "faq": "FAQ (Coming Soon)",
-        "documentation": "Documentation (Coming Soon)",
-        "about": "About Us (Coming Soon)",
-        "blog": "Blog",
-        "company": "Company",
-        "sourcecode": "Source Code",
-        "contactUs": "Contact"
-    },
-    "gameserver": {
-        "freeServer": "Free",
-        "creationFailed": "Creation Failed",
-        "creationFailedMessage": "Our team will resolve this soon",
-        "loading": "Loading Server...",
-        "error": "Error",
-        "serverNotFound": "Server Not Found",
-        "serverNotFoundDesc": "Unable to load server data",
-        "serverNotFoundAccess": "Server not found or access denied",
-        "failedFetch": "Failed to fetch server data",
-        "errorLoading": "An error occurred while loading server data",
-        "installation": {
-            "title": "Server Installation in Progress",
-            "description": "Your server <strong>{serverName}</strong> is currently being installed. This page will automatically refresh and redirect you to the dashboard once the installation is complete.",
-            "step1": "Installing dependencies and game files",
-            "step2": "Configuring server settings",
-            "step3": "This usually takes 1-3 minutes"
-        },
-        "restore": {
-            "title": "Restoring Server Backup",
-            "description": "Your server <strong>{serverName}</strong> is currently being restored from a backup. This page will automatically refresh when the restore finishes.",
-            "step1": "Restoring files and database (if any)",
-            "step2": "Applying backup metadata and configurations",
-            "step3": "This can take several minutes depending on backup size"
-        },
-        "tabs": {
-            "console": "Console",
-            "files": "Files",
-            "network": "Network",
-            "backups": "Backups",
-            "settings": "Settings",
-            "networkComingSoon": "Network control coming soon",
-            "backupsComingSoon": "Backup manager coming soon",
-            "settingsComingSoon": "Settings coming soon"
-        },
-        "eula": {
-            "title": "Accept Minecraft® EULA",
-            "description": "By pressing \"Accept Eula\" below you are indicating your agreement to the",
-            "eulaLink": "Minecraft® EULA.",
-            "cancel": "Cancel",
-            "accept": "Accept Eula"
-        },
-        "connection": {
-            "connecting": "Connecting to server...",
-            "reconnecting": "Connection lost. Reconnecting... (Attempt {attempt})",
-            "disconnected": "Connection to server lost"
-        },
-        "features": {
-            "hytaleOauth": {
-                "title": "Authentication Required",
-                "description": "You need to authenticate with your Hytale account to download or update server files. Please log in to continue.",
-                "cancel": "Cancel",
-                "login": "Log in"
-            }
-        },
-        "dashboard": {
-            "preparing": "Preparing checkout…",
-            "header": {
-                "upgrade": "Upgrade/Extend"
-            },
-            "noAllocation": "No Allocation found",
-            "copyIPPort": "Copy",
-            "uptime": "Uptime:",
-            "serverControls": "Server Controls",
-            "memory": {
-                "usage": "Memory Usage",
-                "current": "Current:"
-            },
-            "charts": {
-                "current": "Current",
-                "limit": "Limit",
-                "memoryGiB": "{amount} GiB"
-            }
-        },
-        "fileManager": {
-            "title": "File Manager",
-            "noApiKeyAlert": "Provide a valid API key to browse and manage files.",
-            "toolbar": {
-                "filterPlaceholder": "Filter files",
-                "refreshButton": "Refresh",
-                "uploadButton": "Upload"
-            },
-            "breadcrumb": {
-                "root": "root"
-            },
-            "table": {
-                "columns": {
-                    "name": "Name",
-                    "size": "Size",
-                    "modifiedAt": "Modified",
-                    "createdAt": "Created"
-                },
-                "loading": "Loading directory…",
-                "empty": "This directory is empty.",
-                "parentDirectory": "..",
-                "actions": {
-                    "open": "Open",
-                    "download": "Download",
-                    "rename": "Rename",
-                    "delete": "Delete"
-                }
-            },
-            "ftpAccess": {
-                "title": "FTP access details",
-                "host": "Host",
-                "username": "Username",
-                "password": "Password",
-                "changePasswordButton": "Change FTP password",
-                "description": "Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.",
-                "copiedToast": "{label} copied",
-                "copyFailedToast": "Unable to copy {label}",
-                "copyFailedDescription": "Please copy it manually instead."
-            },
-            "ftpPassword": {
-                "dialogTitle": "Change FTP password",
-                "dialogDescriptionSet": "Enter a new password or leave the fields blank to let us generate one for you.",
-                "dialogDescriptionResult": "Copy the new password before closing this window.",
-                "newPasswordLabel": "New password",
-                "confirmPasswordLabel": "Confirm password",
-                "copyButton": "Copy",
-                "cancelButton": "Cancel",
-                "doneButton": "Done",
-                "setPasswordButton": "Set password",
-                "generatePasswordButton": "Generate password",
-                "warningText": "This password is only shown once. Store it somewhere safe before closing the dialog.",
-                "errors": {
-                    "passwordMismatch": "Passwords do not match.",
-                    "passwordTooShort": "Password must be at least {min} characters.",
-                    "passwordTooLong": "Password must not exceed {max} characters."
-                },
-                "toasts": {
-                    "passwordCopied": "Password copied",
-                    "passwordCopiedDescription": "Paste it into your FTP client to sign in.",
-                    "passwordUpdated": "FTP password updated",
-                    "passwordUpdatedDescription": "Use the password below when connecting via SFTP.",
-                    "updateFailed": "Unable to update password",
-                    "copyFailed": "Unable to copy password"
-                }
-            },
-            "upload": {
-                "dialogTitle": "Upload files",
-                "dialogDescription": "Files will be uploaded to {directory}",
-                "selectFilesText": "Select from your device.",
-                "chooseFilesButton": "Choose files",
-                "selectedFilesLabel": "Selected files:",
-                "cancelButton": "Cancel",
-                "uploadButton": "Upload"
-            },
-            "editor": {
-                "dialogTitle": "File",
-                "dialogDescriptionEditable": "Make your changes below and press save to update the file.",
-                "dialogDescriptionBinary": "Binary files cannot be edited in the browser.",
-                "loadingText": "Loading file contents…",
-                "binaryFileWarning": "This file appears to be binary or too large to display in the browser.",
-                "binaryFileDownload": "Please download it instead.",
-                "cancelButton": "Cancel",
-                "saveButton": "Save changes"
-            },
-            "rename": {
-                "dialogTitleFile": "Rename file",
-                "dialogTitleFolder": "Rename folder",
-                "dialogDescription": "Choose a new name for {name}.",
-                "inputPlaceholder": "New name",
-                "cancelButton": "Cancel",
-                "renameButton": "Rename",
-                "renamingButton": "Renaming…"
-            },
-            "delete": {
-                "dialogTitleFile": "Delete file",
-                "dialogTitleFolder": "Delete folder",
-                "dialogDescription": "This action can't be undone. You're about to permanently remove {name}.",
-                "cancelButton": "Cancel",
-                "deleteButton": "Delete",
-                "deletingButton": "Deleting…"
-            },
-            "toasts": {
-                "unableToList": "Unable to list files",
-                "unableToOpen": "Unable to open file",
-                "unableToOpenDescription": "Failed to load file",
-                "fileTooLarge": "File too large to edit",
-                "fileTooLargeDescription": "Only files up to {maxSize} can be opened in the browser. Download the file to edit it locally.",
-                "fileSaved": "File saved",
-                "fileSavedDescription": "{fileName} was updated successfully.",
-                "unableToSave": "Unable to save file",
-                "unableToDownload": "Unable to download",
-                "nameRequired": "Name is required",
-                "nameRequiredDescription": "Please enter a new name before saving.",
-                "entryRenamed": "Entry renamed",
-                "entryRenamedDescription": "{oldName} is now {newName}.",
-                "unableToRename": "Unable to rename",
-                "entryDeleted": "Entry deleted",
-                "entryDeletedDescription": "{name} has been removed.",
-                "unableToDelete": "Unable to delete",
-                "noFilesSelected": "No files selected",
-                "noFilesSelectedDescription": "Choose one or more files before uploading.",
-                "uploadComplete": "Upload complete",
-                "uploadCompleteDescription": "{count} file(s) uploaded successfully.",
-                "uploadFailed": "Upload failed",
-                "unableToUpload": "Unable to upload"
-            }
-        }
-    },
-    "freeServerUpgrade": {
-        "title": "Extend or Upgrade Your Free Server",
-        "description": "Choose how you want to continue with your free game server.",
-        "backToOptions": "Back to options",
-        "badge": {
-            "freeServer": "Free Server"
-        },
-        "serverInfo": {
-            "title": "Current Server Information",
-            "expires": "Expires on",
-            "daysLeft": "Days remaining",
-            "days": "days",
-            "cpu": "CPU",
-            "ram": "RAM"
-        },
-        "extend": {
-            "badge": "FREE",
-            "title": "Extend for Free",
-            "description": "Keep your free server running",
-            "feature1": "100% free, no payment required",
-            "feature2": "Extend up to {days} days into the future",
-            "feature3": "Keep your current hardware and settings",
-            "willExtendTo": "New expiry date: {date}",
-            "button": "Extend for Free",
-            "extending": "Extending...",
-            "success": {
-                "title": "Server Extended!",
-                "description": "Your free server has been extended successfully."
-            },
-            "error": {
-                "title": "Extension Failed",
-                "description": "Could not extend your server. Please try again later."
-            }
-        },
-        "upgrade": {
-            "badge": "POPULAR",
-            "title": "Upgrade to Paid",
-            "description": "Unlock more power and extend beyond free tier limits",
-            "feature1": "More CPU and RAM options",
-            "feature2": "Longer durations available",
-            "feature3": "Priority support",
-            "feature4": "Better performance and reliability",
-            "button": "Configure Upgrade",
-            "pricing": {
-                "title": "Flexible Pricing",
-                "description": "Pay only for what you use, starting from €1.00"
-            }
-        },
-        "helpText": {
-            "link": "Contact our support-team",
-            "post": "if you need help.",
-            "pre": "Not sure?"
-        }
-    },
-    "provisioning": {
-        "title": "Setting Up Your Server",
-        "description": "Your server is being provisioned",
-        "loading": "Loading...",
-        "stateQueued": "Your server is queued and will be created shortly",
-        "stateActive": "Creating your server...",
-        "stateCompleted": "Server created successfully!",
-        "stateFailed": "Server creation failed",
-        "progress": "Progress",
-        "jobId": "Job ID",
-        "attempts": "Attempts",
-        "orderId": "Order ID",
-        "pleaseWait": "This may take a few moments. Please don't close this page.",
-        "redirecting": "Redirecting to your server...",
-        "error": "Error",
-        "errorFetchingStatus": "Failed to fetch provisioning status",
-        "provisioningFailed": "Server provisioning failed. Please contact support.",
-        "backToProfile": "Back to Profile",
-        "notFoundTitle": "Job Not Found",
-        "notFoundDescription": "The provisioning job you're looking for doesn't exist or has expired. Please check the job ID and try again."
+      "total": "Total",
+      "min-price-hint": "Minimum price €1",
+      "continue": "Continue to Payment"
     }
+  },
+  "buyGameServer": {
+    "errors": {
+      "gameNotFound": {
+        "title": "Game Not Found",
+        "description": "The game you're looking for doesn't exist or is no longer available. Please choose from our available games.",
+        "browseGames": "Browse Games",
+        "home": "Go to Home"
+      },
+      "loadingError": {
+        "title": "Something Went Wrong",
+        "description": "We couldn't load the configuration options. Please try again or contact support if the problem persists.",
+        "retry": "Try Again",
+        "home": "Go to Home"
+      }
+    },
+    "header": {
+      "title": "Configure Your Server",
+      "step": "Step {current} of {total}"
+    },
+    "loading": {
+      "configOptions": "Loading configuration options..."
+    },
+    "nav": {
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "auth": {
+      "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings"
+    },
+    "payment": {
+      "title": "Complete Your Payment",
+      "footerHint": "Complete payment above to create your server"
+    },
+    "hardware": {
+      "title": "Performance Configuration",
+      "description": "Customize your server hardware.",
+      "performanceTier": "Performance Tier",
+      "billingPeriod": "Billing Period",
+      "durations": {
+        "week": "1 Week",
+        "month": "1 Month",
+        "threeMonths": "3 Months",
+        "sixMonths": "6 Months",
+        "days": "{days} days"
+      },
+      "price": {
+        "overviewTitle": "Price Overview",
+        "overviewDescription": "Summary of your configuration.",
+        "resources": "Resources",
+        "discount": "Discount (-{percent}%)",
+        "total": "Total",
+        "minOrderHint": "Minimum order value is 1.00 €"
+      },
+      "labels": {
+        "ramUnit": "GiB RAM",
+        "perVcore": "€ / vCore",
+        "perGiB": "€ / GiB"
+      },
+      "button": {
+        "continue": "Continue"
+      }
+    },
+    "gameConfig": {
+      "title": "{game} Configuration",
+      "description": "Select your preferred game settings",
+      "noSpecific": "No specific configuration options available for this game."
+    }
+  },
+  "extendServer": {
+    "config": {
+      "title": "Performance Configuration",
+      "description": "Customize your server hardware.",
+      "performance-tier": "Performance Tier",
+      "extend-title": "Extend for",
+      "duration": {
+        "none": "None",
+        "week": "1 Week",
+        "month": "1 Month",
+        "three-months": "3 Months",
+        "discount-10": "-10%"
+      },
+      "little-info": "Info",
+      "cpu": {
+        "price-suffix": "€ / vCore"
+      },
+      "ram": {
+        "label-suffix": "GiB RAM",
+        "price-suffix": "€ / GiB"
+      }
+    },
+    "pricing": {
+      "title": "Price Overview",
+      "description": "Summary of your configuration.",
+      "headers": {
+        "vcpu": "vCPU",
+        "ram": "RAM"
+      },
+      "rows": {
+        "upgrade-for-days": "Upgrade for {days} days",
+        "extend-for-days": "Extend for {days} days"
+      },
+      "discount-with-amount": "(plus {amount} € discount)"
+    },
+    "footer": {
+      "total": "Total",
+      "min-price-hint": "Minimum price €1",
+      "continue": "Continue to Payment"
+    }
+  },
+  "RegisterLogin": {
+    "title": "Welcome",
+    "subtitle": "Register with your Discord or Google account",
+    "oauth": {
+      "discord": "Register with Discord",
+      "google": "Register with Google"
+    },
+    "alreadyAccount": {
+      "text": "Already have an account?",
+      "login": "Login"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Login with your Discord or Google account",
+      "oauthDiscord": "Login with Discord",
+      "oauthGoogle": "Login with Google",
+      "orContinueWith": "Or continue with",
+      "fields": {
+        "email": "Email",
+        "emailPlaceholder": "mail@example.com",
+        "password": "Password",
+        "forgot": "Forgot your password?"
+      },
+      "button": {
+        "loggingIn": "Logging in...",
+        "login": "Login"
+      },
+      "noAccount": {
+        "text": "Don't have an account?",
+        "signUp": "Sign up"
+      },
+      "errors": {
+        "loginFailed": "Login failed",
+        "unexpected": "Unexpected error"
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email address and we'll send you a reset link.",
+      "button": {
+        "send": "Send reset link",
+        "sending": "Sending..."
+      },
+      "success": {
+        "request": "If an account exists for that email, we've sent reset instructions."
+      },
+      "errors": {
+        "requestFailed": "We couldn't send the reset email. Please try again."
+      }
+    },
+    "resetPassword": {
+      "title": "Reset your password",
+      "subtitle": "Set a new password to regain access to your account.",
+      "button": {
+        "reset": "Reset password",
+        "resetting": "Resetting..."
+      },
+      "success": {
+        "reset": "Your password has been updated. You can now log in."
+      },
+      "errors": {
+        "tokenMissing": "The reset token is missing. Please use the link from your email.",
+        "tokenInvalid": "This reset link is invalid or has expired. Request a new one.",
+        "resetFailed": "We couldn't reset your password. Please try again.",
+        "generic": "Something went wrong while validating your reset link."
+      },
+      "backToLogin": "Back to login"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "titleVerified": "Email confirmed",
+      "subtitle": "We sent a verification link to <strong>{email}</strong>.",
+      "subtitleFallback": "We sent a verification link to your email address.",
+      "description": "Open the link in that email to activate your account.",
+      "resend": {
+        "button": "Resend email",
+        "sending": "Sending..."
+      },
+      "status": {
+        "sent": "Verification email sent. Please check your inbox.",
+        "error": "We couldn't resend the email. Please try again.",
+        "missingEmail": "We need an email address to resend the verification link.",
+        "alreadyVerified": "Your email <strong>{email}</strong> is already verified.",
+        "verifiedInfo": "You're all set. Head back to your dashboard to keep going."
+      },
+      "tips": {
+        "checkSpam": "Check your spam or junk folder if you don't see the email.",
+        "contact": "Still nothing? Contact support and we'll help you out.",
+        "typo": "Used the wrong email during sign up? Register again with the correct address."
+      },
+      "cta": {
+        "dashboard": "Go to dashboard"
+      },
+      "backToLogin": "Back to login"
+    },
+    "orContinueWith": "Or continue with",
+    "fields": {
+      "username": "Username",
+      "usernamePlaceholder": "your username",
+      "email": "Email",
+      "emailPlaceholder": "mail@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "password",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter a new password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "confirm password",
+      "currentPassword": "Current password",
+      "currentPasswordPlaceholder": "Enter your current password"
+    },
+    "validation": {
+      "passwordMin": "Password must be at least {min} characters",
+      "passwordsDontMatch": "Passwords do not match",
+      "emailRequired": "Email is required",
+      "currentPasswordRequired": "Current password is required",
+      "invalidCurrentPassword": "Current password is incorrect"
+    },
+    "errors": {
+      "registrationFailedTryAgain": "Registration failed. Please try again.",
+      "registrationFailed": "Registration failed"
+    },
+    "success": {
+      "registration": "Registration successful!"
+    },
+    "button": {
+      "registering": "Registering...",
+      "register": "Register"
+    },
+    "disclaimer": "By clicking continue, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "changePassword": {
+      "title": "Change your password",
+      "subtitle": "Enter your current password and choose a new one.",
+      "button": {
+        "change": "Change password",
+        "changing": "Changing..."
+      },
+      "success": {
+        "changed": "Your password has been successfully changed. Redirecting to profile..."
+      },
+      "errors": {
+        "changeFailed": "We couldn't change your password. Please try again."
+      },
+      "oauthNotAvailable": {
+        "title": "Password Change Not Available",
+        "subtitle": "You are logged in with an OAuth provider",
+        "description": "Since you're using social login, your password is managed by your OAuth provider. Please manage your password through your Google or Discord account settings.",
+        "backButton": "Back to Profile"
+      }
+    }
+  },
+  "payments": {
+    "orderType": {
+      "NEW": "New server",
+      "UPGRADE": "Upgrade",
+      "DOWNGRADE": "Downgrade",
+      "RENEW": "Renewal",
+      "FREE_SERVER": "Free server",
+      "TO_PAYED": "From Free to Paid",
+      "PACKAGE": "Package"
+    },
+    "status": {
+      "created": "Active",
+      "active": "Online",
+      "creationFailed": "Creation failed",
+      "expired": "Expired",
+      "deleted": "Deleted",
+      "provisioning": "Provisioning..."
+    },
+    "freeServers": {
+      "title": "Free Servers"
+    },
+    "supportInfo": {
+      "text": "Questions about a payment, gameserver or refund? Contact our",
+      "link": "support team"
+    },
+    "serverExpired": "Server expired",
+    "extendServer": "Extend server",
+    "manageServer": "Manage server",
+    "serverInaccessible": "Server no longer accessible",
+    "viewReceipt": "View receipt",
+    "historyTitle": "Payment History",
+    "totalSpend": "Total spent",
+    "noPayments": "No payments",
+    "profileTitle": "Profile",
+    "loggedInVia": "Logged in via",
+    "changePassword": "Change Password",
+    "loadingPayments": "Loading payment history...",
+    "oauthPasswordChangeNotice1": "Since you signed in via",
+    "oauthPasswordChangeNotice2": ", you can't change your password here.",
+    "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email.",
+    "noReceipt": "No receipt"
+  },
+  "changeGame": {
+    "flavorChangeTitle": "Changing game flavor",
+    "flavorChangeDesc": "You're switching between different versions of the same game. Your world data will be preserved unless you choose to delete all files.",
+    "flavorChangeCheckbox": "Delete all files (fresh install)",
+    "gameChangeTitle": "Warning: All files will be deleted!",
+    "gameChangeDesc": "Switching to a different game requires a clean installation. All existing files will be permanently deleted. Make sure to backup anything important before continuing!",
+    "gameChangeCheckbox": "Delete all files (required for game changes)",
+    "filesKeptTitle": "Files will be preserved",
+    "filesKeptDesc": "Your current server files and world data will be kept during the reinstallation. This is recommended for flavor changes within the same game.",
+    "filesDeletedTitle": "All files will be deleted!",
+    "filesDeletedDesc": "Your current server files and world data will be permanently deleted before reinstalling. This ensures a clean installation but you will lose all existing data."
+  },
+  "legal": {
+    "impressum": "Imprint",
+    "agb": "Terms and Conditions",
+    "datenschutz": "Privacy Policy"
+  },
+  "footer": {
+    "impressum": "Imprint",
+    "agb": "Terms",
+    "datenschutz": "Privacy",
+    "support_center": "Support-Center",
+    "faq": "FAQ (Coming Soon)",
+    "documentation": "Documentation (Coming Soon)",
+    "about": "About Us (Coming Soon)",
+    "blog": "Blog",
+    "company": "Company",
+    "sourcecode": "Source Code",
+    "contactUs": "Contact"
+  },
+  "gameserver": {
+    "freeServer": "Free",
+    "creationFailed": "Creation Failed",
+    "creationFailedMessage": "Our team will resolve this soon",
+    "loading": "Loading Server...",
+    "error": "Error",
+    "serverNotFound": "Server Not Found",
+    "serverNotFoundDesc": "Unable to load server data",
+    "serverNotFoundAccess": "Server not found or access denied",
+    "failedFetch": "Failed to fetch server data",
+    "errorLoading": "An error occurred while loading server data",
+    "installation": {
+      "title": "Server Installation in Progress",
+      "description": "Your server <strong>{serverName}</strong> is currently being installed. This page will automatically refresh and redirect you to the dashboard once the installation is complete.",
+      "step1": "Installing dependencies and game files",
+      "step2": "Configuring server settings",
+      "step3": "This usually takes 1-3 minutes"
+    },
+    "restore": {
+      "title": "Restoring Server Backup",
+      "description": "Your server <strong>{serverName}</strong> is currently being restored from a backup. This page will automatically refresh when the restore finishes.",
+      "step1": "Restoring files and database (if any)",
+      "step2": "Applying backup metadata and configurations",
+      "step3": "This can take several minutes depending on backup size"
+    },
+    "tabs": {
+      "console": "Console",
+      "files": "Files",
+      "network": "Network",
+      "backups": "Backups",
+      "settings": "Settings",
+      "networkComingSoon": "Network control coming soon",
+      "backupsComingSoon": "Backup manager coming soon",
+      "settingsComingSoon": "Settings coming soon"
+    },
+    "eula": {
+      "title": "Accept Minecraft® EULA",
+      "description": "By pressing \"Accept Eula\" below you are indicating your agreement to the",
+      "eulaLink": "Minecraft® EULA.",
+      "cancel": "Cancel",
+      "accept": "Accept Eula"
+    },
+    "connection": {
+      "connecting": "Connecting to server...",
+      "reconnecting": "Connection lost. Reconnecting... (Attempt {attempt})",
+      "disconnected": "Connection to server lost"
+    },
+    "features": {
+      "hytaleOauth": {
+        "title": "Authentication Required",
+        "description": "You need to authenticate with your Hytale account to download or update server files. Please log in to continue.",
+        "cancel": "Cancel",
+        "login": "Log in"
+      }
+    },
+    "dashboard": {
+      "preparing": "Preparing checkout…",
+      "header": {
+        "upgrade": "Upgrade/Extend"
+      },
+      "noAllocation": "No Allocation found",
+      "copyIPPort": "Copy",
+      "uptime": "Uptime:",
+      "serverControls": "Server Controls",
+      "memory": {
+        "usage": "Memory Usage",
+        "current": "Current:"
+      },
+      "charts": {
+        "current": "Current",
+        "limit": "Limit",
+        "memoryGiB": "{amount} GiB"
+      }
+    },
+    "fileManager": {
+      "title": "File Manager",
+      "noApiKeyAlert": "Provide a valid API key to browse and manage files.",
+      "toolbar": {
+        "filterPlaceholder": "Filter files",
+        "refreshButton": "Refresh",
+        "uploadButton": "Upload"
+      },
+      "breadcrumb": {
+        "root": "root"
+      },
+      "table": {
+        "columns": {
+          "name": "Name",
+          "size": "Size",
+          "modifiedAt": "Modified",
+          "createdAt": "Created"
+        },
+        "loading": "Loading directory…",
+        "empty": "This directory is empty.",
+        "parentDirectory": "..",
+        "actions": {
+          "open": "Open",
+          "download": "Download",
+          "rename": "Rename",
+          "delete": "Delete"
+        }
+      },
+      "ftpAccess": {
+        "title": "FTP access details",
+        "host": "Host",
+        "username": "Username",
+        "password": "Password",
+        "changePasswordButton": "Change FTP password",
+        "description": "Use these credentials with your preferred FTP/SFTP client. You can rotate the password anytime.",
+        "copiedToast": "{label} copied",
+        "copyFailedToast": "Unable to copy {label}",
+        "copyFailedDescription": "Please copy it manually instead."
+      },
+      "ftpPassword": {
+        "dialogTitle": "Change FTP password",
+        "dialogDescriptionSet": "Enter a new password or leave the fields blank to let us generate one for you.",
+        "dialogDescriptionResult": "Copy the new password before closing this window.",
+        "newPasswordLabel": "New password",
+        "confirmPasswordLabel": "Confirm password",
+        "copyButton": "Copy",
+        "cancelButton": "Cancel",
+        "doneButton": "Done",
+        "setPasswordButton": "Set password",
+        "generatePasswordButton": "Generate password",
+        "warningText": "This password is only shown once. Store it somewhere safe before closing the dialog.",
+        "errors": {
+          "passwordMismatch": "Passwords do not match.",
+          "passwordTooShort": "Password must be at least {min} characters.",
+          "passwordTooLong": "Password must not exceed {max} characters."
+        },
+        "toasts": {
+          "passwordCopied": "Password copied",
+          "passwordCopiedDescription": "Paste it into your FTP client to sign in.",
+          "passwordUpdated": "FTP password updated",
+          "passwordUpdatedDescription": "Use the password below when connecting via SFTP.",
+          "updateFailed": "Unable to update password",
+          "copyFailed": "Unable to copy password"
+        }
+      },
+      "upload": {
+        "dialogTitle": "Upload files",
+        "dialogDescription": "Files will be uploaded to {directory}",
+        "selectFilesText": "Select from your device.",
+        "chooseFilesButton": "Choose files",
+        "selectedFilesLabel": "Selected files:",
+        "cancelButton": "Cancel",
+        "uploadButton": "Upload"
+      },
+      "editor": {
+        "dialogTitle": "File",
+        "dialogDescriptionEditable": "Make your changes below and press save to update the file.",
+        "dialogDescriptionBinary": "Binary files cannot be edited in the browser.",
+        "loadingText": "Loading file contents…",
+        "binaryFileWarning": "This file appears to be binary or too large to display in the browser.",
+        "binaryFileDownload": "Please download it instead.",
+        "cancelButton": "Cancel",
+        "saveButton": "Save changes"
+      },
+      "rename": {
+        "dialogTitleFile": "Rename file",
+        "dialogTitleFolder": "Rename folder",
+        "dialogDescription": "Choose a new name for {name}.",
+        "inputPlaceholder": "New name",
+        "cancelButton": "Cancel",
+        "renameButton": "Rename",
+        "renamingButton": "Renaming…"
+      },
+      "delete": {
+        "dialogTitleFile": "Delete file",
+        "dialogTitleFolder": "Delete folder",
+        "dialogDescription": "This action can't be undone. You're about to permanently remove {name}.",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete",
+        "deletingButton": "Deleting…"
+      },
+      "toasts": {
+        "unableToList": "Unable to list files",
+        "unableToOpen": "Unable to open file",
+        "unableToOpenDescription": "Failed to load file",
+        "fileTooLarge": "File too large to edit",
+        "fileTooLargeDescription": "Only files up to {maxSize} can be opened in the browser. Download the file to edit it locally.",
+        "fileSaved": "File saved",
+        "fileSavedDescription": "{fileName} was updated successfully.",
+        "unableToSave": "Unable to save file",
+        "unableToDownload": "Unable to download",
+        "nameRequired": "Name is required",
+        "nameRequiredDescription": "Please enter a new name before saving.",
+        "entryRenamed": "Entry renamed",
+        "entryRenamedDescription": "{oldName} is now {newName}.",
+        "unableToRename": "Unable to rename",
+        "entryDeleted": "Entry deleted",
+        "entryDeletedDescription": "{name} has been removed.",
+        "unableToDelete": "Unable to delete",
+        "noFilesSelected": "No files selected",
+        "noFilesSelectedDescription": "Choose one or more files before uploading.",
+        "uploadComplete": "Upload complete",
+        "uploadCompleteDescription": "{count} file(s) uploaded successfully.",
+        "uploadFailed": "Upload failed",
+        "unableToUpload": "Unable to upload"
+      }
+    }
+  },
+  "freeServerUpgrade": {
+    "title": "Extend or Upgrade Your Free Server",
+    "description": "Choose how you want to continue with your free game server.",
+    "backToOptions": "Back to options",
+    "badge": {
+      "freeServer": "Free Server"
+    },
+    "serverInfo": {
+      "title": "Current Server Information",
+      "expires": "Expires on",
+      "daysLeft": "Days remaining",
+      "days": "days",
+      "cpu": "CPU",
+      "cores": "cores",
+      "ram": "RAM"
+    },
+    "extend": {
+      "badge": "FREE",
+      "title": "Extend for Free",
+      "description": "Keep your free server running",
+      "feature1": "100% free, no payment required",
+      "feature2": "Extend up to {days} days into the future",
+      "feature3": "Keep your current hardware and settings",
+      "willExtendTo": "New expiry date: {date}",
+      "button": "Extend for Free",
+      "extending": "Extending...",
+      "success": {
+        "title": "Server Extended!",
+        "description": "Your free server has been extended successfully."
+      },
+      "error": {
+        "title": "Extension Failed",
+        "description": "Could not extend your server. Please try again later."
+      }
+    },
+    "upgrade": {
+      "badge": "POPULAR",
+      "title": "Upgrade to Paid",
+      "description": "Unlock more power and extend beyond free tier limits",
+      "feature1": "More CPU and RAM options",
+      "feature2": "Longer durations available",
+      "feature3": "Priority support",
+      "feature4": "Better performance and reliability",
+      "button": "Configure Upgrade",
+      "pricing": {
+        "title": "Flexible Pricing",
+        "description": "Pay only for what you use, starting from €1.00"
+      }
+    },
+    "helpText": {
+      "link": "Contact our support-team",
+      "post": "if you need help.",
+      "pre": "Not sure?"
+    }
+  },
+  "provisioning": {
+    "title": "Setting Up Your Server",
+    "description": "Your server is being provisioned",
+    "loading": "Loading...",
+    "stateQueued": "Your server is queued and will be created shortly",
+    "stateActive": "Creating your server...",
+    "stateCompleted": "Server created successfully!",
+    "stateFailed": "Server creation failed",
+    "progress": "Progress",
+    "jobId": "Job ID",
+    "attempts": "Attempts",
+    "orderId": "Order ID",
+    "pleaseWait": "This may take a few moments. Please don't close this page.",
+    "redirecting": "Redirecting to your server...",
+    "error": "Error",
+    "errorFetchingStatus": "Failed to fetch provisioning status",
+    "provisioningFailed": "Server provisioning failed. Please contact support.",
+    "backToProfile": "Back to Profile",
+    "notFoundTitle": "Job Not Found",
+    "notFoundDescription": "The provisioning job you're looking for doesn't exist or has expired. Please check the job ID and try again."
+  }
 }
