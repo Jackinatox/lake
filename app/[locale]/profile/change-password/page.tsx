@@ -13,7 +13,7 @@ export default async function ChangePasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background p-2 md:p-6">
+        <div className="min-h-screen bg-background md:p-6">
             <div className="mx-auto max-w-2xl">
                 <ChangePasswordForm />
             </div>

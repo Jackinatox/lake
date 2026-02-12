@@ -13,7 +13,7 @@ export default function PasswordResetSuccessTemplate({
     scenario = 'reset',
 }: PasswordResetSuccessTemplateProps) {
     const isPasswordChange = scenario === 'change';
-    
+
     return (
         <EmailLayout
             preview={

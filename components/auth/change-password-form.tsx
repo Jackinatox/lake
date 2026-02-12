@@ -10,9 +10,7 @@ import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
-interface ChangePasswordFormProps extends React.ComponentProps<'div'> {}
-
-export function ChangePasswordForm({ className, ...props }: ChangePasswordFormProps) {
+export function ChangePasswordForm() {
     const t = useTranslations('RegisterLogin.changePassword');
     const fieldsT = useTranslations('RegisterLogin.fields');
     const validationT = useTranslations('RegisterLogin.validation');
@@ -90,8 +88,8 @@ export function ChangePasswordForm({ className, ...props }: ChangePasswordFormPr
     );
 
     return (
-        <div className="flex justify-center">
-            <div className={cn('flex flex-col gap-6', className)} {...props}>
+        <div className="w-full">
+            <div className="flex flex-col">
                 <Card>
                     <CardHeader className="text-center">
                         <CardTitle className="text-xl">{t('title')}</CardTitle>

@@ -50,10 +50,11 @@ export async function sendPasswordResetSuccessEmail(
         }),
     );
 
-    const subject = scenario === 'change' 
-        ? 'Dein Passwort wurde geändert' 
-        : 'Dein Passwort wurde zurückgesetzt';
-    
+    const subject =
+        scenario === 'change'
+            ? 'Dein Passwort wurde geändert'
+            : 'Dein Passwort wurde zurückgesetzt';
+
     await sendMail(to, subject, html, 'PASSWORD_RESET_SUCCESS');
 }
 
