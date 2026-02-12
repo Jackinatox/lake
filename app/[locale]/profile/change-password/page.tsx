@@ -28,6 +28,9 @@ export default async function ChangePasswordPage() {
                 not: null,
             },
         },
+        select: {
+            id: true,
+        },
     });
 
     // If user doesn't have a password account, they're using OAuth

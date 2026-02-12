@@ -30,9 +30,14 @@ export function ChangePasswordForm() {
 
     // Check if user is using OAuth login (client-side check as additional protection)
     useEffect(() => {
-        const wasEmail = authClient.isLastUsedLoginMethod('email');
-        if (!wasEmail) {
-            setIsOAuthUser(true);
+        try {
+            const wasEmail = authClient.isLastUsedLoginMethod?.('email');
+            if (wasEmail === false) {
+                setIsOAuthUser(true);
+            }
+        } catch (error) {
+            // If check fails, allow form to be shown (server-side check will catch OAuth users)
+            console.error('Failed to check login method:', error);
         }
     }, []);
 
