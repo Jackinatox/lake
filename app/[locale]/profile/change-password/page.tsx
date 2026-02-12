@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getTranslations } from 'next-intl/server';
 
 export default async function ChangePasswordPage() {
     const session = await auth.api.getSession({
@@ -16,6 +17,8 @@ export default async function ChangePasswordPage() {
     if (!session) {
         return <NotLoggedIn />;
     }
+
+    const t = await getTranslations('RegisterLogin.changePassword.oauthNotAvailable');
 
     // Check if the user has a password account (email/password login)
     const passwordAccount = await prisma.account.findFirst({
@@ -37,19 +40,13 @@ export default async function ChangePasswordPage() {
                             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
                                 <ShieldAlert className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                             </div>
-                            <CardTitle className="text-xl">Password Change Not Available</CardTitle>
-                            <CardDescription>
-                                You are logged in with an OAuth provider (Google or Discord)
-                            </CardDescription>
+                            <CardTitle className="text-xl">{t('title')}</CardTitle>
+                            <CardDescription>{t('subtitle')}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4 text-center">
-                            <p className="text-sm text-muted-foreground">
-                                Since you're using social login, your password is managed by your OAuth
-                                provider. Please manage your password through your Google or Discord
-                                account settings.
-                            </p>
+                            <p className="text-sm text-muted-foreground">{t('description')}</p>
                             <Button asChild variant="default">
-                                <Link href="/profile">Back to Profile</Link>
+                                <Link href="/profile">{t('backButton')}</Link>
                             </Button>
                         </CardContent>
                     </Card>
