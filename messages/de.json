@@ -249,7 +249,7 @@
   "upgrade": {
     "info": {
       "title": "Upgrade Informationen",
-      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Downgrades sind noch nciht möglich."
+      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Downgrades sind noch nicht möglich."
     },
     "config": {
       "title": "Performance-Konfiguration",
