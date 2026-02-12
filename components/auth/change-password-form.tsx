@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
 
 export function ChangePasswordForm() {
     const t = useTranslations('RegisterLogin.changePassword');
@@ -22,8 +24,17 @@ export function ChangePasswordForm() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [isOAuthUser, setIsOAuthUser] = useState(false);
 
     const passwordMinLength = 8;
+
+    // Check if user is using OAuth login (client-side check as additional protection)
+    useEffect(() => {
+        const wasEmail = authClient.isLastUsedLoginMethod('email');
+        if (!wasEmail) {
+            setIsOAuthUser(true);
+        }
+    }, []);
 
     const passwordsMatch = useMemo(
         () => newPassword === confirmPassword,
@@ -86,6 +97,37 @@ export function ChangePasswordForm() {
         },
         [currentPassword, newPassword, passwordMinLength, passwordsMatch, t, validationT, router],
     );
+
+    // Show message for OAuth users (client-side fallback)
+    if (isOAuthUser) {
+        return (
+            <div className="w-full">
+                <div className="flex flex-col">
+                    <Card>
+                        <CardHeader className="text-center">
+                            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
+                                <ShieldAlert className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                            </div>
+                            <CardTitle className="text-xl">Password Change Not Available</CardTitle>
+                            <CardDescription>
+                                You are logged in with an OAuth provider
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                                Since you're using social login, your password is managed by your OAuth
+                                provider. Please manage your password through your Google or Discord
+                                account settings.
+                            </p>
+                            <Button asChild variant="default">
+                                <Link href="/profile">Back to Profile</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">
