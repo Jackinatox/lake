@@ -347,7 +347,13 @@
             "labels": {
                 "ramUnit": "GiB RAM",
                 "perVcore": "€ / vCore",
-                "perGiB": "€ / GiB"
+                "perGiB": "€ / GiB",
+                "diskSpace": "Speicherplatz",
+                "diskUnit": "GiB Speicher",
+                "backupCount": "Backup-Slots",
+                "backupUnit": "Backups",
+                "allocations": "Port-Zuweisungen",
+                "allocationsUnit": "Ports"
             },
             "button": {
                 "continue": "Weiter"
@@ -813,7 +819,6 @@
             "daysLeft": "Verbleibende Tage",
             "days": "Tage",
             "cpu": "CPU",
-            "cores": "Kerne",
             "ram": "RAM"
         },
         "extend": {

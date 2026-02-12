@@ -78,6 +78,7 @@ export function UpgradeHardwareConfig({
                 ramMb: upgradeByRAM,
                 durationsDays: days,
                 backupCount: initialConfig.backupCount,
+                allocations: initialConfig.allocations,
                 pfGroupId: selectedPFGroup.id,
                 diskMb: initialConfig.diskMb,
             };
@@ -388,6 +389,7 @@ export function UpgradeHardwareConfig({
                                         const config: HardwareConfig = {
                                             pfGroupId: selectedPFGroup.id,
                                             cpuPercent,
+                                            allocations: 0, // TODO: Add allocation changes to upgrade when proeprly implememted in price calc
                                             backupCount: calcBackups(cpuPercent, ramMb),
                                             ramMb,
                                             diskMb: calcDiskSize(cpuPercent, ramMb),

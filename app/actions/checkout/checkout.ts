@@ -44,7 +44,7 @@ export type CheckoutParams =
 
 export async function checkoutAction(
     params: CheckoutParams,
-): Promise<{ client_secret: string | null; orderId: number }> {
+): Promise<{ client_secret: string | null; orderId: string }> {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({
@@ -86,8 +86,9 @@ export async function checkoutAction(
             const cpuPercent = hardwareConfig.cpuPercent;
             const ramMB = hardwareConfig.ramMb;
             const diskMB = hardwareConfig.diskMb;
-            const backupCount = calcBackups(cpuPercent, ramMB);
+            const backupCount = hardwareConfig.backupCount;
             const duration = hardwareConfig.durationsDays;
+            const allocations = hardwareConfig.allocations;
 
             const price = calculateNew(location, cpuPercent, ramMB, duration);
 
@@ -102,6 +103,7 @@ export async function checkoutAction(
                     cpuPercent,
                     diskMB,
                     backupCount,
+                    allocations,
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
@@ -160,7 +162,7 @@ export async function checkoutAction(
         }
         case 'UPGRADE': {
             const { ptServerId, upgradeConfig } = params;
-            const { cpuPercent, ramMb, diskMb, durationsDays } = upgradeConfig;
+            const { cpuPercent, ramMb, diskMb, durationsDays, allocations } = upgradeConfig;
 
             const server = await prisma.gameServer.findFirst({
                 where: { ptServerId: ptServerId, userId: user.id },
@@ -186,6 +188,7 @@ export async function checkoutAction(
                 ramMb: server.ramMB,
                 diskMb: server.diskMB,
                 backupCount: server.backupCount,
+                allocations: server.allocations,
                 durationsDays: Math.max(
                     0,
                     Math.round(
@@ -200,6 +203,7 @@ export async function checkoutAction(
                 ramMb: ramMb - oldConfig.ramMb,
                 diskMb: diskMb - oldConfig.diskMb,
                 backupCount: oldConfig.backupCount, // TODO: check this when custom servers allow for disk and backup config. Then the backup count may increase the price and is important here. but then also during inittial buy
+                allocations: allocations - oldConfig.allocations,
                 durationsDays: durationsDays,
                 pfGroupId: server.locationId,
             };
@@ -214,6 +218,7 @@ export async function checkoutAction(
                     ramMB: ramMb,
                     cpuPercent: cpuPercent,
                     backupCount: server.backupCount,
+                    allocations: allocations,
                     diskMB: diskMb,
                     creationLocationId: server.locationId,
                     creationGameDataId: server.gameDataId,
@@ -313,6 +318,7 @@ export async function checkoutAction(
                     cpuPercent: packageData.cpuPercent,
                     diskMB: packageData.diskMB,
                     backupCount: packageData.backups,
+                    allocations: packageData.allocations,
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
@@ -388,6 +394,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             cpuPercent: freeServerStats.cpu,
             diskMB: freeServerStats.storage,
             backupCount: freeServerStats.backupCount,
+            allocations: freeServerStats.allocations,
             price: 0,
             expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
             status: 'PAID',

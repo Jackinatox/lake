@@ -16,6 +16,7 @@ import {
     EGG_FEATURE_JAVA_VERSION,
     EGG_FEATURE_HYTALE_OAUTH,
     FREE_TIER_BACKUP_COUNT,
+    FREE_TIER_ALLOCATIONS,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -230,6 +231,11 @@ async function main() {
                 number: 3,
                 note: 'Number of backups allowed for free tier servers',
             },
+            {
+                key: FREE_TIER_ALLOCATIONS,
+                number: 2,
+                note: 'Number of allocations allowed for free tier servers',
+            }
         ],
         skipDuplicates: true,
     });

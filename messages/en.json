@@ -86,7 +86,7 @@
         "boxDesc2": "Protected infrastructure",
         "boxLabel3": "Reliable",
         "boxDesc3": "High availability",
-        "buttonStartNow": "Get Started",
+        "buttonStartNow": "Custom Config",
         "buttonComparePlans": "Compare Plans",
         "supportedGames": "Supported Games",
         "showAllGames": "Show all games",
@@ -347,7 +347,13 @@
             "labels": {
                 "ramUnit": "GiB RAM",
                 "perVcore": "€ / vCore",
-                "perGiB": "€ / GiB"
+                "perGiB": "€ / GiB",
+                "diskSpace": "Disk Space",
+                "diskUnit": "GiB Storage",
+                "backupCount": "Backup Slots",
+                "backupUnit": "Backups",
+                "allocations": "Port Allocations",
+                "allocationsUnit": "Ports"
             },
             "button": {
                 "continue": "Continue"
@@ -813,7 +819,6 @@
             "daysLeft": "Days remaining",
             "days": "days",
             "cpu": "CPU",
-            "cores": "cores",
             "ram": "RAM"
         },
         "extend": {

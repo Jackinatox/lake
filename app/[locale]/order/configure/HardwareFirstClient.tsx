@@ -2,8 +2,9 @@
 
 import HardwareConfigurator from '@/components/order/HardwareConfigurator';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { PerformanceGroup } from '@/models/prisma';
-import { ArrowLeft, Layers, Wrench } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Layers, Wrench } from 'lucide-react';
 import Link from 'next/link';
 
 interface HardwareFirstClientProps {
@@ -43,27 +44,31 @@ export default function HardwareFirstClient({ performanceGroups }: HardwareFirst
             </div>
 
             {/* Configurator */}
-            <div className="w-full pt-4 pb-8 max-w-7xl mx-auto">
+            <div className="w-full pt-2 pb-8 max-w-7xl mx-auto">
                 {/* Package alternative banner */}
-                <div className="mb-6 mx-auto max-w-7xl">
-                    <Link
-                        href="/order/packages"
-                        className="block rounded-xl border border-primary/20 bg-primary/5 p-4 transition-colors hover:bg-primary/10"
-                    >
+                <Card className="mb-2 md:mb-6 shadow-lg bg-primary/5">
+                    <CardContent className="p-4">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                 <Layers className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1">
-                                <span className="font-semibold">Prefer a ready-made package?</span>
-                                <p className="text-sm text-muted-foreground mt-0.5">
-                                    Browse pre-configured packages with instant setup — no hardware
-                                    decisions needed.
-                                </p>
+                                <div className="font-semibold text-foreground">
+                                    Prefer a ready-made package?
+                                </div>
+                                <div className="text-sm text-muted-foreground mt-0.5">
+                                    Browse pre-configured packages with instant setup
+                                </div>
                             </div>
+                            <Button asChild>
+                                <Link href="/order/packages">
+                                    View Packages
+                                    <ChevronRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
                         </div>
-                    </Link>
-                </div>
+                    </CardContent>
+                </Card>
 
                 <HardwareConfigurator
                     performanceOptions={performanceGroups}

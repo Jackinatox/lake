@@ -1,6 +1,3 @@
-import { HardwareConfig } from '@/models/config';
-import { PerformanceGroup } from '@/models/prisma';
-
 // Config
 const minBackups = 2;
 const maxBackups = 100;

@@ -22,6 +22,34 @@ import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
+// Non-linear scale for CPU cores and RAM
+const CPU_SCALE = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64];
+const RAM_SCALE = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128];
+
+/** Render tick marks for a slider */
+function SliderTicks({
+    min,
+    max,
+    step,
+}: {
+    min: number;
+    max: number;
+    step: number;
+}) {
+    const ticks = [];
+    for (let i = min; i <= max; i += step) {
+        const position = ((i - min) / (max - min)) * 100;
+        ticks.push(
+            <div
+                key={i}
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-0.5 h-3 bg-muted-foreground/50 rounded-full z-10"
+                style={{ left: `${position}%` }}
+            />,
+        );
+    }
+    return <div className="absolute inset-0 pointer-events-none">{ticks}</div>;
+}
+
 interface HardwareConfiguratorProps {
     performanceOptions: PerformanceGroup[];
     /** Where to navigate on continue. Receives the current search params string. */
@@ -53,6 +81,11 @@ export default function HardwareConfigurator({
     const initialCpu = searchParams.get('cpu') ? Number(searchParams.get('cpu')) : 4;
     const initialRam = searchParams.get('ram') ? Number(searchParams.get('ram')) : 4;
     const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
+    const initialDisk = searchParams.get('disk') ? Number(searchParams.get('disk')) : 20;
+    const initialBackups = searchParams.get('backups') ? Number(searchParams.get('backups')) : 5;
+    const initialAllocations = searchParams.get('allocations')
+        ? Number(searchParams.get('allocations'))
+        : 3;
 
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(
         performanceOptions.find((pf) => pf.id === initialPfId) ?? performanceOptions[0] ?? null,
@@ -60,21 +93,53 @@ export default function HardwareConfigurator({
     const [cpuCores, setCpuCores] = useState(initialCpu);
     const [ramGb, setRamGb] = useState(initialRam);
     const [days, setDays] = useState(initialDays);
+    const [diskGb, setDiskGb] = useState(initialDisk);
+    const [backups, setBackups] = useState(initialBackups);
+    const [allocations, setAllocations] = useState(initialAllocations);
 
-    // Clamp CPU and RAM to performance group bounds when group changes
-    useEffect(() => {
-        if (selectedPFGroup) {
-            setCpuCores((prev) =>
-                Math.max(
-                    selectedPFGroup.cpu.minThreads,
-                    Math.min(prev, selectedPFGroup.cpu.maxThreads),
-                ),
-            );
-            setRamGb((prev) =>
-                Math.max(selectedPFGroup.ram.minGb, Math.min(prev, selectedPFGroup.ram.maxGb)),
-            );
-        }
+    // Get available CPU and RAM values based on performance group constraints
+    const availableCpuValues = useMemo(() => {
+        if (!selectedPFGroup) return [];
+        return CPU_SCALE.filter(
+            (v) => v >= selectedPFGroup.cpu.minThreads && v <= selectedPFGroup.cpu.maxThreads,
+        );
     }, [selectedPFGroup]);
+
+    const availableRamValues = useMemo(() => {
+        if (!selectedPFGroup) return [];
+        return RAM_SCALE.filter(
+            (v) => v >= selectedPFGroup.ram.minGb && v <= selectedPFGroup.ram.maxGb,
+        );
+    }, [selectedPFGroup]);
+
+    // Clamp CPU and RAM to available values when group changes
+    useEffect(() => {
+        if (selectedPFGroup && availableCpuValues.length > 0) {
+            if (!availableCpuValues.includes(cpuCores)) {
+                // Find closest value
+                const closest = availableCpuValues.reduce((closestVal, val) =>
+                    Math.abs(val - cpuCores) < Math.abs(closestVal - cpuCores)
+                        ? val
+                        : closestVal,
+                );
+                setCpuCores(closest);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedPFGroup, availableCpuValues]);
+
+    useEffect(() => {
+        if (selectedPFGroup && availableRamValues.length > 0) {
+            if (!availableRamValues.includes(ramGb)) {
+                // Find closest value
+                const closest = availableRamValues.reduce((closestVal, val) =>
+                    Math.abs(val - ramGb) < Math.abs(closestVal - ramGb) ? val : closestVal,
+                );
+                setRamGb(closest);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedPFGroup, availableRamValues]);
 
     // Build search params string from current state
     const buildParams = useCallback(() => {
@@ -83,8 +148,11 @@ export default function HardwareConfigurator({
         params.set('cpu', String(cpuCores));
         params.set('ram', String(ramGb));
         params.set('days', String(days));
+        params.set('disk', String(diskGb));
+        params.set('backups', String(backups));
+        params.set('allocations', String(allocations));
         return params.toString();
-    }, [selectedPFGroup, cpuCores, ramGb, days]);
+    }, [selectedPFGroup, cpuCores, ramGb, days, diskGb, backups, allocations]);
 
     // Sync state back to URL (shallow, no server fetch)
     useEffect(() => {
@@ -112,8 +180,6 @@ export default function HardwareConfigurator({
     if (!selectedPFGroup) {
         return <div>...</div>;
     }
-
-    const ramOption = selectedPFGroup.ram;
 
     // Discount display for table
     const totalResourceCents = totalPrice.cents.cpu + totalPrice.cents.ram;
@@ -263,17 +329,26 @@ export default function HardwareConfigurator({
                                     </div>
                                 </div>
                                 <div className="px-2">
-                                    <Slider
-                                        value={[cpuCores]}
-                                        min={selectedPFGroup.cpu.minThreads}
-                                        max={selectedPFGroup.cpu.maxThreads}
-                                        step={1}
-                                        onValueChange={(value) => setCpuCores(value[0])}
-                                        className="w-full"
-                                    />
+                                    <div className="relative">
+                                        <SliderTicks
+                                            min={0}
+                                            max={availableCpuValues.length - 1}
+                                            step={1}
+                                        />
+                                        <Slider
+                                            value={[availableCpuValues.indexOf(cpuCores)]}
+                                            min={0}
+                                            max={availableCpuValues.length - 1}
+                                            step={1}
+                                            onValueChange={(value) =>
+                                                setCpuCores(availableCpuValues[value[0]])
+                                            }
+                                            className="w-full"
+                                        />
+                                    </div>
                                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                        <span>{selectedPFGroup.cpu.minThreads}</span>
-                                        <span>{selectedPFGroup.cpu.maxThreads}</span>
+                                        <span>{availableCpuValues[0]}</span>
+                                        <span>{availableCpuValues[availableCpuValues.length - 1]}</span>
                                     </div>
                                 </div>
                             </div>
@@ -290,17 +365,113 @@ export default function HardwareConfigurator({
                                     </div>
                                 </div>
                                 <div className="px-2">
-                                    <Slider
-                                        value={[ramGb]}
-                                        min={ramOption.minGb}
-                                        max={ramOption.maxGb}
-                                        step={1}
-                                        onValueChange={(value) => setRamGb(value[0])}
-                                        className="w-full"
-                                    />
+                                    <div className="relative">
+                                        <SliderTicks
+                                            min={0}
+                                            max={availableRamValues.length - 1}
+                                            step={1}
+                                        />
+                                        <Slider
+                                            value={[availableRamValues.indexOf(ramGb)]}
+                                            min={0}
+                                            max={availableRamValues.length - 1}
+                                            step={1}
+                                            onValueChange={(value) =>
+                                                setRamGb(availableRamValues[value[0]])
+                                            }
+                                            className="w-full"
+                                        />
+                                    </div>
                                     <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                        <span>{ramOption.minGb} GiB</span>
-                                        <span>{ramOption.maxGb} GiB</span>
+                                        <span>{availableRamValues[0]} GiB</span>
+                                        <span>{availableRamValues[availableRamValues.length - 1]} GiB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Disk Space Configuration */}
+                            <div className="space-y-3">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                    <div className="text-base sm:text-lg font-semibold">
+                                        {diskGb} {tl('diskUnit' as any)}
+                                    </div>
+                                    <div className="text-xs sm:text-sm text-muted-foreground">
+                                        {tl('diskSpace' as any)}
+                                    </div>
+                                </div>
+                                <div className="px-2">
+                                    <div className="relative">
+                                        <SliderTicks min={10} max={100} step={10} />
+                                        <Slider
+                                            value={[diskGb]}
+                                            min={10}
+                                            max={100}
+                                            step={10}
+                                            onValueChange={(value) => setDiskGb(value[0])}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                        <span>10 GiB</span>
+                                        <span>100 GiB</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Backup Count Configuration */}
+                            <div className="space-y-3">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                    <div className="text-base sm:text-lg font-semibold">
+                                        {backups} {tl('backupUnit' as any)}
+                                    </div>
+                                    <div className="text-xs sm:text-sm text-muted-foreground">
+                                        {tl('backupCount' as any)}
+                                    </div>
+                                </div>
+                                <div className="px-2">
+                                    <div className="relative">
+                                        <SliderTicks min={2} max={20} step={2} />
+                                        <Slider
+                                            value={[backups]}
+                                            min={2}
+                                            max={20}
+                                            step={2}
+                                            onValueChange={(value) => setBackups(value[0])}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                        <span>2</span>
+                                        <span>20</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Allocations (Ports) Configuration */}
+                            <div className="space-y-3">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                    <div className="text-base sm:text-lg font-semibold">
+                                        {allocations} {tl('allocationsUnit' as any)}
+                                    </div>
+                                    <div className="text-xs sm:text-sm text-muted-foreground">
+                                        {tl('allocations' as any)}
+                                    </div>
+                                </div>
+                                <div className="px-2">
+                                    <div className="relative">
+                                        <SliderTicks min={1} max={10} step={1} />
+                                        <Slider
+                                            value={[allocations]}
+                                            min={1}
+                                            max={10}
+                                            step={1}
+                                            onValueChange={(value) => setAllocations(value[0])}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                        <span>1</span>
+                                        <span>10</span>
                                     </div>
                                 </div>
                             </div>
@@ -406,6 +577,9 @@ export function hardwareConfigFromParams(searchParams: URLSearchParams): Hardwar
     const cpu = searchParams.get('cpu');
     const ram = searchParams.get('ram');
     const days = searchParams.get('days');
+    const disk = searchParams.get('disk');
+    const backups = searchParams.get('backups');
+    const allocations = searchParams.get('allocations');
 
     if (!pf || !cpu || !ram || !days) return null;
 
@@ -416,8 +590,9 @@ export function hardwareConfigFromParams(searchParams: URLSearchParams): Hardwar
         pfGroupId: Number(pf),
         cpuPercent,
         ramMb,
-        diskMb: calcDiskSize(cpuPercent, ramMb),
-        backupCount: calcBackups(cpuPercent, ramMb),
+        diskMb: disk ? Number(disk) * 1024 : calcDiskSize(cpuPercent, ramMb),
+        backupCount: backups ? Number(backups) : calcBackups(cpuPercent, ramMb),
+        allocations: allocations ? Number(allocations) : 3,
         durationsDays: Number(days),
     };
 }

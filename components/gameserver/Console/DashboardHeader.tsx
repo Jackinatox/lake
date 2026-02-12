@@ -49,7 +49,7 @@ function PowerControls({
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
-                        variant={isRunning ? 'outline' : 'default'}
+                        variant="default"
                         size="icon"
                         onClick={() => onPowerAction('start')}
                         disabled={
@@ -71,21 +71,6 @@ function PowerControls({
                     <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => onPowerAction('stop')}
-                        disabled={loading || isOffline}
-                        className="h-8 w-8"
-                    >
-                        <Square className="h-4 w-4" />
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>Stop</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="icon"
                         onClick={() => onPowerAction('restart')}
                         disabled={loading || isOffline}
                         className="h-8 w-8"
@@ -94,6 +79,21 @@ function PowerControls({
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>Restart</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onPowerAction('stop')}
+                        disabled={loading || isOffline}
+                        className="h-8 w-8"
+                    >
+                        <Square className="h-4 w-4" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Stop</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -153,20 +153,20 @@ function MobilePowerDropdown({
                     Start
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() => onPowerAction('stop')}
-                    disabled={loading || isOffline}
-                    className="gap-2"
-                >
-                    <Square className="h-4 w-4" />
-                    Stop
-                </DropdownMenuItem>
-                <DropdownMenuItem
                     onClick={() => onPowerAction('restart')}
                     disabled={loading || isOffline}
                     className="gap-2"
                 >
                     <RefreshCw className="h-4 w-4" />
                     Restart
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={() => onPowerAction('stop')}
+                    disabled={loading || isOffline}
+                    className="gap-2"
+                >
+                    <Square className="h-4 w-4" />
+                    Stop
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -281,14 +281,12 @@ export function DashboardHeader({
 
                         {/* Server Address */}
                         {address && port ? (
-                            <div className="bg-muted/50 rounded border px-1.5 py-0.5">
-                                <CompactServerAddress
-                                    address={address}
-                                    port={port}
-                                    eggId={server.egg_id}
-                                    allocations={allocations}
-                                />
-                            </div>
+                            <CompactServerAddress
+                                address={address}
+                                port={port}
+                                eggId={server.egg_id}
+                                allocations={allocations}
+                            />
                         ) : (
                             <span className="text-sm text-muted-foreground">
                                 {t('gameserver.dashboard.noAllocation')}

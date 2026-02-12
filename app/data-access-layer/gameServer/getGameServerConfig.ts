@@ -34,6 +34,7 @@ export async function getGameServerConfig(
         ramMb: server.ramMB,
         diskMb: server.diskMB,
         backupCount: server.backupCount,
+        allocations: server.allocations,
         durationsDays,
         pfGroupId: server.locationId,
         // TODO: Check if this needs ptId or dbId

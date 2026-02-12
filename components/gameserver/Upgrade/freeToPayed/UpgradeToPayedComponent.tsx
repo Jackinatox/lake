@@ -22,6 +22,22 @@ import { PerformanceGroup } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+/** Render tick marks for a slider */
+function SliderTicks({ min, max, step }: { min: number; max: number; step: number }) {
+    const ticks = [];
+    for (let i = min; i <= max; i += step) {
+        const position = ((i - min) / (max - min)) * 100;
+        ticks.push(
+            <div
+                key={i}
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-0.5 h-3 bg-muted-foreground/50 rounded-full z-10"
+                style={{ left: `${position}%` }}
+            />,
+        );
+    }
+    return <div className="absolute inset-0 pointer-events-none">{ticks}</div>;
+}
+
 interface HardwareConfigProps {
     diskOptions?: { id: number; size_gb: number; price_per_gb: number }[];
     performanceOptions: PerformanceGroup[];
@@ -35,12 +51,16 @@ export function UpgradeHardwareConfigToPayed({
     onNext,
 }: HardwareConfigProps) {
     const t = useTranslations('extendServer');
+    const tl = useTranslations('buyGameServer.hardware.labels');
 
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
 
     const [cpuCores, setCpuCores] = useState(initialConfig.cpuPercent / 100);
     const [ramGb, setRamGb] = useState(initialConfig.ramMb / 1024);
     const [days, setDays] = useState(30);
+    const [diskGb, setDiskGb] = useState(initialConfig.diskMb ? initialConfig.diskMb / 1024 : 20);
+    const [backups, setBackups] = useState(initialConfig.backupCount || 5);
+    const [allocations, setAllocations] = useState(initialConfig.allocations || 3);
     const [totalPrice, setTotalPrice] = useState<NewPriceDef>({
         cents: { cpu: 0, ram: 0 },
         totalCents: 0,
@@ -87,8 +107,9 @@ export function UpgradeHardwareConfigToPayed({
             pfGroupId: selectedPFGroup.id,
             cpuPercent,
             ramMb,
-            diskMb: calcDiskSize(cpuPercent, ramMb),
-            backupCount: calcBackups(cpuPercent, ramMb),
+            diskMb: diskGb * 1024,
+            backupCount: backups,
+            allocations: allocations,
             durationsDays: days,
         };
         onNext(config);
@@ -302,6 +323,93 @@ export function UpgradeHardwareConfigToPayed({
                                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
                                             <span>{ramOption.minGb} GiB</span>
                                             <span>{ramOption.maxGb} GiB</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Disk Space Configuration */}
+                                <div className="space-y-3">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                        <div className="text-base sm:text-lg font-semibold">
+                                            {diskGb} {tl('diskUnit')}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">
+                                            {tl('diskSpace')}
+                                        </div>
+                                    </div>
+                                    <div className="px-2">
+                                        <div className="relative">
+                                            <SliderTicks min={10} max={100} step={10} />
+                                            <Slider
+                                                value={[diskGb]}
+                                                min={10}
+                                                max={100}
+                                                step={10}
+                                                onValueChange={(value) => setDiskGb(value[0])}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                            <span>10 GB</span>
+                                            <span>100 GB</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Backup Count Configuration */}
+                                <div className="space-y-3">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                        <div className="text-base sm:text-lg font-semibold">
+                                            {backups} {tl('backupUnit')}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">
+                                            {tl('backupCount')}
+                                        </div>
+                                    </div>
+                                    <div className="px-2">
+                                        <div className="relative">
+                                            <SliderTicks min={2} max={20} step={2} />
+                                            <Slider
+                                                value={[backups]}
+                                                min={2}
+                                                max={20}
+                                                step={2}
+                                                onValueChange={(value) => setBackups(value[0])}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                            <span>2</span>
+                                            <span>20</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Allocations (Ports) Configuration */}
+                                <div className="space-y-3">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                        <div className="text-base sm:text-lg font-semibold">
+                                            {allocations} {tl('allocationsUnit')}
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground">
+                                            {tl('allocations')}
+                                        </div>
+                                    </div>
+                                    <div className="px-2">
+                                        <div className="relative">
+                                            <SliderTicks min={3} max={20} step={1} />
+                                            <Slider
+                                                value={[allocations]}
+                                                min={3}
+                                                max={20}
+                                                step={1}
+                                                onValueChange={(value) => setAllocations(value[0])}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                            <span>3</span>
+                                            <span>20</span>
                                         </div>
                                     </div>
                                 </div>

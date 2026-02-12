@@ -135,12 +135,12 @@ export function CompactServerAddress({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 className="h-8 px-2 font-mono text-xs gap-1"
                                 aria-label={`Connection details for ${address}`}
                             >
-                                <EthernetPort className="h-3 w-3 text-muted-foreground" />
+                                <EthernetPort className="h-3 w-3 text-foreground" />
                                 {/* Show a "Connect" label when there's space (md+), otherwise keep icon-only */}
                                 <span className="hidden md:inline ml-1">Connect</span>
                                 <ChevronDown className="h-3 w-3 text-muted-foreground" />
@@ -198,12 +198,12 @@ export function CompactServerAddress({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 className="h-8 px-2 font-mono text-xs gap-1"
                                 aria-label={`Connection address ${ipPortCombo}`}
                             >
-                                <EthernetPort className="h-3 w-3 text-muted-foreground" />
+                                <EthernetPort className="h-3 w-3 text-foreground" />
                                 {/* Show IP:Port earlier on small screens for Minecraft (sm+), otherwise show at md+ */}
                                 <span
                                     className={cn(
@@ -324,11 +324,11 @@ export function CompactServerAddress({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             className="h-8 px-2 font-mono text-xs gap-1"
                         >
-                            <EthernetPort className="h-3 w-3 text-muted-foreground" />
+                            <EthernetPort className="h-3 w-3 text-foreground" />
                             <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
                                 {defaultCombo}
                             </span>
@@ -385,13 +385,13 @@ export function CompactServerAddress({
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            className="h-8 px-2 font-mono text-xs gap-1 bg-muted/50 hover:bg-muted"
+                            className="h-8 px-2 font-mono text-xs gap-1"
                             aria-label={`Copy connection ${ipPortCombo}`}
                             onClick={() => handleCopy(ipPortCombo, 'main')}
                         >
-                            <EthernetPort className="h-3 w-3 text-muted-foreground" />
+                            <EthernetPort className="h-3 w-3 text-foreground" />
                             {/* Hide the IP:Port on very small screens; show at sm+ for Minecraft, md+ for others */}
                             <span
                                 className={cn(

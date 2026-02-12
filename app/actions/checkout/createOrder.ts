@@ -39,6 +39,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
             backupCount: backupCount,
             cpuPercent,
             diskMB: diskMb,
+            allocations: hardwareConfig.allocations,
             price: price.totalCents,
             expiresAt: new Date(Date.now() + durationsDays * 24 * 60 * 60 * 1000),
             status: 'PENDING',

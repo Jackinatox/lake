@@ -11,16 +11,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ orde
     }
 
     const { orderId } = await params;
-    const parsedId = Number.parseInt(orderId, 10);
-
-    if (Number.isNaN(parsedId)) {
-        return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 });
-    }
 
     try {
         const order = await prisma.gameServerOrder.findUnique({
             where: {
-                id: parsedId,
+                id: orderId,
                 userId: session.user.id, // Security: only fetch user's own orders
             },
             select: {

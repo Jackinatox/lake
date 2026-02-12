@@ -18,7 +18,7 @@ export async function testProvisionServer(orderId: string) {
     if (!orderId) return { success: false, error: { message: 'Missing orderId' } };
 
     try {
-        const order = await prisma.gameServerOrder.findUnique({ where: { id: Number(orderId) } });
+        const order = await prisma.gameServerOrder.findUnique({ where: { id: orderId } });
 
         if (!order) return { success: false, error: { message: 'Order not found' } };
 

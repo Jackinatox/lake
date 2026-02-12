@@ -15,6 +15,7 @@ export interface HardwareConfig {
     ramMb: number;
     diskMb: number;
     backupCount: number;
+    allocations: number;
     durationsDays: number;
 }
 

@@ -84,6 +84,7 @@ model GameServer {
   cpuPercent   Int
   diskMB       Int
   backupCount  Int
+  allocations  Int
   expires      DateTime
   price        Float // To let the user extend his server at the original price in case we increase prices
   type         GameServerType @default(CUSTOM)
@@ -144,8 +145,9 @@ model GameServerOrder {
   ramMB       Int
   cpuPercent  Int
   diskMB      Int
-  price       Float
   backupCount Int
+  allocations Int
+  price       Float
 
   receipt_url        String?
   stripeSessionId    String?     @unique

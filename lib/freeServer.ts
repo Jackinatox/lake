@@ -4,7 +4,7 @@ import { env } from 'next-runtime-env';
 import { sendFreeServerCreatedEmail } from './email/sendEmailEmailsFromLake';
 import { logger } from './logger';
 
-export async function notifyFreeServerCreated(orderId: number) {
+export async function notifyFreeServerCreated(orderId: string) {
     try {
         const updatedOrder = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: orderId },

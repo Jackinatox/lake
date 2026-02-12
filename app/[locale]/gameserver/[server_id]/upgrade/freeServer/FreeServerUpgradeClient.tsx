@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import formatVCores from '@/lib/GlobalFunctions/formatVCores';
 
 interface FreeServerUpgradeClientProps {
     server: ClientServer;
@@ -118,7 +119,7 @@ export default function FreeServerUpgradeClient({
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.cpu')}</p>
                             <p className="font-semibold">
-                                {server.cpuPercent / 100} {t('serverInfo.cores')}
+                                {formatVCores(server.cpuPercent / 100)}
                             </p>
                         </div>
                         <div>

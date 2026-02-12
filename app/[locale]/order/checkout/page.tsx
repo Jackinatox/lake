@@ -21,7 +21,7 @@ export default async function OrderCheckoutPage({
     }
 
     const order = await prisma.gameServerOrder.findUnique({
-        where: { id: Number.parseInt(orderId, 10) },
+        where: { id: orderId },
         select: {
             stripeClientSecret: true,
             type: true,

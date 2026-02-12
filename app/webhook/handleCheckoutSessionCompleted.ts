@@ -13,7 +13,7 @@ export default async function handleCheckoutSessionCompleted(
     checkoutSession: Stripe.Checkout.Session,
 ) {
     try {
-        const serverOrderId = parseInt(checkoutSession.metadata?.orderId || '0');
+        const serverOrderId = checkoutSession.metadata?.orderId || '';
 
         const orderUnprocessed = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: serverOrderId },
