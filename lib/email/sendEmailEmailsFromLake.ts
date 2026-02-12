@@ -40,15 +40,22 @@ export async function sendPasswordResetSuccessEmail(
     to: string,
     loginUrl: string,
     userName?: string,
+    scenario: 'reset' | 'change' = 'reset',
 ) {
     const html = await render(
         PasswordResetSuccessTemplate({
             loginUrl,
             userName,
+            scenario,
         }),
     );
 
-    await sendMail(to, 'Dein Passwort wurde geändert', html, 'PASSWORD_RESET_SUCCESS');
+    const subject =
+        scenario === 'change'
+            ? 'Dein Passwort wurde geändert'
+            : 'Dein Passwort wurde zurückgesetzt';
+
+    await sendMail(to, subject, html, 'PASSWORD_RESET_SUCCESS');
 }
 
 export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) {

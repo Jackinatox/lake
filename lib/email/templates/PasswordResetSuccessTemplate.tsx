@@ -4,25 +4,38 @@ import { EmailButton, EmailLayout, headingStyle, mutedTextStyle, textStyle } fro
 interface PasswordResetSuccessTemplateProps {
     userName?: string;
     loginUrl: string;
+    scenario?: 'reset' | 'change';
 }
 
 export default function PasswordResetSuccessTemplate({
     userName,
     loginUrl,
+    scenario = 'reset',
 }: PasswordResetSuccessTemplateProps) {
+    const isPasswordChange = scenario === 'change';
+
     return (
         <EmailLayout
-            preview="Dein Passwort bei Scyed wurde erfolgreich geändert."
+            preview={
+                isPasswordChange
+                    ? 'Dein Passwort bei Scyed wurde erfolgreich geändert.'
+                    : 'Dein Passwort bei Scyed wurde erfolgreich zurückgesetzt.'
+            }
             footerNote="Wenn du diese Änderung nicht vorgenommen hast, sichere dein Konto bitte sofort."
         >
-            <Heading style={headingStyle}>Passwort geändert</Heading>
+            <Heading style={headingStyle}>
+                {isPasswordChange ? 'Passwort geändert' : 'Passwort zurückgesetzt'}
+            </Heading>
             <Text style={textStyle}>Hallo {userName || 'Scyed Nutzer'},</Text>
             <Text style={textStyle}>
-                Wir bestätigen, dass das Passwort deines Scyed Kontos gerade geändert wurde. Du
-                kannst dich ab sofort mit deinem neuen Passwort anmelden.
+                {isPasswordChange
+                    ? 'Wir bestätigen, dass das Passwort deines Scyed Kontos gerade geändert wurde. Du kannst dich ab sofort mit deinem neuen Passwort anmelden.'
+                    : 'Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich ab sofort mit deinem neuen Passwort anmelden.'}
             </Text>
             <Section style={{ marginTop: 16 }}>
-                <EmailButton href={loginUrl}>Zum Login</EmailButton>
+                <EmailButton href={loginUrl}>
+                    {isPasswordChange ? 'Zum Profil' : 'Zum Login'}
+                </EmailButton>
             </Section>
             <Text style={{ ...textStyle, marginTop: 16 }}>
                 Warst du das nicht? Setze dein Passwort bitte sofort zurück und kontaktiere unser
