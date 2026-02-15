@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-import { Copy, Check, Star, Trash2, StickyNote } from 'lucide-react';
+import { Copy, Check, Star, Trash2, Edit3 } from 'lucide-react';
 import type { Allocation } from './types';
 import { useTranslations } from 'next-intl';
+import DeleteAllocationDialog from './DeleteAllocationDialog';
 
 interface AllocationCardProps {
     allocation: Allocation;
@@ -26,7 +26,7 @@ export default function AllocationCard({
     const t = useTranslations('gameserver.networkManager');
     const [copied, setCopied] = useState(false);
     const [settingPrimary, setSettingPrimary] = useState(false);
-    const [removing, setRemoving] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const displayAddress = allocation.ip_alias
         ? `${allocation.ip_alias}:${allocation.port}`
@@ -45,9 +45,7 @@ export default function AllocationCard({
     };
 
     const handleRemove = async () => {
-        setRemoving(true);
-        const success = await onRemove(allocation.id);
-        if (!success) setRemoving(false);
+        return await onRemove(allocation.id);
     };
 
     return (
@@ -75,46 +73,52 @@ export default function AllocationCard({
             </div>
 
             {/* Notes */}
-            <div className="rounded-md bg-muted/50 px-2.5 py-1.5 min-h-7 flex items-center">
-                {allocation.notes ? (
-                    <p className="text-xs text-foreground">{allocation.notes}</p>
-                ) : (
-                    <p className="text-xs text-muted-foreground italic">{t('notesPlaceholder')}</p>
-                )}
+            <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground">
+                    {t('noteLabel')}
+                </label>
+                <div className="rounded-md bg-muted/30 border border-border/50 px-2.5 py-1.5 min-h-7 flex items-center">
+                    {allocation.notes ? (
+                        <p className="text-xs text-foreground wrap-break-word">
+                            {allocation.notes}
+                        </p>
+                    ) : (
+                        <p className="text-xs text-muted-foreground italic">{t('emptyNoteHint')}</p>
+                    )}
+                </div>
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex flex-wrap gap-1.5">
                 <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
-                    className="h-8 px-3 text-xs"
+                    className="h-8 px-3 text-xs flex-1"
                     onClick={() => onEditNotes(allocation)}
                 >
-                    <StickyNote className="h-3.5 w-3.5 mr-1.5" />
-                    {t('notes')}
+                    <Edit3 className="h-3.5 w-3.5 mr-1.5" />
+                    {t('editNote')}
                 </Button>
 
                 {!allocation.is_default && (
                     <>
                         <Button
-                            variant="secondary"
+                            variant="outline"
                             size="sm"
-                            className="h-8 px-3 text-xs"
+                            className="h-8 px-3 text-xs flex-1"
                             onClick={handleSetPrimary}
                             disabled={settingPrimary}
                         >
                             <Star className="h-3.5 w-3.5 mr-1.5" />
-                            {t('makePrimary')}
+                            {t('setPrimary')}
                         </Button>
 
                         {totalAllocations > 1 && (
                             <Button
-                                variant="destructive"
+                                variant="outline"
                                 size="sm"
-                                className="h-8 px-3 text-xs"
-                                onClick={handleRemove}
-                                disabled={removing}
+                                className="h-8 px-3 text-xs flex-1 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                onClick={() => setDeleteDialogOpen(true)}
                             >
                                 <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                                 {t('remove')}
@@ -123,6 +127,14 @@ export default function AllocationCard({
                     </>
                 )}
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <DeleteAllocationDialog
+                allocation={allocation}
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleRemove}
+            />
         </div>
     );
 }

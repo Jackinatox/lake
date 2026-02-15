@@ -158,7 +158,7 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
                     {/* Add allocation button */}
                     {canAddMore && (
                         <Button
-                            variant="secondary"
+                            variant="outline"
                             size="default"
                             className="w-full mt-3"
                             onClick={handleAdd}
