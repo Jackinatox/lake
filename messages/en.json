@@ -346,6 +346,12 @@
       },
       "labels": {
         "ramUnit": "GiB RAM",
+        "diskUnit": "GiB",
+        "diskSpace": "Disk Space",
+        "backupUnit": "Backups",
+        "backupCount": "Backup Slots",
+        "allocationsUnit": "Ports",
+        "allocations": "Network Allocations",
         "perVcore": "€ / vCore",
         "perGiB": "€ / GiB"
       },
@@ -822,6 +828,35 @@
         "uploadFailed": "Upload failed",
         "unableToUpload": "Unable to upload"
       }
+    },
+    "networkManager": {
+      "title": "Network",
+      "description": "Manage IP allocations and ports assigned to your server.",
+      "primary": "Primary",
+      "notes": "Notes",
+      "editNotes": "Edit notes for this allocation",
+      "makePrimary": "Set Primary",
+      "makePrimaryTooltip": "Set this allocation as the primary connection address",
+      "remove": "Remove",
+      "removeTooltip": "Remove this allocation from the server",
+      "addAllocation": "Add Allocation",
+      "addingAllocation": "Adding...",
+      "noAllocations": "No network allocations found.",
+      "allocationCount": "{current} / {max} allocations used",
+      "primaryUpdated": "Primary allocation updated",
+      "primaryFailed": "Failed to update primary allocation",
+      "allocationRemoved": "Allocation removed",
+      "removeFailed": "Failed to remove allocation",
+      "allocationAdded": "New allocation assigned",
+      "addFailed": "Failed to add allocation",
+      "notesUpdated": "Notes updated",
+      "notesFailed": "Failed to update notes",
+      "notesDialogTitle": "Edit Allocation Notes",
+      "notesDialogDescription": "Add a label or description for {address}.",
+      "notesPlaceholder": "e.g. Main game port, RCON, Web panel...",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
     }
   },
   "freeServerUpgrade": {

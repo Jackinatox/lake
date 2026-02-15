@@ -217,8 +217,8 @@ export function DashboardHeader({
                 <div className="flex md:hidden items-center justify-between gap-1">
                     {/* Left: Status indicator + server name (truncated) */}
                     <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                        <StatusIndicator state={serverStatus} size="sm" showTooltip />
                         <h1 className="text-xs font-semibold truncate">{server.name}</h1>
+                        <StatusIndicator state={serverStatus} size="sm" showTooltip />
                     </div>
 
                     {/* Right: Power dropdown + Upgrade */}

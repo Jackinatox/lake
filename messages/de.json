@@ -346,6 +346,12 @@
       },
       "labels": {
         "ramUnit": "GiB RAM",
+        "diskUnit": "GiB",
+        "diskSpace": "Festplattenspeicher",
+        "backupUnit": "Backups",
+        "backupCount": "Backup-Slots",
+        "allocationsUnit": "Ports",
+        "allocations": "Netzwerk-Allokationen",
         "perVcore": "€ / vCore",
         "perGiB": "€ / GiB"
       },
@@ -822,6 +828,35 @@
         "uploadFailed": "Upload fehlgeschlagen",
         "unableToUpload": "Hochladen nicht möglich"
       }
+    },
+    "networkManager": {
+      "title": "Netzwerk",
+      "description": "Verwalte IP-Zuweisungen und Ports deines Servers.",
+      "primary": "Primär",
+      "notes": "Notizen",
+      "editNotes": "Notizen für diese Zuweisung bearbeiten",
+      "makePrimary": "Als Primär",
+      "makePrimaryTooltip": "Diese Zuweisung als primäre Verbindungsadresse festlegen",
+      "remove": "Entfernen",
+      "removeTooltip": "Diese Zuweisung vom Server entfernen",
+      "addAllocation": "Zuweisung hinzufügen",
+      "addingAllocation": "Wird hinzugefügt...",
+      "noAllocations": "Keine Netzwerk-Zuweisungen gefunden.",
+      "allocationCount": "{current} / {max} Zuweisungen verwendet",
+      "primaryUpdated": "Primäre Zuweisung aktualisiert",
+      "primaryFailed": "Primäre Zuweisung konnte nicht geändert werden",
+      "allocationRemoved": "Zuweisung entfernt",
+      "removeFailed": "Zuweisung konnte nicht entfernt werden",
+      "allocationAdded": "Neue Zuweisung zugewiesen",
+      "addFailed": "Zuweisung konnte nicht hinzugefügt werden",
+      "notesUpdated": "Notizen aktualisiert",
+      "notesFailed": "Notizen konnten nicht aktualisiert werden",
+      "notesDialogTitle": "Zuweisungs-Notizen bearbeiten",
+      "notesDialogDescription": "Beschriftung oder Beschreibung für {address} hinzufügen.",
+      "notesPlaceholder": "z.B. Haupt-Spielport, RCON, Web-Panel...",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saving": "Speichern..."
     }
   },
   "freeServerUpgrade": {

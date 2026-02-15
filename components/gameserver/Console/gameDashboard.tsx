@@ -32,6 +32,7 @@ import { DashboardHeader } from './DashboardHeader';
 import DebugPanel from './DebugPanel';
 import CPUChart from './graphs/CPUChart';
 import RAMChart from './graphs/RAMChart';
+import NetworkManager from '../settings/NetworkManager/NetworkManager';
 
 interface serverProps {
     server: GameServer;
@@ -318,6 +319,9 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                             }
                             settingsComponent={
                                 <GameServerSettings server={server} apiKey={ptApiKey} />
+                            }
+                            networkControlComponent={
+                                <NetworkManager server={server} apiKey={ptApiKey} />
                             }
                         />
                     </div>
