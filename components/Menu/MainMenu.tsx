@@ -142,17 +142,12 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     variant="secondary"
                                     className="bg-green-600 hover:bg-green-700 text-white"
                                 >
-                                    <Link href="/order" className="flex items-center">
+                                    <Link href="/order/free" className="flex items-center">
                                         <Gift className="h-4 w-4 mr-1.5" />
                                         {t('buttonText')}
                                     </Link>
                                 </Button>
                             </NavigationMenuItem>
-                            {/* <NavigationMenuItem>
-                <div className="flex flex-end">
-                  <LanguageSwitcher currentLocale={locale} />
-                </div>
-              </NavigationMenuItem> */}
                         </NavigationMenuList>
                     </NavigationMenu>
 
@@ -220,7 +215,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                         className="w-full justify-start px-4 py-3 h-auto text-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
                                         onClick={() => setOpen(false)}
                                     >
-                                        <Link href="/order" className="flex items-center">
+                                        <Link href="/order/free" className="flex items-center">
                                             <Gift className="h-6 w-6 mr-3" />
                                             {t('buttonText')}
                                         </Link>

@@ -215,10 +215,10 @@ export default async function LandingPage() {
                                     >
                                         <Link
                                             href="/order/configure"
-                                            className="w-full sm:w-auto text-secondary-foreground"
+                                            className="w-full sm:w-auto"
                                         >
                                             {t('buttonStartNow')}
-                                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                            {/* <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /> */}
                                         </Link>
                                     </Button>
                                     <Button
@@ -236,11 +236,11 @@ export default async function LandingPage() {
                                     <Button
                                         size="lg"
                                         variant="secondary"
-                                        className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700 text-white"
+                                        className="w-full sm:w-auto px-8 text-base bg-green-600 hover:bg-green-700 text-primary-foreground"
                                         asChild
                                     >
                                         <Link
-                                            href="/order"
+                                            href="/order/free"
                                             className="flex items-center justify-center gap-2"
                                         >
                                             <Gift className="h-4 w-4" />
@@ -303,7 +303,6 @@ export default async function LandingPage() {
                         <Button size="lg" asChild>
                             <Link href="/order/configure">
                                 {t('ctaButton')}
-                                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>

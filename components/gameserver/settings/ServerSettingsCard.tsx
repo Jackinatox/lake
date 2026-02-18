@@ -1,16 +1,14 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { RefreshCw, Save, Server } from 'lucide-react';
-import ReinstallDialog from './ReinstallDialog';
-import { GameServer } from '@/models/gameServerModel';
 import { useToast } from '@/hooks/use-toast';
+import { GameServer } from '@/models/gameServerModel';
+import { Save, Server } from 'lucide-react';
+import { useState } from 'react';
 import { renameClientServer } from './serverSettingsActions';
 
 export interface ServerSettingsCardProps {
@@ -53,23 +51,24 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                 <div className="space-y-2">
                     <Label htmlFor="server-name">Server Name</Label>
                     <div className="flex flex-col sm:flex-row gap-2">
-                        <Input
-                            id="server-name"
-                            value={serverName}
-                            onChange={(e) => setServerName(e.target.value)}
-                            placeholder="Enter server name"
-                            className="flex-1"
-                            maxLength={64}
-                        />
-                        <Button
-                            onClick={handleSaveServerName}
-                            disabled={serverName === server.name || serverName.trim() === ''}
-                            size="sm"
-                            className="w-full sm:w-auto"
-                        >
-                            <Save className="h-4 w-4 mr-2 sm:mr-0" />
-                            <span className="sm:hidden">Save</span>
-                        </Button>
+                        <ButtonGroup className="flex-1">
+                            <Input
+                                id="server-name"
+                                value={serverName}
+                                onChange={(e) => setServerName(e.target.value)}
+                                placeholder="Enter server name"
+                                maxLength={64}
+                            />
+                            <Button
+                                variant="outline"
+                                onClick={handleSaveServerName}
+                                disabled={serverName === server.name || serverName.trim() === ''}
+                                className="flex items-center gap-2"
+                            >
+                                <Save className="h-4 w-4" />
+                                <span>Save</span>
+                            </Button>
+                        </ButtonGroup>
                     </div>
                 </div>
             </CardContent>

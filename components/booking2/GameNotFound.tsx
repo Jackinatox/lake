@@ -1,4 +1,4 @@
-import { AlertCircle, Home, Search } from 'lucide-react';
+import { Home, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

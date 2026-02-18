@@ -108,7 +108,7 @@
     "backupFeature3": "Download backups",
     "ctaHeader": "Ready to host?",
     "ctaDesc": "Choose a game and get your server online in minutes.",
-    "ctaButton": "Get started",
+    "ctaButton": "Get Started",
     "getFreeServer": "Create a free server"
   },
   "notAdmin": "You are not an admin",
@@ -347,11 +347,11 @@
       "labels": {
         "ramUnit": "GiB RAM",
         "diskUnit": "GiB",
-        "diskSpace": "Disk Space",
+        "diskSpace": "Disk GiB",
         "backupUnit": "Backups",
         "backupCount": "Backup Slots",
         "allocationsUnit": "Ports",
-        "allocations": "Network Allocations",
+        "allocations": "Ports",
         "perVcore": "€ / vCore",
         "perGiB": "€ / GiB"
       },

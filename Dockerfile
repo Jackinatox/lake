@@ -1,6 +1,6 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM oven/bun:1.3.5-alpine AS base
+FROM oven/bun:1.3.9-alpine AS base
 
 # libc6-compat is commonly required for native deps on Alpine.
 RUN apk add --no-cache libc6-compat

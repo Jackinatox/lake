@@ -33,7 +33,7 @@ export default function ProvisionServerTest() {
         <div className="max-w-lg mx-auto mt-10 p-6 border rounded shadow">
             <h1 className="text-2xl font-bold mb-4">Provision Server</h1>
             <div className="flex items-start mb-4 p-3 bg-blue-50 rounded">
-                <Info className="w-5 h-5 text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                <Info className="w-5 h-5 text-blue-600 mt-1 mr-3 shrink-0" />
                 <p className="text-blue-800 text-lg">
                     Die ServerOrder wird überschrieben mit den neuen Daten. Am besten nur für Server
                     ausführen, die noch nicht erstellt wurden, oder zu Debug-Zwecken verwenden.

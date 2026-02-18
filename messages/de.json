@@ -347,11 +347,11 @@
       "labels": {
         "ramUnit": "GiB RAM",
         "diskUnit": "GiB",
-        "diskSpace": "Festplattenspeicher",
+        "diskSpace": "Disk GiB",
         "backupUnit": "Backups",
         "backupCount": "Backup-Slots",
         "allocationsUnit": "Ports",
-        "allocations": "Netzwerk-Allokationen",
+        "allocations": "Ports",
         "perVcore": "€ / vCore",
         "perGiB": "€ / GiB"
       },
