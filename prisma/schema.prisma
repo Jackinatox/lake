@@ -7,11 +7,6 @@ generator client {
   output   = "../app/client/generated"
 }
 
-generator worker {
-  provider = "prisma-client"
-  output   = "../worker/client/generated"
-}
-
 model GameData {
   id       Int     @id @default(autoincrement())
   name     String

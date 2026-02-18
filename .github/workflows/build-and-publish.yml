@@ -61,20 +61,6 @@ jobs:
                       type=raw,value=build-${{ github.run_number }}
                       type=raw,value=latest,enable={{is_default_branch}}
 
-            # Extract metadata for worker image
-            - name: Extract Docker metadata (worker)
-              id: meta-worker
-              uses: docker/metadata-action@v5
-              with:
-                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-worker
-                  tags: |
-                      type=ref,event=branch
-                      type=ref,event=pr
-                      type=semver,pattern={{version}}
-                      type=semver,pattern={{major}}.{{minor}}
-                      type=semver,pattern={{major}}
-                      type=raw,value=build-${{ github.run_number }}
-                      type=raw,value=latest,enable={{is_default_branch}}
 
             # Build and push web app Docker image
             - name: Build and push web app image
@@ -87,15 +73,3 @@ jobs:
                   labels: ${{ steps.meta-web.outputs.labels }}
                   cache-from: type=gha,scope=web
                   cache-to: type=gha,mode=max,scope=web
-
-            # Build and push worker Docker image
-            - name: Build and push worker image
-              uses: docker/build-push-action@v5
-              with:
-                  context: .
-                  file: ./worker/Dockerfile
-                  push: ${{ github.event_name != 'pull_request' }}
-                  tags: ${{ steps.meta-worker.outputs.tags }}
-                  labels: ${{ steps.meta-worker.outputs.labels }}
-                  cache-from: type=gha,scope=worker
-                  cache-to: type=gha,mode=max,scope=worker
