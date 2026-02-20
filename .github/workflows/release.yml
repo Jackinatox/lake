@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             release_notes:
-                description: 'Initial release notes (editable before erelease)'
+                description: 'Initial release notes (editable before release)'
                 required: false
                 default: ''
 
@@ -24,10 +24,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            # Read version from package.json
+            # Read version from package.json and compute lowercase image name
             - name: Read version from package.json
               id: pkg
-              run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+              run: |
+                  echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+                  echo "image=$(echo '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
             # Set up Docker Buildx
             - name: Set up Docker Buildx
@@ -49,8 +51,8 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: |
-                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ steps.pkg.outputs.version }}
-                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+                      ${{ steps.pkg.outputs.image }}:v${{ steps.pkg.outputs.version }}
+                      ${{ steps.pkg.outputs.image }}:latest
                   cache-from: type=gha,scope=web
                   cache-to: type=gha,mode=max,scope=web
 
@@ -76,7 +78,7 @@ jobs:
 
                       ### Docker image
                       ```
-                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ steps.pkg.outputs.version }}
+                      ${{ steps.pkg.outputs.image }}:v${{ steps.pkg.outputs.version }}
                       ```
 
                       ---
