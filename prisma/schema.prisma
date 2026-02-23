@@ -144,10 +144,13 @@ model GameServerOrder {
   allocations Int
   price       Float
 
-  receipt_url        String?
-  stripeSessionId    String?     @unique
-  stripeClientSecret String?
-  status             OrderStatus @default(PENDING)
+  receipt_url         String?
+  stripeSessionId     String?     @unique
+  stripePaymentIntent String?     @unique
+  stripeChargeId      String?     @unique
+  stripeClientSecret  String?
+  status              OrderStatus @default(PENDING)
+  errorText           String? // This is just to save any orbitarry error to show the user something
 
   expiresAt DateTime // New expiry date *if* order succeeds
 
@@ -169,6 +172,7 @@ enum OrderStatus {
   PAID // Money received, now the server is being created
   PAYMENT_FAILED // Stripe weebhook said order failed   
   EXPIRED // Just to keep the entry, i dont know why yet
+  REFUNDED // Refunds are rare but can happen, we want to keep the history of them
 }
 
 enum OrderType {

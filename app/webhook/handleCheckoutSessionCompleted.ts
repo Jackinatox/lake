@@ -31,14 +31,35 @@ export default async function handleCheckoutSessionCompleted(
         });
 
         let receiptUrl: string | null = null;
+        let paymentIntentId: string | null = null;
+        let chargeId: string | null = null;
 
-        if (
-            typeof session.payment_intent !== 'string' &&
-            session.payment_intent?.latest_charge &&
-            typeof session.payment_intent.latest_charge !== 'string'
-        ) {
-            receiptUrl = session.payment_intent.latest_charge.receipt_url;
+        if (typeof session.payment_intent !== 'string' && session.payment_intent) {
+            paymentIntentId = session.payment_intent.id;
+
+            if (
+                session.payment_intent.latest_charge &&
+                typeof session.payment_intent.latest_charge !== 'string'
+            ) {
+                receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                chargeId = session.payment_intent.latest_charge.id;
+            }
+        } else if (typeof session.payment_intent === 'string') {
+            paymentIntentId = session.payment_intent;
         }
+
+        await prisma.gameServerOrder.update({
+            where: {
+                id: serverOrderId,
+            },
+            data: {
+                stripeSessionId: checkoutSession.id,
+                stripePaymentIntent: paymentIntentId,
+                stripeChargeId: chargeId,
+                status: 'PAID',
+                receipt_url: receiptUrl,
+            },
+        });
 
         try {
             switch (orderUnprocessed.type) {
@@ -69,18 +90,6 @@ export default async function handleCheckoutSessionCompleted(
                 details: { error: provisionError, serverOrderId: serverOrderId },
             });
             throw provisionError;
-        } finally {
-            // Move status update to later so the new wait/[jobId] page can get shown
-            await prisma.gameServerOrder.update({
-                where: {
-                    id: serverOrderId,
-                },
-                data: {
-                    stripeSessionId: checkoutSession.id,
-                    status: 'PAID',
-                    receipt_url: receiptUrl,
-                },
-            });
         }
 
         // Fetch updated order with all relations after provisioning
