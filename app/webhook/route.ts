@@ -8,6 +8,7 @@ import { env } from 'next-runtime-env';
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import handleCheckoutSessionCompleted from './handleCheckoutSessionCompleted';
+import { handleRefundUpdated, handleChargeRefunded, handleChargeDisputeCreated } from './handleRefundWebhooks';
 
 export async function POST(req: NextRequest) {
     const body = await req.text();
@@ -124,19 +125,36 @@ export async function POST(req: NextRequest) {
 
         case 'charge.refunded':
             const charge = event.data.object as Stripe.Charge;
-            logger.warn('Charge refunded', 'PAYMENT_LOG', {
-                details: {
-                    charge,
-                },
+            logger.info('Charge refunded webhook received', 'PAYMENT_LOG', {
+                details: { chargeId: charge.id },
             });
-            await prisma.gameServerOrder.updateMany({
-                where: {
-                    stripeChargeId: charge.id,
-                },
-                data: {
-                    status: 'REFUNDED',
-                },
+            await handleChargeRefunded(charge);
+            break;
+
+        case 'refund.updated':
+            const refundUpdated = event.data.object as Stripe.Refund;
+            logger.info('Refund updated webhook received', 'PAYMENT_LOG', {
+                details: { refundId: refundUpdated.id, status: refundUpdated.status },
             });
+            await handleRefundUpdated(refundUpdated);
+            break;
+
+        case 'refund.failed':
+            const refundFailed = event.data.object as Stripe.Refund;
+            logger.error('Refund failed webhook received', 'PAYMENT_LOG', {
+                details: { refundId: refundFailed.id, failureReason: refundFailed.failure_reason },
+            });
+            await handleRefundUpdated(refundFailed);
+            break;
+
+        case 'charge.dispute.created':
+            const dispute = event.data.object as Stripe.Dispute;
+            logger.error('Charge dispute created - Admin attention required', 'PAYMENT_LOG', {
+                details: { disputeId: dispute.id, chargeId: dispute.charge },
+            });
+            await handleChargeDisputeCreated(dispute);
+            break;
+
         default:
             logger.error(`Unhandeld Webhook type: ${event.type}`, 'PAYMENT_LOG', {
                 details: {

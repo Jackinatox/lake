@@ -144,7 +144,7 @@ ${missingKeys.map((key) => `║   • ${key.padEnd(56)} ║`).join('\n')}
 ${missingResources.map((res) => `║   • ${res.padEnd(56)} ║`).join('\n')}
 ║                                                                ║
 ║ Please seed the database with the seed script:                ║
-║   $ pnpm exec prisma db seed                                  ║
+║   $ bun  exec prisma db seed                                  ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
 `;

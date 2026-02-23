@@ -1,7 +1,14 @@
 'use client';
 
-import { GameServerStatus, GameServerType, OrderType } from '@/app/client/generated/browser';
+import {
+    GameServerStatus,
+    GameServerType,
+    OrderStatus,
+    OrderType,
+    RefundStatus,
+} from '@/app/client/generated/browser';
 import { Button } from '@/components/ui/button';
+import { RefundRequestButton } from '@/components/payments/RefundRequestButton';
 import {
     AlertCircle,
     CheckCircle2,
@@ -9,6 +16,7 @@ import {
     Receipt,
     RefreshCw,
     Settings,
+    Undo2,
     XCircle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -23,6 +31,11 @@ interface PaymentItemProps {
     serverStatus?: GameServerStatus;
     serverType?: GameServerType;
     locale?: string;
+    orderId?: string;
+    orderStatus?: OrderStatus;
+    refundStatus?: RefundStatus;
+    totalRefundedCents?: number;
+    hasUserRefund?: boolean;
 }
 
 type StatusConfig = {
@@ -42,6 +55,11 @@ export function PaymentItem({
     serverStatus,
     serverType,
     locale = 'de',
+    orderId,
+    orderStatus,
+    refundStatus,
+    totalRefundedCents = 0,
+    hasUserRefund = false,
 }: PaymentItemProps) {
     const t = useTranslations('payments');
 
@@ -86,14 +104,36 @@ export function PaymentItem({
 
     const statusConfig = getStatusConfig(serverStatus);
     const isFreeServer = serverType === 'FREE' || paymentType === 'FREE_SERVER';
+    const isRefunded = refundStatus === 'FULL' || orderStatus === 'REFUNDED';
+    const isPartiallyRefunded = refundStatus === 'PARTIAL' || orderStatus === 'PARTIALLY_REFUNDED';
+    const canRequestRefund =
+        orderId &&
+        !isFreeServer &&
+        !isRefunded &&
+        !hasUserRefund &&
+        (orderStatus === 'PAID' || orderStatus === 'PARTIALLY_REFUNDED');
 
     return (
-        <div className="flex justify-between items-center p-2 md:p-3 border rounded-lg gap-2">
+        <div
+            className={`flex justify-between items-center p-2 md:p-3 border rounded-lg gap-2 ${
+                isRefunded ? 'opacity-60 border-dashed' : ''
+            }`}
+        >
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                     <p className="font-medium text-sm md:text-base">
                         {t(`orderType.${paymentType}`)}
                     </p>
+                    {isRefunded && (
+                        <span className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium">
+                            {t('refund.refunded')}
+                        </span>
+                    )}
+                    {isPartiallyRefunded && !isRefunded && (
+                        <span className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 font-medium">
+                            {t('refund.partiallyRefunded')}
+                        </span>
+                    )}
                 </div>
                 <p className="text-xs md:text-sm text-muted-foreground">{formatDate(date)}</p>
                 {/* Status indicator */}
@@ -103,6 +143,15 @@ export function PaymentItem({
                     {statusConfig.icon}
                     <span className="text-[10px] md:text-xs">{statusConfig.label}</span>
                 </div>
+                {/* Refund amount info */}
+                {totalRefundedCents > 0 && (
+                    <div className="flex items-center gap-0.5 md:gap-1 mt-0.5 text-xs text-muted-foreground">
+                        <Undo2 className="h-2.5 w-2.5" />
+                        <span>
+                            {t('refund.refundedAmount')}: {(totalRefundedCents / 100).toFixed(2)} €
+                        </span>
+                    </div>
+                )}
             </div>
             <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
                 {!isFreeServer && (
@@ -137,6 +186,11 @@ export function PaymentItem({
                                 </span>
                             )}
                         </Button>
+
+                        {/* Refund request button */}
+                        {canRequestRefund && (
+                            <RefundRequestButton orderId={orderId} orderAmount={amount} />
+                        )}
                     </>
                 )}
 

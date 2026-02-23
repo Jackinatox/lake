@@ -22,10 +22,16 @@ async function PaymentList() {
     }
 
     const payments = await prisma.gameServerOrder.findMany({
-        where: { userId: session.user.id, status: 'PAID' },
+        where: {
+            userId: session.user.id,
+            status: { in: ['PAID', 'REFUNDED', 'PARTIALLY_REFUNDED'] },
+        },
         include: {
             gameServer: {
                 select: { ptServerId: true, status: true, type: true, id: true },
+            },
+            refunds: {
+                select: { amount: true, status: true, isAutomatic: true },
             },
         },
         orderBy: { createdAt: 'desc' },
@@ -40,6 +46,12 @@ async function PaymentList() {
     );
 
     const totalSpent = paidPayments.reduce((acc, pay) => acc + pay.price, 0);
+    const totalRefunded = paidPayments.reduce((acc, pay) => {
+        const refunded = pay.refunds
+            .filter((r) => r.status === 'SUCCEEDED')
+            .reduce((sum, r) => sum + r.amount, 0);
+        return acc + refunded;
+    }, 0);
     const t = await getTranslations('payments');
 
     return (
@@ -53,7 +65,14 @@ async function PaymentList() {
             <CardContent className="space-y-4 p-2 md:p-3">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <span className="font-medium">{t('totalSpend')}:</span>
-                    <span className="font-medium">{(totalSpent / 100).toFixed(2)} €</span>
+                    <div className="text-right">
+                        <span className="font-medium">{(totalSpent / 100).toFixed(2)} €</span>
+                        {totalRefunded > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                                {t('refund.totalRefunded')}: {(totalRefunded / 100).toFixed(2)} €
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Paid payments section */}
@@ -61,22 +80,35 @@ async function PaymentList() {
                     {paidPayments.length === 0 && freeServerPayments.length === 0 && (
                         <div>{t('noPayments')}</div>
                     )}
-                    {paidPayments.map((pay) => (
-                        <PaymentItem
-                            key={pay.id}
-                            amount={pay.price}
-                            paymentType={pay.type}
-                            date={pay.createdAt}
-                            receiptUrl={pay.receipt_url ?? undefined}
-                            gameServerUrl={
-                                pay.gameServer?.ptServerId
-                                    ? `/gameserver/${pay.gameServer.ptServerId}`
-                                    : undefined
-                            }
-                            serverStatus={pay.gameServer?.status}
-                            serverType={pay.gameServer?.type}
-                        />
-                    ))}
+                    {paidPayments.map((pay) => {
+                        const refundedCents = pay.refunds
+                            .filter((r) => r.status === 'SUCCEEDED')
+                            .reduce((sum, r) => sum + r.amount, 0);
+                        const hasUserRefund = pay.refunds.some(
+                            (r) => r.isAutomatic && (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
+                        );
+                        return (
+                            <PaymentItem
+                                key={pay.id}
+                                amount={pay.price}
+                                paymentType={pay.type}
+                                date={pay.createdAt}
+                                receiptUrl={pay.receipt_url ?? undefined}
+                                gameServerUrl={
+                                    pay.gameServer?.ptServerId
+                                        ? `/gameserver/${pay.gameServer.ptServerId}`
+                                        : undefined
+                                }
+                                serverStatus={pay.gameServer?.status}
+                                serverType={pay.gameServer?.type}
+                                orderId={pay.id}
+                                orderStatus={pay.status}
+                                refundStatus={pay.refundStatus}
+                                totalRefundedCents={refundedCents}
+                                hasUserRefund={hasUserRefund}
+                            />
+                        );
+                    })}
                 </div>
 
                 {/* Free server section - collapsible */}

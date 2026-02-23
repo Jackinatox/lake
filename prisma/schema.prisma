@@ -145,11 +145,12 @@ model GameServerOrder {
   price       Float
 
   receipt_url         String?
-  stripeSessionId     String?     @unique
-  stripePaymentIntent String?     @unique
-  stripeChargeId      String?     @unique
+  stripeSessionId     String?      @unique
+  stripePaymentIntent String?      @unique
+  stripeChargeId      String?      @unique
   stripeClientSecret  String?
-  status              OrderStatus @default(PENDING)
+  status              OrderStatus  @default(PENDING)
+  refundStatus        RefundStatus @default(NONE)
   errorText           String? // This is just to save any orbitarry error to show the user something
 
   expiresAt DateTime // New expiry date *if* order succeeds
@@ -160,6 +161,8 @@ model GameServerOrder {
 
   creationLocationId Int
   creationLocation   Location @relation(fields: [creationLocationId], references: [id], onDelete: Restrict)
+
+  refunds Refund[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -172,7 +175,43 @@ enum OrderStatus {
   PAID // Money received, now the server is being created
   PAYMENT_FAILED // Stripe weebhook said order failed   
   EXPIRED // Just to keep the entry, i dont know why yet
-  REFUNDED // Refunds are rare but can happen, we want to keep the history of them
+  REFUNDED // Fully refunded
+  PARTIALLY_REFUNDED // Partial refund applied
+}
+
+enum RefundStatus {
+  NONE
+  PARTIAL
+  FULL
+}
+
+enum RefundStripeStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+model Refund {
+  id String @id @default(cuid())
+
+  orderId String
+  order   GameServerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  stripeRefundId String?            @unique
+  amount         Int // Amount in cents
+  reason         String? // Customer-facing reason
+  internalNote   String? // Admin-only note
+  status         RefundStripeStatus @default(PENDING)
+
+  isAutomatic Boolean @default(false) // True if requested by user within 14-day window
+  initiatedBy String? // User ID of admin who initiated, null if user self-service
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([stripeRefundId])
 }
 
 enum OrderType {
@@ -468,6 +507,7 @@ enum EmailType {
   SERVER_BOOKING_CONFIRMATION
   FREE_SERVER_CREATED
   INVOICE
+  REFUND
 }
 
 model KeyValue {

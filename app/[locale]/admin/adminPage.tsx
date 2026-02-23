@@ -11,6 +11,7 @@ import {
     RefreshCw,
     SquarePlay,
     Ticket,
+    Undo2,
     UsersIcon,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -72,6 +73,12 @@ const tiles: AdminTile[] = [
         link: '/admin/cache-invalidation',
         Icon: RefreshCw,
         color: 'from-pink-500 to-rose-600',
+    },
+    {
+        name: 'Refunds',
+        link: '/admin/refunds',
+        Icon: Undo2,
+        color: 'from-rose-500 to-red-600',
     },
 ];
 

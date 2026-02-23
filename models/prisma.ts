@@ -30,3 +30,21 @@ export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
 export type FreeServerPayment = Prisma.GameServerOrderGetPayload<{
     include: { gameServer: { select: { ptServerId: true; status: true; type: true; id: true } } };
 }>;
+
+export type PaymentWithRefunds = Prisma.GameServerOrderGetPayload<{
+    include: {
+        gameServer: { select: { ptServerId: true; status: true; type: true; id: true } };
+        refunds: { select: { amount: true; status: true } };
+    };
+}>;
+
+export type RefundWithOrder = Prisma.RefundGetPayload<{
+    include: {
+        order: {
+            include: {
+                user: { select: { id: true; email: true; name: true } };
+                creationGameData: { select: { name: true } };
+            };
+        };
+    };
+}>;

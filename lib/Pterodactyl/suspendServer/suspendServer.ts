@@ -46,7 +46,7 @@ export default async function toggleSuspendGameServer(
         await prisma.gameServer.update({
             where: { id: gameServer.id },
             data: {
-                status: 'ACTIVE',
+                status: action === 'suspend' ? 'EXPIRED' : 'ACTIVE',
             },
         });
 
@@ -57,7 +57,6 @@ export default async function toggleSuspendGameServer(
 
         return { success: true, gameServerId: gameServer.id, action };
     } catch (error) {
-        console.error(`Error ${action}ing game server:`, error);
         logger.fatal(`Error ${action}ing game server`, 'GAME_SERVER', {
             details: { error, gameServerId: gameServer.id },
             gameServerId: gameServer.id,

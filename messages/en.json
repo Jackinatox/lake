@@ -600,7 +600,28 @@
     "oauthPasswordChangeNotice1": "Since you signed in via",
     "oauthPasswordChangeNotice2": ", you can't change your password here.",
     "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email.",
-    "noReceipt": "No receipt"
+    "noReceipt": "No receipt",
+    "refund": {
+      "requestRefund": "Request Refund",
+      "dialogTitle": "Request a Refund",
+      "eligible": "You are eligible for a pro-rata refund based on your unused service time.",
+      "notEligible": "You are not eligible for a refund.",
+      "originalAmount": "Original amount",
+      "usedDays": "Used time",
+      "days": "days",
+      "refundAmount": "Refund amount",
+      "refundNote": "The refund will be processed within 5-10 business days back to your original payment method.",
+      "cancel": "Cancel",
+      "confirm": "Confirm Refund",
+      "successTitle": "Refund Initiated",
+      "errorTitle": "Refund Error",
+      "errorCheckingEligibility": "Could not check refund eligibility. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "refunded": "Refunded",
+      "partiallyRefunded": "Partially refunded",
+      "refundedAmount": "Refunded",
+      "totalRefunded": "Total refunded"
+    }
   },
   "changeGame": {
     "flavorChangeTitle": "Changing game flavor",

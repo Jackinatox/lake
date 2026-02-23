@@ -600,7 +600,28 @@
     "oauthPasswordChangeNotice1": "Da du über",
     "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
     "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast.",
-    "noReceipt": "Kein Beleg"
+    "noReceipt": "Kein Beleg",
+    "refund": {
+      "requestRefund": "Rückerstattung anfordern",
+      "dialogTitle": "Rückerstattung anfordern",
+      "eligible": "Du hast Anspruch auf eine anteilige Rückerstattung basierend auf der ungenutzten Servicezeit.",
+      "notEligible": "Du hast keinen Anspruch auf eine Rückerstattung.",
+      "originalAmount": "Ursprünglicher Betrag",
+      "usedDays": "Genutzte Zeit",
+      "days": "Tage",
+      "refundAmount": "Erstattungsbetrag",
+      "refundNote": "Die Rückerstattung wird innerhalb von 5-10 Werktagen auf deine ursprüngliche Zahlungsmethode überwiesen.",
+      "cancel": "Abbrechen",
+      "confirm": "Rückerstattung bestätigen",
+      "successTitle": "Rückerstattung eingeleitet",
+      "errorTitle": "Rückerstattungsfehler",
+      "errorCheckingEligibility": "Rückerstattungsberechtigung konnte nicht geprüft werden. Bitte versuche es erneut.",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
+      "refunded": "Erstattet",
+      "partiallyRefunded": "Teilweise erstattet",
+      "refundedAmount": "Erstattet",
+      "totalRefunded": "Gesamt erstattet"
+    }
   },
   "changeGame": {
     "flavorChangeTitle": "Spiel-Variante ändern",

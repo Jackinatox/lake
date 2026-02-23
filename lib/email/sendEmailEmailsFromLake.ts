@@ -4,6 +4,7 @@ import { sendMail } from './NodeMailer';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
 import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
+import RefundTemplate from './templates/RefundTemplate';
 import PasswordResetSuccessTemplate from './templates/PasswordResetSuccessTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
@@ -231,5 +232,43 @@ export async function sendFreeServerCreatedEmail(data: FreeServerCreatedEmailDat
         `Dein kostenloser ${data.gameName} Server wurde erstellt!`,
         html,
         'FREE_SERVER_CREATED',
+    );
+}
+
+interface RefundEmailData {
+    userName: string;
+    userEmail: string;
+    orderId: string;
+    orderType: OrderType;
+    gameName: string;
+    refundAmountCents: number;
+    originalAmountCents: number;
+    totalRefundedCents: number;
+    isFullRefund: boolean;
+    refundDate: Date;
+    reason?: string;
+}
+
+export async function sendRefundEmail(data: RefundEmailData) {
+    const html = await render(
+        RefundTemplate({
+            userName: data.userName,
+            orderId: data.orderId,
+            orderType: data.orderType,
+            gameName: data.gameName,
+            refundAmountCents: data.refundAmountCents,
+            originalAmountCents: data.originalAmountCents,
+            totalRefundedCents: data.totalRefundedCents,
+            isFullRefund: data.isFullRefund,
+            refundDate: data.refundDate,
+            reason: data.reason,
+        }),
+    );
+
+    await sendMail(
+        data.userEmail,
+        `Rückerstattung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
+        html,
+        'REFUND',
     );
 }

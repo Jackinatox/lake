@@ -27,8 +27,8 @@
 
 ## Tooling
 
-- **Install & Run** Use pnpm: `pnpm install`, `pnpm dev` (Turbopack), `pnpm build`, `pnpm start`; ensure `NEXT_PUBLIC_APP_URL` matches the dev URL for Stripe return links.
-- **Database** Spin up Postgres with `docker compose up db`; run `pnpm exec prisma migrate dev --name <desc>` followed by `pnpm exec prisma db seed` (loads demo game data and locations).
+- **Install & Run** Use bun: `bun install`, `bun dev` (Turbopack), `bun build`, `bun start`; ensure `NEXT_PUBLIC_APP_URL` matches the dev URL for Stripe return links.
+- **Database** Spin up Postgres with `docker compose up db`; run `bun exec prisma migrate dev --name <desc>` followed by `bun exec prisma db seed` (loads demo game data and locations).
 - **Stripe** Set `webhookSecret`, `STRIPE_SECRET_KEY`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`; webhook route expects the raw body so avoid body parsers when adding middleware.
 - **Pterodactyl** Provide `NEXT_PUBLIC_PTERODACTYL_URL` (no trailing slash) and `PTERODACTYL_API_KEY`; user-specific requests rely on `session.user.ptKey` populated during signup.
 - **Secrets** `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, Discord creds, and DB settings live in `.env`; copy from `.env.example` when onboarding.
