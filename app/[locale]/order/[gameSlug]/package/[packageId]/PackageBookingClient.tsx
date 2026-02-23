@@ -2,7 +2,6 @@
 
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -19,8 +18,6 @@ import {
     MemoryStick,
     ArrowLeft,
     Info,
-    Clock,
-    Check,
     ArrowRight,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -30,11 +27,11 @@ import { useRef, useState, useMemo, useEffect } from 'react';
 import { fetchOrderForRestore, calculateOrderDuration } from '@/lib/orderUtils';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 
-const DURATION_OPTIONS: { days: number; label: string; shortLabel: string; discount?: number }[] = [
-    { days: 7, label: '1 Week', shortLabel: '1W' },
-    { days: 30, label: '1 Month', shortLabel: '1M' },
-    { days: 90, label: '3 Months', shortLabel: '3M', discount: 10 },
-    { days: 180, label: '6 Months', shortLabel: '6M', discount: 15 },
+const DURATION_OPTIONS: { days: number; label: string; sublabel: string; discount?: number }[] = [
+    { days: 7, label: '1 Week', sublabel: '7 days' },
+    { days: 30, label: '1 Month', sublabel: '30 days' },
+    { days: 90, label: '3 Months', sublabel: '90 days', discount: 10 },
+    { days: 180, label: '6 Months', sublabel: '180 days', discount: 15 },
 ];
 
 interface PackageData {
@@ -189,9 +186,11 @@ export default function PackageBookingClient({
 
     const imgName = `${game.name.toLowerCase()}.webp`;
 
+    const selectedOption = DURATION_OPTIONS.find((o) => o.days === selectedDuration)!;
+
     return (
         <div className="md:-my-4">
-            {/* Header */}
+            {/* Sticky header */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between gap-4">
@@ -230,83 +229,72 @@ export default function PackageBookingClient({
                                 €{(totalCents / 100).toFixed(2)}
                             </span>
                             {discountPercent > 0 && (
-                                <Badge
-                                    variant="secondary"
-                                    className="text-xs bg-green-500/20 text-green-600"
-                                >
+                                <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-green-500 text-white">
                                     -{discountPercent}%
-                                </Badge>
+                                </span>
                             )}
                         </div>
+                    </div>
+                    {/* Progress indicator */}
+                    <div className="mt-4 flex gap-2">
+                        <div className="h-1.5 flex-1 rounded-full bg-primary" />
+                        <div className="h-1.5 flex-1 rounded-full bg-muted" />
                     </div>
                 </div>
             </div>
 
             {/* Main content */}
-            <div className="w-full pt-4 pb-28 max-w-7xl mx-auto">
-                <div className="space-y-4">
-                    {/* Package Summary */}
-                    <Card className="p-3 md:p-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-                            <div className="flex items-center gap-3">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-lg">
-                                            {packageData.name}
-                                        </span>
-                                        <Badge variant="secondary" className="text-xs">
-                                            Package
-                                        </Badge>
-                                    </div>
-                                    {packageData.description && (
-                                        <p className="text-sm text-muted-foreground mt-0.5">
-                                            {packageData.description}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="hidden sm:block h-8 w-px bg-border" />
-                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
+            <div className="w-full pt-4 pb-28 max-w-7xl mx-auto space-y-4">
+                {/* Package + Duration summary card */}
+                <Card className="p-3 md:p-4">
+                    <div className="space-y-4">
+                        {/* Hardware specs row */}
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                                Included Hardware
+                            </p>
+                            <div className="flex flex-wrap gap-2 text-sm">
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
-                                    <Cpu className="h-4 w-4 text-blue-500" />
+                                    <Cpu className="h-3.5 w-3.5 text-blue-500" />
                                     <span className="font-medium">
                                         {formatVCoresFromPercent(packageData.cpuPercent)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
-                                    <MemoryStick className="h-4 w-4 text-purple-500" />
+                                    <MemoryStick className="h-3.5 w-3.5 text-purple-500" />
                                     <span className="font-medium">
                                         {formatMBToGiB(packageData.ramMB)} RAM
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10">
-                                    <HardDrive className="h-4 w-4 text-green-500" />
+                                    <HardDrive className="h-3.5 w-3.5 text-green-500" />
                                     <span className="font-medium">
                                         {formatMBToGiB(packageData.diskMB)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-500/10">
-                                    <Database className="h-4 w-4 text-orange-500" />
+                                    <Database className="h-3.5 w-3.5 text-orange-500" />
                                     <span className="font-medium">
                                         {packageData.backups} Backups
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-muted-foreground">
-                                    <MapPin className="h-4 w-4" />
-                                    <span>{packageData.location.name}</span>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted">
+                                    <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                                    <span className="font-medium text-muted-foreground">
+                                        {packageData.location.name}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                    </Card>
 
-                    {/* Duration Selection */}
-                    <Card className="p-3 md:p-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                            <div className="flex items-center gap-2 shrink-0">
-                                <Clock className="h-4 w-4 text-primary" />
-                                <span className="font-semibold">Duration</span>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2 flex-1">
+                        <div className="border-t" />
+
+                        {/* Duration selector */}
+                        <div>
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                                Rental Duration
+                            </p>
+                            <div className="flex gap-2 flex-wrap">
                                 {DURATION_OPTIONS.map((option) => {
                                     const isSelected = selectedDuration === option.days;
                                     const optionPrice = calculatePrice(
@@ -316,54 +304,84 @@ export default function PackageBookingClient({
                                         pricing.cpuPricePerCore,
                                         pricing.ramPricePerGb,
                                     );
-
                                     return (
                                         <button
                                             key={option.days}
                                             onClick={() => setSelectedDuration(option.days)}
                                             className={cn(
-                                                'relative flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg border transition-all text-sm',
+                                                'relative flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-all flex-1 min-w-30',
                                                 isSelected
-                                                    ? 'border-primary bg-primary/10 text-primary'
-                                                    : 'border-border hover:border-primary/50 hover:bg-muted/50',
+                                                    ? 'border-primary bg-primary/10'
+                                                    : 'border-border hover:border-primary/40 hover:bg-muted/50',
                                             )}
                                         >
                                             {option.discount && (
-                                                <Badge
-                                                    variant="secondary"
-                                                    className="absolute -top-2 -right-1 text-[10px] px-1 py-0 bg-green-500/20 text-green-600 border-green-500/30"
-                                                >
+                                                <span className="absolute -top-2 -right-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-500 text-white leading-none">
                                                     -{option.discount}%
-                                                </Badge>
+                                                </span>
                                             )}
-                                            <span className="font-medium whitespace-nowrap">
-                                                {option.shortLabel}
+                                            <div className="flex flex-col">
+                                                <span
+                                                    className={cn(
+                                                        'text-sm font-semibold leading-none',
+                                                        isSelected
+                                                            ? 'text-primary'
+                                                            : 'text-foreground',
+                                                    )}
+                                                >
+                                                    {option.label}
+                                                </span>
+                                                <span className="text-xs text-muted-foreground mt-0.5 leading-none">
+                                                    {option.sublabel}
+                                                </span>
+                                            </div>
+                                            <span
+                                                className={cn(
+                                                    'ml-auto text-sm font-bold tabular-nums',
+                                                    isSelected ? 'text-primary' : 'text-foreground',
+                                                )}
+                                            >
+                                                €{(optionPrice.totalCents / 100).toFixed(2)}
                                             </span>
-                                            <span className="text-muted-foreground text-xs hidden md:inline">
-                                                €{(optionPrice.totalCents / 100).toFixed(0)}
-                                            </span>
-                                            {isSelected && <Check className="h-3 w-3 shrink-0" />}
                                         </button>
                                     );
                                 })}
                             </div>
                         </div>
-                    </Card>
+                    </div>
+                </Card>
 
-                    {/* Game Configuration */}
-                    <Card className="p-2 md:p-6">
-                        <h2 className="text-xl font-semibold mb-4">Game Configuration</h2>
-                        <GameConfigComponent
-                            ref={gameConfigRef}
-                            game={game}
-                            onSubmit={handleGameConfigSubmit}
-                            initialConfig={initialGameConfig}
-                        />
-                    </Card>
-                </div>
+                {/* Game Configuration */}
+                <Card className="p-2 md:p-6">
+                    <div className="mb-4 md:mb-6 flex items-center gap-4">
+                        <div className="relative w-14 h-14 shrink-0">
+                            <Image
+                                src={`/images/light/games/icons/${imgName}`}
+                                alt={game.name}
+                                fill
+                                className="object-cover rounded-lg block dark:hidden shadow-md"
+                            />
+                            <Image
+                                src={`/images/dark/games/icons/${imgName}`}
+                                alt={game.name}
+                                fill
+                                className="object-cover rounded-lg hidden dark:block shadow-md"
+                            />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold">{game.name} Configuration</h2>
+                        </div>
+                    </div>
+                    <GameConfigComponent
+                        ref={gameConfigRef}
+                        game={game}
+                        onSubmit={handleGameConfigSubmit}
+                        initialConfig={initialGameConfig}
+                    />
+                </Card>
             </div>
 
-            {/* Sticky bottom navigation */}
+            {/* Sticky bottom bar */}
             <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-4">
                 <div className="w-full max-w-7xl mx-auto">
                     <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
@@ -375,11 +393,9 @@ export default function PackageBookingClient({
                         </Button>
                         <div className="flex items-center gap-4 w-full sm:w-auto">
                             {!isLoggedIn && (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 text-muted-foreground">
                                     <Info className="shrink-0 h-4 w-4" />
-                                    <span className="text-sm text-muted-foreground">
-                                        Log in to continue
-                                    </span>
+                                    <span className="text-sm">Log in to continue</span>
                                 </div>
                             )}
                             <Button
