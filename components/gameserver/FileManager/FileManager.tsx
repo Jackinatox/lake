@@ -562,6 +562,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                     onUploadClick={() => handleUploadDialogOpen(true)}
                     onFilterChange={setFilter}
                     disabled={!canInteract || loading}
+                    loading={loading}
                 />
 
                 <DirectoryBreadcrumb path={currentPath} onNavigate={handleNavigateTo} />

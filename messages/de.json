@@ -865,7 +865,8 @@
       "deleting": "Wird entfernt...",
       "cancel": "Abbrechen",
       "save": "Speichern",
-      "saving": "Speichern..."
+      "saving": "Speichern...",
+      "refresh": "Aktualiseren"
     }
   },
   "freeServerUpgrade": {

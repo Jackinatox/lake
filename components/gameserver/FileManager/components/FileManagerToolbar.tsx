@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RefreshCcw, Search, UploadCloud } from 'lucide-react';
+import { RefreshCw, Search, UploadCloud } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +11,7 @@ interface FileManagerToolbarProps {
     onUploadClick: () => void;
     onFilterChange: (value: string) => void;
     disabled?: boolean;
+    loading: boolean;
 }
 
 const FileManagerToolbarComponent = ({
@@ -18,6 +19,7 @@ const FileManagerToolbarComponent = ({
     onUploadClick,
     onFilterChange,
     disabled,
+    loading,
 }: FileManagerToolbarProps) => {
     const t = useTranslations('gameserver.fileManager.toolbar');
     const [filter, setFilter] = useState('');
@@ -41,7 +43,7 @@ const FileManagerToolbarComponent = ({
             </div>
             <div className="flex items-center gap-2">
                 <Button variant="outline" onClick={onRefresh} disabled={disabled}>
-                    <RefreshCcw className="mr-2 h-4 w-4" />
+                    <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                     {t('refreshButton')}
                 </Button>
                 <Button onClick={onUploadClick} disabled={disabled}>

@@ -26,6 +26,7 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                 description: 'The server name has been successfully updated.',
                 variant: 'default',
             });
+            // eslint-disable-next-line react-hooks/immutability
             server.name = serverName;
         } else {
             toast({
@@ -51,7 +52,7 @@ export default function ServerSettingsCard({ server }: ServerSettingsCardProps) 
                 <div className="space-y-2">
                     <Label htmlFor="server-name">Server Name</Label>
                     <div className="flex flex-col sm:flex-row gap-2">
-                        <ButtonGroup className="flex-1">
+                        <ButtonGroup className="flex-1 w-full">
                             <Input
                                 id="server-name"
                                 value={serverName}
