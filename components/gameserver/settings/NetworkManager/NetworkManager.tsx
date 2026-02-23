@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Network, Plus, RefreshCw, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { GameServer } from '@/models/gameServerModel';
-import { useAllocations } from './useAllocations';
+import { AlertCircle, Network, Plus, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import AllocationCard from './AllocationCard';
 import AllocationNotesDialog from './AllocationNotesDialog';
 import type { Allocation } from './types';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslations } from 'next-intl';
+import { useAllocations } from './useAllocations';
 
 interface NetworkManagerProps {
     server: GameServer;
@@ -86,12 +86,6 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
         return success;
     };
 
-    // Sort: primary first, then by port ascending
-    const sorted = [...allocations].sort((a, b) => {
-        if (a.is_default !== b.is_default) return a.is_default ? -1 : 1;
-        return a.port - b.port;
-    });
-
     return (
         <>
             <Card className="border-0 shadow-sm">
@@ -101,16 +95,11 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
                             <Network className="h-5 w-5" />
                             {t('title')}
                         </CardTitle>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0"
-                            onClick={refetch}
-                            disabled={loading}
-                        >
+                        <Button variant="outline" onClick={refetch} disabled={loading}>
                             <RefreshCw
-                                className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`}
+                                className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
                             />
+                            {t('refresh')}
                         </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">{t('description')}</p>
@@ -140,9 +129,9 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
                         </p>
                     )}
 
-                    {sorted.length > 0 && (
+                    {allocations.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {sorted.map((allocation) => (
+                            {allocations.map((allocation) => (
                                 <AllocationCard
                                     key={allocation.id}
                                     allocation={allocation}

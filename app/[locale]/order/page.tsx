@@ -67,56 +67,48 @@ export default async function OrderPage() {
                 </div>
             </section>
 
-            {/* Custom Hardware CTA */}
+            {/* CTA Section */}
             <section className="py-12 md:py-16">
-                <div className="mx-auto max-w-4xl px-2 md:px-6 space-y-4">
-                    {/* Compare Plans CTA */}
-                    <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
-                        <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
-                            <div className="shrink-0">
-                                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                    <Layers className="h-8 w-8 text-primary" />
+                <div className="mx-auto max-w-6xl px-2 md:px-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Compare Plans CTA */}
+                        <div className="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-start gap-3 flex-1 min-w-0">
+                                    <div className="shrink-0 p-2 rounded-lg bg-primary/10">
+                                        <Layers className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-semibold mb-1">Compare Packages</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Pre-configured plans ready to go
+                                        </p>
+                                    </div>
                                 </div>
+                                <Button asChild className="shrink-0">
+                                    <Link href="/order/packages">View Packages</Link>
+                                </Button>
                             </div>
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-2xl font-bold mb-2">Compare Packages</h2>
-                                <p className="text-muted-foreground">
-                                    Browse pre-configured packages with instant setup. Pick a plan,
-                                    choose your game, and you&apos;re ready to go.
-                                </p>
-                            </div>
-                            <Button asChild size="lg" className="shrink-0">
-                                <Link href="/order/packages">
-                                    <Layers className="h-4 w-4 mr-2" />
-                                    Compare Plans
-                                </Link>
-                            </Button>
                         </div>
-                    </div>
 
-                    {/* Custom Hardware CTA */}
-                    <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
-                        <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
-                            <div className="shrink-0">
-                                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                                    <Wrench className="h-8 w-8 text-primary" />
+                        {/* Custom Hardware CTA */}
+                        <div className="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-start gap-3 flex-1 min-w-0">
+                                    <div className="shrink-0 p-2 rounded-lg bg-primary/10">
+                                        <Wrench className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-semibold mb-1">Custom Hardware</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Build your own from scratch
+                                        </p>
+                                    </div>
                                 </div>
+                                <Button asChild className="shrink-0">
+                                    <Link href="/order/configure">Configure Now</Link>
+                                </Button>
                             </div>
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-2xl font-bold mb-2">Custom Hardware</h2>
-                                <p className="text-muted-foreground">
-                                    Configure your own server from scratch. Choose CPU, RAM,
-                                    duration, and more — then pick a game.
-                                </p>
-                            </div>
-                            <Button asChild size="lg" variant="outline" className="shrink-0">
-                                <Link href="/order/configure">
-                                    <Wrench className="h-4 w-4 mr-2" />
-                                    Configure Hardware
-                                </Link>
-                            </Button>
                         </div>
                     </div>
                 </div>

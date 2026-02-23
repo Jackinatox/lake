@@ -122,8 +122,27 @@ export async function POST(req: NextRequest) {
             }
             break;
 
+        case 'charge.refunded':
+            const charge = event.data.object as Stripe.Charge;
+            logger.warn('Charge refunded', 'PAYMENT_LOG', {
+                details: {
+                    charge,
+                },
+            });
+            await prisma.gameServerOrder.updateMany({
+                where: {
+                    stripeChargeId: charge.id,
+                },
+                data: {
+                    status: 'REFUNDED',
+                },
+            });
         default:
-            console.error(`Unhandeld Webhook type: ${event.type}`);
+            logger.error(`Unhandeld Webhook type: ${event.type}`, 'PAYMENT_LOG', {
+                details: {
+                    event,
+                },
+            });
     }
     return new Response('Success', { status: 200 });
 }

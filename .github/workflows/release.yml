@@ -63,8 +63,7 @@ jobs:
               with:
                   tag_name: v${{ steps.pkg.outputs.version }}
                   name: v${{ steps.pkg.outputs.version }}
-                  prerelease: true
-                  draft: false
+                  draft: true
                   body: |
                       ## v${{ steps.pkg.outputs.version }}
 

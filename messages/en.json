@@ -242,7 +242,11 @@
         "paymentFailedSubtitle": "There was a problem with your payment",
         "retry": "Retry",
         "contactSupport": "Contact support",
-        "returnHome": "Return Home"
+        "returnHome": "Return Home",
+        "fatalError": "An error occurred",
+        "generalHeadline": "Something went wrong",
+        "generalSubheadline": "An internal error occurred. Please contact support.",
+        "generalErrorText": "Something went wrong. Contact support."
       }
     }
   },
@@ -861,7 +865,8 @@
       "cancel": "Cancel",
       "save": "Save",
       "saving": "Saving...",
-      "notes": "Notes"
+      "notes": "Notes",
+      "refresh": "Refresh"
     }
   },
   "freeServerUpgrade": {

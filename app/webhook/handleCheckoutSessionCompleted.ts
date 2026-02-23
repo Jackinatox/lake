@@ -20,7 +20,7 @@ export default async function handleCheckoutSessionCompleted(
         });
 
         if (orderUnprocessed?.status === 'PAID') {
-            logger.info('Order already processed, skipping', 'PAYMENT_LOG', {
+            logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
                 details: { serverOrderId: serverOrderId },
             });
             return;
@@ -31,14 +31,35 @@ export default async function handleCheckoutSessionCompleted(
         });
 
         let receiptUrl: string | null = null;
+        let paymentIntentId: string | null = null;
+        let chargeId: string | null = null;
 
-        if (
-            typeof session.payment_intent !== 'string' &&
-            session.payment_intent?.latest_charge &&
-            typeof session.payment_intent.latest_charge !== 'string'
-        ) {
-            receiptUrl = session.payment_intent.latest_charge.receipt_url;
+        if (typeof session.payment_intent !== 'string' && session.payment_intent) {
+            paymentIntentId = session.payment_intent.id;
+
+            if (
+                session.payment_intent.latest_charge &&
+                typeof session.payment_intent.latest_charge !== 'string'
+            ) {
+                receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                chargeId = session.payment_intent.latest_charge.id;
+            }
+        } else if (typeof session.payment_intent === 'string') {
+            paymentIntentId = session.payment_intent;
         }
+
+        await prisma.gameServerOrder.update({
+            where: {
+                id: serverOrderId,
+            },
+            data: {
+                stripeSessionId: checkoutSession.id,
+                stripePaymentIntent: paymentIntentId,
+                stripeChargeId: chargeId,
+                status: 'PAID',
+                receipt_url: receiptUrl,
+            },
+        });
 
         try {
             switch (orderUnprocessed.type) {
@@ -62,25 +83,19 @@ export default async function handleCheckoutSessionCompleted(
                     await upgradeFromFreeGameServer(orderUnprocessed);
                     break;
                 default:
-                    console.error(`Unhandled server order type: ${orderUnprocessed.type}`);
+                    logger.error(
+                        `Unhandled server order type: ${orderUnprocessed.type}`,
+                        'SYSTEM',
+                        {
+                            details: { serverOrderId: serverOrderId },
+                        },
+                    );
             }
         } catch (provisionError) {
             logger.error('Error during server provisioning/upgrade', 'PAYMENT_LOG', {
                 details: { error: provisionError, serverOrderId: serverOrderId },
             });
             throw provisionError;
-        } finally {
-            // Move status update to later so the new wait/[jobId] page can get shown
-            await prisma.gameServerOrder.update({
-                where: {
-                    id: serverOrderId,
-                },
-                data: {
-                    stripeSessionId: checkoutSession.id,
-                    status: 'PAID',
-                    receipt_url: receiptUrl,
-                },
-            });
         }
 
         // Fetch updated order with all relations after provisioning
@@ -139,6 +154,14 @@ export default async function handleCheckoutSessionCompleted(
     } catch (error) {
         logger.fatal('Error handling checkout.session.completed', 'PAYMENT_LOG', {
             details: { error, checkoutSessionId: checkoutSession.id },
+        });
+        await prisma.gameServerOrder.updateMany({
+            where: {
+                stripeSessionId: checkoutSession.id,
+            },
+            data: {
+                errorText: `Error processing order: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            },
         });
     }
 }

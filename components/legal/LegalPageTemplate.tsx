@@ -58,9 +58,6 @@ export async function LegalPageTemplate({ pageType, locale }: LegalPageTemplateP
     return (
         <div className="w-full max-w-4xl mx-auto">
             <Card>
-                <CardHeader>
-                    <CardTitle className="text-3xl">{t(pageType)}</CardTitle>
-                </CardHeader>
                 <CardContent>
                     <div
                         className="prose prose-sm dark:prose-invert max-w-none"
