@@ -16,8 +16,9 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);
     const [workerJobId, setWorkerJobId] = useState<string | null>(null);
     const [networkError, setNetworkError] = useState<string | null>(null);
+    // error reported by the backend (order.errorText)
+    const [generalError, setGeneralError] = useState<string | null>(null);
     const [pollingSignal, setPollingSignal] = useState(0);
-    const [isRedirecting, setIsRedirecting] = useState(false);
     const redirectStartedRef = useRef(false);
 
     const pollerT = useTranslations('checkout.return.poller');
@@ -31,10 +32,17 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
             if (stopped) return;
             try {
                 setNetworkError(null);
-                const { orderStatus, workerJobId } = await checkPaymentStatus(sessionId);
+                setGeneralError(null);
+                const { orderStatus, workerJobId, hasError } = await checkPaymentStatus(sessionId);
                 if (stopped) return;
 
                 setOrderStatus(orderStatus);
+
+                // backend side problem (order.errorText set)
+                if (hasError) {
+                    setGeneralError(pollerT('generalErrorText'));
+                    return;
+                }
 
                 if (orderStatus === 'PAID' && workerJobId) {
                     setWorkerJobId(workerJobId);
@@ -63,16 +71,16 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     useEffect(() => {
         if (!workerJobId || orderStatus !== 'PAID') return;
 
-        if (redirectStartedRef.current || isRedirecting) {
+        if (redirectStartedRef.current) {
             return;
         }
 
         redirectStartedRef.current = true;
-        setIsRedirecting(true);
         router.push(`/products/wait/${workerJobId}`);
-    }, [workerJobId, orderStatus, router, isRedirecting]);
+    }, [workerJobId, orderStatus, router]);
 
     const isError = orderStatus === 'PAYMENT_FAILED' || orderStatus === 'EXPIRED';
+    const isGeneral = generalError !== null;
 
     const handleRetry = () => {
         setNetworkError(null);
@@ -83,7 +91,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     return (
         <div className="flex min-h-screen items-center justify-center p-4">
             <Card className="w-full max-w-md">
-                {!networkError && !isError ? (
+                {!networkError && !isError && !isGeneral ? (
                     <>
                         <CardHeader className="text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
@@ -106,19 +114,23 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                             <CardTitle className="text-destructive">
                                 {networkError
                                     ? pollerT('networkHeadline')
-                                    : pollerT('paymentFailedTitle')}
+                                    : isGeneral
+                                      ? (pollerT('generalHeadline' as any) as string)
+                                      : pollerT('paymentFailedTitle')}
                             </CardTitle>
                             <CardDescription>
                                 {networkError
                                     ? pollerT('networkSubheadline')
-                                    : pollerT('paymentFailedSubtitle')}
+                                    : isGeneral
+                                      ? (pollerT('generalSubheadline' as any) as string)
+                                      : pollerT('paymentFailedSubtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {networkError && (
+                            {(networkError || isGeneral) && (
                                 <Alert variant="destructive">
-                                    <AlertDescription className="break-words text-sm">
-                                        {networkError}
+                                    <AlertDescription className="wrap-break-word text-sm">
+                                        {networkError || generalError}
                                     </AlertDescription>
                                 </Alert>
                             )}
@@ -133,6 +145,10 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                                             <Link href="/support">{pollerT('contactSupport')}</Link>
                                         </Button>
                                     </>
+                                ) : isGeneral ? (
+                                    <Button asChild className="flex-1">
+                                        <Link href="/support">{pollerT('contactSupport')}</Link>
+                                    </Button>
                                 ) : (
                                     <>
                                         <Button asChild className="flex-1">

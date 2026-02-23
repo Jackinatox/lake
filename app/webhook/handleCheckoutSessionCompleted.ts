@@ -20,7 +20,7 @@ export default async function handleCheckoutSessionCompleted(
         });
 
         if (orderUnprocessed?.status === 'PAID') {
-            logger.info('Order already processed, skipping', 'PAYMENT_LOG', {
+            logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
                 details: { serverOrderId: serverOrderId },
             });
             return;
@@ -83,7 +83,13 @@ export default async function handleCheckoutSessionCompleted(
                     await upgradeFromFreeGameServer(orderUnprocessed);
                     break;
                 default:
-                    console.error(`Unhandled server order type: ${orderUnprocessed.type}`);
+                    logger.error(
+                        `Unhandled server order type: ${orderUnprocessed.type}`,
+                        'SYSTEM',
+                        {
+                            details: { serverOrderId: serverOrderId },
+                        },
+                    );
             }
         } catch (provisionError) {
             logger.error('Error during server provisioning/upgrade', 'PAYMENT_LOG', {
@@ -148,6 +154,14 @@ export default async function handleCheckoutSessionCompleted(
     } catch (error) {
         logger.fatal('Error handling checkout.session.completed', 'PAYMENT_LOG', {
             details: { error, checkoutSessionId: checkoutSession.id },
+        });
+        await prisma.gameServerOrder.updateMany({
+            where: {
+                stripeSessionId: checkoutSession.id,
+            },
+            data: {
+                errorText: `Error processing order: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            },
         });
     }
 }

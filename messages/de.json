@@ -242,7 +242,11 @@
         "paymentFailedSubtitle": "Es gab ein Problem mit deiner Zahlung",
         "retry": "Erneut versuchen",
         "contactSupport": "Support kontaktieren",
-        "returnHome": "Zur Startseite"
+        "returnHome": "Zur Startseite",
+        "fatalError": "Ein Fehler ist aufgetreten",
+        "generalHeadline": "Etwas ist schiefgelaufen",
+        "generalSubheadline": "Ein interner Fehler ist aufgetreten. Bitte kontaktiere den Support.",
+        "generalErrorText": "Etwas ist schiefgelaufen. Kontaktiere den Support."
       }
     }
   },

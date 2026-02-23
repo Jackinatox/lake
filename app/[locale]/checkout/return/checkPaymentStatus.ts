@@ -8,6 +8,7 @@ import { headers } from 'next/headers';
 export default async function checkPaymentStatus(stripeSession: string): Promise<{
     orderStatus: OrderStatus;
     workerJobId?: string | null;
+    hasError: boolean;
 }> {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -22,6 +23,7 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
         select: {
             status: true,
             workerJobId: true,
+            errorText: true,
         },
     });
 
@@ -32,5 +34,6 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
     return {
         orderStatus: serverOrder.status,
         workerJobId: serverOrder.workerJobId,
+        hasError: serverOrder.errorText !== null,
     };
 }
