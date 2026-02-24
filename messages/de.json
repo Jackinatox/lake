@@ -620,7 +620,10 @@
       "refunded": "Erstattet",
       "partiallyRefunded": "Teilweise erstattet",
       "refundedAmount": "Erstattet",
-      "totalRefunded": "Gesamt erstattet"
+      "totalRefunded": "Gesamt erstattet",
+      "upgradeOrderExists": "Dieser Server wurde seit dem Kauf upgegradet.",
+      "upgradeOrderExistsDetail": "Eine automatische Rückerstattung ist nicht möglich, da es nachfolgende Upgrade-Bestellungen für diesen Server gibt. Eine Erstattung der Originalbestellung würde auch das bezahlte Upgrade betreffen. Bitte eröffne ein Support-Ticket, damit wir das individuell klären können.",
+      "openSupportTicket": "Support-Ticket eröffnen"
     }
   },
   "changeGame": {

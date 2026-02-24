@@ -287,7 +287,7 @@
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
       },
-      "discount-with-amount": "(plus {amount} € discount)"
+      "discount-with-amount": "(minus {amount} € discount)"
     },
     "footer": {
       "total": "Total",
@@ -402,7 +402,7 @@
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
       },
-      "discount-with-amount": "(plus {amount} € discount)"
+      "discount-with-amount": "(minus {amount} € discount)"
     },
     "footer": {
       "total": "Total",
@@ -620,7 +620,10 @@
       "refunded": "Refunded",
       "partiallyRefunded": "Partially refunded",
       "refundedAmount": "Refunded",
-      "totalRefunded": "Total refunded"
+      "totalRefunded": "Total refunded",
+      "upgradeOrderExists": "This server has been upgraded since the original purchase.",
+      "upgradeOrderExistsDetail": "A self-service refund is not possible because there are subsequent upgrade orders linked to this server. Refunding the original order would also affect the upgrade you paid for. Please open a support ticket so we can handle this individually.",
+      "openSupportTicket": "Open Support Ticket"
     }
   },
   "changeGame": {

@@ -14,7 +14,7 @@ export async function getGameServerConfig(
             userId: userId,
             ptServerId: server_id,
             status: {
-                notIn: ['CREATION_FAILED', 'DELETED', 'EXPIRED'],
+                notIn: ['DELETED'],
             },
         },
         include: {

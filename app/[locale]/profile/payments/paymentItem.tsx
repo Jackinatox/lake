@@ -116,7 +116,7 @@ export function PaymentItem({
     return (
         <div
             className={`flex justify-between items-center p-2 md:p-3 border rounded-lg gap-2 ${
-                isRefunded ? 'opacity-60 border-dashed' : ''
+                isRefunded ? 'bg-muted/30 border-dashed' : ''
             }`}
         >
             <div className="flex-1 min-w-0">

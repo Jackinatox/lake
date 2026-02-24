@@ -15,14 +15,13 @@ export type RefundEligibilityResult = {
     totalDays: number;
     reason: string | null;
     orderId: string;
+    hasUpgradeOrders: boolean;
 };
 
 /**
  * Check if the current user is eligible for a refund on a specific order.
  */
-export async function checkRefundEligibility(
-    orderId: string,
-): Promise<RefundEligibilityResult> {
+export async function checkRefundEligibility(orderId: string): Promise<RefundEligibilityResult> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
 
@@ -31,15 +30,33 @@ export async function checkRefundEligibility(
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
+    // Check if there are subsequent orders (e.g. upgrades) on the same game server.
+    // If the user bought a server and then upgraded it, we can't refund the original
+    // order because suspending the server would also void the upgrade they paid for.
+    let hasUpgradeOrders = false;
+    if (order.gameServerId) {
+        const subsequentOrders = await prisma.gameServerOrder.count({
+            where: {
+                gameServerId: order.gameServerId,
+                id: { not: orderId },
+                status: { in: ['PAID', 'PARTIALLY_REFUNDED'] },
+                createdAt: { gt: order.createdAt },
+            },
+        });
+        hasUpgradeOrders = subsequentOrders > 0;
+    }
+
     const result = calculateUserRefundEligibility(order, order.refunds);
-    return { ...result, orderId };
+    return { ...result, orderId, hasUpgradeOrders };
 }
 
 /**
  * User self-service refund request.
  * Creates a Stripe refund for the pro-rata unused amount.
  */
-export async function requestUserRefund(orderId: string): Promise<{ success: boolean; message: string }> {
+export async function requestUserRefund(
+    orderId: string,
+): Promise<{ success: boolean; message: string }> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
 
@@ -88,12 +105,9 @@ export async function requestUserRefund(orderId: string): Promise<{ success: boo
             refundParams.charge = order.stripeChargeId;
         }
 
-        const stripeRefund = await stripe.refunds.create(
-            refundParams,
-            {
-                idempotencyKey: `refund-${order.id}-${refundRecord.id}`,
-            },
-        );
+        const stripeRefund = await stripe.refunds.create(refundParams, {
+            idempotencyKey: `refund-${order.id}-${refundRecord.id}`,
+        });
 
         // Update the refund record with Stripe refund ID
         await prisma.refund.update({
@@ -105,9 +119,10 @@ export async function requestUserRefund(orderId: string): Promise<{ success: boo
         });
 
         // Calculate total refunded to determine refund status
-        const totalRefunded = order.refunds
-            .filter((r) => r.status === 'SUCCEEDED' || r.status === 'PENDING')
-            .reduce((sum, r) => sum + r.amount, 0) + eligibility.refundableAmountCents;
+        const totalRefunded =
+            order.refunds
+                .filter((r) => r.status === 'SUCCEEDED' || r.status === 'PENDING')
+                .reduce((sum, r) => sum + r.amount, 0) + eligibility.refundableAmountCents;
 
         const priceCents = Math.round(order.price);
         const isFullRefund = totalRefunded >= priceCents;

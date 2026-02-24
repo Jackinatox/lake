@@ -62,7 +62,7 @@ export default function RefundTemplate({
     reason,
 }: RefundTemplateProps) {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
-    const paymentsUrl = appUrl ? `${appUrl}/profile/payments` : '#';
+    const paymentsUrl = appUrl ? `${appUrl}/profile` : '#'; // TODO Link to more specific page when available
 
     return (
         <EmailLayout
@@ -199,10 +199,22 @@ export default function RefundTemplate({
             {isFullRefund && (
                 <EmailCard tone="warning" style={{ marginTop: 12 }}>
                     <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
-                        <strong>Hinweis:</strong> Da die Bestellung vollständig erstattet wurde,
-                        {orderType === 'UPGRADE'
-                            ? ' wurde dein Server auf die vorherige Konfiguration zurückgesetzt.'
-                            : ' wurde dein Server pausiert.'}
+                        <strong>Hinweis:</strong> Durch die Rückerstattung wurde dein Server
+                        {orderType === 'UPGRADE' || orderType === 'RENEW'
+                            ? ' auf den Stand der vorherigen Bestellung zurückgesetzt. Falls das vorherige Ablaufdatum bereits vergangen ist, wurde der Server pausiert.'
+                            : ' pausiert. Du kannst ihn jederzeit neu buchen.'}
+                    </Text>
+                </EmailCard>
+            )}
+
+            {!isFullRefund && (
+                <EmailCard tone="warning" style={{ marginTop: 12 }}>
+                    <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
+                        <strong>Hinweis:</strong> Durch die teilweise Rückerstattung wurde dein
+                        Server
+                        {orderType === 'UPGRADE' || orderType === 'RENEW'
+                            ? ' auf den Stand der vorherigen Bestellung zurückgesetzt (inkl. Ablaufdatum).'
+                            : ' pausiert.'}
                     </Text>
                 </EmailCard>
             )}

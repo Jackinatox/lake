@@ -16,9 +16,10 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { checkRefundEligibility, requestUserRefund } from '@/app/actions/refunds/requestRefund';
 import { RefundEligibilityResult } from '@/app/actions/refunds/requestRefund';
-import { Loader2, Undo2 } from 'lucide-react';
+import { Loader2, Undo2, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface RefundRequestButtonProps {
     orderId: string;
@@ -100,7 +101,24 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                     <AlertDialogTitle>{t('dialogTitle')}</AlertDialogTitle>
                     <AlertDialogDescription asChild>
                         <div className="space-y-3">
-                            {eligibility?.eligible ? (
+                            {eligibility?.hasUpgradeOrders ? (
+                                <div className="space-y-3">
+                                    <div className="rounded-lg border border-orange-500/30 bg-orange-500/5 p-3">
+                                        <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                                            {t('upgradeOrderExists')}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1.5">
+                                            {t('upgradeOrderExistsDetail')}
+                                        </p>
+                                    </div>
+                                    <Button variant="outline" className="w-full" asChild>
+                                        <Link href="/support">
+                                            <MessageSquare className="h-4 w-4 mr-2" />
+                                            {t('openSupportTicket')}
+                                        </Link>
+                                    </Button>
+                                </div>
+                            ) : eligibility?.eligible ? (
                                 <>
                                     <p>{t('eligible')}</p>
                                     <div className="rounded-lg bg-muted p-3 space-y-1 text-sm">
@@ -138,7 +156,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isPending}>{t('cancel')}</AlertDialogCancel>
-                    {eligibility?.eligible && (
+                    {eligibility?.eligible && !eligibility?.hasUpgradeOrders && (
                         <AlertDialogAction onClick={handleConfirmRefund} disabled={isPending}>
                             {isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
