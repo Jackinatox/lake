@@ -76,5 +76,12 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             userId: gameServer.userId,
         });
         throw new Error('Failed to upgrade game server');
+    } finally {
+        await prisma.gameServerOrder.update({
+            where: { id: serverOrder.id },
+            data: {
+                status: 'PAID',
+            },
+        });
     }
 }

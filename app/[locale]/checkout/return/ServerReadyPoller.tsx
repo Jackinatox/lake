@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import checkPaymentStatus from './checkPaymentStatus';
-import { OrderStatus } from '@/app/client/generated/enums';
+import { OrderStatus, OrderType } from '@/app/client/generated/enums';
 
 export default function ServerReadyPoller({ sessionId }: { sessionId: string }) {
     const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);
+    const [orderType, setOrderType] = useState<OrderType | null>(null);
     const [workerJobId, setWorkerJobId] = useState<string | null>(null);
     const [networkError, setNetworkError] = useState<string | null>(null);
+    const [ptServerId, setPtServerId] = useState<string | null>(null);
     // error reported by the backend (order.errorText)
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [pollingSignal, setPollingSignal] = useState(0);
@@ -33,10 +35,13 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
             try {
                 setNetworkError(null);
                 setGeneralError(null);
-                const { orderStatus, workerJobId, hasError } = await checkPaymentStatus(sessionId);
+                const { orderStatus, workerJobId, hasError, type, ptServerId } =
+                    await checkPaymentStatus(sessionId);
                 if (stopped) return;
 
                 setOrderStatus(orderStatus);
+                setOrderType(type);
+                setPtServerId(ptServerId);
 
                 // backend side problem (order.errorText set)
                 if (hasError) {
@@ -69,15 +74,20 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     }, [sessionId, pollerT, pollingSignal]);
 
     useEffect(() => {
-        if (!workerJobId || orderStatus !== 'PAID') return;
+        if (orderStatus !== 'PAID') return;
 
         if (redirectStartedRef.current) {
             return;
         }
 
         redirectStartedRef.current = true;
-        router.push(`/products/wait/${workerJobId}`);
-    }, [workerJobId, orderStatus, router]);
+        const url = ptServerId
+            ? `/gameserver/${ptServerId}`
+            : orderType === 'UPGRADE' || orderType === 'RENEW'
+              ? `/gameserver`
+              : `/products/wait/${workerJobId}`;
+        router.push(url);
+    }, [workerJobId, orderStatus, orderType, ptServerId, router]);
 
     const isError = orderStatus === 'PAYMENT_FAILED' || orderStatus === 'EXPIRED';
     const isGeneral = generalError !== null;

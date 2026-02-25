@@ -71,6 +71,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             gameDataId: isServerValid.gameDataId,
             gameData: isServerValid.gameConfig as any,
             type: isServerValid.type,
+            expires: isServerValid.expires
         };
 
         return (

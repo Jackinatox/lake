@@ -14,10 +14,10 @@ import { Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import ReinstallDialog from './ReinstallDialog';
 import DeleteFreeServerModal from './DeleteFreeServerModal';
-import ServerSettingsCard from './ServerSettingsCard';
 import MinecraftSettings from './gameSpecific/settings/MinecraftSettings';
 import ActionItem from './ActionItem';
 import { useTranslations } from 'next-intl';
+import { GeneralServerSettings } from './generalSettings/GeneralServerSettings';
 
 interface GameServerSettingsProps {
     server: GameServer;
@@ -39,7 +39,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
         <div className="min-h-72">
             <div className="space-y-3">
                 {/* Server Settings Card */}
-                <ServerSettingsCard server={server} />
+                <GeneralServerSettings server={server} />
 
                 {/* Game-Specific Settings */}
                 {isMinecraftServer && (

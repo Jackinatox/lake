@@ -19,6 +19,7 @@ interface ServerLoaderProps {
         gameDataId: number;
         gameData: any;
         type: GameServerType;
+        expires: Date;
     };
     features: EggFeature[];
 }
@@ -67,6 +68,7 @@ export default function ServerLoader({
                 gameDataId: initialServer.gameDataId,
                 gameData: initialServer.gameData,
                 type: initialServer.type,
+                expires: initialServer.expires,
             };
 
             setServer(updatedServer);
@@ -82,6 +84,7 @@ export default function ServerLoader({
     }, [
         baseUrl,
         initialServer.egg_id,
+        initialServer.expires,
         initialServer.gameData,
         initialServer.gameDataId,
         initialServer.type,

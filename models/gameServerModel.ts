@@ -39,6 +39,7 @@ export type GameServer = {
     is_transferring: boolean;
     gameDataId: number;
     gameData: GameConfig; // To access current game specific conf
+    expires: Date;
     relationships: {
         allocations: {
             object: string;

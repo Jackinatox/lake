@@ -1,6 +1,6 @@
 'use server';
 
-import { OrderStatus } from '@/app/client/generated/enums';
+import { OrderStatus, OrderType } from '@/app/client/generated/enums';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
@@ -9,6 +9,8 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
     orderStatus: OrderStatus;
     workerJobId?: string | null;
     hasError: boolean;
+    type: OrderType;
+    ptServerId: string | null;
 }> {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -24,6 +26,12 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
             status: true,
             workerJobId: true,
             errorText: true,
+            type: true,
+            gameServer: {
+                select: {
+                    ptServerId: true,
+                },
+            },
         },
     });
 
@@ -35,5 +43,7 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
         orderStatus: serverOrder.status,
         workerJobId: serverOrder.workerJobId,
         hasError: serverOrder.errorText !== null,
+        type: serverOrder.type,
+        ptServerId: serverOrder.gameServer?.ptServerId || null,
     };
 }
