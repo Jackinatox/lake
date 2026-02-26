@@ -20,6 +20,10 @@ export const LEGAL_AGB_DE = 'legal_agb_de';
 export const LEGAL_AGB_EN = 'legal_agb_en';
 export const LEGAL_DATENSCHUTZ_DE = 'legal_datenschutz_de';
 export const LEGAL_DATENSCHUTZ_EN = 'legal_datenschutz_en';
+export const LEGAL_PAYMENTS_DE = 'legal_payments_de';
+export const LEGAL_PAYMENTS_EN = 'legal_payments_en';
+export const LEGAL_RETURNS_DE = 'legal_returns_de';
+export const LEGAL_RETURNS_EN = 'legal_returns_en';
 
 // Free Tier Configuration Keys
 export const FREE_TIER_CPU_PERCENT = 'free_tier_cpu_percent';

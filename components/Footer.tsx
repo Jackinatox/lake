@@ -41,19 +41,19 @@ export default function Footer() {
                         <h3 className="font-semibold text-base">Rechtliches</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
-                                href="/legal/impressum"
+                                href="/legal/imprint"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('impressum')}
                             </Link>
                             <Link
-                                href="/legal/agb"
+                                href="/legal/tos"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('agb')}
                             </Link>
                             <Link
-                                href="/legal/datenschutz"
+                                href="/legal/privacy"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('datenschutz')}

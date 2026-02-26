@@ -176,7 +176,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     {tr.rich('disclaimer', {
                         terms: (chunks) => (
                             <Link
-                                href="/legal/agb"
+                                href="/legal/tos"
                                 className="underline underline-offset-4 hover:text-primary"
                             >
                                 {chunks}
@@ -184,7 +184,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                         ),
                         privacy: (chunks) => (
                             <Link
-                                href="/legal/datenschutz"
+                                href="/legal/privacy"
                                 className="underline underline-offset-4 hover:text-primary"
                             >
                                 {chunks}

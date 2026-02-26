@@ -13,6 +13,10 @@ import {
     FREE_TIER_MAX_SERVERS,
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
+    LEGAL_PAYMENTS_DE,
+    LEGAL_PAYMENTS_EN,
+    LEGAL_RETURNS_DE,
+    LEGAL_RETURNS_EN,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
 import { env } from 'next-runtime-env';
@@ -22,12 +26,16 @@ import { env } from 'next-runtime-env';
  */
 const REQUIRED_DB_CONSTANTS = [
     // Legal content keys
-    LEGAL_IMPRESSUM_DE,
-    LEGAL_IMPRESSUM_EN,
     LEGAL_AGB_DE,
     LEGAL_AGB_EN,
     LEGAL_DATENSCHUTZ_DE,
     LEGAL_DATENSCHUTZ_EN,
+    LEGAL_IMPRESSUM_DE,
+    LEGAL_IMPRESSUM_EN,
+    LEGAL_PAYMENTS_DE,
+    LEGAL_PAYMENTS_EN,
+    LEGAL_RETURNS_DE,
+    LEGAL_RETURNS_EN,
     // Free tier configuration keys
     FREE_TIER_CPU_PERCENT,
     FREE_TIER_RAM_MB,

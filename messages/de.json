@@ -643,6 +643,32 @@
     "agb": "AGB",
     "datenschutz": "Datenschutzerklärung"
   },
+  "legalOverview": {
+    "title": "Rechtliche Informationen",
+    "description": "Lese unsere rechtlichen Dokumente und Richtlinien.",
+    "topics": {
+      "tos": {
+        "title": "Allgemeine Geschäftsbedingungen",
+        "description": "Regeln und Bedingungen für die Nutzung unserer Dienste."
+      },
+      "privacy": {
+        "title": "Datenschutzerklärung",
+        "description": "Wie wir deine persönlichen Daten erheben, verwenden und schützen."
+      },
+      "imprint": {
+        "title": "Impressum",
+        "description": "Rechtliche Angaben und Unternehmensinformationen."
+      },
+      "returns": {
+        "title": "Rückgaberichtlinie",
+        "description": "Unsere Richtlinie zu Erstattungen und Stornierungen."
+      },
+      "payments": {
+        "title": "Zahlungen",
+        "description": "Informationen zu akzeptierten Zahlungsmethoden und Abrechnung."
+      }
+    }
+  },
   "footer": {
     "impressum": "Impressum",
     "agb": "AGB",
