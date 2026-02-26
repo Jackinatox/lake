@@ -17,6 +17,10 @@ import {
     EGG_FEATURE_HYTALE_OAUTH,
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
+    LEGAL_PAYMENTS_DE,
+    LEGAL_PAYMENTS_EN,
+    LEGAL_RETURNS_DE,
+    LEGAL_RETURNS_EN,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -168,74 +172,110 @@ async function main() {
         data: [
             {
                 key: LEGAL_IMPRESSUM_DE,
+                type: 'TEXT',
                 string: '# Impressum\n\nBitte fügen Sie hier Ihre Impressum-Informationen ein.',
                 note: 'German Impressum (legal imprint) content',
             },
             {
                 key: LEGAL_IMPRESSUM_EN,
+                type: 'TEXT',
                 string: '# Imprint\n\nPlease add your imprint information here.',
                 note: 'English Imprint (legal imprint) content',
             },
             {
                 key: LEGAL_AGB_DE,
+                type: 'TEXT',
                 string: '# Allgemeine Geschäftsbedingungen\n\nBitte fügen Sie hier Ihre AGB ein.',
                 note: 'German Terms and Conditions (AGB) content',
             },
             {
                 key: LEGAL_AGB_EN,
+                type: 'TEXT',
                 string: '# Terms and Conditions\n\nPlease add your terms and conditions here.',
                 note: 'English Terms and Conditions content',
             },
             {
                 key: LEGAL_DATENSCHUTZ_DE,
+                type: 'TEXT',
                 string: '# Datenschutzerklärung\n\nBitte fügen Sie hier Ihre Datenschutzerklärung ein.',
                 note: 'German Privacy Policy (Datenschutz) content',
             },
             {
                 key: LEGAL_DATENSCHUTZ_EN,
+                type: 'TEXT',
                 string: '# Privacy Policy\n\nPlease add your privacy policy here.',
                 note: 'English Privacy Policy content',
             },
             {
+                key: LEGAL_RETURNS_DE,
+                type: 'TEXT',
+                string: '# Widerrufsbelehrung\n\nBitte fügen Sie hier Ihre Widerrufsbelehrung ein.',
+            },
+            {
+                key: LEGAL_RETURNS_EN,
+                type: 'TEXT',
+                string: '# Returns\n\nPlease add your returns information here.',
+            },
+            {
+                key: LEGAL_PAYMENTS_DE,
+                type: 'TEXT',
+                string: '# Zahlungsmethoden\n\nBitte fügen Sie hier Ihre Zahlungsmethoden ein.',
+                note: 'German Payments content',
+            },
+            {
+                key: LEGAL_PAYMENTS_EN,
+                type: 'TEXT',
+                string: '# Payment Methods\n\nPlease add your payment methods here.',
+                note: 'English Payments content',
+            },
+            {
                 key: FREE_TIER_CPU_PERCENT,
+                type: 'NUMBER',
                 number: 200,
                 note: 'CPU allocation for free tier servers',
             },
             {
                 key: FREE_TIER_RAM_MB,
+                type: 'NUMBER',
                 number: 2048,
                 note: 'RAM allocation for free tier servers',
             },
             {
                 key: FREE_TIER_STORAGE_MB,
+                type: 'NUMBER',
                 number: 10240,
                 note: 'Storage allocation for free tier servers',
             },
             {
                 key: FREE_TIER_DURATION_DAYS,
+                type: 'NUMBER',
                 number: 7,
                 note: 'Duration for free tier servers',
             },
             {
                 key: FREE_SERVERS_LOCATION_ID,
+                type: 'NUMBER',
                 number: 3,
                 note: 'Location ID for free tier servers in this Database, not Pterodactyl -  maybe this is useless',
             },
             {
                 key: FREE_TIER_MAX_SERVERS,
+                type: 'NUMBER',
                 number: 10,
                 note: 'Maximum number of free tier servers',
             },
             {
                 key: FREE_TIER_BACKUP_COUNT,
+                type: 'NUMBER',
                 number: 3,
                 note: 'Number of backups allowed for free tier servers',
             },
             {
                 key: FREE_TIER_ALLOCATIONS,
+                type: 'NUMBER',
                 number: 2,
                 note: 'Number of allocations allowed for free tier servers',
-            }
+            },
         ],
         skipDuplicates: true,
     });

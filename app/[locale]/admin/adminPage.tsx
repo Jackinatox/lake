@@ -5,6 +5,7 @@ import {
     Activity,
     CalendarClock,
     Cog,
+    Database,
     FileText,
     Gamepad2Icon,
     MonitorX,
@@ -79,6 +80,12 @@ const tiles: AdminTile[] = [
         link: '/admin/refunds',
         Icon: Undo2,
         color: 'from-rose-500 to-red-600',
+    },
+    {
+        name: 'Key-Value Store',
+        link: '/admin/keyvalue',
+        Icon: Database,
+        color: 'from-teal-500 to-cyan-600',
     },
 ];
 
