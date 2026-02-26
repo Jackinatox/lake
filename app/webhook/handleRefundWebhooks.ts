@@ -1,6 +1,6 @@
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { sendRefundEmail } from '@/lib/email/sendEmailEmailsFromLake';
+import { sendRefundEmail, sendWithdrawalEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { undoRefundedOrder } from '@/lib/refund/undoRefundedOrder';
 import Stripe from 'stripe';
 
@@ -148,22 +148,23 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             });
         }
 
-        // If refund succeeded, undo the order (suspend server or revert upgrade)
+        // If refund succeeded, execute server action (suspend/revert/nothing)
         // and send a confirmation email to the user
         if (newStatus === 'SUCCEEDED') {
             try {
-                await undoRefundedOrder(refundRecord.orderId);
+                await undoRefundedOrder(refundRecord.orderId, refundRecord.serverAction);
             } catch (undoError) {
                 logger.error('Failed to undo refunded order', 'PAYMENT_LOG', {
                     details: {
                         orderId: refundRecord.orderId,
                         refundId: refundRecord.id,
+                        serverAction: refundRecord.serverAction,
                         error: undoError,
                     },
                 });
             }
 
-            // Send refund confirmation email
+            // Send appropriate email based on refund type (WITHDRAWAL vs REFUND)
             try {
                 const orderWithDetails = await prisma.gameServerOrder.findUniqueOrThrow({
                     where: { id: refundRecord.orderId },
@@ -180,24 +181,43 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
                 );
                 const priceCents = Math.round(orderWithDetails.price);
 
-                await sendRefundEmail({
-                    userName: orderWithDetails.user.name ?? 'Kunde',
-                    userEmail: orderWithDetails.user.email,
-                    orderId: refundRecord.orderId,
-                    orderType: orderWithDetails.type,
-                    gameName: orderWithDetails.creationGameData.name,
-                    refundAmountCents: refundRecord.amount,
-                    originalAmountCents: priceCents,
-                    totalRefundedCents,
-                    isFullRefund: totalRefundedCents >= priceCents,
-                    refundDate: new Date(),
-                    reason: refundRecord.reason ?? undefined,
-                });
+                if (refundRecord.type === 'WITHDRAWAL') {
+                    // Withdrawal (Widerruf) — contract ends, legally required confirmation
+                    await sendWithdrawalEmail({
+                        userName: orderWithDetails.user.name ?? 'Kunde',
+                        userEmail: orderWithDetails.user.email,
+                        orderId: refundRecord.orderId,
+                        orderType: orderWithDetails.type,
+                        gameName: orderWithDetails.creationGameData.name,
+                        refundAmountCents: refundRecord.amount,
+                        originalAmountCents: priceCents,
+                        totalRefundedCents,
+                        isFullRefund: totalRefundedCents >= priceCents,
+                        withdrawalDate: new Date(),
+                    });
+                } else {
+                    // Goodwill refund (Erstattung) — standard confirmation
+                    await sendRefundEmail({
+                        userName: orderWithDetails.user.name ?? 'Kunde',
+                        userEmail: orderWithDetails.user.email,
+                        orderId: refundRecord.orderId,
+                        orderType: orderWithDetails.type,
+                        gameName: orderWithDetails.creationGameData.name,
+                        refundAmountCents: refundRecord.amount,
+                        originalAmountCents: priceCents,
+                        totalRefundedCents,
+                        isFullRefund: totalRefundedCents >= priceCents,
+                        refundDate: new Date(),
+                        reason: refundRecord.reason ?? undefined,
+                        serverAction: refundRecord.serverAction,
+                    });
+                }
             } catch (emailError) {
-                logger.error('Failed to send refund confirmation email', 'PAYMENT_LOG', {
+                logger.error('Failed to send refund/withdrawal confirmation email', 'PAYMENT_LOG', {
                     details: {
                         orderId: refundRecord.orderId,
                         refundId: refundRecord.id,
+                        refundType: refundRecord.type,
                         error: emailError,
                     },
                 });
@@ -289,6 +309,8 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
         };
 
         // Create the missing refund record
+        // External refunds default to REFUND type with NONE server action
+        // since we don't know the admin's intent
         await prisma.refund.create({
             data: {
                 orderId: order.id,
@@ -297,6 +319,8 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
                 reason: 'Externally created refund (Stripe Dashboard)',
                 internalNote: 'Auto-reconciled from webhook',
                 status: statusMap[refund.status ?? ''] ?? 'PENDING',
+                type: 'REFUND',
+                serverAction: 'NONE',
                 isAutomatic: false,
                 initiatedBy: null,
             },

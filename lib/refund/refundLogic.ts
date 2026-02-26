@@ -1,25 +1,29 @@
 import { GameServerOrder, Refund } from '@/app/client/generated/browser';
 
 /**
- * The maximum number of days after purchase that a user can request a self-service refund.
+ * The maximum number of days after purchase that a user can exercise their
+ * right of withdrawal (Widerrufsrecht) under §355 BGB.
  * EU consumer protection: 14-day withdrawal period.
  */
-export const REFUND_WINDOW_DAYS = 14;
+export const WITHDRAWAL_WINDOW_DAYS = 14;
 
 /**
- * Calculate the pro-rata refund amount for a user self-service refund.
+ * Calculate the pro-rata withdrawal amount for a user self-service withdrawal (Widerruf).
  *
- * The user can get refunded for the % of time they *didn't* use.
- * E.g. ordered 30 days, used 5 days → refund = (25/30) * price
+ * The user gets refunded for the portion of time they *didn't* use.
+ * Days used are rounded DOWN (floor) — e.g. if the user withdraws within
+ * the first 24h, usedDays = 0, so they get 100% back.
  *
- * Users can only request ONE self-service refund per order.
+ * E.g. ordered 30 days, used 5 full days → refund = floor((25/30) * price)
+ *
+ * Users can only request ONE self-service withdrawal per order.
  * For additional refunds, an admin must process them manually.
  *
  * @param order - The GameServerOrder
  * @param existingRefunds - Already-processed refunds on this order
  * @returns { eligible, refundableAmountCents, usedDays, totalDays, reason }
  */
-export function calculateUserRefundEligibility(
+export function calculateWithdrawalEligibility(
     order: Pick<
         GameServerOrder,
         'price' | 'createdAt' | 'expiresAt' | 'status' | 'type' | 'refundStatus'
@@ -51,52 +55,54 @@ export function calculateUserRefundEligibility(
         };
     }
 
-    // Users can only request ONE self-service refund per order.
+    // Users can only request ONE self-service withdrawal per order.
     // For additional refunds, an admin must process them via the admin panel.
-    const hasExistingUserRefund = existingRefunds.some(
+    const hasExistingUserWithdrawal = existingRefunds.some(
         (r) => r.isAutomatic && (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
     );
-    if (hasExistingUserRefund) {
+    if (hasExistingUserWithdrawal) {
         return {
             eligible: false,
             refundableAmountCents: 0,
             usedDays: 0,
             totalDays: 0,
-            reason: 'You have already used your self-service refund for this order. Please contact support for further refunds.',
+            reason: 'You have already exercised your right of withdrawal for this order. Please contact support for further assistance.',
         };
     }
 
-    // Free servers are not refundable
+    // Free servers are not eligible for withdrawal
     if (order.type === 'FREE_SERVER') {
         return {
             eligible: false,
             refundableAmountCents: 0,
             usedDays: 0,
             totalDays: 0,
-            reason: 'Free server orders are not refundable',
+            reason: 'Free server orders are not eligible for withdrawal',
         };
     }
 
-    // Check if within the 14-day refund window
+    // Check if within the 14-day withdrawal window (Widerrufsfrist)
     const daysSincePurchase = Math.floor(
         (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    if (daysSincePurchase > REFUND_WINDOW_DAYS) {
+    if (daysSincePurchase > WITHDRAWAL_WINDOW_DAYS) {
         return {
             eligible: false,
             refundableAmountCents: 0,
             usedDays: daysSincePurchase,
             totalDays: 0,
-            reason: `Refund window of ${REFUND_WINDOW_DAYS} days has expired`,
+            reason: `Withdrawal window of ${WITHDRAWAL_WINDOW_DAYS} days has expired`,
         };
     }
 
     // Calculate total subscription period and used time
+    // Days used are rounded DOWN (floor) to favor the consumer.
+    // E.g. purchased at 14:00 and withdraws at 13:59 next day → 0 used days → 100% refund
     const totalMs = expiresAt.getTime() - createdAt.getTime();
     const usedMs = Math.max(0, now.getTime() - createdAt.getTime());
     const totalDays = Math.max(1, Math.ceil(totalMs / (1000 * 60 * 60 * 24)));
-    const usedDays = Math.ceil(usedMs / (1000 * 60 * 60 * 24));
+    const usedDays = Math.floor(usedMs / (1000 * 60 * 60 * 24));
 
     // Price is stored in cents
     const priceCents = Math.round(order.price);

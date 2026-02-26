@@ -1,7 +1,7 @@
 import { Heading, Hr, Section, Text } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
-import { OrderType, RefundServerAction } from '@/app/client/generated/enums';
+import { OrderType } from '@/app/client/generated/enums';
 import {
     EmailButton,
     EmailCard,
@@ -12,7 +12,7 @@ import {
     textStyle,
 } from '../components';
 
-interface RefundTemplateProps {
+interface WithdrawalTemplateProps {
     userName: string;
     orderId: string;
     orderType: OrderType;
@@ -21,9 +21,7 @@ interface RefundTemplateProps {
     originalAmountCents: number;
     totalRefundedCents: number;
     isFullRefund: boolean;
-    refundDate: Date;
-    reason?: string;
-    serverAction?: RefundServerAction;
+    withdrawalDate: Date;
 }
 
 const formatPrice = (cents: number) => {
@@ -50,7 +48,7 @@ const getOrderTypeLabel = (type: string) => {
     }
 };
 
-export default function RefundTemplate({
+export default function WithdrawalTemplate({
     userName,
     orderId,
     orderType,
@@ -59,28 +57,29 @@ export default function RefundTemplate({
     originalAmountCents,
     totalRefundedCents,
     isFullRefund,
-    refundDate,
-    reason,
-    serverAction,
-}: RefundTemplateProps) {
+    withdrawalDate,
+}: WithdrawalTemplateProps) {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
-    const paymentsUrl = appUrl ? `${appUrl}/profile` : '#'; // TODO Link to more specific page when available
+    const paymentsUrl = appUrl ? `${appUrl}/profile` : '#';
 
     return (
         <EmailLayout
-            preview={`Rückerstattung von ${formatPrice(refundAmountCents)} für deinen ${gameName} Server`}
+            preview={`Widerrufsbestätigung: ${formatPrice(refundAmountCents)} für deinen ${gameName} Server`}
         >
-            <Heading style={headingStyle}>Rückerstattung bestätigt</Heading>
+            <Heading style={headingStyle}>Widerrufsbestätigung</Heading>
 
             <Text style={textStyle}>Hallo {userName},</Text>
             <Text style={textStyle}>
-                wir bestätigen, dass eine Rückerstattung für deine Bestellung verarbeitet wurde. Der
-                Betrag wird innerhalb von 5-10 Werktagen auf deine ursprüngliche Zahlungsmethode
-                zurückerstattet.
+                wir bestätigen den Eingang deines Widerrufs gemäß §355 BGB. Dein Vertrag für die
+                nachfolgend genannte Bestellung wurde hiermit beendet.
+            </Text>
+            <Text style={textStyle}>
+                Der Erstattungsbetrag wird innerhalb von 5-10 Werktagen auf deine ursprüngliche
+                Zahlungsmethode zurückerstattet.
             </Text>
 
             <EmailCard style={{ marginTop: 16 }}>
-                <Text style={{ ...subheadingStyle, margin: 0 }}>Rückerstattungsdetails</Text>
+                <Text style={{ ...subheadingStyle, margin: 0 }}>Widerrufsdetails</Text>
 
                 <Hr style={{ borderColor: '#e2e8f0', margin: '12px 0' }} />
 
@@ -181,7 +180,9 @@ export default function RefundTemplate({
                             </tr>
                         )}
                         <tr>
-                            <td style={{ ...textStyle, margin: 0, padding: '4px 0' }}>Datum</td>
+                            <td style={{ ...textStyle, margin: 0, padding: '4px 0' }}>
+                                Widerrufsdatum
+                            </td>
                             <td
                                 style={{
                                     ...textStyle,
@@ -191,42 +192,26 @@ export default function RefundTemplate({
                                     fontWeight: 600,
                                 }}
                             >
-                                {formatDate(refundDate)}
+                                {formatDate(withdrawalDate)}
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </EmailCard>
 
-            {serverAction === 'SUSPEND' && (
-                <EmailCard tone="warning" style={{ marginTop: 12 }}>
-                    <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
-                        <strong>Hinweis:</strong> Durch die Erstattung wurde dein Server pausiert.
-                        Du kannst ihn jederzeit neu buchen.
-                    </Text>
-                </EmailCard>
-            )}
+            <EmailCard tone="warning" style={{ marginTop: 12 }}>
+                <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
+                    <strong>Vertragsbeendigung:</strong> Durch den Widerruf wurde dein Vertrag
+                    beendet und dein Server wurde pausiert. Du kannst jederzeit eine neue Buchung
+                    vornehmen.
+                </Text>
+            </EmailCard>
 
-            {serverAction === 'SHORTEN' && (
-                <EmailCard tone="warning" style={{ marginTop: 12 }}>
-                    <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
-                        <strong>Hinweis:</strong> Durch die Erstattung wurde dein Server auf den
-                        Stand der vorherigen Bestellung zurückgesetzt (inkl. Ressourcen und
-                        Ablaufdatum).
-                    </Text>
-                </EmailCard>
-            )}
-
-            {(!serverAction || serverAction === 'NONE') && (
-                <EmailCard style={{ marginTop: 12 }}>
-                    <Text style={{ ...textStyle, margin: 0, fontSize: '14px' }}>
-                        <strong>Hinweis:</strong> Dein Server ist von dieser Erstattung nicht
-                        betroffen und läuft wie gewohnt weiter.
-                    </Text>
-                </EmailCard>
-            )}
-
-            {reason && <Text style={{ ...mutedTextStyle, marginTop: 12 }}>Grund: {reason}</Text>}
+            <Text style={{ ...mutedTextStyle, marginTop: 16, fontSize: '12px' }}>
+                Diese Bestätigung dient als Nachweis deines Widerrufs gemäß §355 BGB
+                (Widerrufsrecht bei Fernabsatzverträgen). Der anteilige Erstattungsbetrag wurde
+                basierend auf der ungenutzten Vertragslaufzeit berechnet.
+            </Text>
 
             <Section style={{ marginTop: 20 }}>
                 <EmailButton href={paymentsUrl}>Zahlungen anzeigen</EmailButton>

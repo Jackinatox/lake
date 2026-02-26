@@ -52,16 +52,14 @@ export default async function AdminRefundsPage() {
 
             <Tabs defaultValue="issue" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="issue">Issue Refund</TabsTrigger>
-                    <TabsTrigger value="history">
-                        Refund History ({refundHistoryData.total})
-                    </TabsTrigger>
+                    <TabsTrigger value="issue">Issue Withdrawal / Refund</TabsTrigger>
+                    <TabsTrigger value="history">History ({refundHistoryData.total})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="issue">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Issue Manual Refund</CardTitle>
+                            <CardTitle>Issue Withdrawal or Refund</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <AdminRefundPanel orders={refundableData.orders} />
@@ -72,7 +70,7 @@ export default async function AdminRefundsPage() {
                 <TabsContent value="history">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Refund History</CardTitle>
+                            <CardTitle>Withdrawal & Refund History</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <RefundHistoryTable refunds={refundHistoryData.refunds} />

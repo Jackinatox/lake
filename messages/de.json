@@ -621,9 +621,56 @@
       "partiallyRefunded": "Teilweise erstattet",
       "refundedAmount": "Erstattet",
       "totalRefunded": "Gesamt erstattet",
+      "withdrawn": "Widerrufen",
       "upgradeOrderExists": "Dieser Server wurde seit dem Kauf upgegradet.",
       "upgradeOrderExistsDetail": "Eine automatische Rückerstattung ist nicht möglich, da es nachfolgende Upgrade-Bestellungen für diesen Server gibt. Eine Erstattung der Originalbestellung würde auch das bezahlte Upgrade betreffen. Bitte eröffne ein Support-Ticket, damit wir das individuell klären können.",
       "openSupportTicket": "Support-Ticket eröffnen"
+    },
+    "withdrawal": {
+      "requestWithdrawal": "Widerruf (§355 BGB)",
+      "dialogTitle": "Widerruf (§355 BGB)",
+      "eligible": "Du hast Anspruch auf einen anteiligen Widerruf. Dein Vertrag wird beendet und der Server wird pausiert.",
+      "notEligible": "Du hast keinen Anspruch auf einen Widerruf.",
+      "originalAmount": "Ursprünglicher Betrag",
+      "usedDays": "Genutzte Zeit",
+      "days": "Tage",
+      "withdrawalAmount": "Widerrufsbetrag",
+      "withdrawalNote": "Dies ist ein gesetzlicher Widerruf gemäß §355 BGB. Der Vertrag wird beendet und dein Server wird pausiert. Die Erstattung wird innerhalb von 5-10 Werktagen auf deine ursprüngliche Zahlungsmethode überwiesen.",
+      "cancel": "Abbrechen",
+      "confirm": "Widerruf bestätigen",
+      "successTitle": "Widerruf eingeleitet",
+      "errorTitle": "Widerrufsfehler",
+      "errorCheckingEligibility": "Widerrufsberechtigung konnte nicht geprüft werden. Bitte versuche es erneut.",
+      "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
+      "upgradeOrderExists": "Dieser Server wurde seit dem Kauf upgegradet.",
+      "upgradeOrderExistsDetail": "Ein automatischer Widerruf ist nicht möglich, da es nachfolgende Upgrade-Bestellungen für diesen Server gibt. Bitte eröffne ein Support-Ticket, damit wir das individuell klären können.",
+      "openSupportTicket": "Support-Ticket eröffnen"
+    }
+  },
+  "legalOverview": {
+    "title": "Rechtliche Informationen",
+    "description": "Lese unsere rechtlichen Dokumente und Richtlinien.",
+    "topics": {
+      "tos": {
+        "title": "Allgemeine Geschäftsbedingungen",
+        "description": "Regeln und Bedingungen für die Nutzung unserer Dienste."
+      },
+      "privacy": {
+        "title": "Datenschutzerklärung",
+        "description": "Wie wir deine persönlichen Daten erheben, verwenden und schützen."
+      },
+      "imprint": {
+        "title": "Impressum",
+        "description": "Rechtliche Angaben und Unternehmensinformationen."
+      },
+      "returns": {
+        "title": "Rückgaberichtlinie",
+        "description": "Unsere Richtlinie zu Erstattungen und Stornierungen."
+      },
+      "payments": {
+        "title": "Zahlungen",
+        "description": "Informationen zu akzeptierten Zahlungsmethoden und Abrechnung."
+      }
     }
   },
   "changeGame": {

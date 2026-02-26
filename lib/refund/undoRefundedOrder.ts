@@ -2,21 +2,28 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
 import { env } from 'next-runtime-env';
+import { RefundServerAction } from '@/app/client/generated/browser';
 
 /**
- * Undo the effect of a refunded order.
+ * Execute the server-side effect of a refund/withdrawal.
  *
- * ANY refund (partial or full) completely reverts the gameserver to its
- * state before this order was applied:
+ * The behavior depends on the `serverAction` stored on the Refund record:
  *
- * - NEW / PACKAGE / FREE_SERVER → expire (suspend) the server
- * - UPGRADE → revert to the previous order's config AND expiry date
- *   (covers resource upgrades, extension-only purchases, or both)
- * - RENEW → revert expiry to the previous order, then expire if past due
+ * - SUSPEND → expire (suspend) the server immediately
+ * - SHORTEN → revert to the previous order's config AND expiry date
+ * - NONE → do nothing to the server (goodwill refund)
  *
  * This is called when a refund is confirmed (SUCCEEDED) via webhook.
  */
-export async function undoRefundedOrder(orderId: string): Promise<void> {
+export async function undoRefundedOrder(orderId: string, serverAction: RefundServerAction): Promise<void> {
+    // If admin chose NONE, skip all server modifications
+    if (serverAction === 'NONE') {
+        logger.info('undoRefundedOrder: serverAction is NONE, skipping server changes', 'PAYMENT', {
+            details: { orderId },
+        });
+        return;
+    }
+
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
         where: { id: orderId },
         include: {
@@ -42,12 +49,21 @@ export async function undoRefundedOrder(orderId: string): Promise<void> {
     }
 
     try {
+        // SUSPEND action: always suspend the server regardless of order type
+        if (serverAction === 'SUSPEND') {
+            await suspendAndExpire(gameServer.id);
+            logger.info(
+                'undoRefundedOrder: Server suspended due to refund/withdrawal',
+                'PAYMENT',
+                { details: { orderId, gameServerId: gameServer.id, serverAction } },
+            );
+            return;
+        }
+
+        // SHORTEN action: revert to previous order's configuration
         switch (order.type) {
             case 'UPGRADE':
             case 'RENEW': {
-                // Revert to the previous order's configuration (resources + expiry).
-                // An UPGRADE can be resource-only, extension-only, or both — we always
-                // roll the server back to whatever the previous order set.
                 await revertToPreviousOrder(order.id, gameServer.id);
                 break;
             }
@@ -55,12 +71,11 @@ export async function undoRefundedOrder(orderId: string): Promise<void> {
             case 'NEW':
             case 'PACKAGE':
             case 'FREE_SERVER': {
-                // The refunded order was the one that created this server.
-                // Suspend it in PT which also sets the DB status to EXPIRED.
+                // For creation orders, SHORTEN falls back to SUSPEND since there's nothing to revert to
                 await suspendAndExpire(gameServer.id);
 
                 logger.info(
-                    'undoRefundedOrder: Server expired due to refunded creation order',
+                    'undoRefundedOrder: Server expired due to refunded creation order (SHORTEN fallback)',
                     'PAYMENT',
                     { details: { orderId, gameServerId: gameServer.id } },
                 );

@@ -13,9 +13,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { checkRefundEligibility, requestUserRefund } from '@/app/actions/refunds/requestRefund';
-import { RefundEligibilityResult } from '@/app/actions/refunds/requestRefund';
-import { Loader2, Undo2, MessageSquare } from 'lucide-react';
+import {
+    checkWithdrawalEligibility,
+    requestUserWithdrawal,
+    WithdrawalEligibilityResult,
+} from '@/app/actions/refunds/requestRefund';
+import { Loader2, FileX2, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -26,18 +29,18 @@ interface RefundRequestButtonProps {
 }
 
 export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButtonProps) {
-    const t = useTranslations('payments.refund');
+    const t = useTranslations('payments.withdrawal');
     const { toast } = useToast();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
-    const [eligibility, setEligibility] = useState<RefundEligibilityResult | null>(null);
+    const [eligibility, setEligibility] = useState<WithdrawalEligibilityResult | null>(null);
     const [isChecking, setIsChecking] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleCheckEligibility = async () => {
         setIsChecking(true);
         try {
-            const result = await checkRefundEligibility(orderId);
+            const result = await checkWithdrawalEligibility(orderId);
             setEligibility(result);
             setDialogOpen(true);
         } catch {
@@ -51,10 +54,10 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
         }
     };
 
-    const handleConfirmRefund = () => {
+    const handleConfirmWithdrawal = () => {
         startTransition(async () => {
             try {
-                const result = await requestUserRefund(orderId);
+                const result = await requestUserWithdrawal(orderId);
                 if (result.success) {
                     toast({
                         title: t('successTitle'),
@@ -87,12 +90,12 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                 className="h-8 w-8 md:h-9 md:w-9"
                 onClick={handleCheckEligibility}
                 disabled={isChecking}
-                title={t('requestRefund')}
+                title={t('requestWithdrawal')}
             >
                 {isChecking ? (
                     <Loader2 className="h-3.5 w-3.5 md:h-4 md:w-4 animate-spin" />
                 ) : (
-                    <Undo2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <FileX2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 )}
             </Button>
             <AlertDialogContent>
@@ -135,14 +138,14 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                             </span>
                                         </div>
                                         <div className="flex justify-between font-medium text-green-600 dark:text-green-400">
-                                            <span>{t('refundAmount')}:</span>
+                                            <span>{t('withdrawalAmount')}:</span>
                                             <span>
                                                 {(eligibility.refundableAmountCents / 100).toFixed(2)} €
                                             </span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        {t('refundNote')}
+                                    <p className="text-xs text-muted-foreground mt-1.5">
+                                        {t('withdrawalNote')}
                                     </p>
                                 </>
                             ) : (
@@ -156,7 +159,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isPending}>{t('cancel')}</AlertDialogCancel>
                     {eligibility?.eligible && !eligibility?.hasUpgradeOrders && (
-                        <AlertDialogAction onClick={handleConfirmRefund} disabled={isPending}>
+                        <AlertDialogAction onClick={handleConfirmWithdrawal} disabled={isPending}>
                             {isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : null}
