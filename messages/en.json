@@ -643,32 +643,6 @@
     "agb": "Terms and Conditions",
     "datenschutz": "Privacy Policy"
   },
-  "legalOverview": {
-    "title": "Legal Information",
-    "description": "Read our legal documents and policies.",
-    "topics": {
-      "tos": {
-        "title": "Terms of Service",
-        "description": "Rules and conditions governing the use of our services."
-      },
-      "privacy": {
-        "title": "Privacy Policy",
-        "description": "How we collect, use, and protect your personal data."
-      },
-      "imprint": {
-        "title": "Imprint",
-        "description": "Legal disclosure and company information."
-      },
-      "returns": {
-        "title": "Returns Policy",
-        "description": "Our policy on refunds and cancellations."
-      },
-      "payments": {
-        "title": "Payments",
-        "description": "Information about accepted payment methods and billing."
-      }
-    }
-  },
   "footer": {
     "impressum": "Imprint",
     "agb": "Terms",

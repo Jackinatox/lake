@@ -434,8 +434,8 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
 
 function getTermsMessage(locale: 'de' | 'en') {
     if (locale === 'de') {
-        return "Ich stimme Scyed's AGB und der Widerrufsbelehrung zu [AGB](https://scyed.com/de/legal/agb) (Rückerstattungen nur innerhalb von 2 Tagen nach dem Kauf).";
+        return "Ich stimme Scyed's [AGB](https://scyed.com/de/legal/tos) und der [Widerrufsbelehrung](https://scyed.com/de/legal/returns) zu.";
     } else {
-        return "I agree to Scyed's Terms of Service and Refund Policy [ToS](https://scyed.com/en/legal/agb) (Refunds only within 2 days of purchase).";
+        return "I agree to Scyed's Terms of Service [ToS](https://scyed.com/en/legal/tos) and [Refund Policy](https://scyed.com/en/legal/returns).";
     }
 }
