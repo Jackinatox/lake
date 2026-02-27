@@ -17,6 +17,7 @@ import {
     LEGAL_PAYMENTS_EN,
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
+    CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
 import { env } from 'next-runtime-env';
@@ -45,6 +46,7 @@ const REQUIRED_DB_CONSTANTS = [
     FREE_TIER_MAX_SERVERS,
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
+    CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 ];
 
 const ENV_VARS_REQUIRED = [

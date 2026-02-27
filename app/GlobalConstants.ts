@@ -34,9 +34,10 @@ export const FREE_SERVERS_LOCATION_ID = 'free_servers_location_id';
 export const FREE_TIER_MAX_SERVERS = 'free_tier_max_servers';
 export const FREE_TIER_BACKUP_COUNT = 'free_tier_backup_count';
 export const FREE_TIER_ALLOCATIONS = 'free_tier_allocations';
-
-// Free tier extension cooldown (in hours) - how often users can extend their server
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
+
+// User Limits
+export const CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS = 'delete_gameserver_after_days';
 
 // FTP
 export const FTP_PASSWORD_MIN_LENGTH = 8;

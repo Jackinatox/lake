@@ -21,6 +21,7 @@ import {
     LEGAL_PAYMENTS_EN,
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
+    CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -276,6 +277,12 @@ async function main() {
                 number: 2,
                 note: 'Number of allocations allowed for free tier servers',
             },
+            {
+                key: CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
+                type: 'NUMBER',
+                number: 90,
+                note: 'Number of days after which suspended tier servers will be deleted',
+            }
         ],
         skipDuplicates: true,
     });
