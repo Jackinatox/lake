@@ -5,7 +5,19 @@ CREATE TYPE "GameServerType" AS ENUM ('CUSTOM', 'PACKAGE', 'FREE');
 CREATE TYPE "GameServerStatus" AS ENUM ('CREATED', 'CREATION_FAILED', 'ACTIVE', 'EXPIRED', 'DELETED');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PAID', 'PAYMENT_FAILED', 'EXPIRED');
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PAID', 'PAYMENT_FAILED', 'EXPIRED', 'REFUNDED', 'PARTIALLY_REFUNDED');
+
+-- CreateEnum
+CREATE TYPE "RefundStatus" AS ENUM ('NONE', 'PARTIAL', 'FULL');
+
+-- CreateEnum
+CREATE TYPE "RefundStripeStatus" AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED', 'CANCELED');
+
+-- CreateEnum
+CREATE TYPE "RefundType" AS ENUM ('WITHDRAWAL', 'REFUND');
+
+-- CreateEnum
+CREATE TYPE "RefundServerAction" AS ENUM ('SUSPEND', 'SHORTEN', 'NONE');
 
 -- CreateEnum
 CREATE TYPE "OrderType" AS ENUM ('NEW', 'UPGRADE', 'DOWNGRADE', 'RENEW', 'FREE_SERVER', 'TO_PAYED', 'PACKAGE');
@@ -23,18 +35,25 @@ CREATE TYPE "LogLevel" AS ENUM ('TRACE', 'INFO', 'WARN', 'ERROR', 'FATAL');
 CREATE TYPE "WorkerJobType" AS ENUM ('EXPIRE_SERVERS', 'SEND_EMAILS', 'GENERATE_EMAILS', 'DELETE_SERVERS', 'GENERATE_DELETION_EMAILS', 'CHECK_NEW_VERSIONS');
 
 -- CreateEnum
+CREATE TYPE "JobRunStatus" AS ENUM ('RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED');
+
+-- CreateEnum
 CREATE TYPE "LogType" AS ENUM ('SYSTEM', 'AUTHENTICATION', 'PAYMENT', 'PAYMENT_LOG', 'GAME_SERVER', 'EMAIL', 'SUPPORT_TICKET', 'FREE_SERVER_EXTEND', 'TELEGRAM');
 
 -- CreateEnum
 CREATE TYPE "EmailStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
 
 -- CreateEnum
-CREATE TYPE "EmailType" AS ENUM ('EMAIL_VERIFICATION', 'REQUEST_PASSWORD_RESET', 'PASSWORD_RESET_SUCCESS', 'TWO_FACTOR_CREATED', 'TWO_FACTOR_REMOVED', 'TWO_FAKTOR_OPT_SEND', 'SUPPORT_TICKET_CREATED', 'SUPPORT_TICKET_RESPONSE', 'GAME_SERVER_EXPIRED', 'GAME_SERVER_EXPIRING_7_DAYS', 'GAME_SERVER_EXPIRING_1_DAY', 'GAME_SERVER_DELETION_1_DAY', 'GAME_SERVER_DELETION_7_DAYS', 'SERVER_BOOKING_CONFIRMATION', 'FREE_SERVER_CREATED', 'INVOICE');
+CREATE TYPE "EmailType" AS ENUM ('EMAIL_VERIFICATION', 'REQUEST_PASSWORD_RESET', 'PASSWORD_RESET_SUCCESS', 'TWO_FACTOR_CREATED', 'TWO_FACTOR_REMOVED', 'TWO_FAKTOR_OPT_SEND', 'SUPPORT_TICKET_CREATED', 'SUPPORT_TICKET_RESPONSE', 'GAME_SERVER_EXPIRED', 'GAME_SERVER_EXPIRING_7_DAYS', 'GAME_SERVER_EXPIRING_1_DAY', 'GAME_SERVER_DELETION_1_DAY', 'GAME_SERVER_DELETION_7_DAYS', 'SERVER_BOOKING_CONFIRMATION', 'FREE_SERVER_CREATED', 'INVOICE', 'REFUND', 'WITHDRAWAL');
+
+-- CreateEnum
+CREATE TYPE "KeyValueType" AS ENUM ('STRING', 'JSON', 'NUMBER', 'BOOLEAN', 'TEXT');
 
 -- CreateTable
 CREATE TABLE "GameData" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "data" JSONB,
     "enabled" BOOLEAN NOT NULL DEFAULT false,
     "featured" BOOLEAN NOT NULL DEFAULT false,
@@ -95,6 +114,7 @@ CREATE TABLE "GameServer" (
     "cpuPercent" INTEGER NOT NULL,
     "diskMB" INTEGER NOT NULL,
     "backupCount" INTEGER NOT NULL,
+    "allocations" INTEGER NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "type" "GameServerType" NOT NULL DEFAULT 'CUSTOM',
@@ -115,25 +135,52 @@ CREATE TABLE "GameServer" (
 
 -- CreateTable
 CREATE TABLE "GameServerOrder" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "gameServerId" TEXT,
     "userId" TEXT NOT NULL,
+    "workerJobId" TEXT,
     "type" "OrderType" NOT NULL,
     "ramMB" INTEGER NOT NULL,
     "cpuPercent" INTEGER NOT NULL,
     "diskMB" INTEGER NOT NULL,
+    "backupCount" INTEGER NOT NULL,
+    "allocations" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "receipt_url" TEXT,
     "stripeSessionId" TEXT,
+    "stripePaymentIntent" TEXT,
+    "stripeChargeId" TEXT,
+    "stripeClientSecret" TEXT,
     "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
+    "refundStatus" "RefundStatus" NOT NULL DEFAULT 'NONE',
+    "errorText" TEXT,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "gameConfig" JSONB,
-    "creationGameDataId" INTEGER,
-    "creationLocationId" INTEGER,
+    "creationGameDataId" INTEGER NOT NULL,
+    "creationLocationId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "GameServerOrder_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Refund" (
+    "id" TEXT NOT NULL,
+    "orderId" TEXT NOT NULL,
+    "stripeRefundId" TEXT,
+    "amount" INTEGER NOT NULL,
+    "reason" TEXT,
+    "internalNote" TEXT,
+    "status" "RefundStripeStatus" NOT NULL DEFAULT 'PENDING',
+    "type" "RefundType" NOT NULL DEFAULT 'WITHDRAWAL',
+    "serverAction" "RefundServerAction" NOT NULL DEFAULT 'SUSPEND',
+    "isAutomatic" BOOLEAN NOT NULL DEFAULT false,
+    "initiatedBy" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Refund_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -222,6 +269,23 @@ CREATE TABLE "account" (
 );
 
 -- CreateTable
+CREATE TABLE "JobRun" (
+    "id" TEXT NOT NULL,
+    "jobType" "WorkerJobType" NOT NULL,
+    "status" "JobRunStatus" NOT NULL DEFAULT 'RUNNING',
+    "startedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "endedAt" TIMESTAMP(3),
+    "itemsProcessed" INTEGER NOT NULL DEFAULT 0,
+    "itemsTotal" INTEGER NOT NULL DEFAULT 0,
+    "itemsFailed" INTEGER NOT NULL DEFAULT 0,
+    "errorMessage" TEXT,
+    "errorStack" TEXT,
+    "metadata" JSONB,
+
+    CONSTRAINT "JobRun_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "WorkerLog" (
     "id" SERIAL NOT NULL,
     "jobType" "WorkerJobType" NOT NULL,
@@ -231,6 +295,7 @@ CREATE TABLE "WorkerLog" (
     "details" JSONB,
     "gameServerId" TEXT,
     "userId" TEXT,
+    "jobRunId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "WorkerLog_pkey" PRIMARY KEY ("id")
@@ -278,6 +343,7 @@ CREATE TABLE "Email" (
 CREATE TABLE "KeyValue" (
     "id" SERIAL NOT NULL,
     "key" TEXT NOT NULL,
+    "type" "KeyValueType" NOT NULL,
     "string" TEXT,
     "json" JSONB,
     "number" DOUBLE PRECISION,
@@ -336,11 +402,47 @@ CREATE TABLE "GameDataFeature" (
     CONSTRAINT "GameDataFeature_pkey" PRIMARY KEY ("gameDataId","featureId")
 );
 
+-- CreateTable
+CREATE TABLE "HardwareRecommendation" (
+    "id" SERIAL NOT NULL,
+    "eggId" INTEGER,
+    "gameDataId" INTEGER NOT NULL,
+    "minCpuPercent" INTEGER NOT NULL,
+    "recCpuPercent" INTEGER NOT NULL,
+    "minramMb" INTEGER NOT NULL,
+    "recRamMb" INTEGER NOT NULL,
+    "preselectedPackageId" INTEGER,
+    "note" TEXT,
+    "sorting" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "HardwareRecommendation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GameData_slug_key" ON "GameData"("slug");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "GameServerOrder_stripeSessionId_key" ON "GameServerOrder"("stripeSessionId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "GameServerOrder_stripePaymentIntent_key" ON "GameServerOrder"("stripePaymentIntent");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GameServerOrder_stripeChargeId_key" ON "GameServerOrder"("stripeChargeId");
+
+-- CreateIndex
 CREATE INDEX "GameServerOrder_stripeSessionId_idx" ON "GameServerOrder"("stripeSessionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Refund_stripeRefundId_key" ON "Refund"("stripeRefundId");
+
+-- CreateIndex
+CREATE INDEX "Refund_orderId_idx" ON "Refund"("orderId");
+
+-- CreateIndex
+CREATE INDEX "Refund_stripeRefundId_idx" ON "Refund"("stripeRefundId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "SupportTicket_ticketId_key" ON "SupportTicket"("ticketId");
@@ -376,6 +478,15 @@ CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
 CREATE INDEX "account_userId_idx" ON "account"("userId");
 
 -- CreateIndex
+CREATE INDEX "JobRun_jobType_status_idx" ON "JobRun"("jobType", "status");
+
+-- CreateIndex
+CREATE INDEX "JobRun_startedAt_idx" ON "JobRun"("startedAt");
+
+-- CreateIndex
+CREATE INDEX "JobRun_status_idx" ON "JobRun"("status");
+
+-- CreateIndex
 CREATE INDEX "WorkerLog_jobType_level_createdAt_idx" ON "WorkerLog"("jobType", "level", "createdAt");
 
 -- CreateIndex
@@ -383,6 +494,9 @@ CREATE INDEX "WorkerLog_gameServerId_idx" ON "WorkerLog"("gameServerId");
 
 -- CreateIndex
 CREATE INDEX "WorkerLog_userId_idx" ON "WorkerLog"("userId");
+
+-- CreateIndex
+CREATE INDEX "WorkerLog_jobRunId_idx" ON "WorkerLog"("jobRunId");
 
 -- CreateIndex
 CREATE INDEX "ApplicationLog_level_createdAt_idx" ON "ApplicationLog"("level", "createdAt");
@@ -442,13 +556,16 @@ ALTER TABLE "GameServer" ADD CONSTRAINT "GameServer_locationId_fkey" FOREIGN KEY
 ALTER TABLE "GameServerOrder" ADD CONSTRAINT "GameServerOrder_gameServerId_fkey" FOREIGN KEY ("gameServerId") REFERENCES "GameServer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "GameServerOrder" ADD CONSTRAINT "GameServerOrder_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "GameServerOrder" ADD CONSTRAINT "GameServerOrder_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "GameServerOrder" ADD CONSTRAINT "GameServerOrder_creationGameDataId_fkey" FOREIGN KEY ("creationGameDataId") REFERENCES "GameData"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "GameServerOrder" ADD CONSTRAINT "GameServerOrder_creationLocationId_fkey" FOREIGN KEY ("creationLocationId") REFERENCES "Location"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refund" ADD CONSTRAINT "Refund_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "GameServerOrder"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SupportTicket" ADD CONSTRAINT "SupportTicket_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -463,10 +580,13 @@ ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "WorkerLog" ADD CONSTRAINT "WorkerLog_gameServerId_fkey" FOREIGN KEY ("gameServerId") REFERENCES "GameServer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkerLog" ADD CONSTRAINT "WorkerLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "WorkerLog" ADD CONSTRAINT "WorkerLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ApplicationLog" ADD CONSTRAINT "ApplicationLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "WorkerLog" ADD CONSTRAINT "WorkerLog_jobRunId_fkey" FOREIGN KEY ("jobRunId") REFERENCES "JobRun"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ApplicationLog" ADD CONSTRAINT "ApplicationLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ApplicationLog" ADD CONSTRAINT "ApplicationLog_gameServerId_fkey" FOREIGN KEY ("gameServerId") REFERENCES "GameServer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -485,3 +605,9 @@ ALTER TABLE "GameDataFeature" ADD CONSTRAINT "GameDataFeature_gameDataId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "GameDataFeature" ADD CONSTRAINT "GameDataFeature_featureId_fkey" FOREIGN KEY ("featureId") REFERENCES "EggFeature"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "HardwareRecommendation" ADD CONSTRAINT "HardwareRecommendation_gameDataId_fkey" FOREIGN KEY ("gameDataId") REFERENCES "GameData"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "HardwareRecommendation" ADD CONSTRAINT "HardwareRecommendation_preselectedPackageId_fkey" FOREIGN KEY ("preselectedPackageId") REFERENCES "Package"("id") ON DELETE SET NULL ON UPDATE CASCADE;
