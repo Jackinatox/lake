@@ -192,6 +192,17 @@ enum RefundStripeStatus {
   CANCELED
 }
 
+enum RefundType {
+  WITHDRAWAL // Widerruf — 14-day statutory right under §355 BGB, contract ends
+  REFUND // Erstattung — goodwill/admin refund, contract may continue
+}
+
+enum RefundServerAction {
+  SUSPEND // Suspend the server immediately
+  SHORTEN // Revert to previous order (shorten runtime/resources)
+  NONE // Do nothing to the server
+}
+
 model Refund {
   id String @id @default(cuid())
 
@@ -203,6 +214,9 @@ model Refund {
   reason         String? // Customer-facing reason
   internalNote   String? // Admin-only note
   status         RefundStripeStatus @default(PENDING)
+
+  type         RefundType         @default(WITHDRAWAL) // Withdrawal (Widerruf) vs Refund (Erstattung)
+  serverAction RefundServerAction @default(SUSPEND) // What to do with the server
 
   isAutomatic Boolean @default(false) // True if requested by user within 14-day window
   initiatedBy String? // User ID of admin who initiated, null if user self-service
@@ -508,11 +522,21 @@ enum EmailType {
   FREE_SERVER_CREATED
   INVOICE
   REFUND
+  WITHDRAWAL
+}
+
+enum KeyValueType {
+  STRING
+  JSON
+  NUMBER
+  BOOLEAN
+  TEXT  // same a s string, but the admin page will show the monaco editor to edit it
 }
 
 model KeyValue {
   id      Int      @id @default(autoincrement())
   key     String   @unique
+  type    KeyValueType
   string  String?
   json    Json?
   number  Float?

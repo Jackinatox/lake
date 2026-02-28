@@ -5,6 +5,7 @@ import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
 import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
 import RefundTemplate from './templates/RefundTemplate';
+import WithdrawalTemplate from './templates/WithdrawalTemplate';
 import PasswordResetSuccessTemplate from './templates/PasswordResetSuccessTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
@@ -13,7 +14,7 @@ import TwoFactorCreatedTemplate from './templates/TwoFactorCreatedTemplate';
 import TwoFactorOtpTemplate from './templates/TwoFactorOtpTemplate';
 import TwoFactorRemovedTemplate from './templates/TwoFactorRemovedTemplate';
 import { percentToVCores } from '../GlobalFunctions/formatVCores';
-import { OrderType, SupportTicket } from '@/app/client/generated/browser';
+import { OrderType, SupportTicket, RefundServerAction } from '@/app/client/generated/browser';
 import { TicketStatus } from '@/app/client/generated/enums';
 
 export async function sendConfirmEmail(to: string, url: string) {
@@ -247,6 +248,7 @@ interface RefundEmailData {
     isFullRefund: boolean;
     refundDate: Date;
     reason?: string;
+    serverAction?: RefundServerAction;
 }
 
 export async function sendRefundEmail(data: RefundEmailData) {
@@ -262,13 +264,50 @@ export async function sendRefundEmail(data: RefundEmailData) {
             isFullRefund: data.isFullRefund,
             refundDate: data.refundDate,
             reason: data.reason,
+            serverAction: data.serverAction,
         }),
     );
 
     await sendMail(
         data.userEmail,
-        `Rückerstattung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
+        `Erstattung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
         html,
         'REFUND',
+    );
+}
+
+interface WithdrawalEmailData {
+    userName: string;
+    userEmail: string;
+    orderId: string;
+    orderType: OrderType;
+    gameName: string;
+    refundAmountCents: number;
+    originalAmountCents: number;
+    totalRefundedCents: number;
+    isFullRefund: boolean;
+    withdrawalDate: Date;
+}
+
+export async function sendWithdrawalEmail(data: WithdrawalEmailData) {
+    const html = await render(
+        WithdrawalTemplate({
+            userName: data.userName,
+            orderId: data.orderId,
+            orderType: data.orderType,
+            gameName: data.gameName,
+            refundAmountCents: data.refundAmountCents,
+            originalAmountCents: data.originalAmountCents,
+            totalRefundedCents: data.totalRefundedCents,
+            isFullRefund: data.isFullRefund,
+            withdrawalDate: data.withdrawalDate,
+        }),
+    );
+
+    await sendMail(
+        data.userEmail,
+        `Widerrufsbestätigung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
+        html,
+        'WITHDRAWAL',
     );
 }

@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { adminRefund } from '@/app/actions/refunds/adminRefund';
-import { Loader2, Search, Undo2 } from 'lucide-react';
+import { adminRefund, calculateAdminWithdrawalAmount } from '@/app/actions/refunds/adminRefund';
+import { Loader2, Search, Undo2, FileX2, HandCoins } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
     AlertDialog,
@@ -19,20 +19,15 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-
-type RefundableOrder = {
-    id: string;
-    price: number;
-    type: string;
-    status: string;
-    refundStatus: string;
-    createdAt: Date;
-    stripePaymentIntent: string | null;
-    user: { id: string; email: string; name: string };
-    refunds: { id: string; amount: number; status: string; reason: string | null; createdAt: Date }[];
-    gameServer: { ptServerId: string | null; name: string; status: string } | null;
-    creationGameData: { name: string };
-};
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import type { RefundServerAction, RefundType } from '@/app/client/generated/browser';
+import type { RefundableOrder } from '@/models/prisma';
 
 interface AdminRefundPanelProps {
     orders: RefundableOrder[];
@@ -48,6 +43,9 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
     const [reason, setReason] = useState('');
     const [internalNote, setInternalNote] = useState('');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [refundType, setRefundType] = useState<RefundType>('WITHDRAWAL');
+    const [serverAction, setServerAction] = useState<RefundServerAction>('SUSPEND');
+    const [isCalculating, setIsCalculating] = useState(false);
 
     const filteredOrders = orders.filter((order) => {
         const q = searchQuery.toLowerCase();
@@ -75,6 +73,45 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
         setRefundAmountEur((remaining / 100).toFixed(2));
         setReason('');
         setInternalNote('');
+        setRefundType('WITHDRAWAL');
+        setServerAction('SUSPEND');
+    };
+
+    const handleTypeChange = async (type: RefundType) => {
+        setRefundType(type);
+
+        if (type === 'WITHDRAWAL' && selectedOrder) {
+            // Withdrawal always suspends the server
+            setServerAction('SUSPEND');
+
+            // Auto-calculate pro-rata amount
+            setIsCalculating(true);
+            try {
+                const result = await calculateAdminWithdrawalAmount(selectedOrder.id);
+                if (result.eligible) {
+                    setRefundAmountEur((result.refundableAmountCents / 100).toFixed(2));
+                } else {
+                    toast({
+                        title: 'Withdrawal not eligible',
+                        description: result.reason ?? 'This order is not eligible for withdrawal.',
+                        variant: 'destructive',
+                    });
+                }
+            } catch {
+                toast({
+                    title: 'Error',
+                    description: 'Could not calculate withdrawal amount.',
+                    variant: 'destructive',
+                });
+            } finally {
+                setIsCalculating(false);
+            }
+        } else if (type === 'REFUND' && selectedOrder) {
+            // For refunds, default to full remaining balance and NONE server action
+            const remaining = getRemainingBalance(selectedOrder);
+            setRefundAmountEur((remaining / 100).toFixed(2));
+            setServerAction('NONE');
+        }
     };
 
     const handleSubmitRefund = () => {
@@ -100,18 +137,26 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                 const result = await adminRefund({
                     orderId: selectedOrder.id,
                     amountCents,
+                    type: refundType,
+                    serverAction,
                     reason: reason || undefined,
                     internalNote: internalNote || undefined,
                 });
 
                 if (result.success) {
-                    toast({ title: 'Refund initiated', description: result.message });
+                    toast({
+                        title:
+                            refundType === 'WITHDRAWAL'
+                                ? 'Withdrawal initiated'
+                                : 'Refund initiated',
+                        description: result.message,
+                    });
                     setSelectedOrder(null);
                     setDialogOpen(false);
                     router.refresh();
                 } else {
                     toast({
-                        title: 'Refund failed',
+                        title: 'Failed',
                         description: result.message,
                         variant: 'destructive',
                     });
@@ -119,12 +164,14 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
             } catch {
                 toast({
                     title: 'Error',
-                    description: 'Unexpected error processing refund.',
+                    description: 'Unexpected error processing request.',
                     variant: 'destructive',
                 });
             }
         });
     };
+
+    const typeLabel = refundType === 'WITHDRAWAL' ? 'Widerruf (Withdrawal)' : 'Erstattung (Refund)';
 
     return (
         <div className="space-y-4">
@@ -141,7 +188,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
 
             <div className="grid gap-4 lg:grid-cols-2">
                 {/* Order list */}
-                <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                <div className="space-y-2 max-h-[600px] overflow-y-auto">
                     {filteredOrders.length === 0 && (
                         <p className="text-muted-foreground text-sm p-4 text-center">
                             No refundable orders found.
@@ -157,9 +204,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                 key={order.id}
                                 onClick={() => handleSelectOrder(order)}
                                 className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                                    isSelected
-                                        ? 'border-primary bg-primary/5'
-                                        : 'hover:bg-muted/50'
+                                    isSelected ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'
                                 }`}
                             >
                                 <div className="flex items-start justify-between gap-2">
@@ -211,7 +256,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                     {selectedOrder ? (
                         <>
                             <div>
-                                <h3 className="font-medium text-sm">Refund for Order</h3>
+                                <h3 className="font-medium text-sm">Order Details</h3>
                                 <p className="text-xs text-muted-foreground font-mono">
                                     {selectedOrder.id}
                                 </p>
@@ -254,6 +299,9 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                         >
                                             <span>
                                                 {(r.amount / 100).toFixed(2)} € — {r.status}
+                                                {r.type === 'WITHDRAWAL'
+                                                    ? ' (Widerruf)'
+                                                    : ' (Erstattung)'}
                                             </span>
                                             <span>
                                                 {new Date(r.createdAt).toLocaleDateString()}
@@ -263,9 +311,73 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                 </div>
                             )}
 
+                            {/* Type selector */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Type</label>
+                                <Select
+                                    value={refundType}
+                                    onValueChange={(v) => handleTypeChange(v as RefundType)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="WITHDRAWAL">
+                                            <div className="flex items-center gap-2">
+                                                <FileX2 className="h-3.5 w-3.5" />
+                                                Widerruf (Withdrawal) — Contract ends
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="REFUND">
+                                            <div className="flex items-center gap-2">
+                                                <HandCoins className="h-3.5 w-3.5" />
+                                                Erstattung (Refund) — Goodwill
+                                            </div>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {refundType === 'WITHDRAWAL' && (
+                                    <p className="text-xs text-muted-foreground">
+                                        §355 BGB — Pro-rata amount auto-calculated. Server will be
+                                        suspended. Contract ends immediately.
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Server action (only for REFUND type — WITHDRAWAL always suspends) */}
+                            {refundType === 'REFUND' && (
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Server Action</label>
+                                    <Select
+                                        value={serverAction}
+                                        onValueChange={(v) =>
+                                            setServerAction(v as RefundServerAction)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="NONE">
+                                                Do nothing — Server continues running
+                                            </SelectItem>
+                                            <SelectItem value="SUSPEND">
+                                                Suspend — Server gets suspended immediately
+                                            </SelectItem>
+                                            <SelectItem value="SHORTEN">
+                                                Revert — Revert to previous order config/expiry
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium">
-                                    Refund amount (€)
+                                    Amount (€)
+                                    {isCalculating && (
+                                        <Loader2 className="inline h-3 w-3 animate-spin ml-1" />
+                                    )}
                                 </label>
                                 <Input
                                     type="number"
@@ -274,7 +386,14 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                     max={(getRemainingBalance(selectedOrder) / 100).toFixed(2)}
                                     value={refundAmountEur}
                                     onChange={(e) => setRefundAmountEur(e.target.value)}
+                                    disabled={refundType === 'WITHDRAWAL'}
                                 />
+                                {refundType === 'WITHDRAWAL' && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Amount is auto-calculated based on unused service time (days
+                                        used rounded down).
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -284,7 +403,11 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                 <Input
                                     value={reason}
                                     onChange={(e) => setReason(e.target.value)}
-                                    placeholder="e.g. Customer requested refund"
+                                    placeholder={
+                                        refundType === 'WITHDRAWAL'
+                                            ? 'e.g. Admin-triggered withdrawal on behalf of customer'
+                                            : 'e.g. Goodwill compensation for downtime'
+                                    }
                                 />
                             </div>
 
@@ -302,21 +425,25 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
 
                             <Button
                                 onClick={handleSubmitRefund}
-                                disabled={isPending}
+                                disabled={isPending || isCalculating}
                                 className="w-full"
                                 variant="destructive"
                             >
                                 {isPending ? (
                                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                ) : refundType === 'WITHDRAWAL' ? (
+                                    <FileX2 className="h-4 w-4 mr-2" />
                                 ) : (
                                     <Undo2 className="h-4 w-4 mr-2" />
                                 )}
-                                Issue Refund
+                                {refundType === 'WITHDRAWAL'
+                                    ? 'Issue Withdrawal (Widerruf)'
+                                    : 'Issue Refund (Erstattung)'}
                             </Button>
                         </>
                     ) : (
                         <div className="flex items-center justify-center h-full min-h-[200px] text-muted-foreground text-sm">
-                            Select an order to issue a refund
+                            Select an order to issue a withdrawal or refund
                         </div>
                     )}
                 </div>
@@ -326,13 +453,43 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Refund</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            You are about to refund{' '}
-                            <strong>{refundAmountEur} €</strong> to{' '}
-                            <strong>{selectedOrder?.user.email}</strong> for order{' '}
-                            <code className="text-xs">{selectedOrder?.id}</code>.
-                            This action cannot be undone.
+                        <AlertDialogTitle>
+                            {refundType === 'WITHDRAWAL'
+                                ? 'Confirm Withdrawal (Widerruf)'
+                                : 'Confirm Refund (Erstattung)'}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                            <div className="space-y-2">
+                                <p>
+                                    You are about to issue a <strong>{typeLabel}</strong> of{' '}
+                                    <strong>{refundAmountEur} €</strong> to{' '}
+                                    <strong>{selectedOrder?.user.email}</strong> for order{' '}
+                                    <code className="text-xs">{selectedOrder?.id}</code>.
+                                </p>
+                                {refundType === 'WITHDRAWAL' && (
+                                    <p className="text-orange-600 dark:text-orange-400 text-sm">
+                                        This is a legal withdrawal (Widerruf §355 BGB). The contract
+                                        will be terminated and the server will be suspended. A
+                                        Widerrufsbestätigung email will be sent.
+                                    </p>
+                                )}
+                                {refundType === 'REFUND' && (
+                                    <p className="text-sm text-muted-foreground">
+                                        Server action:{' '}
+                                        <strong>
+                                            {serverAction === 'NONE'
+                                                ? 'No change'
+                                                : serverAction === 'SUSPEND'
+                                                  ? 'Suspend'
+                                                  : 'Revert to previous'}
+                                        </strong>
+                                        . A refund confirmation email will be sent.
+                                    </p>
+                                )}
+                                <p className="text-sm text-muted-foreground">
+                                    This action cannot be undone.
+                                </p>
+                            </div>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -343,7 +500,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                            Confirm Refund
+                            {refundType === 'WITHDRAWAL' ? 'Confirm Withdrawal' : 'Confirm Refund'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

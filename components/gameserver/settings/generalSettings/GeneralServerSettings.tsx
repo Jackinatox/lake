@@ -1,5 +1,4 @@
 import { GameServer } from '@/models/gameServerModel';
-import React from 'react';
 import { ServerNameChanger } from './ServerNameChanger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Server } from 'lucide-react';

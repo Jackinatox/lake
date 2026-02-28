@@ -35,7 +35,7 @@ export default function GameLandingClient({
     const configureHref = `/order/${game.slug}/configure${configureParams.toString() ? `?${configureParams.toString()}` : ''}`;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-7xl mx-auto">
             {/* Hero Section */}
             <section className="space-y-4">
                 <Button variant="ghost" size="sm" asChild>

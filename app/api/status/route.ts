@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import os from 'os';
-import { authClient } from '@/lib/auth-client';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 

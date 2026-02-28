@@ -106,11 +106,12 @@ export function PaymentItem({
     const isFreeServer = serverType === 'FREE' || paymentType === 'FREE_SERVER';
     const isRefunded = refundStatus === 'FULL' || orderStatus === 'REFUNDED';
     const isPartiallyRefunded = refundStatus === 'PARTIAL' || orderStatus === 'PARTIALLY_REFUNDED';
+    const isWithdrawn = hasUserRefund; // hasUserRefund now means "has used withdrawal right"
     const canRequestRefund =
         orderId &&
         !isFreeServer &&
         !isRefunded &&
-        !hasUserRefund &&
+        !isWithdrawn &&
         (orderStatus === 'PAID' || orderStatus === 'PARTIALLY_REFUNDED');
 
     return (
@@ -129,7 +130,12 @@ export function PaymentItem({
                             {t('refund.refunded')}
                         </span>
                     )}
-                    {isPartiallyRefunded && !isRefunded && (
+                    {isWithdrawn && !isRefunded && (
+                        <span className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 font-medium">
+                            {t('refund.withdrawn')}
+                        </span>
+                    )}
+                    {isPartiallyRefunded && !isRefunded && !isWithdrawn && (
                         <span className="text-[10px] md:text-xs px-1.5 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 font-medium">
                             {t('refund.partiallyRefunded')}
                         </span>

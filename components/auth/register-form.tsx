@@ -16,38 +16,41 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
     const router = useRouter();
     const t = useTranslations('RegisterLogin');
 
-    const registerUser = async ({
-        username,
-        email,
-        password,
-    }: {
-        username: string;
-        email: string;
-        password: string;
-    }) => {
-        const trimmedEmail = email.trim();
-        const { data, error } = await authClient.signUp.email(
-            {
-                email: trimmedEmail,
-                password,
-                name: username,
-                image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
-                callbackURL: '/verify-email',
-            },
-            {
-                onRequest: () => {
-                    setLoading(true);
+    const registerUser = useCallback(
+        async ({
+            username,
+            email,
+            password,
+        }: {
+            username: string;
+            email: string;
+            password: string;
+        }) => {
+            const trimmedEmail = email.trim();
+            const { data, error } = await authClient.signUp.email(
+                {
+                    email: trimmedEmail,
+                    password,
+                    name: username,
+                    image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
+                    callbackURL: '/verify-email',
                 },
-                onSuccess: () => {
-                    router.push(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
+                {
+                    onRequest: () => {
+                        setLoading(true);
+                    },
+                    onSuccess: () => {
+                        router.push(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
+                    },
+                    onError: () => {
+                        setError(t('errors.registrationFailedTryAgain'));
+                    },
                 },
-                onError: () => {
-                    setError(t('errors.registrationFailedTryAgain'));
-                },
-            },
-        );
-        return { success: !!data, error: error?.message };
-    };
+            );
+            return { success: !!data, error: error?.message };
+        },
+        [t, router],
+    );
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
@@ -100,7 +103,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                 setLoading(false);
             }
         },
-        [username, email, password, confirmPassword, passwordsMatch, emailValid, t],
+        [emailValid, password, passwordsMatch, t, registerUser, username, email],
     );
 
     return (
@@ -267,7 +270,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                     {t.rich('disclaimer', {
                         terms: (chunks) => (
                             <Link
-                                href="/legal/agb"
+                                href="/legal/tos"
                                 className="underline underline-offset-4 hover:text-primary"
                             >
                                 {chunks}
@@ -275,7 +278,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                         ),
                         privacy: (chunks) => (
                             <Link
-                                href="/legal/datenschutz"
+                                href="/legal/privacy"
                                 className="underline underline-offset-4 hover:text-primary"
                             >
                                 {chunks}

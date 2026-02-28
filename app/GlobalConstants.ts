@@ -20,6 +20,10 @@ export const LEGAL_AGB_DE = 'legal_agb_de';
 export const LEGAL_AGB_EN = 'legal_agb_en';
 export const LEGAL_DATENSCHUTZ_DE = 'legal_datenschutz_de';
 export const LEGAL_DATENSCHUTZ_EN = 'legal_datenschutz_en';
+export const LEGAL_PAYMENTS_DE = 'legal_payments_de';
+export const LEGAL_PAYMENTS_EN = 'legal_payments_en';
+export const LEGAL_RETURNS_DE = 'legal_returns_de';
+export const LEGAL_RETURNS_EN = 'legal_returns_en';
 
 // Free Tier Configuration Keys
 export const FREE_TIER_CPU_PERCENT = 'free_tier_cpu_percent';
@@ -30,9 +34,10 @@ export const FREE_SERVERS_LOCATION_ID = 'free_servers_location_id';
 export const FREE_TIER_MAX_SERVERS = 'free_tier_max_servers';
 export const FREE_TIER_BACKUP_COUNT = 'free_tier_backup_count';
 export const FREE_TIER_ALLOCATIONS = 'free_tier_allocations';
-
-// Free tier extension cooldown (in hours) - how often users can extend their server
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
+
+// User Limits
+export const CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS = 'delete_gameserver_after_days';
 
 // FTP
 export const FTP_PASSWORD_MIN_LENGTH = 8;

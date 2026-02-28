@@ -34,7 +34,16 @@ export type FreeServerPayment = Prisma.GameServerOrderGetPayload<{
 export type PaymentWithRefunds = Prisma.GameServerOrderGetPayload<{
     include: {
         gameServer: { select: { ptServerId: true; status: true; type: true; id: true } };
-        refunds: { select: { amount: true; status: true } };
+        refunds: { select: { amount: true; status: true; type: true; isAutomatic: true } };
+    };
+}>;
+
+export type RefundableOrder = Prisma.GameServerOrderGetPayload<{
+    include: {
+        user: { select: { id: true; email: true; name: true } };
+        refunds: true;
+        gameServer: { select: { ptServerId: true; name: true; status: true } };
+        creationGameData: { select: { name: true } };
     };
 }>;
 

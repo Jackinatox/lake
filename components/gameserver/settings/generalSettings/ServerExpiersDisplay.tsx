@@ -49,7 +49,7 @@ function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayPr
                 >
                     <Link href={`/gameserver/${ptServerId}/upgrade`}>
                         <ArrowUpCircle className="h-3.5 w-3.5" />
-                        Upgrade
+                        Extend
                     </Link>
                 </Button>
             </div>

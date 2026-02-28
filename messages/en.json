@@ -621,9 +621,56 @@
       "partiallyRefunded": "Partially refunded",
       "refundedAmount": "Refunded",
       "totalRefunded": "Total refunded",
+      "withdrawn": "Withdrawn",
       "upgradeOrderExists": "This server has been upgraded since the original purchase.",
       "upgradeOrderExistsDetail": "A self-service refund is not possible because there are subsequent upgrade orders linked to this server. Refunding the original order would also affect the upgrade you paid for. Please open a support ticket so we can handle this individually.",
       "openSupportTicket": "Open Support Ticket"
+    },
+    "withdrawal": {
+      "requestWithdrawal": "Withdraw (Widerruf)",
+      "dialogTitle": "Withdrawal (Widerruf §355 BGB)",
+      "eligible": "You are eligible for a pro-rata withdrawal. Your contract will end and the server will be suspended.",
+      "notEligible": "You are not eligible for a withdrawal.",
+      "originalAmount": "Original amount",
+      "usedDays": "Used time",
+      "days": "days",
+      "withdrawalAmount": "Withdrawal amount",
+      "withdrawalNote": "This is a legal withdrawal under §355 BGB. The contract will be terminated, and your server will be suspended. The refund will be processed within 5-10 business days to your original payment method.",
+      "cancel": "Cancel",
+      "confirm": "Confirm Withdrawal",
+      "successTitle": "Withdrawal Initiated",
+      "errorTitle": "Withdrawal Error",
+      "errorCheckingEligibility": "Could not check withdrawal eligibility. Please try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "upgradeOrderExists": "This server has been upgraded since the original purchase.",
+      "upgradeOrderExistsDetail": "A self-service withdrawal is not possible because there are subsequent upgrade orders linked to this server. Please open a support ticket so we can handle this individually.",
+      "openSupportTicket": "Open Support Ticket"
+    }
+  },
+  "legalOverview": {
+    "title": "Legal Information",
+    "description": "Read our legal documents and policies.",
+    "topics": {
+      "tos": {
+        "title": "Terms of Service",
+        "description": "Rules and conditions governing the use of our services."
+      },
+      "privacy": {
+        "title": "Privacy Policy",
+        "description": "How we collect, use, and protect your personal data."
+      },
+      "imprint": {
+        "title": "Imprint",
+        "description": "Legal disclosure and company information."
+      },
+      "returns": {
+        "title": "Returns Policy",
+        "description": "Our policy on refunds and cancellations."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Information about accepted payment methods and billing."
+      }
     }
   },
   "changeGame": {

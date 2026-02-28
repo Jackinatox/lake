@@ -17,6 +17,8 @@ type RefundEntry = {
     internalNote: string | null;
     status: string;
     isAutomatic: boolean;
+    type: string;
+    serverAction: string;
     initiatedBy: string | null;
     stripeRefundId: string | null;
     createdAt: Date;
@@ -60,7 +62,9 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                         <TableHead className="text-right">Original</TableHead>
                         <TableHead className="text-right">Refund</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Type</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Server Action</TableHead>
+                        <TableHead>Source</TableHead>
                         <TableHead>Reason</TableHead>
                         <TableHead>Stripe ID</TableHead>
                     </TableRow>
@@ -100,6 +104,19 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                                     className={`text-[10px] ${statusColors[refund.status] ?? ''}`}
                                 >
                                     {refund.status}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                <Badge
+                                    variant="outline"
+                                    className={`text-[10px] ${refund.type === 'WITHDRAWAL' ? 'text-orange-600 border-orange-500/30' : 'text-blue-600 border-blue-500/30'}`}
+                                >
+                                    {refund.type === 'WITHDRAWAL' ? 'Widerruf' : 'Erstattung'}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant="outline" className="text-[10px]">
+                                    {refund.serverAction === 'SUSPEND' ? 'Suspend' : refund.serverAction === 'SHORTEN' ? 'Revert' : 'None'}
                                 </Badge>
                             </TableCell>
                             <TableCell>

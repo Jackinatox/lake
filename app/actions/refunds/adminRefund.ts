@@ -4,19 +4,26 @@ import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
+import { calculateWithdrawalEligibility } from '@/lib/refund/refundLogic';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
+import { RefundServerAction, RefundType } from '@/app/client/generated/browser';
 
 export type AdminRefundParams = {
     orderId: string;
     amountCents: number;
+    type: RefundType; // WITHDRAWAL (Widerruf) or REFUND (Erstattung)
+    serverAction: RefundServerAction; // What to do with the server
     reason?: string;
     internalNote?: string;
 };
 
 /**
- * Admin-initiated refund for a specific amount.
- * This bypasses the 14-day window and pro-rata calculation.
+ * Admin-initiated refund or withdrawal.
+ *
+ * - WITHDRAWAL (Widerruf): Uses pro-rata calculation, contract ends.
+ *   Admin can trigger this on behalf of a user. Amount is auto-calculated.
+ * - REFUND (Erstattung): Custom amount, admin decides server impact.
  */
 export async function adminRefund(
     params: AdminRefundParams,
@@ -25,10 +32,10 @@ export async function adminRefund(
     if (!session) throw new Error('Not authenticated');
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
-    const { orderId, amountCents, reason, internalNote } = params;
+    const { orderId, amountCents, type, serverAction, reason, internalNote } = params;
 
     if (amountCents <= 0) {
-        return { success: false, message: 'Refund amount must be greater than 0' };
+        return { success: false, message: 'Amount must be greater than 0' };
     }
 
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
@@ -51,9 +58,11 @@ export async function adminRefund(
     if (amountCents > remainingBalance) {
         return {
             success: false,
-            message: `Refund amount (${(amountCents / 100).toFixed(2)} €) exceeds remaining balance (${(remainingBalance / 100).toFixed(2)} €)`,
+            message: `Amount (${(amountCents / 100).toFixed(2)} €) exceeds remaining balance (${(remainingBalance / 100).toFixed(2)} €)`,
         };
     }
+
+    const typeLabel = type === 'WITHDRAWAL' ? 'Withdrawal (Widerruf)' : 'Refund (Erstattung)';
 
     try {
         // Create refund record in DB as PENDING
@@ -61,9 +70,11 @@ export async function adminRefund(
             data: {
                 orderId: order.id,
                 amount: amountCents,
-                reason: reason ?? 'Admin-initiated refund',
+                reason: reason ?? (type === 'WITHDRAWAL' ? 'Admin-initiated withdrawal (Widerruf)' : 'Admin-initiated refund'),
                 internalNote: internalNote ?? null,
                 status: 'PENDING',
+                type,
+                serverAction,
                 isAutomatic: false,
                 initiatedBy: session.user.id,
             },
@@ -77,6 +88,8 @@ export async function adminRefund(
                 order_id: order.id,
                 refund_record_id: refundRecord.id,
                 admin_id: session.user.id,
+                refund_type: type,
+                server_action: serverAction,
                 internal_note: internalNote ?? '',
             },
         };
@@ -116,13 +129,15 @@ export async function adminRefund(
             },
         });
 
-        logger.info('Admin refund created', 'PAYMENT', {
+        logger.info(`Admin ${typeLabel} created`, 'PAYMENT', {
             userId: session.user.id,
             details: {
                 orderId: order.id,
                 refundId: refundRecord.id,
                 stripeRefundId: stripeRefund.id,
                 amountCents,
+                type,
+                serverAction,
                 isFullRefund,
                 targetUser: order.user.email,
                 internalNote,
@@ -131,12 +146,12 @@ export async function adminRefund(
 
         return {
             success: true,
-            message: `Refund of ${(amountCents / 100).toFixed(2)} € has been initiated for order ${order.id}`,
+            message: `${typeLabel} of ${(amountCents / 100).toFixed(2)} € has been initiated for order ${order.id}`,
         };
     } catch (error) {
-        logger.error('Failed to create admin refund', 'PAYMENT', {
+        logger.error(`Failed to create admin ${typeLabel}`, 'PAYMENT', {
             userId: session.user.id,
-            details: { orderId: order.id, amountCents, error },
+            details: { orderId: order.id, amountCents, type, serverAction, error },
         });
 
         if (error instanceof stripe.errors.StripeError) {
@@ -148,8 +163,39 @@ export async function adminRefund(
             }
         }
 
-        return { success: false, message: 'An error occurred while processing the refund' };
+        return { success: false, message: 'An error occurred while processing the request' };
     }
+}
+
+/**
+ * Calculate admin withdrawal amount using the same pro-rata logic as user self-service.
+ * This is used when admin selects WITHDRAWAL type to auto-calculate the amount.
+ */
+export async function calculateAdminWithdrawalAmount(orderId: string): Promise<{
+    refundableAmountCents: number;
+    usedDays: number;
+    totalDays: number;
+    eligible: boolean;
+    reason: string | null;
+}> {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) throw new Error('Not authenticated');
+    if (session.user.role !== 'admin') throw new Error('Unauthorized');
+
+    const order = await prisma.gameServerOrder.findUniqueOrThrow({
+        where: { id: orderId },
+        include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
+    });
+
+    // Use the same calculation but without the "already used self-service" check
+    const result = calculateWithdrawalEligibility(order, []);
+    return {
+        refundableAmountCents: result.refundableAmountCents,
+        usedDays: result.usedDays,
+        totalDays: result.totalDays,
+        eligible: result.eligible,
+        reason: result.reason,
+    };
 }
 
 /**

@@ -31,7 +31,7 @@ async function PaymentList() {
                 select: { ptServerId: true, status: true, type: true, id: true },
             },
             refunds: {
-                select: { amount: true, status: true, isAutomatic: true },
+                select: { amount: true, status: true, isAutomatic: true, type: true },
             },
         },
         orderBy: { createdAt: 'desc' },
@@ -84,8 +84,10 @@ async function PaymentList() {
                         const refundedCents = pay.refunds
                             .filter((r) => r.status === 'SUCCEEDED')
                             .reduce((sum, r) => sum + r.amount, 0);
-                        const hasUserRefund = pay.refunds.some(
-                            (r) => r.isAutomatic && (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
+                        const hasUserWithdrawal = pay.refunds.some(
+                            (r) =>
+                                r.type === 'WITHDRAWAL' &&
+                                (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
                         );
                         return (
                             <PaymentItem
@@ -105,7 +107,7 @@ async function PaymentList() {
                                 orderStatus={pay.status}
                                 refundStatus={pay.refundStatus}
                                 totalRefundedCents={refundedCents}
-                                hasUserRefund={hasUserRefund}
+                                hasUserRefund={hasUserWithdrawal}
                             />
                         );
                     })}

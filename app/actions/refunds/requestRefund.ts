@@ -3,12 +3,12 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { calculateUserRefundEligibility } from '@/lib/refund/refundLogic';
+import { calculateWithdrawalEligibility } from '@/lib/refund/refundLogic';
 import { stripe } from '@/lib/stripe';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 
-export type RefundEligibilityResult = {
+export type WithdrawalEligibilityResult = {
     eligible: boolean;
     refundableAmountCents: number;
     usedDays: number;
@@ -19,9 +19,9 @@ export type RefundEligibilityResult = {
 };
 
 /**
- * Check if the current user is eligible for a refund on a specific order.
+ * Check if the current user is eligible for a withdrawal (Widerruf) on a specific order.
  */
-export async function checkRefundEligibility(orderId: string): Promise<RefundEligibilityResult> {
+export async function checkWithdrawalEligibility(orderId: string): Promise<WithdrawalEligibilityResult> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
 
@@ -46,15 +46,16 @@ export async function checkRefundEligibility(orderId: string): Promise<RefundEli
         hasUpgradeOrders = subsequentOrders > 0;
     }
 
-    const result = calculateUserRefundEligibility(order, order.refunds);
+    const result = calculateWithdrawalEligibility(order, order.refunds);
     return { ...result, orderId, hasUpgradeOrders };
 }
 
 /**
- * User self-service refund request.
+ * User self-service withdrawal request (Widerruf).
  * Creates a Stripe refund for the pro-rata unused amount.
+ * The contract ends immediately upon withdrawal.
  */
-export async function requestUserRefund(
+export async function requestUserWithdrawal(
     orderId: string,
 ): Promise<{ success: boolean; message: string }> {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -65,10 +66,10 @@ export async function requestUserRefund(
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
-    // Validate eligibility
-    const eligibility = calculateUserRefundEligibility(order, order.refunds);
+    // Validate withdrawal eligibility
+    const eligibility = calculateWithdrawalEligibility(order, order.refunds);
     if (!eligibility.eligible) {
-        return { success: false, message: eligibility.reason ?? 'Not eligible for refund' };
+        return { success: false, message: eligibility.reason ?? 'Not eligible for withdrawal' };
     }
 
     if (!order.stripePaymentIntent && !order.stripeChargeId) {
@@ -77,12 +78,19 @@ export async function requestUserRefund(
 
     try {
         // Create refund record in DB as PENDING first
+        // User self-service is always a WITHDRAWAL (Widerruf) — contract ends
+        // For upgrade/renew orders, revert to previous state instead of suspending
+        const withdrawalServerAction =
+            order.type === 'UPGRADE' || order.type === 'RENEW' ? 'SHORTEN' : 'SUSPEND';
+
         const refundRecord = await prisma.refund.create({
             data: {
                 orderId: order.id,
                 amount: eligibility.refundableAmountCents,
-                reason: 'Customer requested within 14-day window',
+                reason: 'Widerruf innerhalb der 14-Tage-Frist / Withdrawal within 14-day window',
                 status: 'PENDING',
+                type: 'WITHDRAWAL',
+                serverAction: withdrawalServerAction,
                 isAutomatic: true,
                 initiatedBy: null,
             },
@@ -136,7 +144,7 @@ export async function requestUserRefund(
             },
         });
 
-        logger.info('User refund created', 'PAYMENT', {
+        logger.info('User withdrawal (Widerruf) created', 'PAYMENT', {
             userId: session.user.id,
             details: {
                 orderId: order.id,
@@ -144,15 +152,16 @@ export async function requestUserRefund(
                 stripeRefundId: stripeRefund.id,
                 amountCents: eligibility.refundableAmountCents,
                 isFullRefund,
+                type: 'WITHDRAWAL',
             },
         });
 
         return {
             success: true,
-            message: `Refund of ${(eligibility.refundableAmountCents / 100).toFixed(2)} € has been initiated`,
+            message: `Withdrawal of ${(eligibility.refundableAmountCents / 100).toFixed(2)} € has been initiated`,
         };
     } catch (error) {
-        logger.error('Failed to create user refund', 'PAYMENT', {
+        logger.error('Failed to create user withdrawal', 'PAYMENT', {
             userId: session.user.id,
             details: { orderId: order.id, error },
         });
