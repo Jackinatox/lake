@@ -59,7 +59,7 @@
         "date-fns": "^4.1.0",
         "eslint-config-next": "^16.1.6",
         "framer-motion": "^12.34.3",
-        "import-in-the-middle": "^2.0.6",
+        "import-in-the-middle": "^3.0.0",
         "install": "^0.13.0",
         "lucide-react": "^0.562.0",
         "monaco-editor": "^0.55.1",
