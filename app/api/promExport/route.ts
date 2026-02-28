@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
 
+// This endpoint should be protected by the reverse proxy to only be accessed locally
+
 type MetricType = 'gauge' | 'counter' | 'histogram' | 'summary' | 'untyped';
 
 interface Metric {
@@ -106,7 +108,7 @@ const collectors: Metric[] = [
                 where: { status: 'PAID' },
                 _sum: { price: true },
             });
-            const cents = Math.round((result._sum.price ?? 0) * 100);
+            const cents = Math.round((result._sum.price ?? 0));
             return [`lake_orders_revenue_cents_total ${cents}`];
         },
     },
