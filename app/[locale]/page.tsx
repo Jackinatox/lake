@@ -8,8 +8,11 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Game, SupportedGamesList } from './SupportedGamesList';
+import PosthogClientComp from './clientComp';
+import { logger } from '@/lib/logger';
 
 export default async function LandingPage() {
+    logger.info('Rendering landing page');
     const t = await getTranslations('landingpage');
     const games = await prisma.gameData.findMany({
         select: { id: true, name: true, slug: true },
@@ -31,6 +34,7 @@ export default async function LandingPage() {
             },
         };
     });
+
 
     const stuff = (
         <div className="p-2 md:p-8">
@@ -154,6 +158,7 @@ export default async function LandingPage() {
 
     return (
         <main className="flex flex-col min-h-screen -mx-2 md:-mx-8 -my-5">
+            <PosthogClientComp />
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Animated Background Gradient */}
