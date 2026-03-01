@@ -2,6 +2,15 @@ import { Prisma, PrismaClient } from '@/app/client/generated/client';
 import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
 import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
+import { logs, SeverityNumber } from '@opentelemetry/api-logs';
+
+const SEVERITY_MAP: Record<LogLevel, SeverityNumber> = {
+    TRACE: SeverityNumber.TRACE,
+    INFO: SeverityNumber.INFO,
+    WARN: SeverityNumber.WARN,
+    ERROR: SeverityNumber.ERROR,
+    FATAL: SeverityNumber.FATAL,
+};
 
 /**
  * Unified application logger that writes to ApplicationLog table.
@@ -69,7 +78,11 @@ class Logger {
             }
         }
 
-        return JSON.stringify(cleaned, null, 2);
+        try {
+            return JSON.stringify(cleaned, null, 2);
+        } catch {
+            return '[non-serializable details]';
+        }
     }
 
     /**
@@ -77,14 +90,33 @@ class Logger {
      */
     private async log(entry: LogEntry): Promise<void> {
         try {
-            // Clean console output
+            // Use process.stdout.write to bypass Next.js's styled console patch
+            // and PostHog's console capture hook, avoiding CSS noise in log sinks.
             const formattedDetails = this.formatDetailsForConsole(entry.details);
-            if (formattedDetails) {
-                console.log(
-                    `[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}`,
-                );
-            } else {
-                console.log(`[${entry.level}] [${entry.type}] ${entry.message}`);
+            const line = formattedDetails
+                ? `[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}\n`
+                : `[${entry.level}] [${entry.type}] ${entry.message}\n`;
+            process.stdout.write(line);
+
+            // Emit a clean structured record directly via the OTel logs API so that
+            // PostHog doesn't receive Next.js's %c/%s console styling noise.
+            try {
+                const otelLogger = logs.getLogger('lake-app');
+                otelLogger.emit({
+                    severityNumber: SEVERITY_MAP[entry.level] ?? SeverityNumber.INFO,
+                    severityText: entry.level,
+                    body: entry.message,
+                    attributes: {
+                        'log.type': entry.type,
+                        ...(entry.userId && { 'user.id': entry.userId }),
+                        ...(entry.gameServerId && { 'gameserver.id': entry.gameServerId }),
+                        ...(entry.path && { 'http.path': entry.path }),
+                        ...(entry.method && { 'http.method': entry.method }),
+                        ...(entry.details && { 'log.details': JSON.stringify(entry.details) }),
+                    },
+                });
+            } catch {
+                // OTel not yet initialised (e.g. during build) – safe to ignore
             }
 
             await this.prisma.applicationLog.create({
@@ -187,7 +219,12 @@ class Logger {
                 sanitized[key] = value.substring(0, 200) + '...';
             } else if (typeof value === 'object' && value !== null) {
                 // Convert objects to strings but keep them short
-                const str = JSON.stringify(value);
+                let str: string;
+                try {
+                    str = JSON.stringify(value);
+                } catch {
+                    str = '[non-serializable]';
+                }
                 if (str.length > 200) {
                     sanitized[key] = str.substring(0, 200) + '...';
                 } else {

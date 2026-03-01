@@ -44,11 +44,10 @@ prisma/db.sqlite
 lgtm/
 .vscode/settings.json
 
-# Sentry Config File
-.env.sentry-build-plugin
 generated/
 dist/
 prismaTesting.ts
 .agents/skills/*
 .github/skills/*
 knip.json
+.worker.env
