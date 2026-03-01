@@ -25,8 +25,9 @@ const typeBadgeColor: Record<KeyValueType, string> = {
 function valuePreview(row: KeyValueRow): string {
     switch (row.type) {
         case 'STRING':
-        case 'TEXT':
             return row.string ? row.string.slice(0, 80) + (row.string.length > 80 ? '…' : '') : '—';
+        case 'TEXT':
+            return row.string ? row.string.slice(0, 30) + (row.string.length > 30 ? '…' : '') : '—';
         case 'JSON':
             try {
                 const s = JSON.stringify(row.json);
@@ -86,9 +87,21 @@ export default async function KeyValuePage() {
                 </CardHeader>
                 <CardContent>
                     {entries.length === 0 ? (
-                        <p className="py-8 text-center text-sm text-muted-foreground">No entries yet.</p>
+                        <p className="py-8 text-center text-sm text-muted-foreground">
+                            No entries yet.
+                        </p>
                     ) : (
                         <div className="divide-y rounded-lg border">
+                            <div className="flex flex-row items-center gap-3 px-3 py-2 bg-muted/50 text-xs font-medium text-muted-foreground rounded-t-lg">
+                                <div className="min-w-0 flex-1">Variable</div>
+                                <div className="hidden min-w-0 max-w-xs flex-1 sm:block">
+                                    Preview
+                                </div>
+                                <div className="hidden min-w-0 max-w-40 flex-1 xl:block">
+                                    Note
+                                </div>
+                                <div className="shrink-0 w-18 text-right">Actions</div>
+                            </div>
                             {entries.map((row) => (
                                 <div
                                     key={row.id}
@@ -107,11 +120,9 @@ export default async function KeyValuePage() {
                                     <div className="hidden min-w-0 max-w-xs flex-1 text-xs text-muted-foreground sm:block truncate">
                                         {valuePreview(row)}
                                     </div>
-                                    {row.note && (
-                                        <div className="hidden min-w-0 max-w-[160px] flex-1 text-xs text-muted-foreground xl:block truncate">
-                                            {row.note}
-                                        </div>
-                                    )}
+                                    <div className="hidden min-w-0 max-w-40 flex-1 text-xs text-muted-foreground xl:block truncate">
+                                        {row.note ?? ''}
+                                    </div>
                                     <div className="flex shrink-0 gap-2">
                                         <EntryDialog entry={row} />
                                         <DeleteButton id={row.id} keyName={row.key} />
