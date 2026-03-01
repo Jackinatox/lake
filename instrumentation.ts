@@ -14,9 +14,9 @@ export const loggerProvider = new LoggerProvider({
     resource: resourceFromAttributes({
         // Each container sets INSTANCE_ID (e.g. "lake-0"). Falls back to the
         // Docker-assigned hostname so it's never empty.
-        'service.name': process.env.INSTANCE_ID ?? process.env.HOSTNAME ?? 'unknown',
+        'service.instance.id': process.env.INSTANCE_ID ?? process.env.HOSTNAME ?? 'unknown',
         // one common tag for lake-wide log querying in Loki
-        'service.instance.id': 'lake',
+        'service.name': 'lake',
     }),
     processors: [
         // Route through the local OTel Collector, which fans out to both
