@@ -50,3 +50,4 @@ prismaTesting.ts
 .agents/skills/*
 .github/skills/*
 knip.json
+.worker.env

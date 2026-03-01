@@ -30,6 +30,12 @@ services:
         image: valkey/valkey
         ports:
             - '6379:6379'
+    worker:
+        image: ghcr.io/jackinatox/lake-worker:master
+        env_file: .worker.env
+        ports:
+        - "3100:3002"
+        restart: always
 
 volumes:
     postgres_data:

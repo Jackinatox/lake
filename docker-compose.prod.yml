@@ -1,0 +1,72 @@
+# Server 1: lake0, lake1, lake2 + worker + valkey + OTel Collector
+# Usage: docker compose -f docker-compose.prod.yml up -d
+#
+# The external reverse proxy (Nginx/Traefik/Caddy) load-balances across
+# all 6 instances on both servers. No LB service here.
+#
+# All app config comes from .env (shared across both servers).
+# Only INSTANCE_ID and OTEL_EXPORTER_OTLP_ENDPOINT are overridden per container.
+
+x-lake: &lake
+  image: ghcr.io/jackinatox/lake:latest
+  env_file: .env
+  depends_on:
+    - otelcol
+  restart: always
+
+services:
+  # ── App instances ───────────────────────────────────────────────────────
+  lake0:
+    <<: *lake
+    ports:
+      - "3000:3000"
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otelcol:4318
+      INSTANCE_ID: lake-0
+
+  lake1:
+    <<: *lake
+    ports:
+      - "3001:3000"
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otelcol:4318
+      INSTANCE_ID: lake-1
+
+  lake2:
+    <<: *lake
+    ports:
+      - "3002:3000"
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otelcol:4318
+      INSTANCE_ID: lake-2
+
+  # ── OTel Collector ──────────────────────────────────────────────────────
+  # Receives OTLP from the 3 local instances, fans out to PostHog + Loki.
+  # Not exposed externally.
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otelcol-config.yaml:/etc/otelcol/config.yaml:ro
+    env_file: .env            # provides NEXT_PUBLIC_POSTHOG_KEY + LOKI_ENDPOINT
+    restart: always
+
+  # ── Worker (only on server 1) ────────────────────────────────────────────
+  worker:
+    image: ghcr.io/jackinatox/lake-worker:master
+    env_file: .worker.env
+    ports:
+      - "3100:3002"
+    restart: always
+
+  # ── Valkey (only on server 1) ────────────────────────────────────────────
+  # Server 2's .env should point REDIS_URL / VALKEY_URL at this server's IP.
+  valkey:
+    image: valkey/valkey
+    container_name: valkey
+    environment:
+      - VALKEY_EXTRA_FLAGS=--save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    restart: always
+

@@ -1,0 +1,33 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: "0.0.0.0:4318"
+
+processors:
+  batch:
+    timeout: 5s
+
+exporters:
+  # ── PostHog ────────────────────────────────────────────────────────────────
+  # Requires in .env:  NEXT_PUBLIC_POSTHOG_KEY=phc_...
+  otlp_http/posthog:
+    endpoint: "https://eu.i.posthog.com/i/v1"
+    headers:
+      Authorization: "Bearer ${env:NEXT_PUBLIC_POSTHOG_KEY}"
+
+  # ── Loki ───────────────────────────────────────────────────────────────────
+  # Requires in .env:  LOKI_ENDPOINT=http://your-loki-host:3100/otlp
+  # Loki >= 3.0 accepts OTLP natively at /otlp.
+  # Optional basic-auth: add LOKI_BASIC_AUTH_B64 to .env and uncomment below.
+  otlp_http/loki:
+    endpoint: "${env:LOKI_ENDPOINT}"
+    # headers:
+    #   Authorization: "Basic ${env:LOKI_BASIC_AUTH_B64}"
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/posthog, otlp_http/loki]
