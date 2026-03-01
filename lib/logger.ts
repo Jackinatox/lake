@@ -78,7 +78,11 @@ class Logger {
             }
         }
 
-        return JSON.stringify(cleaned, null, 2);
+        try {
+            return JSON.stringify(cleaned, null, 2);
+        } catch {
+            return '[non-serializable details]';
+        }
     }
 
     /**
@@ -215,7 +219,12 @@ class Logger {
                 sanitized[key] = value.substring(0, 200) + '...';
             } else if (typeof value === 'object' && value !== null) {
                 // Convert objects to strings but keep them short
-                const str = JSON.stringify(value);
+                let str: string;
+                try {
+                    str = JSON.stringify(value);
+                } catch {
+                    str = '[non-serializable]';
+                }
                 if (str.length > 200) {
                     sanitized[key] = str.substring(0, 200) + '...';
                 } else {
