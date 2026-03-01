@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
         //   ),
         // ],
     },
-    allowedDevOrigins: ['localhost:3000', 'scyed.com'],
+    allowedDevOrigins: ['localhost:3000', 'scyed.com', 'devlake.scyed.com'],
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), {

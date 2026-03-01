@@ -232,7 +232,7 @@ async function main() {
             {
                 key: FREE_TIER_CPU_PERCENT,
                 type: 'NUMBER',
-                number: 200,
+                number: 300,
                 note: 'CPU allocation for free tier servers',
             },
             {
@@ -244,13 +244,13 @@ async function main() {
             {
                 key: FREE_TIER_STORAGE_MB,
                 type: 'NUMBER',
-                number: 10240,
+                number: 16384,
                 note: 'Storage allocation for free tier servers',
             },
             {
                 key: FREE_TIER_DURATION_DAYS,
                 type: 'NUMBER',
-                number: 7,
+                number: 30,
                 note: 'Duration for free tier servers',
             },
             {
@@ -262,13 +262,13 @@ async function main() {
             {
                 key: FREE_TIER_MAX_SERVERS,
                 type: 'NUMBER',
-                number: 10,
+                number: 2,
                 note: 'Maximum number of free tier servers',
             },
             {
                 key: FREE_TIER_BACKUP_COUNT,
                 type: 'NUMBER',
-                number: 3,
+                number: 2,
                 note: 'Number of backups allowed for free tier servers',
             },
             {
