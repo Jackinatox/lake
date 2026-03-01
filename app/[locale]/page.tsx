@@ -8,11 +8,8 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Game, SupportedGamesList } from './SupportedGamesList';
-import PosthogClientComp from './clientComp';
-import { logger } from '@/lib/logger';
 
 export default async function LandingPage() {
-    logger.info('Rendering landing page');
     const t = await getTranslations('landingpage');
     const games = await prisma.gameData.findMany({
         select: { id: true, name: true, slug: true },
@@ -34,7 +31,6 @@ export default async function LandingPage() {
             },
         };
     });
-
 
     const stuff = (
         <div className="p-2 md:p-8">
@@ -158,7 +154,6 @@ export default async function LandingPage() {
 
     return (
         <main className="flex flex-col min-h-screen -mx-2 md:-mx-8 -my-5">
-            <PosthogClientComp />
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Animated Background Gradient */}
@@ -218,10 +213,7 @@ export default async function LandingPage() {
                                         className="w-full sm:w-auto px-8 text-base group"
                                         asChild
                                     >
-                                        <Link
-                                            href="/order/configure"
-                                            className="w-full sm:w-auto"
-                                        >
+                                        <Link href="/order/configure" className="w-full sm:w-auto">
                                             {t('buttonStartNow')}
                                             {/* <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" /> */}
                                         </Link>
@@ -306,9 +298,7 @@ export default async function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                         <Button size="lg" asChild>
-                            <Link href="/order/configure">
-                                {t('ctaButton')}
-                            </Link>
+                            <Link href="/order/configure">{t('ctaButton')}</Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>
                             <Link href="/order/packages">{t('buttonComparePlans')}</Link>
