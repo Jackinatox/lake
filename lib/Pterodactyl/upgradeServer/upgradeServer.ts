@@ -71,7 +71,12 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
         });
     } catch (error) {
         logger.fatal('Error upgrading game server', 'GAME_SERVER', {
-            details: { error, gameServerId: gameServer.id },
+            details: {
+                error,
+                gameServerId: gameServer.id,
+                ptAdminId: gameServer.ptAdminId,
+                ptServerId: gameServer.ptServerId,
+            },
             gameServerId: gameServer.id,
             userId: gameServer.userId,
         });

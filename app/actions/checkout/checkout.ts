@@ -411,6 +411,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             await notifyFreeServerCreated(order.id);
         } catch (notifyErr) {
             logger.error('Failed to run free server notification helper', 'EMAIL', {
+                userId: user.id,
                 details: {
                     error: notifyErr instanceof Error ? notifyErr.message : String(notifyErr),
                     orderId: order.id,

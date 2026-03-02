@@ -25,6 +25,8 @@ export async function deleteGameServers(ids: string[]) {
             const gameServer = await prisma.gameServer.findUniqueOrThrow({ where: { id } });
             if (!gameServer.ptAdminId) {
                 logger.warn('GameServer Deletion: ', 'SYSTEM', {
+                    userId: session.user.id,
+                    gameServerId: id,
                     details: { error: `Game server with ID ${id} missing ptAdminId` },
                 });
                 deletedIds.push(id);

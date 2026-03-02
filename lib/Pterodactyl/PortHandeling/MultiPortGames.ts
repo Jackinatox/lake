@@ -68,7 +68,7 @@ export async function correctPortsForGame(
             logger.warn(
                 `Port configuration attempt ${attempt}/${maxRetries} failed for server ${ptServerId}`,
                 'GAME_SERVER',
-                { details: { error: lastError.message } },
+                { details: { error: lastError.message, ptServerId, attempt, maxRetries } },
             );
 
             if (attempt < maxRetries) {
@@ -82,7 +82,7 @@ export async function correctPortsForGame(
     logger.error(
         `All ${maxRetries} port configuration attempts failed for server ${ptServerId}`,
         'GAME_SERVER',
-        { details: { error: lastError } },
+        { details: { error: lastError, ptServerId, maxRetries } },
     );
 
     return {
@@ -105,6 +105,7 @@ async function configureServerPorts(
     logger.trace(
         `Starting port configuration for server ${ptServerId}, game ${gameId}`,
         'GAME_SERVER',
+        { details: { ptServerId, gameId } },
     );
 
     const gameConfig = GAME_PORT_CONFIG[gameId as keyof typeof GAME_PORT_CONFIG];
@@ -114,7 +115,11 @@ async function configureServerPorts(
     }
 
     // Step 1: Ensure correct number of allocations
-    logger.info(`Ensuring server has ${gameConfig.requiredAllocations} allocations`, 'GAME_SERVER');
+    logger.info(
+        `Ensuring server has ${gameConfig.requiredAllocations} allocations`,
+        'GAME_SERVER',
+        { details: { ptServerId, requiredAllocations: gameConfig.requiredAllocations } },
+    );
     const allocations = await setAllocationCount(
         ptServerId,
         apiKey,
@@ -148,6 +153,7 @@ async function configureServerPorts(
     logger.info(
         `Port configuration completed for server ${ptServerId}. Allocations: ${allocations.length}, Ports configured: ${portsConfigured.length}`,
         'GAME_SERVER',
+        { details: { ptServerId, allocations: allocations.length, portsConfigured } },
     );
 
     return {

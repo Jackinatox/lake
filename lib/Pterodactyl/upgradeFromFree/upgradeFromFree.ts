@@ -52,8 +52,13 @@ export default async function upgradeFromFreeGameServer(serverOrder: GameServerO
         }
     } catch (error) {
         logger.fatal('Error upgrading from free server: ', 'FREE_SERVER_EXTEND', {
-            details: { error: JSON.stringify(error) },
+            userId: gameServer.userId,
             gameServerId: gameServer.id,
+            details: {
+                error: JSON.stringify(error),
+                ptAdminId: gameServer.ptAdminId,
+                ptServerId: gameServer.ptServerId,
+            },
         });
     }
 }

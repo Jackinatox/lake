@@ -37,8 +37,9 @@ export default async function toggleSuspendGameServer(
         if (!response.ok) {
             const errorData = await response.json();
             logger.error(`PT API Error: Failed to ${action} server`, 'GAME_SERVER', {
-                details: errorData,
+                userId: gameServer.userId,
                 gameServerId: gameServer.id,
+                details: { ...errorData, ptAdminId: gameServer.ptAdminId, ptServerId: gameServer.ptServerId, action },
             });
             throw new Error('PT API Error: ' + JSON.stringify(errorData));
         }
@@ -53,12 +54,13 @@ export default async function toggleSuspendGameServer(
         logger.info(`Game server ${action}ed successfully`, 'GAME_SERVER', {
             gameServerId: gameServer.id,
             userId: gameServer.userId,
+            details: { ptAdminId: gameServer.ptAdminId, ptServerId: gameServer.ptServerId, action },
         });
 
         return { success: true, gameServerId: gameServer.id, action };
     } catch (error) {
         logger.fatal(`Error ${action}ing game server`, 'GAME_SERVER', {
-            details: { error, gameServerId: gameServer.id },
+            details: { error, gameServerId: gameServer.id, ptAdminId: gameServer.ptAdminId, ptServerId: gameServer.ptServerId, action },
             gameServerId: gameServer.id,
             userId: gameServer.userId,
         });

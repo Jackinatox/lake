@@ -15,7 +15,10 @@ import { RefundServerAction } from '@/app/client/generated/browser';
  *
  * This is called when a refund is confirmed (SUCCEEDED) via webhook.
  */
-export async function undoRefundedOrder(orderId: string, serverAction: RefundServerAction): Promise<void> {
+export async function undoRefundedOrder(
+    orderId: string,
+    serverAction: RefundServerAction,
+): Promise<void> {
     // If admin chose NONE, skip all server modifications
     if (serverAction === 'NONE') {
         logger.info('undoRefundedOrder: serverAction is NONE, skipping server changes', 'PAYMENT', {
@@ -33,6 +36,7 @@ export async function undoRefundedOrder(orderId: string, serverAction: RefundSer
 
     if (!order.gameServer) {
         logger.error('undoRefundedOrder: No game server linked to order, skipping', 'PAYMENT', {
+            userId: order.userId,
             details: { orderId },
         });
         return;
@@ -43,6 +47,8 @@ export async function undoRefundedOrder(orderId: string, serverAction: RefundSer
     // Only act if the server is still active
     if (gameServer.status !== 'ACTIVE' && gameServer.status !== 'CREATED') {
         logger.info('undoRefundedOrder: Server is not active, no undo action needed', 'PAYMENT', {
+            userId: order.userId,
+            gameServerId: gameServer.id,
             details: { orderId, serverStatus: gameServer.status },
         });
         return;
@@ -52,11 +58,16 @@ export async function undoRefundedOrder(orderId: string, serverAction: RefundSer
         // SUSPEND action: always suspend the server regardless of order type
         if (serverAction === 'SUSPEND') {
             await suspendAndExpire(gameServer.id);
-            logger.info(
-                'undoRefundedOrder: Server suspended due to refund/withdrawal',
-                'PAYMENT',
-                { details: { orderId, gameServerId: gameServer.id, serverAction } },
-            );
+            logger.info('undoRefundedOrder: Server suspended due to refund/withdrawal', 'PAYMENT', {
+                userId: order.userId,
+                gameServerId: gameServer.id,
+                details: {
+                    orderId,
+                    serverAction,
+                    ptAdminId: gameServer.ptAdminId,
+                    ptServerId: gameServer.ptServerId,
+                },
+            });
             return;
         }
 
@@ -77,7 +88,15 @@ export async function undoRefundedOrder(orderId: string, serverAction: RefundSer
                 logger.info(
                     'undoRefundedOrder: Server expired due to refunded creation order (SHORTEN fallback)',
                     'PAYMENT',
-                    { details: { orderId, gameServerId: gameServer.id } },
+                    {
+                        userId: order.userId,
+                        gameServerId: gameServer.id,
+                        details: {
+                            orderId,
+                            ptAdminId: gameServer.ptAdminId,
+                            ptServerId: gameServer.ptServerId,
+                        },
+                    },
                 );
                 break;
             }
@@ -86,19 +105,30 @@ export async function undoRefundedOrder(orderId: string, serverAction: RefundSer
                 logger.fatal(
                     'undoRefundedOrder: Unexpected TO_PAYED order type, manual review needed',
                     'PAYMENT',
-                    { details: { orderId } },
+                    { userId: order.userId, gameServerId: gameServer.id, details: { orderId } },
                 );
                 break;
             }
 
             default:
                 logger.error(`undoRefundedOrder: Unhandled order type ${order.type}`, 'PAYMENT', {
+                    userId: order.userId,
+                    gameServerId: gameServer.id,
                     details: { orderId, orderType: order.type },
                 });
         }
     } catch (error) {
         logger.error('undoRefundedOrder: Failed to undo order', 'PAYMENT', {
-            details: { orderId, gameServerId: gameServer.id, orderType: order.type, error },
+            userId: order.userId,
+            gameServerId: gameServer.id,
+            details: {
+                orderId,
+                gameServerId: gameServer.id,
+                orderType: order.type,
+                ptAdminId: gameServer.ptAdminId,
+                ptServerId: gameServer.ptServerId,
+                error,
+            },
         });
     }
 }
@@ -140,6 +170,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             'revertToPreviousOrder: THIS IS A CASE THAT SHOULD NEVER HAPPEN!!!! DEBUG THIS - No previous order found, expiring server',
             'PAYMENT',
             {
+                gameServerId: gameServerId,
                 details: { refundedOrderId, gameServerId },
             },
         );
@@ -182,7 +213,10 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             logger.error(
                 'revertToPreviousOrder: Failed to get current server info from PT',
                 'PAYMENT',
-                { details: { gameServerId } },
+                {
+                    gameServerId: gameServerId,
+                    details: { gameServerId, ptAdminId: gameServer.ptAdminId },
+                },
             );
             await suspendAndExpire(gameServerId);
             return;
@@ -216,7 +250,13 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             logger.error('revertToPreviousOrder: Failed to revert server build in PT', 'PAYMENT', {
-                details: { gameServerId, errorData },
+                gameServerId: gameServerId,
+                details: {
+                    gameServerId,
+                    ptAdminId: gameServer.ptAdminId,
+                    ptServerId: gameServer.ptServerId,
+                    errorData,
+                },
             });
             await suspendAndExpire(gameServerId);
             return;
@@ -249,7 +289,15 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             logger.error(
                 'revertToPreviousOrder: Failed to suspend expired server in PT',
                 'PAYMENT',
-                { details: { gameServerId, error: suspendError } },
+                {
+                    gameServerId: gameServerId,
+                    details: {
+                        gameServerId,
+                        ptAdminId: gameServer.ptAdminId,
+                        ptServerId: gameServer.ptServerId,
+                        error: suspendError,
+                    },
+                },
             );
         }
     }
@@ -258,9 +306,12 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         'revertToPreviousOrder: Successfully reverted server to previous order state',
         'PAYMENT',
         {
+            gameServerId: gameServerId,
             details: {
                 refundedOrderId,
                 gameServerId,
+                ptAdminId: gameServer.ptAdminId,
+                ptServerId: gameServer.ptServerId,
                 previousOrderId: previousOrder.id,
                 resourcesChanged,
                 revertedExpiry: previousExpiry.toISOString(),

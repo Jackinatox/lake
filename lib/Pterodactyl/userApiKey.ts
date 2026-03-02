@@ -37,7 +37,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         return key;
     } catch (e) {
         logger.fatal('PTUser API-Key Creation: ', 'SYSTEM', {
-            details: { error: (e as Error).message },
+            details: { error: (e as Error).message, ptUserId: userId },
         });
     }
 }
