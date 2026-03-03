@@ -84,7 +84,7 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
     useImperativeHandle(ref, () => ({
         submit: () => {
             const completeConfig: GameConfig = {
-                gameId: game.id,
+                gameSlug: game.slug,
                 eggId: game.data.egg_id,
                 version:
                     config.version === 'custom' ? config.customVersion || 'latest' : config.version,

@@ -5,6 +5,7 @@ import { SatisfactoryConfig } from './gameSpecificConfig/SatisfactoryConfig';
 
 export interface Game {
     id: number;
+    slug: string;
     name: string;
     data: any;
 }
@@ -20,7 +21,8 @@ export interface HardwareConfig {
 }
 
 export interface GameConfig {
-    gameId: number;
+    gameSlug: string;
+    gameId?: number; // @deprecated — kept for backward compat with existing orders
     eggId: number;
     version: string;
     dockerImage: string;

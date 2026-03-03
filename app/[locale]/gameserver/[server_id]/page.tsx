@@ -54,24 +54,31 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     try {
         const pt = createPtClient();
         const adminServer = await pt.getServer(isServerValid.ptAdminId.toString());
-        const gameDataFeatures = await prisma.gameDataFeature.findMany({
-            where: {
-                gameDataId: isServerValid.gameDataId,
-            },
-            include: {
-                feature: true,
-            },
-        });
+        const [gameDataFeatures, gameData] = await Promise.all([
+            prisma.gameDataFeature.findMany({
+                where: {
+                    gameDataId: isServerValid.gameDataId,
+                },
+                include: {
+                    feature: true,
+                },
+            }),
+            prisma.gameData.findUnique({
+                where: { id: isServerValid.gameDataId },
+                select: { slug: true },
+            }),
+        ]);
 
         // Extract just the EggFeature objects
         const features = gameDataFeatures.map((gdf) => gdf.feature);
 
         const initialServer = {
             egg_id: adminServer.egg,
+            gameSlug: gameData?.slug ?? 'unknown',
             gameDataId: isServerValid.gameDataId,
             gameData: isServerValid.gameConfig as any,
             type: isServerValid.type,
-            expires: isServerValid.expires
+            expires: isServerValid.expires,
         };
 
         return (

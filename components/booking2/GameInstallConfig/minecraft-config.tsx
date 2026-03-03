@@ -1,4 +1,3 @@
-import { PaperEggId } from '@/app/GlobalConstants';
 import {
     Select,
     SelectContent,
@@ -35,7 +34,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
 
     useEffect(() => {
         const defaultEggId =
-            flavors.find((f) => f.egg_id === PaperEggId)?.egg_id || flavors[0]?.egg_id || null;
+            flavors.find((f) => f.name === 'Paper')?.egg_id || flavors[0]?.egg_id || null;
         setSelectedFlavorId(defaultEggId);
 
         // Set default version to the first version of the selected flavor
@@ -109,7 +108,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
 
             // Create a complete game configuration object
             const completeConfig: GameConfig = {
-                gameId: game.id,
+                gameSlug: game.slug,
                 eggId: selectedEggId,
                 version: selectedVersion.version,
                 dockerImage: selectedVersion.docker_image,

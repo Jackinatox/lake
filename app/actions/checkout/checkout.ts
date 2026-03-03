@@ -15,6 +15,25 @@ import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
 import upgradeToPayed from './createOrder';
 import { calcBackups, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { deprecate } from 'node:util';
+
+/**
+ * Resolves a gameSlug to a gameData ID. Falls back to gameId for backward compat
+ * with configs that were persisted before the slug migration.
+ */
+async function resolveGameDataId(gameConfig: GameConfig): Promise<number> {
+    if (gameConfig.gameSlug) {
+        const gameData = await prisma.gameData.findUnique({
+            where: { slug: gameConfig.gameSlug },
+            select: { id: true },
+        });
+        if (!gameData) throw new Error(`Game not found for slug: ${gameConfig.gameSlug}`);
+        return gameData.id;
+    }
+    // Fallback for legacy configs that only have gameId
+    if (gameConfig.gameId) return gameConfig.gameId;
+    throw new Error('GameConfig must have gameSlug or gameId');
+}
 
 export type CheckoutParams =
     | {
@@ -92,6 +111,8 @@ export async function checkoutAction(
 
             const price = calculateNew(location, cpuPercent, ramMB, duration);
 
+            const creationGameDataId = await resolveGameDataId(creationServerConfig.gameConfig);
+
             // 1. Create the ServerOrder
 
             const order = await prisma.gameServerOrder.create({
@@ -107,7 +128,7 @@ export async function checkoutAction(
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
-                    creationGameDataId: creationServerConfig.gameConfig.gameId,
+                    creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
                     gameConfig: creationServerConfig.gameConfig as any,
                 },
@@ -293,7 +314,7 @@ export async function checkoutAction(
             }
 
             // Validate gameConfig has required fields
-            if (!gameConfig.gameId) {
+            if (!gameConfig.gameSlug && !gameConfig.gameId) {
                 throw new Error('Game configuration is required');
             }
 
@@ -307,6 +328,8 @@ export async function checkoutAction(
                 packageData.ramMB,
                 durationDays,
             );
+
+            const packageGameDataId = await resolveGameDataId(gameConfig);
 
             // Create the order
             const order = await prisma.gameServerOrder.create({
@@ -322,7 +345,7 @@ export async function checkoutAction(
                     price: price.totalCents,
                     expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
                     status: 'PENDING',
-                    creationGameDataId: gameConfig.gameId,
+                    creationGameDataId: packageGameDataId,
                     creationLocationId: packageData.locationId,
                     gameConfig: gameConfig as any,
                 },
@@ -386,6 +409,8 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
         throw new Error('Maximale Anzahl kostenloser Server erreicht');
     }
 
+    const freeGameDataId = await resolveGameDataId(gameConfig);
+
     const order = await prisma.gameServerOrder.create({
         data: {
             type: 'FREE_SERVER',
@@ -398,7 +423,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             price: 0,
             expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
             status: 'PAID',
-            creationGameDataId: gameConfig.gameId,
+            creationGameDataId: freeGameDataId,
             gameConfig: gameConfig as any,
             creationLocationId: locationId,
         },

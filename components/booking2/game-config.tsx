@@ -7,12 +7,6 @@ import type { Game, GameConfig } from '@/models/config';
 import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
 import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
 import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
-import {
-    FactorioGameId,
-    HytaleGameId,
-    MinecraftGameId,
-    SatisfactoryGameId,
-} from '@/app/GlobalConstants';
 import { HytaleConfigComponent } from './GameInstallConfig/HytaleConfig';
 
 interface GameConfigProps {
@@ -40,8 +34,8 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
     return (
         <div className="w-full">
             {(() => {
-                switch (game.id) {
-                    case MinecraftGameId: // Minecraft
+                switch (game.slug) {
+                    case 'minecraft':
                         return (
                             <MinecraftConfigComponent
                                 ref={configRef}
@@ -50,7 +44,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 initialConfig={initialConfig}
                             />
                         );
-                    case SatisfactoryGameId: // Satisfactory
+                    case 'satisfactory':
                         return (
                             <SatisfactoryConfigComponent
                                 ref={configRef}
@@ -59,7 +53,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 initialConfig={initialConfig}
                             />
                         );
-                    case FactorioGameId: // Factorio
+                    case 'factorio':
                         return (
                             <FactorioConfigComponent
                                 ref={configRef}
@@ -68,7 +62,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 initialConfig={initialConfig}
                             />
                         );
-                    case HytaleGameId: // Hytale
+                    case 'hytale':
                         return (
                             <HytaleConfigComponent
                                 ref={configRef}

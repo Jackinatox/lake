@@ -227,7 +227,7 @@ export function DashboardHeader({
                             <CompactServerAddress
                                 address={address}
                                 port={port}
-                                eggId={server.egg_id}
+                                gameSlug={server.gameSlug}
                                 allocations={allocations}
                                 compact
                             />
@@ -284,7 +284,7 @@ export function DashboardHeader({
                             <CompactServerAddress
                                 address={address}
                                 port={port}
-                                eggId={server.egg_id}
+                                gameSlug={server.gameSlug}
                                 allocations={allocations}
                             />
                         ) : (

@@ -1,12 +1,5 @@
 'use client';
 
-import {
-    FabricEggId,
-    ForgeEggId,
-    NeoForgeEggId,
-    PaperEggId,
-    VanillaEggId,
-} from '@/app/GlobalConstants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GameServer } from '@/models/gameServerModel';
@@ -25,13 +18,7 @@ interface GameServerSettingsProps {
 }
 
 export default function GameServerSettings({ server, apiKey }: GameServerSettingsProps) {
-    const isMinecraftServer = [
-        PaperEggId,
-        VanillaEggId,
-        ForgeEggId,
-        FabricEggId,
-        NeoForgeEggId,
-    ].includes(server.egg_id);
+    const isMinecraftServer = server.gameSlug === 'minecraft';
 
     const t = useTranslations('gameserverSettings');
 
