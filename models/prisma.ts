@@ -57,3 +57,23 @@ export type RefundWithOrder = Prisma.RefundGetPayload<{
         };
     };
 }>;
+
+export type WithdrawalPageOrder = Prisma.GameServerOrderGetPayload<{
+    include: {
+        gameServer: { select: { ptServerId: true; name: true; status: true; type: true } };
+        creationGameData: { select: { name: true } };
+        refunds: {
+            select: {
+                id: true;
+                amount: true;
+                status: true;
+                type: true;
+                isAutomatic: true;
+                reason: true;
+                receiptNumber: true;
+                createdAt: true;
+                serverAction: true;
+            };
+        };
+    };
+}>;

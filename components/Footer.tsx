@@ -33,6 +33,12 @@ export default function Footer() {
                             >
                                 {t('documentation')}
                             </Link>
+                            <Link
+                                href={'/withdrawl'}
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('withdrawl')}
+                            </Link>
                         </nav>
                     </div>
 

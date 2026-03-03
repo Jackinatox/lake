@@ -91,7 +91,10 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
 
         await prisma.refund.update({
             where: { id: refundRecord.id },
-            data: { status: newStatus },
+            data: {
+                status: newStatus,
+                receiptNumber: refund.receipt_number ?? undefined,
+            },
         });
 
         // Recalculate order refund status based on all refunds
@@ -327,6 +330,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
             data: {
                 orderId: order.id,
                 stripeRefundId: refund.id,
+                receiptNumber: refund.receipt_number ?? null,
                 amount: refund.amount,
                 reason: 'Externally created refund (Stripe Dashboard)',
                 internalNote: 'Auto-reconciled from webhook',

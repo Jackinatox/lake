@@ -701,7 +701,8 @@
     "blog": "Blog",
     "company": "Unternehmen",
     "sourcecode": "Quellcode",
-    "contactUs": "Kontakt"
+    "contactUs": "Kontakt",
+    "withdrawl": "Widerruf"
   },
   "gameserver": {
     "freeServer": "Kostenlos",
@@ -1015,5 +1016,42 @@
     "backToProfile": "Zurück zum Profil",
     "notFoundTitle": "Job nicht gefunden",
     "notFoundDescription": "Der Bereitstellungsjob, den du suchst, existiert nicht oder ist abgelaufen. Bitte überprüfe die Job-ID und versuche es erneut."
+  },
+  "withdrawalPage": {
+    "title": "Widerruf & Erstattungen",
+    "subtitle": "Nutze dein Widerrufsrecht gemäß §355 BGB oder sieh dir deine Erstattungshistorie an.",
+    "eligibleOrders": {
+      "title": "Widerrufsfähige Bestellungen",
+      "description": "Bestellungen der letzten {days} Tage, von denen du zurücktreten kannst. Du erhältst eine anteilige Erstattung für die ungenutzte Servicezeit.",
+      "noOrders": "Derzeit sind keine Bestellungen widerrufsfähig.",
+      "daysRemaining": "{days} Tage verbleibend",
+      "alreadyRefunded": "Bereits erstattet"
+    },
+    "history": {
+      "title": "Erstattungshistorie",
+      "totalRefunded": "Gesamt erstattet",
+      "noRefunds": "Noch keine Erstattungen oder Widerrufe.",
+      "typeWithdrawal": "Widerruf (§355 BGB)",
+      "typeRefund": "Erstattung",
+      "refundedAmount": "Erstattet",
+      "ofOriginal": "Original",
+      "serverActionLabel": "Server-Aktion",
+      "receiptNumber": "Beleg-Nr.",
+      "viewReceipt": "Beleg",
+      "status": {
+        "succeeded": "Abgeschlossen",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen",
+        "canceled": "Storniert"
+      },
+      "serverAction": {
+        "suspend": "Server pausiert",
+        "shorten": "Auf vorherige Konfiguration zurückgesetzt",
+        "none": "Keine Server-Änderungen"
+      }
+    },
+    "legalNote": "Nach EU-Verbraucherschutzrecht (§355 BGB) hast du das Recht, innerhalb von 14 Tagen nach dem Kauf von jedem Vertrag zurückzutreten. Die Erstattung wird anteilig basierend auf der ungenutzten Servicezeit berechnet.",
+    "supportNote": "Bei Fragen oder Hilfe zu einer Erstattung kontaktiere unser",
+    "supportLink": "Support-Team"
   }
 }

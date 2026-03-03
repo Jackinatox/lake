@@ -701,7 +701,8 @@
     "blog": "Blog",
     "company": "Company",
     "sourcecode": "Source Code",
-    "contactUs": "Contact"
+    "contactUs": "Contact",
+    "withdrawl": "Withdrawl"
   },
   "gameserver": {
     "freeServer": "Free",
@@ -1015,5 +1016,42 @@
     "backToProfile": "Back to Profile",
     "notFoundTitle": "Job Not Found",
     "notFoundDescription": "The provisioning job you're looking for doesn't exist or has expired. Please check the job ID and try again."
+  },
+  "withdrawalPage": {
+    "title": "Withdrawal & Refunds",
+    "subtitle": "Exercise your right of withdrawal (Widerruf) under §355 BGB or view your refund history.",
+    "eligibleOrders": {
+      "title": "Eligible for Withdrawal",
+      "description": "Orders purchased within the last {days} days that you can withdraw from. You will receive a pro-rata refund for unused service time.",
+      "noOrders": "No orders are currently eligible for withdrawal.",
+      "daysRemaining": "{days} days remaining",
+      "alreadyRefunded": "Already refunded"
+    },
+    "history": {
+      "title": "Refund History",
+      "totalRefunded": "Total refunded",
+      "noRefunds": "No refunds or withdrawals yet.",
+      "typeWithdrawal": "Withdrawal (Widerruf)",
+      "typeRefund": "Refund",
+      "refundedAmount": "Refunded",
+      "ofOriginal": "Original",
+      "serverActionLabel": "Server action",
+      "receiptNumber": "Receipt No.",
+      "viewReceipt": "Receipt",
+      "status": {
+        "succeeded": "Completed",
+        "pending": "Pending",
+        "failed": "Failed",
+        "canceled": "Canceled"
+      },
+      "serverAction": {
+        "suspend": "Server suspended",
+        "shorten": "Reverted to previous config",
+        "none": "No server changes"
+      }
+    },
+    "legalNote": "Under EU consumer protection law (§355 BGB), you have the right to withdraw from any contract within 14 days of purchase. The refund is calculated pro-rata based on your unused service time.",
+    "supportNote": "If you need help or have questions about a refund, contact our",
+    "supportLink": "Support Team"
   }
 }
