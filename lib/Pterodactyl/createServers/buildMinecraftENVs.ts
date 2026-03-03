@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 /**
  * Build Minecraft environment variables and startup command based on flavor name.
  * Flavor names come from GameData.data.flavors[].name (e.g. 'Vanilla', 'Paper', 'Forge', 'Fabric', 'Neoforge').
@@ -59,6 +61,13 @@ export function buildMC_ENVs_and_startup(flavorName: string, minecraftVersion: s
                 },
                 startup:
                     'java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true @unix_args.txt',
+            };
+            break;
+        default:
+            logger.warn(`Unknown flavor "${flavorName}", using default startup and empty environment variables.`);
+            startAndVars = {
+                environment: {},
+                startup: '',
             };
             break;
     }

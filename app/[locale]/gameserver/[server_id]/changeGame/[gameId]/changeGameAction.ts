@@ -49,7 +49,18 @@ export async function changeGame({
             },
         }),
 
-        prisma.gameData.findUnique({ where: { id: gameId }, select: { id: true, slug: true, name: true, data: true, enabled: true, featured: true, sorting: true } }),
+        prisma.gameData.findUnique({
+            where: { id: gameId },
+            select: {
+                id: true,
+                slug: true,
+                name: true,
+                data: true,
+                enabled: true,
+                featured: true,
+                sorting: true,
+            },
+        }),
     ]);
 
     if (!gameServer || !gameServer.ptServerId || !gameServer.ptAdminId) {
@@ -129,7 +140,8 @@ async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
     };
 
     let body;
-    switch ((newGameData as any).slug) {
+    // TODO: Add Hytale and Factorio or move to worker
+    switch (newGameData.slug) {
         case 'minecraft': {
             const mcConfig = gameConfig.gameSpecificConfig as MinecraftConfig;
             body = buildMC_ENVs_and_startup(mcConfig.flavor, gameConfig.version);
@@ -139,7 +151,7 @@ async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
             body = createSatisStartup(gameConfig.gameSpecificConfig as SatisfactoryConfig);
             break;
         default:
-            throw new Error(`Unsupported game slug: ${(newGameData as any).slug}`);
+            throw new Error(`Unsupported game slug: ${newGameData.slug}`);
     }
 
     return { ...plainBody, ...body };

@@ -702,7 +702,7 @@
     "company": "Unternehmen",
     "sourcecode": "Quellcode",
     "contactUs": "Kontakt",
-    "withdrawl": "Widerruf"
+    "withdrawal": "Widerruf"
   },
   "gameserver": {
     "freeServer": "Kostenlos",

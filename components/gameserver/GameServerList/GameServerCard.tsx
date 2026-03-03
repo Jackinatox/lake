@@ -56,6 +56,7 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
         ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
         : formatExpirationDate(server.expires);
 
+    // TODO: Use value fropm KeyValue Table
     const deletionDate = isExpired
         ? new Date(new Date(server.expires).getTime() + 90 * 24 * 60 * 60 * 1000)
         : null;

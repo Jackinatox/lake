@@ -34,10 +34,10 @@ export default function Footer() {
                                 {t('documentation')}
                             </Link>
                             <Link
-                                href={'/withdrawl'}
+                                href={'/withdrawal'}
                                 className="hover:text-foreground transition-colors"
                             >
-                                {t('withdrawl')}
+                                {t('withdrawal')}
                             </Link>
                         </nav>
                     </div>

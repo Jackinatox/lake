@@ -8,6 +8,7 @@ import {
 } from '@/app/client/generated/browser';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import formatDate from '@/lib/formatDate';
 import {
     CheckCircle2,
     Clock,
@@ -54,16 +55,6 @@ export function RefundHistoryItem({
 }: RefundHistoryItemProps) {
     const t = useTranslations('withdrawalPage.history');
     const tPayments = useTranslations('payments');
-
-    const formatDate = (date: Date) => {
-        return new Date(date).toLocaleDateString('de-DE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
 
     const getStatusConfig = () => {
         switch (status) {

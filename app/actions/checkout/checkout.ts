@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeServer';
@@ -13,9 +14,6 @@ import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
-import upgradeToPayed from './createOrder';
-import { calcBackups, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { deprecate } from 'node:util';
 
 /**
  * Resolves a gameSlug to a gameData ID. Falls back to gameId for backward compat
