@@ -29,6 +29,7 @@ export async function fetchGames(gameId: number): Promise<Game | null> {
         },
         select: {
             id: true,
+            slug: true,
             name: true,
             data: true,
         },
@@ -39,6 +40,7 @@ export async function fetchGames(gameId: number): Promise<Game | null> {
     return {
         data: game.data,
         id: game.id,
+        slug: game.slug,
         name: game.name,
     };
 }
@@ -51,6 +53,7 @@ export async function fetchGameBySlug(slug: string): Promise<Game | null> {
         },
         select: {
             id: true,
+            slug: true,
             name: true,
             data: true,
         },
@@ -61,6 +64,7 @@ export async function fetchGameBySlug(slug: string): Promise<Game | null> {
     return {
         data: game.data,
         id: game.id,
+        slug: game.slug,
         name: game.name,
     };
 }

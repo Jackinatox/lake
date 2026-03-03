@@ -9,6 +9,7 @@ export type GameServer = {
     name: string;
     node: string;
     egg_id: number;
+    gameSlug: string;
     type: GameServerType;
     is_node_under_maintenance: boolean;
     sftp_details: {

@@ -58,6 +58,7 @@ async function Page({
             },
             select: {
                 id: true,
+                slug: true,
                 name: true,
                 data: true,
             },
@@ -80,6 +81,7 @@ async function Page({
 
     const gameForConfig: Game = {
         id: game.id,
+        slug: game.slug,
         name: game.name ?? 'Unknown game',
         data: game.data as Record<string, unknown>,
     };

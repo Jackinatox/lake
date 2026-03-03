@@ -1,11 +1,11 @@
 'use server';
 
-import { MinecraftGameId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { auth } from '@/auth';
 import { buildMC_ENVs_and_startup } from '@/lib/Pterodactyl/createServers/buildMinecraftENVs';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import PTUserServerPowerAction from '@/lib/Pterodactyl/Functions/StopPTUserServer';
 import type { GameConfig } from '@/models/config';
+import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
 import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
@@ -49,7 +49,7 @@ export async function changeGame({
             },
         }),
 
-        prisma.gameData.findUnique({ where: { id: gameId } }),
+        prisma.gameData.findUnique({ where: { id: gameId }, select: { id: true, slug: true, name: true, data: true, enabled: true, featured: true, sorting: true } }),
     ]);
 
     if (!gameServer || !gameServer.ptServerId || !gameServer.ptAdminId) {
@@ -89,7 +89,7 @@ export async function changeGame({
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    await correctPortsForGame(gameServer.ptServerId, newGameData.id, session.user.ptKey);
+    await correctPortsForGame(gameServer.ptServerId, newGameData.slug, session.user.ptKey);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -129,15 +129,17 @@ async function buildBody(gameConfig: GameConfig, newGameData: GameData) {
     };
 
     let body;
-    switch (newGameData.id) {
-        case MinecraftGameId:
-            body = buildMC_ENVs_and_startup(gameConfig.eggId, gameConfig.version);
+    switch ((newGameData as any).slug) {
+        case 'minecraft': {
+            const mcConfig = gameConfig.gameSpecificConfig as MinecraftConfig;
+            body = buildMC_ENVs_and_startup(mcConfig.flavor, gameConfig.version);
             break;
-        case SatisfactoryGameId:
+        }
+        case 'satisfactory':
             body = createSatisStartup(gameConfig.gameSpecificConfig as SatisfactoryConfig);
             break;
         default:
-            throw new Error('Unsupported game ID');
+            throw new Error(`Unsupported game slug: ${(newGameData as any).slug}`);
     }
 
     return { ...plainBody, ...body };

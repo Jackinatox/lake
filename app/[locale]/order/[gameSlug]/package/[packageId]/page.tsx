@@ -38,6 +38,7 @@ export default async function PackageOrderPage({
     const gameData: Game = {
         id: game.id,
         name: game.name,
+        slug: game.slug,
         data: game.data,
     };
 

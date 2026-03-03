@@ -14,14 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import {
-    SatisfactoryEggId,
-    PaperEggId,
-    VanillaEggId,
-    ForgeEggId,
-    FabricEggId,
-    NeoForgeEggId,
-} from '@/app/GlobalConstants';
 
 interface Allocation {
     id: number;
@@ -36,7 +28,7 @@ interface CompactServerAddressProps {
     /** Primary/default allocation */
     address: string;
     port: number;
-    eggId: number;
+    gameSlug: string;
     /** Additional allocations (optional) */
     allocations?: Allocation[];
     /** Compact mode - always use dropdown even for simple addresses */
@@ -91,7 +83,7 @@ function CopyButton({ text, copyKey, label, iconOnly = false, isCopied, onCopy }
 export function CompactServerAddress({
     address,
     port,
-    eggId,
+    gameSlug,
     allocations = [],
     compact = false,
     className,
@@ -99,11 +91,10 @@ export function CompactServerAddress({
     const t = useTranslations();
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-    const minecraftEggs = [PaperEggId, VanillaEggId, ForgeEggId, FabricEggId, NeoForgeEggId];
-    const isMinecraft = minecraftEggs.includes(eggId);
-    const isSatisfactory = eggId === SatisfactoryEggId;
+    const isMinecraft = gameSlug === 'minecraft';
+    const isSatisfactory = gameSlug === 'satisfactory';
 
-    // For games that need separate IP/Port (like Satisfactory) - determined by egg type
+    // For games that need separate IP/Port (like Satisfactory) - determined by game type
     const needsSeparateDisplay = isSatisfactory;
 
     const ipPortCombo = `${address}:${port}`;

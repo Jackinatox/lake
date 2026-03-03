@@ -1,18 +1,3 @@
-// Eggs
-export const PaperEggId = 1;
-export const VanillaEggId = 2;
-export const ForgeEggId = 3;
-export const FabricEggId = 16;
-export const SatisfactoryEggId = 15;
-export const NeoForgeEggId = 20;
-export const FactorioEggId = 22;
-
-// GameIds
-export const MinecraftGameId = 1;
-export const SatisfactoryGameId = 2;
-export const FactorioGameId = 3;
-export const HytaleGameId = 4;
-
 // Legal Content Keys
 export const LEGAL_IMPRESSUM_DE = 'legal_impressum_de';
 export const LEGAL_IMPRESSUM_EN = 'legal_impressum_en';
