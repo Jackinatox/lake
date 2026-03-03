@@ -1,4 +1,3 @@
-import { MinecraftGameId, SatisfactoryEggId, SatisfactoryGameId } from '@/app/GlobalConstants';
 import { logger } from '@/lib/logger';
 import {
     listServerAllocations,
@@ -7,14 +6,21 @@ import {
 } from './allocationHelper';
 
 /**
- * Game-specific port configuration mapping
+ * Game-specific port configuration mapping, keyed by game slug.
+ * Add new games here when they need multi-port support.
  */
-const GAME_PORT_CONFIG = {
-    [MinecraftGameId]: {
+const GAME_PORT_CONFIG: Record<
+    string,
+    {
+        requiredAllocations: number;
+        ports: ReadonlyArray<{ envVar: string; notes: string; isSecondary: boolean }>;
+    }
+> = {
+    minecraft: {
         requiredAllocations: 1,
         ports: [],
     },
-    [SatisfactoryGameId]: {
+    satisfactory: {
         requiredAllocations: 2,
         ports: [
             {
@@ -24,7 +30,7 @@ const GAME_PORT_CONFIG = {
             },
         ],
     },
-} as const;
+};
 
 interface PortConfigurationResult {
     success: boolean;
@@ -42,14 +48,14 @@ interface PortConfigurationResult {
  * 3. Sets environment variables for multi-port games (e.g., Satisfactory)
  *
  * @param ptServerId - Pterodactyl server UUID or short ID
- * @param gameId - Game ID from GlobalConstants (MinecraftGameId, SatisfactoryGameId, etc.)
+ * @param gameSlug - Game slug (e.g. 'minecraft', 'satisfactory')
  * @param apiKey - Pterodactyl user API key
  * @param maxRetries - Maximum number of retry attempts (default: 3)
  * @returns Result object with success status and configuration details
  */
 export async function correctPortsForGame(
     ptServerId: string,
-    gameId: number,
+    gameSlug: string,
     apiKey: string,
     maxRetries: number = 4,
 ): Promise<PortConfigurationResult> {
@@ -57,7 +63,7 @@ export async function correctPortsForGame(
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            const result = await configureServerPorts(ptServerId, gameId, apiKey);
+            const result = await configureServerPorts(ptServerId, gameSlug, apiKey);
 
             return {
                 ...result,
@@ -68,7 +74,7 @@ export async function correctPortsForGame(
             logger.warn(
                 `Port configuration attempt ${attempt}/${maxRetries} failed for server ${ptServerId}`,
                 'GAME_SERVER',
-                { details: { error: lastError.message } },
+                { details: { error: lastError.message, ptServerId, attempt, maxRetries } },
             );
 
             if (attempt < maxRetries) {
@@ -82,7 +88,7 @@ export async function correctPortsForGame(
     logger.error(
         `All ${maxRetries} port configuration attempts failed for server ${ptServerId}`,
         'GAME_SERVER',
-        { details: { error: lastError } },
+        { details: { error: lastError, ptServerId, maxRetries } },
     );
 
     return {
@@ -99,22 +105,36 @@ export async function correctPortsForGame(
  */
 async function configureServerPorts(
     ptServerId: string,
-    gameId: number,
+    gameSlug: string,
     apiKey: string,
 ): Promise<Omit<PortConfigurationResult, 'attemptsMade'>> {
     logger.trace(
-        `Starting port configuration for server ${ptServerId}, game ${gameId}`,
+        `Starting port configuration for server ${ptServerId}, game ${gameSlug}`,
         'GAME_SERVER',
+        { details: { ptServerId, gameSlug } },
     );
 
-    const gameConfig = GAME_PORT_CONFIG[gameId as keyof typeof GAME_PORT_CONFIG];
+    const gameConfig = GAME_PORT_CONFIG[gameSlug];
 
     if (!gameConfig) {
-        throw new Error(`No port configuration found for game ID: ${gameId}`);
+        // Not every game needs port configuration — default to 1 allocation, no extra ports
+        logger.trace(
+            `No port configuration for game slug '${gameSlug}', using defaults`,
+            'GAME_SERVER',
+        );
+        return {
+            success: true,
+            allocations: 1,
+            portsConfigured: [],
+        };
     }
 
     // Step 1: Ensure correct number of allocations
-    logger.info(`Ensuring server has ${gameConfig.requiredAllocations} allocations`, 'GAME_SERVER');
+    logger.info(
+        `Ensuring server has ${gameConfig.requiredAllocations} allocations`,
+        'GAME_SERVER',
+        { details: { ptServerId, requiredAllocations: gameConfig.requiredAllocations } },
+    );
     const allocations = await setAllocationCount(
         ptServerId,
         apiKey,
@@ -148,6 +168,7 @@ async function configureServerPorts(
     logger.info(
         `Port configuration completed for server ${ptServerId}. Allocations: ${allocations.length}, Ports configured: ${portsConfigured.length}`,
         'GAME_SERVER',
+        { details: { ptServerId, allocations: allocations.length, portsConfigured } },
     );
 
     return {
@@ -155,30 +176,6 @@ async function configureServerPorts(
         allocations: allocations.length,
         portsConfigured,
     };
-}
-
-/**
- * Legacy function - now delegated to correctPortsForGame
- * @deprecated Use correctPortsForGame instead
- */
-export default async function setSecondaryPort(
-    ptServerId: string,
-    eggId: number,
-    apiKey: string,
-): Promise<void> {
-    // Map egg ID to game ID for backward compatibility
-    let gameId: number;
-
-    switch (eggId) {
-        case SatisfactoryEggId:
-            gameId = SatisfactoryGameId;
-            break;
-        default:
-            logger.warn(`No game mapping for egg ID ${eggId}`, 'GAME_SERVER');
-            return;
-    }
-
-    await correctPortsForGame(ptServerId, gameId, apiKey);
 }
 
 /**

@@ -21,6 +21,8 @@ export default async function handleCheckoutSessionCompleted(
 
         if (orderUnprocessed?.status === 'PAID') {
             logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
+                userId: orderUnprocessed.userId,
+                gameServerId: orderUnprocessed.gameServerId ?? undefined,
                 details: { serverOrderId: serverOrderId },
             });
             return;
@@ -87,13 +89,24 @@ export default async function handleCheckoutSessionCompleted(
                         `Unhandled server order type: ${orderUnprocessed.type}`,
                         'SYSTEM',
                         {
-                            details: { serverOrderId: serverOrderId },
+                            userId: orderUnprocessed.userId,
+                            gameServerId: orderUnprocessed.gameServerId ?? undefined,
+                            details: {
+                                serverOrderId: serverOrderId,
+                                orderType: orderUnprocessed.type,
+                            },
                         },
                     );
             }
         } catch (provisionError) {
             logger.error('Error during server provisioning/upgrade', 'PAYMENT_LOG', {
-                details: { error: provisionError, serverOrderId: serverOrderId },
+                userId: orderUnprocessed.userId,
+                gameServerId: orderUnprocessed.gameServerId ?? undefined,
+                details: {
+                    error: provisionError,
+                    serverOrderId: serverOrderId,
+                    orderType: orderUnprocessed.type,
+                },
             });
             throw provisionError;
         }
@@ -135,6 +148,8 @@ export default async function handleCheckoutSessionCompleted(
                 });
 
                 logger.info('Sent booking confirmation and invoice emails', 'EMAIL', {
+                    userId: updatedOrder.userId,
+                    gameServerId: updatedOrder.gameServerId ?? undefined,
                     details: {
                         serverOrderId: updatedOrder.id,
                         userEmail: updatedOrder.user.email,
@@ -143,6 +158,8 @@ export default async function handleCheckoutSessionCompleted(
                 });
             } catch (emailError) {
                 logger.error('Failed to send booking/invoice emails', 'EMAIL', {
+                    userId: updatedOrder.userId,
+                    gameServerId: updatedOrder.gameServerId ?? undefined,
                     details: {
                         error: emailError,
                         serverOrderId: updatedOrder.id,

@@ -71,9 +71,13 @@ export const auth = betterAuth({
             // Check if this was a password reset (via token) or password change (with current password)
             // Password reset comes from /reset-password endpoint, password change from /change-password
             const isPasswordChange = request?.url?.includes('/change-password');
-            
+
             if (isPasswordChange) {
-                await logger.info(`Password for user ${user.email} has been changed.`, 'AUTHENTICATION');
+                await logger.info(
+                    `Password for user ${user.email} has been changed.`,
+                    'AUTHENTICATION',
+                    { userId: user.id },
+                );
                 await sendPasswordResetSuccessEmail(
                     user.email,
                     `${env('NEXT_PUBLIC_APP_URL')}/profile`,
@@ -81,7 +85,11 @@ export const auth = betterAuth({
                     'change',
                 );
             } else {
-                await logger.info(`Password for user ${user.email} has been reset.`, 'AUTHENTICATION');
+                await logger.info(
+                    `Password for user ${user.email} has been reset.`,
+                    'AUTHENTICATION',
+                    { userId: user.id },
+                );
                 await sendPasswordResetSuccessEmail(
                     user.email,
                     `${env('NEXT_PUBLIC_APP_URL')}/login`,

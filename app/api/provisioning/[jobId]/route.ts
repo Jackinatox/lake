@@ -43,7 +43,10 @@ export async function GET(
 
         if (!response.ok) {
             const errorText = await response.text();
-            logger.warn(`Failed to fetch job status from worker: ${errorText}`, 'SYSTEM');
+            logger.warn(`Failed to fetch job status from worker: ${errorText}`, 'SYSTEM', {
+                userId: session.user.id,
+                details: { jobId, workerStatus: response.status },
+            });
             return NextResponse.json(
                 { success: false, error: `Failed to fetch job status: ${errorText}` },
                 { status: response.status },

@@ -115,8 +115,9 @@ class Logger {
                         ...(entry.details && { 'log.details': JSON.stringify(entry.details) }),
                     },
                 });
-            } catch {
+            } catch (error) {
                 // OTel not yet initialised (e.g. during build) – safe to ignore
+                console.error('Failed to emit OTel log:', error);
             }
 
             await this.prisma.applicationLog.create({

@@ -210,6 +210,7 @@ model Refund {
   order   GameServerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   stripeRefundId String?            @unique
+  receiptNumber  String? // Stripe refund receipt/transaction number for compliance
   amount         Int // Amount in cents
   reason         String? // Customer-facing reason
   internalNote   String? // Admin-only note

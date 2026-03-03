@@ -79,7 +79,13 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
 
     if (!stripeSession.id || !stripeSession.client_secret) {
         logger.error('Failed to create Stripe session', 'FREE_SERVER_EXTEND', {
-            details: { orderId: order.id },
+            userId: user.id,
+            gameServerId: server.id,
+            details: {
+                orderId: order.id,
+                ptServerId: server.ptServerId,
+                ptAdminId: server.ptAdminId,
+            },
         });
         throw new Error('Failed to create Stripe session');
     }

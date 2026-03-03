@@ -214,7 +214,9 @@ export async function setAllocationCount(
     const currentCount = currentAllocations.length;
 
     if (currentCount === targetCount) {
-        logger.trace(`Server ${serverId} already has ${targetCount} allocations`, 'GAME_SERVER');
+        logger.trace(`Server ${serverId} already has ${targetCount} allocations`, 'GAME_SERVER', {
+            details: { ptServerId: serverId, targetCount },
+        });
         return currentAllocations;
     }
 
@@ -229,7 +231,14 @@ export async function setAllocationCount(
                 logger.error(
                     `Failed to add allocation ${i + 1} of ${allocationsToAdd} to server ${serverId}`,
                     'GAME_SERVER',
-                    { details: { error } },
+                    {
+                        details: {
+                            error,
+                            ptServerId: serverId,
+                            allocationIndex: i + 1,
+                            allocationsToAdd,
+                        },
+                    },
                 );
                 throw error;
             }
@@ -253,7 +262,14 @@ export async function setAllocationCount(
                 logger.error(
                     `Failed to remove allocation ${i + 1} of ${allocationsToRemove} from server ${serverId}`,
                     'GAME_SERVER',
-                    { details: { error } },
+                    {
+                        details: {
+                            error,
+                            ptServerId: serverId,
+                            allocationIndex: i + 1,
+                            allocationsToRemove,
+                        },
+                    },
                 );
                 throw error;
             }
@@ -296,11 +312,13 @@ export async function updateServerEnvironmentVariable(
         logger.error(
             `Failed to update environment variable ${envVarName} for server ${serverId}: ${response.status} ${response.statusText} - ${errorData}`,
             'GAME_SERVER',
+            { details: { ptServerId: serverId, envVarName, status: response.status } },
         );
     }
 
     logger.trace(
         `Updated environment variable ${envVarName} to ${value} for server ${serverId}`,
         'GAME_SERVER',
+        { details: { ptServerId: serverId, envVarName, value } },
     );
 }

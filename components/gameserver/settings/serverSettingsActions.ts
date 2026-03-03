@@ -55,13 +55,18 @@ export async function reinstallServer(server: string): Promise<boolean> {
     });
 
     if (!session || !session.user.ptKey) {
-        logger.warn(`Reinstall attempt without authentication for server ${server}`, 'GAME_SERVER');
+        logger.warn(
+            `Reinstall attempt without authentication for server ${server}`,
+            'GAME_SERVER',
+            { details: { ptServerId: server } },
+        );
         return false;
     }
 
     try {
         logger.info(`initiating reinstall for server ${server}`, 'GAME_SERVER', {
             userId: session.user.id,
+            details: { ptServerId: server },
         });
         const response = await ReinstallPTServerClient(server, session.user.ptKey, false);
 
@@ -69,7 +74,7 @@ export async function reinstallServer(server: string): Promise<boolean> {
             logger.error(`Reinstall failed for server ${server}`, 'GAME_SERVER', {
                 userId: session.user.id,
                 gameServerId: server,
-                details: { response: JSON.stringify(response) },
+                details: { ptServerId: server, response: JSON.stringify(response) },
             });
             return false;
         }
@@ -78,7 +83,7 @@ export async function reinstallServer(server: string): Promise<boolean> {
     } catch (error) {
         logger.error(`Exception during server reinstall for ${server}`, 'GAME_SERVER', {
             userId: session.user.id,
-            details: { error },
+            details: { ptServerId: server, error },
         });
         return false;
     }
@@ -177,12 +182,16 @@ async function changeServerDockerImageInternal(
  * @returns true if successful, false otherwise
  */
 export async function enableServerInstallScripts(ptAdminId: number): Promise<boolean> {
-    logger.info(`Enabling install scripts for server ${ptAdminId}`, 'GAME_SERVER');
+    logger.info(`Enabling install scripts for server ${ptAdminId}`, 'GAME_SERVER', {
+        details: { ptAdminId },
+    });
 
     const success = await changeServerDockerImageInternal(ptAdminId.toString(), null, false);
 
     if (!success) {
-        logger.error(`Failed to enable install scripts for server ${ptAdminId}`, 'GAME_SERVER');
+        logger.error(`Failed to enable install scripts for server ${ptAdminId}`, 'GAME_SERVER', {
+            details: { ptAdminId },
+        });
     }
 
     return success;
@@ -200,6 +209,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
         logger.warn(
             `Delete attempt without authentication for server ${ptServerId}`,
             'AUTHENTICATION',
+            { details: { ptServerId } },
         );
         return false;
     }
@@ -212,6 +222,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
         logger.warn(
             `Delete attempt for unknown server ${ptServerId} by user ${session.user.id}`,
             'GAME_SERVER',
+            { userId: session.user.id, details: { ptServerId } },
         );
         return false;
     }
@@ -220,6 +231,11 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
         logger.warn(
             `Delete attempt for non-free server ${ptServerId} by user ${session.user.id}`,
             'GAME_SERVER',
+            {
+                userId: session.user.id,
+                gameServerId: server.id,
+                details: { ptServerId, ptAdminId: server.ptAdminId },
+            },
         );
         return false;
     }
@@ -234,7 +250,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
         logger.error(`Failed to delete free server ${ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
             gameServerId: server.id,
-            details: { error },
+            details: { ptServerId, ptAdminId: server.ptAdminId, error },
         });
         return false;
     }
@@ -242,6 +258,11 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
     logger.info(
         `deleteFreeServer requested for server ${ptServerId} by user ${session.user.id}`,
         'GAME_SERVER',
+        {
+            userId: session.user.id,
+            gameServerId: server.id,
+            details: { ptServerId, ptAdminId: server.ptAdminId },
+        },
     );
     return true;
 }

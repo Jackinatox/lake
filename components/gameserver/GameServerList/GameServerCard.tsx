@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
+import formatDate from '@/lib/formatDate';
 
 function formatExpirationDate(date: Date) {
     const now = new Date();
@@ -50,10 +51,16 @@ function formatExpirationDate(date: Date) {
 
 function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }) {
     const t = useTranslations('gameserver');
-    const expiration =
-        server.status === 'EXPIRED'
-            ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
-            : formatExpirationDate(server.expires);
+    const isExpired = server.status === 'EXPIRED';
+    const expiration = isExpired
+        ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
+        : formatExpirationDate(server.expires);
+
+    // TODO: Use value fropm KeyValue Table
+    const deletionDate = isExpired
+        ? new Date(new Date(server.expires).getTime() + 90 * 24 * 60 * 60 * 1000)
+        : null;
+    const deletionDateFormatted = deletionDate ? formatDate(deletionDate) : null;
 
     const isCreationFailed = server.status === 'CREATION_FAILED';
 
@@ -128,9 +135,16 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
                 </div>
 
                 {/* Expiration - inline on mobile */}
-                <div className="flex items-center gap-2 text-sm sm:shrink-0 pl-15 sm:pl-0">
-                    <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span className={`font-medium ${expiration.color}`}>{expiration.text}</span>
+                <div className="flex items-start gap-2 text-sm sm:shrink-0 pl-15 sm:pl-0">
+                    <Calendar className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                        <span className={`font-medium ${expiration.color}`}>{expiration.text}</span>
+                        {deletionDateFormatted && (
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                                Deleted on {deletionDateFormatted}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
         </CardContent>

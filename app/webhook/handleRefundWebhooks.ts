@@ -37,6 +37,8 @@ export async function handleChargeRefunded(charge: Stripe.Charge) {
         });
 
         logger.info('charge.refunded processed', 'PAYMENT_LOG', {
+            userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 chargeId: charge.id,
@@ -89,7 +91,10 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
 
         await prisma.refund.update({
             where: { id: refundRecord.id },
-            data: { status: newStatus },
+            data: {
+                status: newStatus,
+                receiptNumber: refund.receipt_number ?? undefined,
+            },
         });
 
         // Recalculate order refund status based on all refunds
@@ -127,6 +132,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
         });
 
         logger.info('refund.updated processed', 'PAYMENT_LOG', {
+            userId: refundRecord.order.userId,
+            gameServerId: refundRecord.order.gameServerId ?? undefined,
             details: {
                 refundRecordId: refundRecord.id,
                 stripeRefundId: refund.id,
@@ -139,6 +146,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
         // If refund failed, alert via logging
         if (newStatus === 'FAILED') {
             logger.error('Refund FAILED - manual intervention required', 'PAYMENT_LOG', {
+                userId: refundRecord.order.userId,
+                gameServerId: refundRecord.order.gameServerId ?? undefined,
                 details: {
                     refundRecordId: refundRecord.id,
                     stripeRefundId: refund.id,
@@ -155,6 +164,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
                 await undoRefundedOrder(refundRecord.orderId, refundRecord.serverAction);
             } catch (undoError) {
                 logger.error('Failed to undo refunded order', 'PAYMENT_LOG', {
+                    userId: refundRecord.order.userId,
+                    gameServerId: refundRecord.order.gameServerId ?? undefined,
                     details: {
                         orderId: refundRecord.orderId,
                         refundId: refundRecord.id,
@@ -214,6 +225,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
                 }
             } catch (emailError) {
                 logger.error('Failed to send refund/withdrawal confirmation email', 'PAYMENT_LOG', {
+                    userId: refundRecord.order.userId,
+                    gameServerId: refundRecord.order.gameServerId ?? undefined,
                     details: {
                         orderId: refundRecord.orderId,
                         refundId: refundRecord.id,
@@ -251,6 +264,8 @@ export async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
         }
 
         logger.error('DISPUTE OPENED - Immediate admin attention required', 'PAYMENT_LOG', {
+            userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 disputeId: dispute.id,
@@ -315,6 +330,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
             data: {
                 orderId: order.id,
                 stripeRefundId: refund.id,
+                receiptNumber: refund.receipt_number ?? null,
                 amount: refund.amount,
                 reason: 'Externally created refund (Stripe Dashboard)',
                 internalNote: 'Auto-reconciled from webhook',
@@ -347,6 +363,8 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
         });
 
         logger.info('External refund reconciled', 'PAYMENT_LOG', {
+            userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 stripeRefundId: refund.id,

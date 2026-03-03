@@ -75,7 +75,13 @@ const ENV_VARS_REQUIRED = [
     'NEXT_PUBLIC_SUPPORT_MAIL',
     'TELEGRAM_CHAT_ID',
     'TELEGRAM_BOT_TOKEN',
+    'NEXT_PUBLIC_POSTHOG_KEY',
+    'NEXT_PUBLIC_POSTHOG_HOST',
+    'OTEL_EXPORTER_OTLP_ENDPOINT',
+    'INSTANCE_ID',
+    'DEPLOYMENT_ENV',
 ];
+
 export async function performVerification(): Promise<void> {
     await verifyDatabaseConst();
     await verifyEnvVars();

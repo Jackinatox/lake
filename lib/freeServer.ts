@@ -40,6 +40,8 @@ export async function notifyFreeServerCreated(orderId: string) {
                 });
             } catch (emailErr) {
                 logger.error('Failed to send free-server-created email', 'EMAIL', {
+                    userId: updatedOrder.userId,
+                    gameServerId: updatedOrder.gameServerId ?? undefined,
                     details: { error: emailErr, orderId: updatedOrder.id },
                 });
             }
