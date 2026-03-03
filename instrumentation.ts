@@ -39,5 +39,8 @@ export async function register() {
         console.log('Running startup database constant verification...');
         await performVerification();
         logs.setGlobalLoggerProvider(loggerProvider);
+        const { logger } = await import('./lib/logger');
+        logger.info('OpenTelemetry LoggerProvider registered successfully');
+        logger.info('Logging finished setup and verification');
     }
 }
