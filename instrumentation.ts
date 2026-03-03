@@ -15,6 +15,7 @@ export const loggerProvider = new LoggerProvider({
         // Each container sets INSTANCE_ID (e.g. "lake-0"). Falls back to the
         // Docker-assigned hostname so it's never empty.
         'service.instance.id': process.env.INSTANCE_ID ?? process.env.HOSTNAME ?? 'unknown',
+        'environment': process.env.DEPLOYMENT_ENV ?? 'unknown',
         // one common tag for lake-wide log querying in Loki
         'service.name': 'lake',
     }),
