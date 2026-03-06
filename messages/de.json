@@ -705,7 +705,7 @@
     "withdrawal": "Widerruf"
   },
   "gameserver": {
-    "freeServer": "Kostenlos",
+    "freeServer": "Kostenloser Server",
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",
     "loading": "Server wird geladen...",
@@ -1053,5 +1053,13 @@
     "legalNote": "Nach EU-Verbraucherschutzrecht (§355 BGB) hast du das Recht, innerhalb von 14 Tagen nach dem Kauf von jedem Vertrag zurückzutreten. Die Erstattung wird anteilig basierend auf der ungenutzten Servicezeit berechnet.",
     "supportNote": "Bei Fragen oder Hilfe zu einer Erstattung kontaktiere unser",
     "supportLink": "Support-Team"
+  },
+  "CookieBanner": {
+    "title": "Cookie-Hinweis",
+    "description": "Wir verwenden Analyse-Cookies (PostHog), um zu verstehen, welche Funktionen wie intensiv genutzt werden und potentielle Bugs zu finden.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen",
+    "privacyPolicy": "Datenschutzerklärung",
+    "cookieSettings": "Cookie-Einstellungen"
   }
 }

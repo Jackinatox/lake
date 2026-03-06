@@ -47,7 +47,7 @@ function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayPr
                     asChild
                     className="w-full sm:w-auto shrink-0 gap-1.5"
                 >
-                    <Link href={`/gameserver/${ptServerId}/upgrade`}>
+                    <Link href={`/gameserver/${ptServerId}/upgrade?extend=30`}>
                         <ArrowUpCircle className="h-3.5 w-3.5" />
                         Extend
                     </Link>

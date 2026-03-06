@@ -13,6 +13,8 @@ export interface UpdateGameServerInput {
 }
 
 export async function updateGameServer(input: UpdateGameServerInput) {
+    // TODO: Implement this to also update values in Pterodactyl
+    throw new Error("Not implemented yet");
     const session = await auth.api.getSession({
         headers: await headers(),
     });

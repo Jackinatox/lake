@@ -22,7 +22,12 @@ const PageHeader = () => (
 const ServerList = ({ servers, apiKey }: { servers: ClientServer[]; apiKey: string }) => (
     <div className="space-y-4">
         {servers.map((server) => (
-            <ServerCard key={server.id} server={server} apiKey={apiKey} />
+            <ServerCard
+                key={server.id}
+                server={server}
+                apiKey={apiKey}
+                isFreeServer={server.type === 'FREE'}
+            />
         ))}
     </div>
 );

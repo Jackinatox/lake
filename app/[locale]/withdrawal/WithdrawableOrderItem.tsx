@@ -3,6 +3,7 @@
 import { OrderType } from '@/app/client/generated/browser';
 import { RefundRequestButton } from '@/components/payments/RefundRequestButton';
 import { Badge } from '@/components/ui/badge';
+import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
 import { Gamepad2, Clock, Undo2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -41,7 +42,7 @@ export function WithdrawableOrderItem({
     const daysSincePurchase = Math.floor(
         (now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24),
     );
-    const daysRemaining = Math.max(0, 14 - daysSincePurchase);
+    const daysRemaining = Math.max(0, WITHDRAWAL_WINDOW_DAYS - daysSincePurchase);
 
     const alreadyRefundedCents = existingRefunds
         .filter((r) => r.status === 'SUCCEEDED' || r.status === 'PENDING')

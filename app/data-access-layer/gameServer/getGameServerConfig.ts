@@ -37,6 +37,5 @@ export async function getGameServerConfig(
         allocations: server.allocations,
         durationsDays,
         pfGroupId: server.locationId,
-        // TODO: Check if this needs ptId or dbId
     };
 }

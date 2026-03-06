@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 // This endpoint should be protected by the reverse proxy to only be accessed locally
 
@@ -649,9 +650,16 @@ const collectors: Metric[] = [
 
 export async function GET() {
     const start = performance.now();
-    const blocks = await Promise.all(
+    const results = await Promise.allSettled(
         collectors.map(async (m) => renderMetric(m, await m.collect())),
     );
+    const blocks = results.flatMap((r, i) => {
+        if (r.status === 'fulfilled') return [r.value];
+        logger.error('promExport: collector failed', 'SYSTEM', {
+            details: { metric: collectors[i].name, err: r.reason },
+        });
+        return [];
+    });
     const duration = (performance.now() - start) / 1000;
 
     blocks.push(
