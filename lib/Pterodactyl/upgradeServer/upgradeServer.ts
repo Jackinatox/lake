@@ -1,11 +1,10 @@
 import prisma from '@/lib/prisma';
 
+import { GameServerOrder } from '@/app/client/generated/browser';
+import { logger } from '@/lib/logger';
 import { env } from 'next-runtime-env';
 import { createPtClient } from '../ptAdminClient';
-import { logger } from '@/lib/logger';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
-import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { GameServerOrder } from '@/app/client/generated/browser';
 
 /**
  * Upgrades a game server's resources (CPU and RAM) based on a server order.
