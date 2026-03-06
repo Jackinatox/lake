@@ -705,7 +705,7 @@
     "withdrawal": "Withdrawal"
   },
   "gameserver": {
-    "freeServer": "Free",
+    "freeServer": "Free Server",
     "creationFailed": "Creation Failed",
     "creationFailedMessage": "Our team will resolve this soon",
     "loading": "Loading Server...",

@@ -705,7 +705,7 @@
     "withdrawal": "Widerruf"
   },
   "gameserver": {
-    "freeServer": "Kostenlos",
+    "freeServer": "Kostenloser Server",
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",
     "loading": "Server wird geladen...",

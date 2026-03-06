@@ -17,7 +17,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/formatDate';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/browser';

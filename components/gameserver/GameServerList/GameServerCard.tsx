@@ -2,59 +2,45 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientServer } from '@/models/prisma';
-import { Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
+import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
-import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import formatDate from '@/lib/formatDate';
 
-function formatExpirationDate(date: Date) {
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+type ExpirationUrgency = 'ok' | 'warn' | 'urgent' | 'expired';
 
-    // Format: "15.01.2025 14:30"
-    const formattedDate = date.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
-    const formattedTime = date.toLocaleTimeString('de-DE', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-    });
+function getExpiration(date: Date): { text: string; urgency: ExpirationUrgency } {
+    const diffDays = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const text =
+        date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+        ' ' +
+        date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-    if (diffDays < 0) {
-        return { text: 'Expired', color: 'text-red-600 dark:text-red-400' };
-    } else if (diffDays <= 7) {
-        return {
-            text: `${formattedDate} ${formattedTime}`,
-            color: 'text-orange-600 dark:text-orange-400',
-        };
-    } else if (diffDays <= 30) {
-        return {
-            text: `${formattedDate} ${formattedTime}`,
-            color: 'text-yellow-600 dark:text-yellow-400',
-        };
-    } else {
-        return {
-            text: `${formattedDate} ${formattedTime}`,
-            color: 'text-slate-600 dark:text-slate-400',
-        };
-    }
+    if (diffDays < 0) return { text: 'Expired', urgency: 'expired' };
+    if (diffDays <= 7) return { text, urgency: 'urgent' };
+    if (diffDays <= 30) return { text, urgency: 'warn' };
+    return { text, urgency: 'ok' };
 }
+
+const expiryColor: Record<ExpirationUrgency, string> = {
+    ok: 'text-slate-500 dark:text-slate-400',
+    warn: 'text-yellow-600 dark:text-yellow-400',
+    urgent: 'text-orange-600 dark:text-orange-400',
+    expired: 'text-red-600 dark:text-red-400',
+};
 
 function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }) {
     const t = useTranslations('gameserver');
     const isExpired = server.status === 'EXPIRED';
+    const isCreationFailed = server.status === 'CREATION_FAILED';
+
     const expiration = isExpired
-        ? { text: 'Expired', color: 'text-red-600 dark:text-red-400' }
-        : formatExpirationDate(server.expires);
+        ? { text: 'Expired', urgency: 'expired' as ExpirationUrgency }
+        : getExpiration(server.expires);
 
     // TODO: Use value from KeyValue Table
     const deletionDate = isExpired
@@ -62,86 +48,87 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
         : null;
     const deletionDateFormatted = deletionDate ? formatDate(deletionDate) : null;
 
-    const isCreationFailed = server.status === 'CREATION_FAILED';
-
-    const cardContent = (
-        <CardContent className="p-3 sm:p-6">
-            {/* Mobile layout: compact stacked design */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                {/* Top row on mobile: icon + name + status */}
-                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                    {/* Game icon */}
-                    <div className="shrink-0">
-                        <span className="block dark:hidden">
-                            <Image
-                                src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                                alt={`${server.gameData.name} icon`}
-                                width={64}
-                                height={64}
-                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg object-cover"
-                                priority
-                            />
-                        </span>
-                        <span className="hidden dark:block">
-                            <Image
-                                src={`/images/dark/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                                alt={`${server.gameData.name} icon (dark mode)`}
-                                width={64}
-                                height={64}
-                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg object-cover"
-                                priority
-                            />
-                        </span>
-                    </div>
-
-                    {/* Server info */}
-                    <div className="flex-1 min-w-0">
-                        {/* Name row with status */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-lg sm:text-xl text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                                {server.name}
-                            </h3>
-                            <GameServerStatus apiKey={apiKey} server={server} />
-                            {server.type === 'FREE' && (
-                                <Badge className="bg-linear-to-r from-green-500 to-emerald-600 text-white border-0 px-2 py-0.5 text-xs font-bold shadow-sm">
-                                    💸 {t('freeServer')}
-                                </Badge>
-                            )}
-                        </div>
-
-                        {/* Creation failed message */}
-                        {isCreationFailed && (
-                            <div className="mt-1 text-sm text-red-700 dark:text-red-300 font-medium">
-                                {t('creationFailed')} <br /> {t('creationFailedMessage')}
-                            </div>
-                        )}
-
-                        {/* Specs row - compact on mobile */}
-                        <div className="flex items-center gap-4 sm:gap-5 mt-1.5 text-sm text-slate-600 dark:text-slate-400">
-                            <span className="flex items-center gap-1">
-                                <Cpu className="w-4 h-4 text-blue-500" />
-                                {formatVCoresFromPercent(server.cpuPercent)}
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <MemoryStick className="w-4 h-4 text-purple-500" />
-                                <span>{formatMBToGiB(server.ramMB)}</span>
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <HardDrive className="w-4 h-4 text-green-500" />
-                                <span>{formatBytes(server.diskMB * 1024 * 1024)}</span>
-                            </span>
-                        </div>
-                    </div>
+    const inner = (
+        <CardContent className="p-3 sm:p-4">
+            <div className="flex gap-3">
+                {/* Game icon */}
+                <div className="shrink-0">
+                    <span className="block dark:hidden">
+                        <Image
+                            src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                            alt={server.gameData.name}
+                            width={48}
+                            height={48}
+                            className="w-11 h-11 rounded-lg object-cover"
+                            priority
+                        />
+                    </span>
+                    <span className="hidden dark:block">
+                        <Image
+                            src={`/images/dark/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                            alt={server.gameData.name}
+                            width={48}
+                            height={48}
+                            className="w-11 h-11 rounded-lg object-cover"
+                            priority
+                        />
+                    </span>
                 </div>
 
-                {/* Expiration - inline on mobile */}
-                <div className="flex items-start gap-2 text-sm sm:shrink-0 pl-15 sm:pl-0">
-                    <Calendar className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                    <div className="flex flex-col">
-                        <span className={`font-medium ${expiration.color}`}>{expiration.text}</span>
-                        {deletionDateFormatted && (
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                                Deleted on {deletionDateFormatted}
+                {/* Content */}
+                <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                    {/* Name + status */}
+                    <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-semibold text-base text-slate-900 dark:text-slate-100 truncate leading-snug min-w-0">
+                            {server.name}
+                        </h3>
+                        <div className="shrink-0">
+                            <GameServerStatus apiKey={apiKey} server={server} />
+                        </div>
+                    </div>
+
+                    {/* Creation failed notice */}
+                    {isCreationFailed && (
+                        <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                            <span>
+                                {t('creationFailed')} — {t('creationFailedMessage')}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Specs */}
+                    <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                        <span className="flex items-center gap-1">
+                            <Cpu className="w-3.5 h-3.5 text-blue-400" />
+                            {formatVCoresFromPercent(server.cpuPercent)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <MemoryStick className="w-3.5 h-3.5 text-purple-400" />
+                            {formatMBToGiB(server.ramMB)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
+                            {formatBytes(server.diskMB * 1024 * 1024)}
+                        </span>
+                    </div>
+
+                    {/* Bottom row: expiration + free label */}
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1 text-xs min-w-0">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className={expiryColor[expiration.urgency]}>
+                                {expiration.text}
+                            </span>
+                            {deletionDateFormatted && (
+                                <span className="text-slate-400 dark:text-slate-500 truncate">
+                                    &nbsp;· deleted {deletionDateFormatted}
+                                </span>
+                            )}
+                        </div>
+                        {server.type === 'FREE' && (
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium shrink-0">
+                                {t('freeServer')}
                             </span>
                         )}
                     </div>
@@ -152,19 +139,17 @@ function ServerCard({ server, apiKey }: { server: ClientServer; apiKey: string }
 
     return (
         <Card
-            className={`group hover:shadow-md transition-all duration-300 shadow-sm ${
+            className={`group transition-all duration-200 ${
                 isCreationFailed
-                    ? 'border-2 border-red-500 dark:border-red-600 bg-red-50/50 dark:bg-red-950/20'
-                    : ''
+                    ? 'border-red-400/60 dark:border-red-600/60 bg-red-50/50 dark:bg-red-950/20'
+                    : 'hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'
             }`}
         >
             {isCreationFailed ? (
-                cardContent
+                inner
             ) : (
-                <Link
-                    href={`/gameserver/${server.ptServerId}${server.status === 'EXPIRED' ? '/upgrade' : ''}`}
-                >
-                    {cardContent}
+                <Link href={`/gameserver/${server.ptServerId}${isExpired ? '/upgrade' : ''}`}>
+                    {inner}
                 </Link>
             )}
         </Card>
