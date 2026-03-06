@@ -264,7 +264,6 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                             <span>{t('gameserver.dashboard.uptime')}</span>
                         </div>
                         <span className="font-medium tabular-nums">
-                            {/* TODO: Format uptime nicely */}
                             {loading ? '—' : formatMilliseconds(serverStats?.uptime_seconds ?? 0)}
                         </span>
                     </div>

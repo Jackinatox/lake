@@ -15,8 +15,8 @@ export default function PackagesListClient({ packages }: PackagesListClientProps
         <div className="-mx-2 -my-2 md:-mx-8 md:-my-4">
             {/* Hero */}
             <section className="relative pt-6 pb-16 md:pt-16 md:pb-32 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5" />
-                <div className="absolute bottom-0 left-0 right-0 h-16 md:h-32 bg-gradient-to-t from-background to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-primary/5" />
+                <div className="absolute bottom-0 left-0 right-0 h-16 md:h-32 bg-linear-to-t from-background to-transparent" />
                 <div className="relative z-10 max-w-6xl mx-auto px-2 md:px-6">
                     <div className="mb-4 md:mb-6">
                         <Button variant="ghost" size="sm" asChild>
@@ -33,7 +33,7 @@ export default function PackagesListClient({ packages }: PackagesListClientProps
                         </div>
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                             Pre-Configured{' '}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
+                            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-primary/60">
                                 Packages
                             </span>
                         </h1>
@@ -70,29 +70,22 @@ export default function PackagesListClient({ packages }: PackagesListClientProps
 
             {/* Custom Hardware CTA */}
             <section className="py-8 md:py-12">
-                <div className="max-w-4xl mx-auto px-2 md:px-6">
-                    <div className="relative rounded-xl border bg-card p-4 md:p-8 overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent" />
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 md:gap-8">
-                            <div className="shrink-0">
-                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <Wrench className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                <div className="max-w-6xl mx-auto px-2 md:px-6">
+                    <div className="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <div className="shrink-0 p-2 rounded-lg bg-primary/10">
+                                    <Wrench className="h-5 w-5 text-primary" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="font-semibold mb-1">Custom Hardware</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Build your own from scratch
+                                    </p>
                                 </div>
                             </div>
-                            <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">
-                                    Need More Control?
-                                </h2>
-                                <p className="text-sm md:text-base text-muted-foreground">
-                                    Configure your own server from scratch. Choose CPU, RAM,
-                                    duration, and more — then pick a game.
-                                </p>
-                            </div>
-                            <Button asChild size="lg" className="shrink-0 w-full md:w-auto">
-                                <Link href="/order/configure">
-                                    <Wrench className="h-4 w-4 mr-2" />
-                                    Custom Hardware
-                                </Link>
+                            <Button asChild className="shrink-0">
+                                <Link href="/order/configure">Configure Now</Link>
                             </Button>
                         </div>
                     </div>
