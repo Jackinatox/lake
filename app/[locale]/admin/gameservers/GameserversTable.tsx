@@ -23,30 +23,12 @@ import { GameServerStatus, GameServerType } from '@/app/client/generated/browser
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EditServerDialog } from './EditServerDialog';
-import { Pencil } from 'lucide-react';
+import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
-
-interface GameServerWithRelations {
-    id: string;
-    userId: string;
-    ramMB: number;
-    cpuPercent: number;
-    diskMB: number;
-    backupCount: number;
-    expires: Date;
-    price: number;
-    type: GameServerType;
-    ptServerId: string | null;
-    ptAdminId: number | null;
-    name: string;
-    status: GameServerStatus;
-    createdAt: Date;
-    user: { id: string; email: string };
-    location: { id: number; name: string };
-}
+import { GameServerAdmin } from '@/models/prisma';
 
 interface GameserversTableProps {
-    servers: GameServerWithRelations[];
+    servers: GameServerAdmin[];
     currentPage: number;
     totalPages: number;
     totalCount: number;
@@ -73,7 +55,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
-    const [editingServer, setEditingServer] = useState<GameServerWithRelations | null>(null);
+    const [editingServer, setEditingServer] = useState<GameServerAdmin | null>(null);
 
     const handleCheckboxChange = (id: string, checked: boolean) => {
         setSelectedIds((prev) =>
@@ -316,13 +298,11 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                                 </TableCell>
                                 <TableCell>{gameserver.ptServerId || 'N/A'}</TableCell>
                                 <TableCell>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setEditingServer(gameserver)}
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
+                                    <AdminServerActionsMenu
+                                        server={gameserver}
+                                        onEdit={() => setEditingServer(gameserver)}
+                                        onSuccess={() => router.refresh()}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}
