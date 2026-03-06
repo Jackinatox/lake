@@ -42,7 +42,7 @@ export default function ChangeGameConfigClient({
         try {
             setIsSubmitting(true);
             await changeGame({
-                serverId,
+                ptServerId: serverId,
                 gameId: game.id,
                 gameConfig: config,
                 deleteFiles,

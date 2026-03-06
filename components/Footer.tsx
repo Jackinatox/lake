@@ -1,4 +1,5 @@
 import { ThemeSwitcher } from '@/components/Menu/theme-switcher';
+import CookieSettingsButton from '@/components/CookieSettingsButton';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -141,6 +142,7 @@ export default function Footer() {
                         </span>
                     </div>
                     <ThemeSwitcher />
+                    <CookieSettingsButton />
                 </div>
             </div>
         </footer>

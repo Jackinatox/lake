@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import CookieBanner from '@/components/CookieBanner';
 import { Toaster } from '@/components/ui/toaster';
 import { Metadata } from 'next';
 import { NextIntlClientProvider, useLocale } from 'next-intl';
@@ -65,6 +66,7 @@ export default async function RootLayout({
                             </div>
                             <Footer />
                         </main>
+                        <CookieBanner />
                     </ThemeProvider>
                 </body>
             </NextIntlClientProvider>
