@@ -1,5 +1,8 @@
 <img src="./public/images/light/logo/ScyedLogo.webp" alt="Scyed Logo" width="200" />
 
+> [!CAUTION]  
+> Only use Lake with the worker that has the same Major.Minor Version. The Patch usually doesnt matter
+
 # Lake
 
 ### Scyed Game Server Hosting Platform
