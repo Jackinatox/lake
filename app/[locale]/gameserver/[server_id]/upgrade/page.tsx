@@ -6,9 +6,22 @@ import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-async function UpgradePage({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
+async function UpgradePage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ locale: string; server_id: string }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
     const awaitedParams = await params;
     const { server_id } = awaitedParams;
+    const awaitedSearch = await searchParams;
+    const query = new URLSearchParams(
+        Object.entries(awaitedSearch).flatMap(([k, v]) =>
+            Array.isArray(v) ? v.map((val) => [k, val]) : v !== undefined ? [[k, v]] : [],
+        ),
+    ).toString();
+    const queryString = query ? `?${query}` : '';
 
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -31,7 +44,7 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
 
     const direction = server.type === 'FREE' ? 'freeServer' : 'payedServer';
 
-    redirect(`/gameserver/${server_id}/upgrade/${direction}`);
+    redirect(`/gameserver/${server_id}/upgrade/${direction}${queryString}`);
 }
 
 export default UpgradePage;

@@ -27,8 +27,6 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
 
     try {
         await toggleSuspendGameServer(gameServer.id, 'unsuspend');
-        const diskMb = calcDiskSize(serverOrder.cpuPercent, serverOrder.ramMB);
-        const backups = calcBackups(serverOrder.cpuPercent, serverOrder.ramMB);
 
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
@@ -42,13 +40,13 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                     allocation: ptServer.allocation,
                     memory: serverOrder.ramMB,
                     swap: ptServer.limits.swap,
-                    disk: diskMb,
+                    disk: serverOrder.diskMB,
                     io: ptServer.limits.io,
                     cpu: serverOrder.cpuPercent,
                     feature_limits: {
                         allocations: ptServer.featureLimits.allocations,
                         databases: ptServer.featureLimits.databases,
-                        backups: backups,
+                        backups: serverOrder.backupCount,
                     },
                 }),
             },
@@ -62,8 +60,8 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             data: {
                 cpuPercent: serverOrder.cpuPercent,
                 ramMB: serverOrder.ramMB,
-                diskMB: diskMb,
-                backupCount: backups,
+                diskMB: serverOrder.diskMB,
+                backupCount: serverOrder.backupCount,
                 expires: serverOrder.expiresAt,
                 status: 'ACTIVE',
                 lastExtended: new Date(),

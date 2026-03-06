@@ -11,6 +11,7 @@ import Link from 'next/link';
 import React from 'react';
 import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
+import { useSearchParams } from 'next/navigation';
 
 interface UpgradeGameServerProps {
     serverId: string;
@@ -20,6 +21,8 @@ interface UpgradeGameServerProps {
 }
 
 function UpgradeGameServer({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
+    const searchParams = useSearchParams();
+    const initialDays = searchParams.get('extend') === '30' ? 30 : undefined;
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
@@ -70,6 +73,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
                         performanceOptions={performanceOptions}
                         initialConfig={selectedConfig ?? minOptions}
                         onNext={handleNext}
+                        initialDays={initialDays}
                     />
                 </>
             )}

@@ -28,12 +28,14 @@ interface HardwareConfigProps {
     performanceOptions: PerformanceGroup[];
     onNext: (config: HardwareConfig) => void;
     initialConfig: HardwareConfig;
+    initialDays?: number;
 }
 
 export function UpgradeHardwareConfig({
     initialConfig,
     performanceOptions,
     onNext,
+    initialDays,
 }: HardwareConfigProps) {
     const t = useTranslations('upgrade');
 
@@ -41,7 +43,7 @@ export function UpgradeHardwareConfig({
 
     const [cpuCores, setCpuCores] = useState(initialConfig.cpuPercent / 100);
     const [ramGb, setRamGb] = useState(initialConfig.ramMb / 1024);
-    const [days, setDays] = useState(0);
+    const [days, setDays] = useState(initialDays ?? 0);
     const [totalPrice, setTotalPrice] = useState<UpgradePriceDef>({
         totalCents: 0,
         upgradeCents: { cpu: 0, ram: 0 },

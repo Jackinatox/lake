@@ -16,6 +16,10 @@ export async function expireGameServer(id: string) {
     await requireAdmin();
     try {
         await toggleSuspendGameServer(id, 'suspend');
+        await prisma.gameServer.update({
+            where: { id },
+            data: { expires: new Date() },
+        });
         return { success: true };
     } catch (error) {
         return { success: false, error: error instanceof Error ? error.message : String(error) };
