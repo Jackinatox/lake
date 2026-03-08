@@ -136,7 +136,7 @@ export default async function handleCheckoutSessionCompleted(
                     invoiceDate: new Date(),
                     gameName: gameName,
                     gameImageUrl: gameImageUrl,
-                    serverName: 'Game Server',
+                    serverName: 'Gameserver',
                     orderType: updatedOrder.type,
                     ramMB: updatedOrder.ramMB,
                     cpuPercent: updatedOrder.cpuPercent,

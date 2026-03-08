@@ -187,17 +187,7 @@ export async function GET(req: NextRequest) {
         headers: await headers(),
     });
 
-    if (!(isLocalIP(clientIP) || session?.user.role?.includes('admin'))) {
-        console.log(clientIP);
-        logger
-            .logError({}, 'SYSTEM', {
-                method: 'GET',
-                path: '/api/status',
-                ipAddress: clientIP ?? undefined,
-            })
-            .catch(() => {
-                /* swallow logging errors */
-            });
+    if (!(isLocalIP(clientIP) || session?.user.role === 'admin')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

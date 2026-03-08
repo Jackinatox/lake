@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { useTranslations } from 'next-intl';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import {
     ChartConfig,
@@ -38,7 +37,6 @@ const config = {
 export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
     const [data, setData] = useState<DataPoint[]>([]);
     const lastUpdate = useRef<number>(0);
-    const t = useTranslations();
 
     useEffect(() => {
         if (newData?.cpu_absolute === undefined) return;
@@ -117,7 +115,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
             ticks = [0, 0.2, 0.4, 0.6, 0.8, 1];
         }
 
-        return { yDomain: [0, maxY] as [number, number], yTicks: ticks };
+        return { yDomain: [0, maxY], yTicks: ticks };
     }, [data]);
 
     const formatTime = (ts: number): string => {
@@ -128,84 +126,67 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
         return `${Math.floor(diff / 60)}m`;
     };
 
-    const currentCpu =
-        newData?.cpu_absolute !== undefined ? `${newData.cpu_absolute.toFixed(0)}%` : 'N/A';
-    const limitLabel = formatVCores(cpuLimit);
-
     return (
-        <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-                <div className="text-muted-foreground">
-                    {t('gameserver.dashboard.charts.current')}:{' '}
-                    <span className="font-semibold text-foreground">{currentCpu}</span>
-                </div>
-                <div className="text-muted-foreground">
-                    {t('gameserver.dashboard.charts.limit')}:{' '}
-                    <span className="font-semibold text-foreground">{limitLabel}</span>
-                </div>
-            </div>
+        <ChartContainer config={config} className="h-37.5 w-full">
+            <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                    <linearGradient id="gradCpu" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--color-cpu)" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="var(--color-cpu)" stopOpacity={0.05} />
+                    </linearGradient>
+                </defs>
 
-            <ChartContainer config={config} className="h-37.5 w-full">
-                <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                        <linearGradient id="gradCpu" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="var(--color-cpu)" stopOpacity={0.4} />
-                            <stop offset="100%" stopColor="var(--color-cpu)" stopOpacity={0.05} />
-                        </linearGradient>
-                    </defs>
+                <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={true}
+                    horizontal={true}
+                    className="stroke-muted"
+                />
 
-                    <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={true}
-                        horizontal={true}
-                        className="stroke-muted"
-                    />
+                <XAxis
+                    dataKey="timestamp"
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={formatTime}
+                    tickLine={true}
+                    axisLine={true}
+                    tickMargin={8}
+                    className="text-xs"
+                />
 
-                    <XAxis
-                        dataKey="timestamp"
-                        type="number"
-                        domain={['dataMin', 'dataMax']}
-                        tickFormatter={formatTime}
-                        tickLine={true}
-                        axisLine={true}
-                        tickMargin={8}
-                        className="text-xs"
-                    />
+                <YAxis
+                    domain={yDomain}
+                    ticks={yTicks}
+                    tickLine={true}
+                    axisLine={true}
+                    tickMargin={8}
+                    tickFormatter={(v) => `${v}%`}
+                    width={45}
+                    className="text-xs"
+                />
 
-                    <YAxis
-                        domain={yDomain}
-                        ticks={yTicks}
-                        tickLine={true}
-                        axisLine={true}
-                        tickMargin={8}
-                        tickFormatter={(v) => `${v}%`}
-                        width={45}
-                        className="text-xs"
-                    />
+                <ChartTooltip
+                    content={
+                        <ChartTooltipContent
+                            labelFormatter={(_, p) =>
+                                p?.[0] ? formatTime(p[0].payload.timestamp) : ''
+                            }
+                            formatter={(v) => [`${Number(v).toFixed(0)}%`, 'CPU']}
+                        />
+                    }
+                />
 
-                    <ChartTooltip
-                        content={
-                            <ChartTooltipContent
-                                labelFormatter={(_, p) =>
-                                    p?.[0] ? formatTime(p[0].payload.timestamp) : ''
-                                }
-                                formatter={(v) => [`${Number(v).toFixed(0)}%`, 'CPU']}
-                            />
-                        }
-                    />
-
-                    <Area
-                        dataKey="cpu"
-                        type="monotone"
-                        fill="url(#gradCpu)"
-                        stroke="var(--color-cpu)"
-                        strokeWidth={2}
-                        isAnimationActive={false}
-                        dot={false}
-                        fillOpacity={1}
-                    />
-                </AreaChart>
-            </ChartContainer>
-        </div>
+                <Area
+                    dataKey="cpu"
+                    type="monotone"
+                    fill="url(#gradCpu)"
+                    stroke="var(--color-cpu)"
+                    strokeWidth={2}
+                    isAnimationActive={false}
+                    dot={false}
+                    fillOpacity={1}
+                />
+            </AreaChart>
+        </ChartContainer>
     );
 }

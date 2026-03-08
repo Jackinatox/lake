@@ -140,7 +140,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     asChild
                                     size="default"
                                     variant="secondary"
-                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                    className="bg-green-600 hover:bg-green-700 text-background"
                                 >
                                     <Link href="/order/free" className="flex items-center">
                                         <Gift className="h-4 w-4 mr-1.5" />

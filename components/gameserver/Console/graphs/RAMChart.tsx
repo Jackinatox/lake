@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { useTranslations } from 'next-intl';
 import {
     ChartConfig,
     ChartContainer,
@@ -39,7 +38,6 @@ const config = {
 export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
     const [data, setData] = useState<DataPoint[]>([]);
     const lastUpdate = useRef<number>(0);
-    const t = useTranslations();
 
     useEffect(() => {
         if (newData?.memory_bytes === undefined) return;
@@ -110,84 +108,67 @@ export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
         return `${Math.floor(diff / 60)}m`;
     };
 
-    const currentRam =
-        newData?.memory_bytes !== undefined ? formatGiBValue(newData.memory_bytes) : 'N/A';
-    const limitLabel = t('gameserver.dashboard.charts.memoryGiB', { amount: memoryLimit });
-
     return (
-        <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-                <div className="text-muted-foreground">
-                    {t('gameserver.dashboard.charts.current')}:{' '}
-                    <span className="font-semibold text-foreground">{currentRam}</span>
-                </div>
-                <div className="text-muted-foreground">
-                    {t('gameserver.dashboard.charts.limit')}:{' '}
-                    <span className="font-semibold text-foreground">{limitLabel}</span>
-                </div>
-            </div>
+        <ChartContainer config={config} className="h-37.5 w-full">
+            <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                    <linearGradient id="gradRam" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="var(--color-ram)" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="var(--color-ram)" stopOpacity={0.05} />
+                    </linearGradient>
+                </defs>
 
-            <ChartContainer config={config} className="h-37.5 w-full">
-                <AreaChart data={displayData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                        <linearGradient id="gradRam" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="var(--color-ram)" stopOpacity={0.4} />
-                            <stop offset="100%" stopColor="var(--color-ram)" stopOpacity={0.05} />
-                        </linearGradient>
-                    </defs>
+                <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={true}
+                    horizontal={true}
+                    className="stroke-muted"
+                />
 
-                    <CartesianGrid
-                        strokeDasharray="3 3"
-                        vertical={true}
-                        horizontal={true}
-                        className="stroke-muted"
-                    />
+                <XAxis
+                    dataKey="timestamp"
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={formatTime}
+                    tickLine={true}
+                    axisLine={true}
+                    tickMargin={8}
+                    className="text-xs"
+                />
 
-                    <XAxis
-                        dataKey="timestamp"
-                        type="number"
-                        domain={['dataMin', 'dataMax']}
-                        tickFormatter={formatTime}
-                        tickLine={true}
-                        axisLine={true}
-                        tickMargin={8}
-                        className="text-xs"
-                    />
+                <YAxis
+                    domain={[0, memoryLimit]}
+                    ticks={yTicks}
+                    tickLine={true}
+                    axisLine={true}
+                    tickMargin={8}
+                    tickFormatter={(v) => `${v} GiB`}
+                    width={50}
+                    className="text-xs"
+                />
 
-                    <YAxis
-                        domain={[0, memoryLimit]}
-                        ticks={yTicks}
-                        tickLine={true}
-                        axisLine={true}
-                        tickMargin={8}
-                        tickFormatter={(v) => `${v} GiB`}
-                        width={50}
-                        className="text-xs"
-                    />
+                <ChartTooltip
+                    content={
+                        <ChartTooltipContent
+                            labelFormatter={(_, p) =>
+                                p?.[0] ? formatTime(p[0].payload.timestamp) : ''
+                            }
+                            formatter={(v) => [formatGiBValue(Number(v)), 'RAM']}
+                        />
+                    }
+                />
 
-                    <ChartTooltip
-                        content={
-                            <ChartTooltipContent
-                                labelFormatter={(_, p) =>
-                                    p?.[0] ? formatTime(p[0].payload.timestamp) : ''
-                                }
-                                formatter={(v) => [formatGiBValue(Number(v)), 'RAM']}
-                            />
-                        }
-                    />
-
-                    <Area
-                        dataKey="ram"
-                        type="monotone"
-                        fill="url(#gradRam)"
-                        stroke="var(--color-ram)"
-                        strokeWidth={2}
-                        isAnimationActive={false}
-                        dot={false}
-                        fillOpacity={1}
-                    />
-                </AreaChart>
-            </ChartContainer>
-        </div>
+                <Area
+                    dataKey="ram"
+                    type="monotone"
+                    fill="url(#gradRam)"
+                    stroke="var(--color-ram)"
+                    strokeWidth={2}
+                    isAnimationActive={false}
+                    dot={false}
+                    fillOpacity={1}
+                />
+            </AreaChart>
+        </ChartContainer>
     );
 }

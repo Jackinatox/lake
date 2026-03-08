@@ -42,7 +42,7 @@ const NoServersMessage = () => (
             No servers found
         </h3>
         <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Get started by creating your first game server
+            Get started by creating your first gameserver
         </p>
     </div>
 );
