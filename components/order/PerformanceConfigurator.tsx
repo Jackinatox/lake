@@ -12,8 +12,7 @@ import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
-import { cn } from '@/lib/utils';
-import { HardDrive, Archive, Network } from 'lucide-react';
+import ResourceTierSelector from './ResourceTierSelector';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -49,6 +48,8 @@ interface PerformanceConfiguratorProps {
     continueHref: (params: string) => string;
     /** Button label override */
     continueLabel?: string;
+    /** Called whenever price or continue state changes, for parent to render in sticky header/footer */
+    onPriceUpdate?: (info: { totalCents: number; disabled: boolean; onContinue: () => void }) => void;
 }
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -57,6 +58,7 @@ export default function PerformanceConfigurator({
     resourceTiers,
     continueHref,
     continueLabel,
+    onPriceUpdate,
 }: PerformanceConfiguratorProps) {
     const t = useTranslations('buyGameServer.hardware');
     const tl = useTranslations('buyGameServer.hardware.labels');
@@ -151,18 +153,25 @@ export default function PerformanceConfigurator({
         };
     }, [selectedPFGroup, cpuCores, ramGb, days]);
 
-    if (!selectedPFGroup) return <div>...</div>;
-
     const handleContinue = () => {
         router.push(continueHref(buildParams()));
     };
+
+    useEffect(() => {
+        if (!onPriceUpdate) return;
+        const grandTotal = totalPrice.totalCents + tierPriceCents;
+        onPriceUpdate({ totalCents: grandTotal, disabled: !selectedTier || grandTotal < 100, onContinue: handleContinue });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [totalPrice.totalCents, tierPriceCents, selectedTier, onPriceUpdate]);
+
+    if (!selectedPFGroup) return <div>...</div>;
 
     // ── Render ───────────────────────────────────────────────────────────
     return (
         <div className="w-full max-w-7xl mx-auto">
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
                 {/* ── Configuration panel ──────────────────────────────── */}
-                <div className="lg:col-span-2 order-2 lg:order-1">
+                <div className="lg:col-span-2 order-1 lg:order-1">
                     <Card className="shadow-lg">
                         <CardHeader className="pb-4">
                             <CardTitle className="text-lg sm:text-xl">{t('title')}</CardTitle>
@@ -271,53 +280,18 @@ export default function PerformanceConfigurator({
 
                             {/* Resource Tiers */}
                             {resourceTiers.length > 0 && (
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                        {resourceTiers.map((tier) => (
-                                            <button
-                                                key={tier.id}
-                                                type="button"
-                                                onClick={() => setSelectedTierId(tier.id)}
-                                                className={cn(
-                                                    'relative rounded-lg border-2 p-4 sm:p-6 text-center transition-all duration-200 cursor-pointer',
-                                                    selectedTierId === tier.id
-                                                        ? 'border-primary bg-primary/5 shadow-md'
-                                                        : 'border-border hover:border-muted-foreground/50 hover:bg-muted/30',
-                                                )}
-                                            >
-                                                <div className="space-y-3">
-                                                    <TierRow
-                                                        icon={HardDrive}
-                                                        label="Disk"
-                                                        value={`${tier.diskMB / 1024} GiB`}
-                                                    />
-                                                    <TierRow
-                                                        icon={Archive}
-                                                        label="Backups"
-                                                        value={String(tier.backups)}
-                                                    />
-                                                    <TierRow
-                                                        icon={Network}
-                                                        label="Ports"
-                                                        value={String(tier.ports)}
-                                                    />
-                                                    {tier.priceCents > 0 && (
-                                                        <div className="pt-1 border-t text-sm font-semibold text-primary">
-                                                            +{(tier.priceCents / 100).toFixed(2)} €
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                <ResourceTierSelector
+                                    tiers={resourceTiers}
+                                    selectedId={selectedTierId}
+                                    onSelect={setSelectedTierId}
+                                />
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
                 {/* ── Price overview ───────────────────────────────────── */}
-                <div className="order-1 lg:order-2">
+                <div className="order-2 lg:order-2">
                     <div className="lg:sticky lg:top-4">
                         <PriceOverview
                             cpuCores={cpuCores}
@@ -373,25 +347,6 @@ function SliderSection({
     );
 }
 
-function TierRow({
-    icon: Icon,
-    label,
-    value,
-}: {
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    value: string;
-}) {
-    return (
-        <div className="flex items-center justify-between gap-2 text-sm">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Icon className="h-4 w-4" />
-                <span>{label}</span>
-            </div>
-            <span className="font-semibold">{value}</span>
-        </div>
-    );
-}
 
 // ── Utility: parse hardware config from URL search params ────────────────
 export function configuredHardwareFromParams(

@@ -330,9 +330,9 @@
     },
     "hardware": {
       "title": "Performance Configuration",
-      "description": "Customize your server hardware.",
+      "description": "Choose your hardware and how long you need it — one-time purchase, no subscription.",
       "performanceTier": "Performance Tier",
-      "billingPeriod": "Billing Period",
+      "billingPeriod": "Duration",
       "durations": {
         "week": "1 Week",
         "month": "1 Month",
@@ -342,7 +342,7 @@
       },
       "price": {
         "overviewTitle": "Price Overview",
-        "overviewDescription": "Summary of your configuration.",
+        "overviewDescription": "One-time payment for the selected duration.",
         "resources": "Resources",
         "discount": "Discount (-{percent}%)",
         "total": "Total",

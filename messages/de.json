@@ -330,9 +330,9 @@
     },
     "hardware": {
       "title": "Performance-Konfiguration",
-      "description": "Passe die Hardware deines Servers an.",
+      "description": "Wähle deine Hardware und wie lange du sie brauchst — Einmalkauf, kein Abo.",
       "performanceTier": "Performance-Stufe",
-      "billingPeriod": "Abrechnungszeitraum",
+      "billingPeriod": "Laufzeit",
       "durations": {
         "week": "1 Woche",
         "month": "1 Monat",
@@ -342,7 +342,7 @@
       },
       "price": {
         "overviewTitle": "Preisübersicht",
-        "overviewDescription": "Zusammenfassung deiner Konfiguration.",
+        "overviewDescription": "Einmalige Zahlung für die gewählte Laufzeit.",
         "resources": "Ressourcen",
         "discount": "Rabatt (-{percent}%)",
         "total": "Gesamt",

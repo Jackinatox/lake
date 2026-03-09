@@ -1,5 +1,8 @@
 import { Prisma } from '@/app/client/generated/browser';
 
+export type ResourceTier = Prisma.ResourceTierGetPayload<Record<string, never>>;
+export type GameData = Prisma.GameDataGetPayload<Record<string, never>>;
+
 export type PerformanceGroup = Prisma.LocationGetPayload<{
     include: { cpu: true; ram: true };
 }>;
