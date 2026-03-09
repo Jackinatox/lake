@@ -275,7 +275,7 @@ export function DashboardHeader({
                     {/* Center section: Address + Game Info (flexible width) */}
                     <div className="flex items-center gap-2 flex-1 justify-center min-w-0">
                         {/* Game Info - hidden on smaller tablets */}
-                        <div className="hidden xl:block shrink-0">
+                        <div className="hidden lg:block shrink-0 text-sm">
                             <GameInfo server={server} apiKey={ptApiKey} />
                         </div>
 
