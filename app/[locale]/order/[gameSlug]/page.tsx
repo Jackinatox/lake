@@ -15,7 +15,7 @@ export default async function GameLandingPage({
 }) {
     const { gameSlug } = await params;
 
-    const [game, performanceGroups, resourceTiers] = await Promise.all([
+    const [game, performanceGroups, resourceTiers, freeLocations] = await Promise.all([
         prisma.gameData.findUnique({
             where: { slug: gameSlug, enabled: true },
             select: { id: true, name: true, slug: true },
@@ -32,6 +32,10 @@ export default async function GameLandingPage({
                 ports: true,
                 priceCents: true,
             },
+        }),
+        prisma.location.findMany({
+            where: { freeServer: true, enabled: true },
+            select: { id: true },
         }),
     ]);
 
@@ -53,6 +57,7 @@ export default async function GameLandingPage({
                 performanceGroups={performanceGroups}
                 resourceTiers={resourceTiers}
                 game={game}
+                hasFreeServers={freeLocations.length > 0}
             />
         </Suspense>
     );

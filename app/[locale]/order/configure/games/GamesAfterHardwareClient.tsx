@@ -21,6 +21,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
     const ram = searchParams.get('ram') ?? '4';
     const days = searchParams.get('days') ?? '30';
     const pf = searchParams.get('pf') ?? '';
+    const tier = searchParams.get('tier') ?? '';
 
     // Carry hardware params forward to the setup page
     const hwParams = new URLSearchParams();
@@ -28,6 +29,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
     hwParams.set('cpu', cpu);
     hwParams.set('ram', ram);
     hwParams.set('days', days);
+    if (tier) hwParams.set('tier', tier);
     const hwParamsStr = hwParams.toString();
 
     return (
@@ -86,7 +88,7 @@ export default function GamesAfterHardwareClient({ games }: { games: GameInfo[] 
                         <GameCard
                             key={game.id}
                             card={{
-                                link: `/order/${game.slug}/setup?${hwParamsStr}`,
+                                link: `/order/${game.slug}/setup?${hwParamsStr}&mode=configured`,
                                 name: game.name,
                             }}
                             images={game.images}

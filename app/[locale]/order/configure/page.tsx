@@ -1,18 +1,24 @@
-import { notFound } from 'next/navigation';
-
-// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
-export default function HardwareFirstPage() {
-    notFound();
-}
-
-/*
-// ── Original implementation (preserved for re-enablement) ──────────────
 import { Suspense } from 'react';
 import { fetchPerformanceGroups } from '@/lib/actions';
-import HardwareFirstClient from './HardwareFirstClient';
+import prisma from '@/lib/prisma';
+import ConfigureHardwareClient from './ConfigureHardwareClient';
 
-export default async function HardwareFirstPage() {
-    const performanceGroups = await fetchPerformanceGroups();
+export default async function ConfigureHardwarePage() {
+    const [performanceGroups, resourceTiers] = await Promise.all([
+        fetchPerformanceGroups(),
+        prisma.resourceTier.findMany({
+            where: { enabled: true },
+            orderBy: { sorting: 'asc' },
+            select: {
+                id: true,
+                name: true,
+                diskMB: true,
+                backups: true,
+                ports: true,
+                priceCents: true,
+            },
+        }),
+    ]);
 
     if (!performanceGroups || performanceGroups.length === 0) {
         return (
@@ -24,8 +30,10 @@ export default async function HardwareFirstPage() {
 
     return (
         <Suspense>
-            <HardwareFirstClient performanceGroups={performanceGroups} />
+            <ConfigureHardwareClient
+                performanceGroups={performanceGroups}
+                resourceTiers={resourceTiers}
+            />
         </Suspense>
     );
 }
-*/

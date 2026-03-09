@@ -1,12 +1,3 @@
-import { notFound } from 'next/navigation';
-
-// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
-export default function GamesAfterHardwarePage() {
-    notFound();
-}
-
-/*
-// ── Original implementation (preserved for re-enablement) ──────────────
 import prisma from '@/lib/prisma';
 import { Suspense } from 'react';
 import GamesAfterHardwareClient from './GamesAfterHardwareClient';
@@ -35,4 +26,3 @@ export default async function GamesAfterHardwarePage() {
         </Suspense>
     );
 }
-*/
