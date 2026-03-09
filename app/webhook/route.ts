@@ -5,7 +5,7 @@ import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
 import { env } from 'next-runtime-env';
-import { NextRequest } from 'next/server';
+import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import handleCheckoutSessionCompleted from './handleCheckoutSessionCompleted';
 import { handleRefundUpdated, handleChargeRefunded, handleChargeDisputeCreated } from './handleRefundWebhooks';
@@ -56,10 +56,11 @@ export async function POST(req: NextRequest) {
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
             logger.info('Handling checkout.session.completed', 'PAYMENT_LOG', {
-                details: { paymentSession: checkoutSession },
+                details: { sessionId: checkoutSession.id },
             });
-
-            await handleCheckoutSessionCompleted(checkoutSession);
+            after(async () => {
+                await handleCheckoutSessionCompleted(checkoutSession);
+            });
             break;
 
         case 'checkout.session.expired':

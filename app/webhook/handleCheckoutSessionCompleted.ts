@@ -9,6 +9,31 @@ import { sendInvoiceEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { env } from 'next-runtime-env';
 import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
+const PROVISION_RETRIES = 2;
+const RETRY_DELAY_MS = 10_000;
+
+async function provisionWithRetry(
+    order: Parameters<typeof provisionServerWithWorker>[0],
+): Promise<string> {
+    for (let attempt = 0; attempt <= PROVISION_RETRIES; attempt++) {
+        try {
+            return await provisionServerWithWorker(order);
+        } catch (error) {
+            if (attempt < PROVISION_RETRIES) {
+                logger.warn(
+                    `Worker unreachable, retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${PROVISION_RETRIES + 1})`,
+                    'PAYMENT_LOG',
+                    { userId: order.userId, details: { orderId: order.id, error } },
+                );
+                await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+            } else {
+                throw error;
+            }
+        }
+    }
+    throw new Error('unreachable');
+}
+
 export default async function handleCheckoutSessionCompleted(
     checkoutSession: Stripe.Checkout.Session,
 ) {
@@ -68,18 +93,22 @@ export default async function handleCheckoutSessionCompleted(
                 case 'NEW':
                 case 'CONFIGURED':
                 case 'PACKAGE': {
-                    const jobId = await provisionServerWithWorker(orderUnprocessed);
+                    const jobId = await provisionWithRetry(orderUnprocessed);
                     await prisma.gameServerOrder.update({
                         where: { id: orderUnprocessed.id },
                         data: {
                             workerJobId: jobId,
-                            status: 'PAID',
+                            provisioningStatus: 'SUBMITTED',
                         },
                     });
                     break;
                 }
                 case 'UPGRADE':
                     await upgradeGameServer(orderUnprocessed);
+                    await prisma.gameServerOrder.update({
+                        where: { id: orderUnprocessed.id },
+                        data: { provisioningStatus: 'SUBMITTED' },
+                    });
                     break;
                 case 'TO_PAYED':
                     throw new Error('Feature not implemented yet.');
@@ -100,7 +129,7 @@ export default async function handleCheckoutSessionCompleted(
                     );
             }
         } catch (provisionError) {
-            logger.error('Error during server provisioning/upgrade', 'PAYMENT_LOG', {
+            logger.error('Provisioning failed after all retries', 'PAYMENT_LOG', {
                 userId: orderUnprocessed.userId,
                 gameServerId: orderUnprocessed.gameServerId ?? undefined,
                 details: {
@@ -109,7 +138,14 @@ export default async function handleCheckoutSessionCompleted(
                     orderType: orderUnprocessed.type,
                 },
             });
-            throw provisionError;
+            await prisma.gameServerOrder.update({
+                where: { id: orderUnprocessed.id },
+                data: {
+                    provisioningStatus: 'FAILED',
+                    errorText: `Provisioning failed: ${provisionError instanceof Error ? provisionError.message : 'Unknown error'}`,
+                },
+            });
+            return;
         }
 
         // Fetch updated order with all relations after provisioning

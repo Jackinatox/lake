@@ -52,6 +52,9 @@ export default async function KeyValuePage() {
     }
 
     const entries = await getKeyValuesAction();
+    const categories = [
+        ...new Set(entries.map((e) => e.category).filter((c): c is string => c !== null)),
+    ].sort();
 
     return (
         <div className="w-full max-w-5xl mx-auto">
@@ -83,7 +86,7 @@ export default async function KeyValuePage() {
                         <Database className="h-5 w-5" />
                         Key-Value Store
                     </CardTitle>
-                    <EntryDialog />
+                    <EntryDialog categories={categories} />
                 </CardHeader>
                 <CardContent>
                     {entries.length === 0 ? (
@@ -97,9 +100,10 @@ export default async function KeyValuePage() {
                                 <div className="hidden min-w-0 max-w-xs flex-1 sm:block">
                                     Preview
                                 </div>
-                                <div className="hidden min-w-0 max-w-40 flex-1 xl:block">
-                                    Note
+                                <div className="hidden min-w-0 max-w-28 flex-1 lg:block">
+                                    Category
                                 </div>
+                                <div className="hidden min-w-0 max-w-40 flex-1 xl:block">Note</div>
                                 <div className="shrink-0 w-18 text-right">Actions</div>
                             </div>
                             {entries.map((row) => (
@@ -120,11 +124,18 @@ export default async function KeyValuePage() {
                                     <div className="hidden min-w-0 max-w-xs flex-1 text-xs text-muted-foreground sm:block truncate">
                                         {valuePreview(row)}
                                     </div>
+                                    <div className="hidden min-w-0 max-w-28 flex-1 lg:block">
+                                        {row.category && (
+                                            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                                                {row.category}
+                                            </span>
+                                        )}
+                                    </div>
                                     <div className="hidden min-w-0 max-w-40 flex-1 text-xs text-muted-foreground xl:block truncate">
                                         {row.note ?? ''}
                                     </div>
                                     <div className="flex shrink-0 gap-2">
-                                        <EntryDialog entry={row} />
+                                        <EntryDialog entry={row} categories={categories} />
                                         <DeleteButton id={row.id} keyName={row.key} />
                                     </div>
                                 </div>

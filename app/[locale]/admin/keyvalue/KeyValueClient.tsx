@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -25,6 +25,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/command';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,6 +51,8 @@ import {
     deleteKeyValueAction,
 } from '@/app/actions/keyvalue/keyValueActions';
 import { KeyValueType } from '@/app/client/generated/enums';
+
+const MAX_CATEGORY_LENGTH = 30;
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
     ssr: false,
@@ -61,11 +72,16 @@ type FormState = {
     numberValue: string;
     booleanValue: boolean;
     note: string;
+    category: string;
 };
 
 function rowToForm(row: KeyValueRow): FormState {
     let jsonValue = '{}';
-    try { jsonValue = JSON.stringify(row.json, null, 2); } catch { /* */ }
+    try {
+        jsonValue = JSON.stringify(row.json, null, 2);
+    } catch {
+        /* */
+    }
     return {
         key: row.key,
         type: row.type,
@@ -74,6 +90,7 @@ function rowToForm(row: KeyValueRow): FormState {
         numberValue: row.number != null ? String(row.number) : '',
         booleanValue: row.boolean ?? false,
         note: row.note ?? '',
+        category: row.category ?? '',
     };
 }
 
@@ -85,15 +102,101 @@ const defaultForm = (): FormState => ({
     numberValue: '',
     booleanValue: false,
     note: '',
+    category: '',
 });
+
+// ─── Category combobox ────────────────────────────────────────────────────────
+
+function CategoryCombobox({
+    value,
+    onChange,
+    categories,
+}: {
+    value: string;
+    onChange: (v: string) => void;
+    categories: string[];
+}) {
+    const [open, setOpen] = useState(false);
+    const [input, setInput] = useState('');
+
+    const categoriesLower = useMemo(
+        () => new Set(categories.map((c) => c.toLowerCase())),
+        [categories],
+    );
+    const filtered = useMemo(
+        () => categories.filter((c) => c.toLowerCase().includes(input.toLowerCase())),
+        [categories, input],
+    );
+    const showCreate = input.length > 0 && !categoriesLower.has(input.toLowerCase());
+
+    function select(cat: string) {
+        onChange(value === cat ? '' : cat);
+        setOpen(false);
+        setInput('');
+    }
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between font-normal"
+                >
+                    {value || (
+                        <span className="text-muted-foreground">Select or create category…</span>
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                    <CommandInput
+                        placeholder="Search or create category…"
+                        value={input}
+                        onValueChange={(v) => setInput(v.slice(0, MAX_CATEGORY_LENGTH))}
+                    />
+                    <CommandList>
+                        <CommandEmpty>{input ? null : 'No categories yet.'}</CommandEmpty>
+                        {filtered.length > 0 && (
+                            <CommandGroup heading="Existing">
+                                {filtered.map((cat) => (
+                                    <CommandItem key={cat} value={cat} onSelect={() => select(cat)}>
+                                        <Check
+                                            className={`mr-2 h-4 w-4 ${value === cat ? 'opacity-100' : 'opacity-0'}`}
+                                        />
+                                        {cat}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        )}
+                        {showCreate && (
+                            <CommandGroup heading="Create">
+                                <CommandItem
+                                    value={`__create__${input}`}
+                                    onSelect={() => select(input)}
+                                >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Create &quot;{input}&quot;
+                                </CommandItem>
+                            </CommandGroup>
+                        )}
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+}
 
 // ─── Edit / Create dialog ────────────────────────────────────────────────────
 
 interface EntryDialogProps {
     entry?: KeyValueRow;
+    categories: string[];
 }
 
-export function EntryDialog({ entry }: EntryDialogProps) {
+export function EntryDialog({ entry, categories }: EntryDialogProps) {
     const router = useRouter();
     const { toast } = useToast();
     const { theme } = useTheme();
@@ -116,7 +219,11 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                     try {
                         parsedJson = JSON.parse(form.jsonValue);
                     } catch {
-                        toast({ title: 'Invalid JSON', description: 'Fix the JSON before saving.', variant: 'destructive' });
+                        toast({
+                            title: 'Invalid JSON',
+                            description: 'Fix the JSON before saving.',
+                            variant: 'destructive',
+                        });
                         return;
                     }
                 }
@@ -124,17 +231,31 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                     id: entry?.id,
                     key: form.key.trim(),
                     type: form.type,
-                    string: form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : null,
+                    string:
+                        form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : null,
                     json: form.type === 'JSON' ? parsedJson : null,
-                    number: form.type === 'NUMBER' ? (form.numberValue !== '' ? parseFloat(form.numberValue) : null) : null,
+                    number:
+                        form.type === 'NUMBER'
+                            ? form.numberValue !== ''
+                                ? parseFloat(form.numberValue)
+                                : null
+                            : null,
                     boolean: form.type === 'BOOLEAN' ? form.booleanValue : null,
                     note: form.note || null,
+                    category: form.category || null,
                 });
                 setOpen(false);
                 router.refresh();
-                toast({ title: isEditing ? 'Updated' : 'Created', description: `Key "${form.key.trim()}" saved.` });
+                toast({
+                    title: isEditing ? 'Updated' : 'Created',
+                    description: `Key "${form.key.trim()}" saved.`,
+                });
             } catch (err: unknown) {
-                toast({ title: 'Error', description: err instanceof Error ? err.message : 'Unknown error', variant: 'destructive' });
+                toast({
+                    title: 'Error',
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                    variant: 'destructive',
+                });
             }
         });
     }
@@ -156,9 +277,13 @@ export function EntryDialog({ entry }: EntryDialogProps) {
             <Dialog open={open} onOpenChange={(v) => !isPending && setOpen(v)}>
                 <DialogContent className="flex max-h-[95dvh] w-full max-w-2xl flex-col overflow-hidden p-0">
                     <DialogHeader className="shrink-0 border-b px-6 py-4">
-                        <DialogTitle>{isEditing ? `Edit: ${entry.key}` : 'New Key-Value Entry'}</DialogTitle>
+                        <DialogTitle>
+                            {isEditing ? `Edit: ${entry.key}` : 'New Key-Value Entry'}
+                        </DialogTitle>
                         <DialogDescription>
-                            {isEditing ? 'Update the value and note for this entry.' : 'Add a new configuration entry.'}
+                            {isEditing
+                                ? 'Update the value and note for this entry.'
+                                : 'Add a new configuration entry.'}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -181,10 +306,14 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                             <Label>Type</Label>
                             <Select
                                 value={form.type}
-                                onValueChange={(v) => setForm((f) => ({ ...f, type: v as KeyValueType }))}
+                                onValueChange={(v) =>
+                                    setForm((f) => ({ ...f, type: v as KeyValueType }))
+                                }
                                 disabled={isEditing}
                             >
-                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="STRING">STRING — short text</SelectItem>
                                     <SelectItem value="TEXT">TEXT — long text / Monaco</SelectItem>
@@ -201,7 +330,9 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                             {form.type === 'STRING' && (
                                 <Input
                                     value={form.stringValue}
-                                    onChange={(e) => setForm((f) => ({ ...f, stringValue: e.target.value }))}
+                                    onChange={(e) =>
+                                        setForm((f) => ({ ...f, stringValue: e.target.value }))
+                                    }
                                     placeholder="String value"
                                 />
                             )}
@@ -232,7 +363,9 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                                 <Input
                                     type="number"
                                     value={form.numberValue}
-                                    onChange={(e) => setForm((f) => ({ ...f, numberValue: e.target.value }))}
+                                    onChange={(e) =>
+                                        setForm((f) => ({ ...f, numberValue: e.target.value }))
+                                    }
                                     placeholder="0"
                                 />
                             )}
@@ -241,7 +374,9 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                                     <Switch
                                         id="kv-bool"
                                         checked={form.booleanValue}
-                                        onCheckedChange={(v) => setForm((f) => ({ ...f, booleanValue: v }))}
+                                        onCheckedChange={(v) =>
+                                            setForm((f) => ({ ...f, booleanValue: v }))
+                                        }
                                     />
                                     <Label htmlFor="kv-bool" className="cursor-pointer">
                                         {form.booleanValue ? 'true' : 'false'}
@@ -261,10 +396,24 @@ export function EntryDialog({ entry }: EntryDialogProps) {
                                 rows={2}
                             />
                         </div>
+
+                        {/* Category */}
+                        <div className="space-y-1.5">
+                            <Label>Category (optional)</Label>
+                            <CategoryCombobox
+                                value={form.category}
+                                onChange={(v) => setForm((f) => ({ ...f, category: v }))}
+                                categories={categories}
+                            />
+                        </div>
                     </div>
 
                     <DialogFooter className="shrink-0 border-t px-6 py-4">
-                        <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpen(false)}
+                            disabled={isPending}
+                        >
                             Cancel
                         </Button>
                         <Button onClick={handleSave} disabled={isPending || !form.key.trim()}>
@@ -299,7 +448,11 @@ export function DeleteButton({ id, keyName }: DeleteButtonProps) {
                 router.refresh();
                 toast({ title: 'Deleted', description: `Key "${keyName}" removed.` });
             } catch (err: unknown) {
-                toast({ title: 'Error', description: err instanceof Error ? err.message : 'Unknown error', variant: 'destructive' });
+                toast({
+                    title: 'Error',
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                    variant: 'destructive',
+                });
             }
         });
     }
@@ -316,7 +469,8 @@ export function DeleteButton({ id, keyName }: DeleteButtonProps) {
                         <AlertDialogTitle>Delete key?</AlertDialogTitle>
                         <AlertDialogDescription>
                             This will permanently remove{' '}
-                            <span className="font-mono font-semibold">{keyName}</span>. This action cannot be undone.
+                            <span className="font-mono font-semibold">{keyName}</span>. This action
+                            cannot be undone.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

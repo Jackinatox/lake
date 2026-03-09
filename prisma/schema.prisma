@@ -134,7 +134,8 @@ model GameServerOrder {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade deletion for compliance with the EU
 
-  workerJobId String? // Job that processed this order
+  workerJobId        String? // Job that processed this order
+  provisioningStatus ProvisioningStatus @default(PENDING)
 
   type        OrderType
   ramMB       Int
@@ -177,6 +178,12 @@ enum OrderStatus {
   EXPIRED // Just to keep the entry, i dont know why yet
   REFUNDED // Fully refunded
   PARTIALLY_REFUNDED // Partial refund applied
+}
+
+enum ProvisioningStatus {
+  PENDING // Awaiting provisioning
+  SUBMITTED // Job successfully submitted to worker
+  FAILED // Worker unreachable after retries; manual intervention needed
 }
 
 enum RefundStatus {
@@ -532,23 +539,25 @@ enum KeyValueType {
   JSON
   NUMBER
   BOOLEAN
-  TEXT  // same a s string, but the admin page will show the monaco editor to edit it
+  TEXT // same a s string, but the admin page will show the monaco editor to edit it
 }
 
 model KeyValue {
-  id      Int      @id @default(autoincrement())
-  key     String   @unique
-  type    KeyValueType
-  string  String?
-  json    Json?
-  number  Float?
-  boolean Boolean?
-  note    String?
+  id       Int          @id @default(autoincrement())
+  key      String       @unique
+  type     KeyValueType
+  string   String?
+  json     Json?
+  number   Float?
+  boolean  Boolean?
+  note     String?
+  category String?      @db.VarChar(30)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([key])
+  @@index([category])
 }
 
 model Package {
