@@ -66,6 +66,7 @@ export default async function handleCheckoutSessionCompleted(
         try {
             switch (orderUnprocessed.type) {
                 case 'NEW':
+                case 'CONFIGURED':
                 case 'PACKAGE': {
                     const jobId = await provisionServerWithWorker(orderUnprocessed);
                     await prisma.gameServerOrder.update({
@@ -85,7 +86,7 @@ export default async function handleCheckoutSessionCompleted(
                     await upgradeFromFreeGameServer(orderUnprocessed);
                     break;
                 default:
-                    logger.error(
+                    logger.fatal(
                         `Unhandled server order type: ${orderUnprocessed.type}`,
                         'SYSTEM',
                         {

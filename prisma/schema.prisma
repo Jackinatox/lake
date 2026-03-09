@@ -237,6 +237,7 @@ enum OrderType {
   FREE_SERVER
   TO_PAYED
   PACKAGE
+  CONFIGURED // New unified configurator order flow
 }
 
 enum TicketCategory {
@@ -569,6 +570,20 @@ model Package {
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
   hardwareRecommendations HardwareRecommendation[]
+}
+
+model ResourceTier {
+  id         Int     @id @default(autoincrement())
+  name       String
+  diskMB     Int
+  backups    Int
+  ports      Int
+  priceCents Int     @default(0) // Flat fee in cents added on top of CPU+RAM price
+  sorting    Int     @default(0)
+  enabled    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model TwoFactor {

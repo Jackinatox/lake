@@ -1,3 +1,12 @@
+import { notFound } from 'next/navigation';
+
+// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
+export default function FreeGameBookingPage() {
+    notFound();
+}
+
+/*
+// ── Original implementation (preserved for re-enablement) ──────────────
 import { auth } from '@/auth';
 import GameNotFound from '@/components/booking2/GameNotFound';
 import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
@@ -54,3 +63,4 @@ export default async function FreeGameServerBySlugPage({
         </div>
     );
 }
+*/

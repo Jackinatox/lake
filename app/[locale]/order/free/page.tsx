@@ -1,3 +1,12 @@
+import { notFound } from 'next/navigation';
+
+// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
+export default function FreeOrderPage() {
+    notFound();
+}
+
+/*
+// ── Original implementation (preserved for re-enablement) ──────────────
 import prisma from '@/lib/prisma';
 import { Gamepad2, Layers, Wrench } from 'lucide-react';
 import GameCard from '@/components/order/game/gameCard';
@@ -24,7 +33,6 @@ export default async function OrderPage() {
 
     return (
         <div className="-mx-2 -my-2 md:-mx-8 md:-my-4">
-            {/* Hero */}
             <section className="relative pt-16 pb-32 md:pt-24 md:pb-44 overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-background to-primary/5" />
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
@@ -48,7 +56,6 @@ export default async function OrderPage() {
                 </div>
             </section>
 
-            {/* Game Grid */}
             <section className="relative -mt-20 md:-mt-32 pb-8 z-10">
                 <div className="mx-auto max-w-6xl px-2 md:px-6">
                     <div className="flex flex-wrap gap-4 justify-center">
@@ -66,10 +73,10 @@ export default async function OrderPage() {
                 </div>
             </section>
 
-            {/* Custom Hardware CTA */}
+            {/* Custom Hardware CTA * /}
             <section className="py-12 md:py-16">
                 <div className="mx-auto max-w-4xl px-2 md:px-6 space-y-4">
-                    {/* Compare Plans CTA */}
+                    {/* Compare Plans CTA * /}
                     <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
                         <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
@@ -94,7 +101,7 @@ export default async function OrderPage() {
                         </div>
                     </div>
 
-                    {/* Custom Hardware CTA */}
+                    {/* Custom Hardware CTA * /}
                     <div className="relative rounded-2xl border bg-card p-6 md:p-10 overflow-hidden">
                         <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent" />
                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
@@ -123,3 +130,4 @@ export default async function OrderPage() {
         </div>
     );
 }
+*/
