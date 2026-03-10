@@ -39,6 +39,7 @@ export default function PriceOverview({
     const t = useTranslations('buyGameServer.hardware');
     const tp = useTranslations('buyGameServer.hardware.price');
     const tb = useTranslations('buyGameServer.hardware.button');
+    const to = useTranslations('order');
 
     const grandTotalCents = totalPrice.totalCents + tierPriceCents;
     const priceTooSmall = grandTotalCents < 100;
@@ -96,7 +97,7 @@ export default function PriceOverview({
                         )}
                         {tierPriceCents > 0 && (
                             <TableRow>
-                                <TableCell className="font-medium">Storage Tier</TableCell>
+                                <TableCell className="font-medium">{to('storageTier')}</TableCell>
                                 <TableCell colSpan={2}>
                                     {(tierPriceCents / 100).toFixed(2)} €
                                 </TableCell>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,6 +26,7 @@ interface UnlockBackupDialogProps {
 export function UnlockBackupDialog({ backup, trigger, onConfirm }: UnlockBackupDialogProps) {
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const t = useTranslations('backupManager.unlockDialog');
 
     const handleOpenChange = (nextOpen: boolean) => {
         setOpen(nextOpen);
@@ -50,14 +52,13 @@ export function UnlockBackupDialog({ backup, trigger, onConfirm }: UnlockBackupD
             <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Unlock this backup?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('title')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Unlocking <span className="font-medium">{backup.name}</span> allows it to be
-                        deleted or updated.
+                        {t('description', { name: backup.name })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isSubmitting}>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleUnlock}
                         className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -65,10 +66,10 @@ export function UnlockBackupDialog({ backup, trigger, onConfirm }: UnlockBackupD
                     >
                         {isSubmitting ? (
                             <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" /> Unlocking
+                                <Loader2 className="h-4 w-4 animate-spin" /> {t('unlocking')}
                             </span>
                         ) : (
-                            'Unlock'
+                            t('unlock')
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>

@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { Archive, HardDrive, Network } from 'lucide-react';
 import type { ResourceTierDisplay } from './PerformanceConfigurator';
+import { useTranslations } from 'next-intl';
 
 interface ResourceTierSelectorProps {
     tiers: ResourceTierDisplay[];
@@ -16,6 +17,7 @@ export default function ResourceTierSelector({
     onSelect,
 }: ResourceTierSelectorProps) {
     if (tiers.length === 0) return null;
+    const t = useTranslations('order.resourceTier');
 
     return (
         <div className="flex flex-col gap-2">
@@ -39,7 +41,7 @@ export default function ResourceTierSelector({
                             </span>
                         ) : (
                             <span className="text-base font-bold text-green-600 dark:text-green-400">
-                                Free
+                                {t('free')}
                             </span>
                         )}
                         {tier.name && (
@@ -52,9 +54,9 @@ export default function ResourceTierSelector({
 
                     {/* Stats — right */}
                     <div className="flex flex-1 items-center justify-around gap-3 text-sm">
-                        <Stat icon={HardDrive} value={`${tier.diskMB / 1024} GiB`} label="Disk" />
-                        <Stat icon={Archive} value={String(tier.backups)} label="Backups" />
-                        <Stat icon={Network} value={String(tier.ports)} label="Ports" />
+                        <Stat icon={HardDrive} value={`${tier.diskMB / 1024} GiB`} label={t('disk')} />
+                        <Stat icon={Archive} value={String(tier.backups)} label={t('backups')} />
+                        <Stat icon={Network} value={String(tier.ports)} label={t('ports')} />
                     </div>
                 </button>
             ))}

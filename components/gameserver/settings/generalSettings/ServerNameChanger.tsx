@@ -10,6 +10,7 @@ import { GameServer } from '@/models/gameServerModel';
 import { Save, Server } from 'lucide-react';
 import { useState } from 'react';
 import { renameClientServer } from '../serverSettingsActions';
+import { useTranslations } from 'next-intl';
 
 export interface ServerSettingsCardProps {
     server: GameServer;
@@ -18,34 +19,35 @@ export interface ServerSettingsCardProps {
 export function ServerNameChanger({ server }: ServerSettingsCardProps) {
     const [serverName, setServerName] = useState(server.name);
     const { toast } = useToast();
+    const t = useTranslations('gameserver.settings.serverName');
 
     const handleSaveServerName = async () => {
         if (await renameClientServer(server.identifier, serverName)) {
             toast({
-                title: 'Server name updated',
-                description: 'The server name has been successfully updated.',
+                title: t('updated'),
+                description: t('updatedDescription'),
                 variant: 'default',
             });
             // eslint-disable-next-line react-hooks/immutability
             server.name = serverName;
         } else {
             toast({
-                title: 'Server name update failed',
-                description: 'The server name update has failed',
+                title: t('updateFailed'),
+                description: t('updateFailedDescription'),
                 variant: 'destructive',
             });
         }
     };
     return (
         <div>
-            <Label htmlFor="server-name">Server Name</Label>
+            <Label htmlFor="server-name">{t('label')}</Label>
             <div className="flex flex-col sm:flex-row gap-2">
                 <ButtonGroup className="flex-1 w-full">
                     <Input
                         id="server-name"
                         value={serverName}
                         onChange={(e) => setServerName(e.target.value)}
-                        placeholder="Enter server name"
+                        placeholder={t('placeholder')}
                         maxLength={64}
                     />
                     <Button
@@ -55,7 +57,7 @@ export function ServerNameChanger({ server }: ServerSettingsCardProps) {
                         className="flex items-center gap-2"
                     >
                         <Save className="h-4 w-4" />
-                        <span>Save</span>
+                        <span>{t('save')}</span>
                     </Button>
                 </ButtonGroup>
             </div>

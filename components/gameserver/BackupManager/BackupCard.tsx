@@ -11,6 +11,7 @@ import { RestoreBackupDialog } from './RestoreBackupDialog';
 import { DeleteBackupDialog } from './DeleteBackupDialog';
 import { UnlockBackupDialog } from './UnlockBackupDialog';
 import { GameServer } from '@/models/gameServerModel';
+import { useTranslations } from 'next-intl';
 
 interface BackupCardProps {
     backup: Backup;
@@ -35,6 +36,7 @@ export function BackupCard({
     isDownloading,
     isUnlocking,
 }: BackupCardProps) {
+    const t = useTranslations('backupManager.card');
     const statusLabel = deriveStatusLabel(backup.status);
     const statusVariant =
         backup.status === 'failed'
@@ -44,8 +46,8 @@ export function BackupCard({
               : 'default';
     const ignoredLabel =
         backup.ignoredFiles.length > 0
-            ? `${backup.ignoredFiles.length} pattern${backup.ignoredFiles.length === 1 ? '' : 's'}`
-            : 'No files';
+            ? t('patterns', { count: backup.ignoredFiles.length })
+            : t('noFiles');
 
     const handleDownload = async () => {
         if (disabled) return;
@@ -63,14 +65,14 @@ export function BackupCard({
                     <div>
                         <CardTitle className="text-base font-semibold">{backup.name}</CardTitle>
                         <p className="text-xs text-muted-foreground">
-                            Created {formatDateTime(backup.createdAt)}
+                            {t('created', { date: formatDateTime(backup.createdAt) })}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
                         <Badge variant={statusVariant}>{statusLabel}</Badge>
                         {backup.isLocked ? (
                             <Badge variant="outline" className="gap-1">
-                                <Lock className="h-3.5 w-3.5" /> Locked
+                                <Lock className="h-3.5 w-3.5" /> {t('locked')}
                             </Badge>
                         ) : null}
                     </div>
@@ -82,15 +84,15 @@ export function BackupCard({
             <CardContent className="flex-1 space-y-3 p-4">
                 <div className="grid gap-2 text-sm">
                     <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Backup size</span>
+                        <span className="text-muted-foreground">{t('backupSize')}</span>
                         <span className="font-medium">{formatBytes(backup.bytes)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Completed</span>
+                        <span className="text-muted-foreground">{t('completed')}</span>
                         <span className="font-medium">{formatDateTime(backup.completedAt)}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Ignored</span>
+                        <span className="text-muted-foreground">{t('ignored')}</span>
                         <span className="font-medium">{ignoredLabel}</span>
                     </div>
                 </div>
@@ -108,8 +110,8 @@ export function BackupCard({
                     ) : (
                         <Download className="mr-2 h-4 w-4" />
                     )}
-                    <span className="hidden sm:inline">Download</span>
-                    <span className="sm:hidden">Get</span>
+                    <span className="hidden sm:inline">{t('download')}</span>
+                    <span className="sm:hidden">{t('get')}</span>
                 </Button>
 
                 <RestoreBackupDialog
@@ -123,8 +125,8 @@ export function BackupCard({
                             disabled={disabled}
                         >
                             <RotateCcw className="mr-2 h-4 w-4" />
-                            <span className="hidden sm:inline">Restore</span>
-                            <span className="sm:hidden">Restore</span>
+                            <span className="hidden sm:inline">{t('restore')}</span>
+                            <span className="sm:hidden">{t('restore')}</span>
                         </Button>
                     }
                     onConfirm={handleRestore}
@@ -145,8 +147,8 @@ export function BackupCard({
                                 ) : (
                                     <Unlock className="mr-2 h-4 w-4" />
                                 )}
-                                <span className="hidden sm:inline">Unlock</span>
-                                <span className="sm:hidden">Unlock</span>
+                                <span className="hidden sm:inline">{t('unlock')}</span>
+                                <span className="sm:hidden">{t('unlock')}</span>
                             </Button>
                         }
                         onConfirm={handleUnlock}
@@ -162,8 +164,8 @@ export function BackupCard({
                                 disabled={disabled}
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Delete</span>
-                                <span className="sm:hidden">Delete</span>
+                                <span className="hidden sm:inline">{t('delete')}</span>
+                                <span className="sm:hidden">{t('delete')}</span>
                             </Button>
                         }
                         onConfirm={handleDelete}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     Dialog,
     DialogContent,
@@ -39,6 +40,7 @@ export function CreateBackupDialog({
     const [name, setName] = useState('');
     const [ignored, setIgnored] = useState('');
     const [isLocked, setIsLocked] = useState(false);
+    const t = useTranslations('backupManager.createDialog');
 
     useEffect(() => {
         if (!open) {
@@ -70,19 +72,18 @@ export function CreateBackupDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Create backup</DialogTitle>
+                    <DialogTitle>{t('title')}</DialogTitle>
                     <DialogDescription>
-                        Capture the server state. You can optionally name the backup, lock it from
-                        accidental deletion, and exclude temporary files.
+                        {t('description')}
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-2">
                     <div className="space-y-2">
-                        <Label htmlFor="backup-name">Backup name</Label>
+                        <Label htmlFor="backup-name">{t('nameLabel')}</Label>
                         <Input
                             id="backup-name"
-                            placeholder="Pre-update backup"
+                            placeholder={t('namePlaceholder')}
                             value={name}
                             onChange={(event) => setName(event.target.value)}
                             autoFocus
@@ -90,7 +91,7 @@ export function CreateBackupDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="backup-ignored">Ignored files</Label>
+                        <Label htmlFor="backup-ignored">{t('ignoredLabel')}</Label>
                         <Textarea
                             id="backup-ignored"
                             placeholder={ignoredPlaceholder}
@@ -99,16 +100,16 @@ export function CreateBackupDialog({
                             rows={4}
                         />
                         <p className="text-xs text-muted-foreground">
-                            One pattern per line. Leave empty to include all files.
+                            {t('ignoredHint')}
                         </p>
                     </div>
 
                     <div className="flex items-center justify-between rounded-md border p-3">
                         <div>
                             <Label htmlFor="backup-lock" className="flex flex-col">
-                                <span>Lock backup</span>
+                                <span>{t('lockLabel')}</span>
                                 <span className="text-xs text-muted-foreground">
-                                    Prevent this backup from being deleted until unlocked.
+                                    {t('lockDescription')}
                                 </span>
                             </Label>
                         </div>
@@ -123,14 +124,14 @@ export function CreateBackupDialog({
                         onClick={() => onOpenChange(false)}
                         disabled={isSubmitting}
                     >
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     <Button
                         type="button"
                         onClick={handleSubmit}
                         disabled={isSubmitting || disabled}
                     >
-                        {isSubmitting ? 'Creating...' : 'Create backup'}
+                        {isSubmitting ? t('creating') : t('create')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

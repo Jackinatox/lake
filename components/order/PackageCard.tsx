@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
+import { useTranslations } from 'next-intl';
 
 export interface PackageDisplay {
     id: number;
@@ -29,6 +30,7 @@ interface PackageCardProps {
 }
 
 export default function PackageCard({ pkg, href }: PackageCardProps) {
+    const t = useTranslations('order.package');
     return (
         <Link href={href} className="group block">
             <div className="relative h-full rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:border-muted-foreground/20 overflow-hidden">
@@ -62,7 +64,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                                     className="bg-amber-500/20 text-amber-600 border-amber-500/30"
                                 >
                                     <Star className="h-3 w-3 mr-1" />
-                                    Recommended
+                                    {t('recommended')}
                                 </Badge>
                             )}
                         </div>
@@ -88,7 +90,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                                 <div className="text-sm font-semibold">
                                     {formatMBToGiB(pkg.ramMB)}
                                 </div>
-                                <div className="text-xs text-muted-foreground">RAM</div>
+                                <div className="text-xs text-muted-foreground">{t('ram')}</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2.5 p-2.5 rounded-lg backdrop-blur-sm border bg-green-500/10 border-green-500/30">
@@ -97,14 +99,14 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                                 <div className="text-sm font-semibold">
                                     {formatMBToGiB(pkg.diskMB)}
                                 </div>
-                                <div className="text-xs text-muted-foreground">Storage</div>
+                                <div className="text-xs text-muted-foreground">{t('storage')}</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2.5 p-2.5 rounded-lg backdrop-blur-sm border bg-orange-500/10 border-orange-500/30">
                             <Database className="h-5 w-5 text-orange-500" />
                             <div>
                                 <div className="text-sm font-semibold">{pkg.backups}</div>
-                                <div className="text-xs text-muted-foreground">Backups</div>
+                                <div className="text-xs text-muted-foreground">{t('backups')}</div>
                             </div>
                         </div>
                     </div>
@@ -119,14 +121,14 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                                 <div className="text-lg font-bold text-primary">
                                     €{(pkg.priceCents / 100).toFixed(2)}
                                 </div>
-                                <div className="text-xs text-muted-foreground">/month</div>
+                                <div className="text-xs text-muted-foreground">{t('perMonth')}</div>
                             </div>
                             <Button
                                 size="sm"
                                 variant="ghost"
                                 className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                             >
-                                Select
+                                {t('select')}
                                 <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                             </Button>
                         </div>

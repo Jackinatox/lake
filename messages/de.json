@@ -777,6 +777,12 @@
         "current": "Aktuell",
         "limit": "Limit",
         "memoryGiB": "{amount} GiB"
+      },
+      "power": {
+        "start": "Starten",
+        "restart": "Neustart",
+        "stop": "Stoppen",
+        "kill": "Beenden"
       }
     },
     "fileManager": {
@@ -940,6 +946,30 @@
       "save": "Speichern",
       "saving": "Speichern...",
       "refresh": "Aktualiseren"
+    },
+    "settings": {
+      "serverName": {
+        "label": "Servername",
+        "placeholder": "Servernamen eingeben",
+        "save": "Speichern",
+        "updated": "Servername aktualisiert",
+        "updatedDescription": "Der Servername wurde erfolgreich aktualisiert.",
+        "updateFailed": "Servername konnte nicht geändert werden",
+        "updateFailedDescription": "Die Änderung des Servernamens ist fehlgeschlagen"
+      },
+      "expiry": {
+        "label": "Server-Ablauf",
+        "expired": "Abgelaufen",
+        "daysLeft": "{days}T übrig",
+        "extend": "Verlängern"
+      },
+      "startupCommand": {
+        "label": "Startbefehl",
+        "description": "Dieser Befehl wird automatisch generiert und kann nicht geändert werden."
+      }
+    },
+    "statusIndicator": {
+      "loading": "Lädt"
     }
   },
   "freeServerUpgrade": {
@@ -1062,5 +1092,164 @@
     "decline": "Ablehnen",
     "privacyPolicy": "Datenschutzerklärung",
     "cookieSettings": "Cookie-Einstellungen"
+  },
+  "backupManager": {
+    "title": "Backups",
+    "description": "Erstelle, lade herunter und stelle Snapshots deines Servers wieder her.",
+    "refresh": "Aktualisieren",
+    "newBackup": "Neues Backup",
+    "slotsUsed": "{used}/{limit} Backup-Slots belegt · Gesamtgröße {size}",
+    "slotsUnlimited": "Unbegrenzte Backup-Slots · Gesamtgröße {size}",
+    "limitReachedTitle": "Backup-Limit erreicht",
+    "limitReachedDescription": "Lösche ein vorhandenes Backup, um Platz für ein neues zu schaffen.",
+    "configRequiredTitle": "Konfiguration erforderlich",
+    "configRequiredDescription": "Bitte setze NEXT_PUBLIC_PTERODACTYL_URL, um die Backup-Verwaltung zu aktivieren.",
+    "unableToLoad": "Backups konnten nicht geladen werden",
+    "noBackups": "Noch keine Backups. Erstelle deinen ersten Snapshot, um den Serverzustand zu sichern.",
+    "toasts": {
+      "notConfigured": "Pterodactyl-URL ist nicht konfiguriert.",
+      "missingConfig": "Fehlende Konfiguration",
+      "missingConfigDescription": "NEXT_PUBLIC_PTERODACTYL_URL ist nicht gesetzt.",
+      "failedToLoad": "Backups konnten nicht geladen werden",
+      "rateLimitTitle": "Limit überschritten",
+      "rateLimitDescription": "Du kannst nur 2 Backups alle 10 Minuten erstellen.",
+      "backupScheduled": "Backup geplant",
+      "backupScheduledDescription": "Das Backup wurde in die Warteschlange gestellt. Aktualisiere, um den Fortschritt zu sehen.",
+      "creationFailed": "Backup-Erstellung fehlgeschlagen",
+      "downloadFailed": "Download fehlgeschlagen",
+      "failedToGenerateUrl": "Download-URL konnte nicht generiert werden",
+      "failedToDownload": "Backup konnte nicht heruntergeladen werden",
+      "downloadUrlMissing": "Download-URL fehlt in der Antwort",
+      "restoreStarted": "Wiederherstellung gestartet",
+      "restoreStartedDescription": "Der Server wird in Kürze auf das ausgewählte Backup zurückgesetzt.",
+      "restoreFailed": "Wiederherstellung fehlgeschlagen",
+      "failedToRestore": "Backup konnte nicht wiederhergestellt werden",
+      "failedToStartRestore": "Wiederherstellung konnte nicht gestartet werden",
+      "backupDeleted": "Backup gelöscht",
+      "backupDeletedDescription": "Das Backup wurde erfolgreich gelöscht.",
+      "deletionFailed": "Löschen fehlgeschlagen",
+      "failedToDelete": "Backup konnte nicht gelöscht werden",
+      "backupUnlocked": "Backup entsperrt",
+      "backupUnlockedDescription": "Das Backup kann jetzt gelöscht oder geändert werden.",
+      "unlockFailed": "Entsperren fehlgeschlagen",
+      "failedToUnlock": "Backup konnte nicht entsperrt werden"
+    },
+    "deleteDialog": {
+      "title": "Dieses Backup löschen?",
+      "description": "Diese Aktion entfernt {name} dauerhaft. Gelöschte Backups können nicht wiederhergestellt werden.",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleting": "Lösche"
+    },
+    "restoreDialog": {
+      "title": "Dieses Backup wiederherstellen?",
+      "description": "Das Wiederherstellen von {name} ersetzt alle aktuellen Serverdateien durch den Backup-Inhalt. Der Server stoppt automatisch während des Wiederherstellungsprozesses.",
+      "backupDetails": "Backup-Details",
+      "createdAt": "Erstellt am {date}",
+      "status": "Status: {status}",
+      "size": "Größe: {size}",
+      "truncateLabel": "Vorhandene Dateien zuerst löschen",
+      "truncateDescription": "Hält das Backup sauber, indem übrig gebliebene Dateien entfernt werden. Empfohlen für die meisten Wiederherstellungen.",
+      "cancel": "Abbrechen",
+      "restore": "Wiederherstellen",
+      "restoring": "Stelle wieder her"
+    },
+    "unlockDialog": {
+      "title": "Dieses Backup entsperren?",
+      "description": "Das Entsperren von {name} ermöglicht es, es zu löschen oder zu aktualisieren.",
+      "cancel": "Abbrechen",
+      "unlock": "Entsperren",
+      "unlocking": "Entsperre"
+    },
+    "createDialog": {
+      "title": "Backup erstellen",
+      "description": "Erfasse den Serverzustand. Du kannst das Backup optional benennen, vor versehentlichem Löschen sperren und temporäre Dateien ausschließen.",
+      "nameLabel": "Backup-Name",
+      "namePlaceholder": "Backup vor Update",
+      "ignoredLabel": "Ignorierte Dateien",
+      "ignoredHint": "Ein Muster pro Zeile. Leer lassen, um alle Dateien einzubeziehen.",
+      "lockLabel": "Backup sperren",
+      "lockDescription": "Verhindert, dass dieses Backup gelöscht wird, bis es entsperrt wird.",
+      "cancel": "Abbrechen",
+      "creating": "Erstelle...",
+      "create": "Backup erstellen"
+    },
+    "card": {
+      "created": "Erstellt {date}",
+      "locked": "Gesperrt",
+      "backupSize": "Backup-Größe",
+      "completed": "Abgeschlossen",
+      "ignored": "Ignoriert",
+      "patterns": "{count} {count, plural, =1 {Muster} other {Muster}}",
+      "noFiles": "Keine Dateien",
+      "download": "Herunterladen",
+      "get": "Laden",
+      "restore": "Wiederherstellen",
+      "unlock": "Entsperren",
+      "delete": "Löschen"
+    }
+  },
+  "adminLogs": {
+    "filters": {
+      "search": "Suche",
+      "searchPlaceholder": "In Nachrichten suchen...",
+      "logLevel": "Log-Level",
+      "category": "Kategorie",
+      "timeRange": "Zeitraum",
+      "timeRanges": {
+        "ALL": "Gesamte Zeit",
+        "1m": "Letzte Minute",
+        "10m": "Letzte 10 Minuten",
+        "1h": "Letzte Stunde",
+        "1d": "Letzter Tag",
+        "7d": "Letzte Woche",
+        "30d": "Letzter Monat"
+      }
+    },
+    "list": {
+      "noLogs": "Keine Logs gefunden",
+      "showing": "Zeige {count} von {total} Logs (Seite {page} von {totalPages})",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "pageOf": "Seite {page} von {totalPages}"
+    },
+    "entry": {
+      "showDetails": "Details anzeigen",
+      "hideDetails": "Details ausblenden",
+      "ip": "IP:",
+      "userAgent": "User Agent:",
+      "details": "Details:",
+      "user": "Benutzer: {name}",
+      "server": "Server: {name}"
+    }
+  },
+  "order": {
+    "storageTier": "Speicher-Stufe",
+    "resourceTier": {
+      "free": "Kostenlos",
+      "disk": "Speicher",
+      "backups": "Backups",
+      "ports": "Ports"
+    },
+    "package": {
+      "recommended": "Empfohlen",
+      "ram": "RAM",
+      "storage": "Speicher",
+      "backups": "Backups",
+      "perMonth": "/Monat",
+      "select": "Auswählen"
+    }
+  },
+  "upgradeCheckout": {
+    "errorTitle": "Checkout-Fehler",
+    "errorDescription": "Beim Checkout ist ein Fehler aufgetreten.",
+    "backToConfig": "← Zurück zur Konfiguration",
+    "preparing": "Checkout wird vorbereitet…",
+    "goBack": "← Zurück"
+  },
+  "menu": {
+    "games": "Spiele",
+    "dashboard": "Dashboard",
+    "support": "Support"
   }
 }
