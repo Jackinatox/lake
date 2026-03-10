@@ -142,11 +142,14 @@ export const auth = betterAuth({
                     const ua = extractUserAgent(req);
                     const path = req ? new URL(req.url).pathname : undefined;
 
+                    // Email/password signups: defer PT account creation until email is verified
+                    const isEmailSignup = path?.includes('/sign-up/email');
+
                     await logger.info(`New user signup attempt: ${user.email}`, 'AUTHENTICATION', {
                         ipAddress: ip,
                         userAgent: ua,
                         path,
-                        details: { email: user.email, name: user.name },
+                        details: { email: user.email, name: user.name, isEmailSignup },
                     });
 
                     captureServerEvent(user.email, 'user_signup_attempt', {
@@ -154,7 +157,13 @@ export const auth = betterAuth({
                         ip,
                         userAgent: ua,
                         signupPath: path,
+                        isEmailSignup,
                     });
+
+                    if (isEmailSignup) {
+                        // PT account will be provisioned in session.create.after once email is verified
+                        return { data: user };
+                    }
 
                     try {
                         const ptAdmin = createPtClient();
@@ -250,6 +259,71 @@ export const auth = betterAuth({
                         userAgent: ua,
                         signInPath: path,
                     });
+
+                    // Provision PT account for email-verified users who don't have one yet
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: session.userId },
+                        select: { ptUserId: true, email: true, name: true },
+                    });
+
+                    if (dbUser && !dbUser.ptUserId) {
+                        try {
+                            const ptAdmin = createPtClient();
+                            const ptUsername = await generateUniqueUserName(dbUser.email);
+
+                            const newPTUser = await ptAdmin.createUser({
+                                firstName: dbUser.name,
+                                lastName: 'Scyed',
+                                username: ptUsername,
+                                email: dbUser.email,
+                                password: generateRandomPassword(),
+                                externalId: session.userId,
+                            });
+
+                            const newKey = await createUserApiKey(newPTUser.id);
+
+                            await prisma.user.update({
+                                where: { id: session.userId },
+                                data: {
+                                    ptUserId: newPTUser.id,
+                                    ptKey: newKey,
+                                    ptUsername,
+                                },
+                            });
+
+                            await logger.info(
+                                `PT account provisioned after email verification: ${dbUser.email}`,
+                                'AUTHENTICATION',
+                                {
+                                    userId: session.userId,
+                                    ipAddress: ip,
+                                    userAgent: ua,
+                                    details: { email: dbUser.email, ptUsername, ptUserId: newPTUser.id },
+                                },
+                            );
+
+                            captureServerEvent(session.userId, 'user_signup_success', {
+                                email: dbUser.email,
+                                ip,
+                                userAgent: ua,
+                                ptUsername,
+                            });
+                        } catch (error) {
+                            await logger.error(
+                                `Failed to provision PT account after email verification: ${dbUser.email}`,
+                                'AUTHENTICATION',
+                                {
+                                    userId: session.userId,
+                                    ipAddress: ip,
+                                    userAgent: ua,
+                                    details: {
+                                        email: dbUser.email,
+                                        error: error instanceof Error ? error.message : String(error),
+                                    },
+                                },
+                            );
+                        }
+                    }
                 },
             },
         },
