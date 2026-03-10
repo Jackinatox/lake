@@ -3,6 +3,15 @@
 import { Slider } from '@/components/ui/slider';
 import { useCallback, useMemo } from 'react';
 
+export interface SliderMarker {
+    /** The value to place the marker at (in the same unit as stops) */
+    value: number;
+    /** Color class for the marker line */
+    color: string;
+    /** Short label shown as tooltip */
+    label: string;
+}
+
 interface LogarithmicSliderProps {
     /** The discrete stop values (e.g. [1,2,3,4,6,8,10,16]) */
     stops: number[];
@@ -14,6 +23,8 @@ interface LogarithmicSliderProps {
     unit?: string;
     /** Whether tick spacing should represent actual value gaps (logarithmic feel) */
     logarithmic?: boolean;
+    /** Optional markers (e.g. min/recommended hardware) rendered as colored lines */
+    markers?: SliderMarker[];
 }
 
 /**
@@ -30,6 +41,7 @@ export default function LogarithmicSlider({
     onChange,
     unit,
     logarithmic = false,
+    markers,
 }: LogarithmicSliderProps) {
     // Build position map: each stop gets a cumulative position proportional to gaps
     const { positions, totalRange } = useMemo(() => {
@@ -88,6 +100,30 @@ export default function LogarithmicSlider({
         }));
     }, [stops, positions, totalRange]);
 
+    // Compute marker positions by interpolating between stops
+    const markerPositions = useMemo(() => {
+        if (!markers || markers.length === 0 || totalRange === 0 || stops.length < 2) return [];
+        return markers
+            .map((m) => {
+                // Find which two stops this value falls between
+                if (m.value <= stops[0]) return { ...m, percent: 0 };
+                if (m.value >= stops[stops.length - 1]) return { ...m, percent: 100 };
+
+                for (let i = 0; i < stops.length - 1; i++) {
+                    if (m.value >= stops[i] && m.value <= stops[i + 1]) {
+                        const frac =
+                            stops[i + 1] === stops[i]
+                                ? 0
+                                : (m.value - stops[i]) / (stops[i + 1] - stops[i]);
+                        const pos = positions[i] + frac * (positions[i + 1] - positions[i]);
+                        return { ...m, percent: (pos / totalRange) * 100 };
+                    }
+                }
+                return null;
+            })
+            .filter(Boolean) as (SliderMarker & { percent: number })[];
+    }, [markers, stops, positions, totalRange]);
+
     if (stops.length === 0) return null;
 
     return (
@@ -106,6 +142,25 @@ export default function LogarithmicSlider({
                     ))}
                 </div>
 
+                {/* Recommendation markers */}
+                {markerPositions.length > 0 && (
+                    <div className="absolute inset-0 pointer-events-none">
+                        {markerPositions.map((m, i) => (
+                            <div
+                                key={i}
+                                className="absolute top-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
+                                style={{
+                                    left: `calc(10px + (100% - 20px) * ${m.percent / 100})`,
+                                    transform: 'translateX(-50%) translateY(-50%)',
+                                }}
+                                title={m.label}
+                            >
+                                <div className={`w-0.5 h-5 rounded-full ${m.color}`} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 <Slider
                     value={[sliderValue]}
                     min={0}
@@ -115,6 +170,23 @@ export default function LogarithmicSlider({
                     className="w-full"
                 />
             </div>
+
+            {/* Marker labels below slider */}
+            {markerPositions.length > 0 && (
+                <div className="relative h-3">
+                    {markerPositions.map((m, i) => (
+                        <div
+                            key={i}
+                            className="absolute -translate-x-1/2 text-[10px] leading-none whitespace-nowrap"
+                            style={{
+                                left: `calc(10px + (100% - 20px) * ${m.percent / 100})`,
+                            }}
+                        >
+                            <span className={m.color.replace('bg-', 'text-')}>{m.label}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Labels under the slider */}
             <div className="flex justify-between text-xs text-muted-foreground">

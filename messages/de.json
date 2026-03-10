@@ -361,6 +361,11 @@
       },
       "button": {
         "continue": "Weiter"
+      },
+      "recommendation": {
+        "note": "Die farbigen Markierungen auf den Schiebereglern zeigen Hardware-Empfehlungen für dieses Spiel.",
+        "min": "Minimum",
+        "recommended": "Empfohlen"
       }
     },
     "gameConfig": {

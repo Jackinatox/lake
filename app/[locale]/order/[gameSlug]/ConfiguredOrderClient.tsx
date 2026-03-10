@@ -4,7 +4,7 @@ import PerformanceConfigurator, {
     ResourceTierDisplay,
 } from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
-import { PerformanceGroup } from '@/models/prisma';
+import { HardwareRecommendationSlim, PerformanceGroup } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ interface ConfiguredOrderClientProps {
     resourceTiers: ResourceTierDisplay[];
     game: { id: number; name: string; slug: string };
     hasFreeServers: boolean;
+    hardwareRecommendations: HardwareRecommendationSlim[];
 }
 
 interface PriceInfo {
@@ -27,6 +28,7 @@ export default function ConfiguredOrderClient({
     performanceGroups,
     resourceTiers,
     game,
+    hardwareRecommendations,
 }: ConfiguredOrderClientProps) {
     const imgName = `${game.name.toLowerCase()}.webp`;
 
@@ -62,8 +64,12 @@ export default function ConfiguredOrderClient({
                             />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h1 className="text-base sm:text-lg font-bold leading-tight">{game.name}</h1>
-                            <p className="text-xs text-muted-foreground hidden sm:block">Configure your server</p>
+                            <h1 className="text-base sm:text-lg font-bold leading-tight">
+                                {game.name}
+                            </h1>
+                            <p className="text-xs text-muted-foreground hidden sm:block">
+                                Configure your server
+                            </p>
                         </div>
 
                         {priceInfo && (
@@ -74,7 +80,6 @@ export default function ConfiguredOrderClient({
                                 <div className="text-xs text-muted-foreground">total</div>
                             </div>
                         )}
-
                     </div>
 
                     {/* Progress: step 1 of 3 */}
@@ -91,6 +96,7 @@ export default function ConfiguredOrderClient({
                 <PerformanceConfigurator
                     performanceOptions={performanceGroups}
                     resourceTiers={resourceTiers}
+                    hardwareRecommendations={hardwareRecommendations}
                     continueHref={(params) => `/order/${game.slug}/setup?${params}&mode=configured`}
                     continueLabel="Continue to Setup"
                     onPriceUpdate={handlePriceUpdate}

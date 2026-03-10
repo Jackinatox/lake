@@ -361,6 +361,11 @@
       },
       "button": {
         "continue": "Continue"
+      },
+      "recommendation": {
+        "note": "The colored markers on the sliders show hardware recommendations for this game.",
+        "min": "Minimum",
+        "recommended": "Recommended"
       }
     },
     "gameConfig": {

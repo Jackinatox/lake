@@ -10,9 +10,10 @@ import { useTranslations } from 'next-intl';
 import InfoButton from '@/components/InfoButton';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import LogarithmicSlider from './LogarithmicSlider';
+import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
+import type { HardwareRecommendationSlim } from '@/models/prisma';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -44,18 +45,25 @@ export interface ResourceTierDisplay {
 interface PerformanceConfiguratorProps {
     performanceOptions: PerformanceGroup[];
     resourceTiers: ResourceTierDisplay[];
+    /** Hardware recommendations from the database (left-joined on GameData) */
+    hardwareRecommendations?: HardwareRecommendationSlim[];
     /** Where to navigate on continue. Receives the current search params string. */
     continueHref: (params: string) => string;
     /** Button label override */
     continueLabel?: string;
     /** Called whenever price or continue state changes, for parent to render in sticky header/footer */
-    onPriceUpdate?: (info: { totalCents: number; disabled: boolean; onContinue: () => void }) => void;
+    onPriceUpdate?: (info: {
+        totalCents: number;
+        disabled: boolean;
+        onContinue: () => void;
+    }) => void;
 }
 
 // ── Component ────────────────────────────────────────────────────────────
 export default function PerformanceConfigurator({
     performanceOptions,
     resourceTiers,
+    hardwareRecommendations,
     continueHref,
     continueLabel,
     onPriceUpdate,
@@ -121,6 +129,74 @@ export default function PerformanceConfigurator({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [availableRamStops]);
 
+    // ── Hardware recommendation (use the first one without an eggId, i.e. general) ──
+    // For games like Minecraft with multiple eggs, eggId-specific recommendations
+    // won't be shown here since the egg isn't selected yet at this stage.
+    const activeRecommendation = useMemo(() => {
+        if (!hardwareRecommendations || hardwareRecommendations.length === 0) return null;
+        // Prefer a recommendation without eggId (general for the game)
+        const general = hardwareRecommendations.find((r) => r.eggId === null);
+        if (general) return general;
+        // If ALL recommendations are eggId-specific, don't show any at this stage
+        return null;
+    }, [hardwareRecommendations]);
+
+    // Pre-select resource tier from recommendation (only on mount)
+    const [hasAppliedTierPreselect, setHasAppliedTierPreselect] = useState(false);
+    useEffect(() => {
+        if (hasAppliedTierPreselect) return;
+        if (!activeRecommendation?.preSelectedResourceTierId) return;
+        // Only preselect if the user hasn't explicitly chosen a tier via URL
+        if (searchParams.get('tier')) return;
+        const tierExists = resourceTiers.some(
+            (t) => t.id === activeRecommendation.preSelectedResourceTierId,
+        );
+        if (tierExists) {
+            setSelectedTierId(activeRecommendation.preSelectedResourceTierId);
+        }
+        setHasAppliedTierPreselect(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeRecommendation]);
+
+    // Build slider markers from the recommendation
+    const cpuMarkers = useMemo<SliderMarker[]>(() => {
+        if (!activeRecommendation) return [];
+        const markers: SliderMarker[] = [];
+        // Convert from cpuPercent (e.g. 200) to vCores (e.g. 2)
+        const minCores = activeRecommendation.minCpuPercent / 100;
+        const recCores = activeRecommendation.recCpuPercent / 100;
+        markers.push({
+            value: minCores,
+            color: 'bg-yellow-500',
+            label: 'Min',
+        });
+        markers.push({
+            value: recCores,
+            color: 'bg-green-500',
+            label: 'Rec',
+        });
+        return markers;
+    }, [activeRecommendation]);
+
+    const ramMarkers = useMemo<SliderMarker[]>(() => {
+        if (!activeRecommendation) return [];
+        const markers: SliderMarker[] = [];
+        // Convert from MB to GB
+        const minGb = activeRecommendation.minramMb / 1024;
+        const recGb = activeRecommendation.recRamMb / 1024;
+        markers.push({
+            value: minGb,
+            color: 'bg-yellow-500',
+            label: 'Min',
+        });
+        markers.push({
+            value: recGb,
+            color: 'bg-green-500',
+            label: 'Rec',
+        });
+        return markers;
+    }, [activeRecommendation]);
+
     // ── URL sync ─────────────────────────────────────────────────────────
     const buildParams = useCallback(() => {
         const params = new URLSearchParams();
@@ -160,7 +236,11 @@ export default function PerformanceConfigurator({
     useEffect(() => {
         if (!onPriceUpdate) return;
         const grandTotal = totalPrice.totalCents + tierPriceCents;
-        onPriceUpdate({ totalCents: grandTotal, disabled: !selectedTier || grandTotal < 100, onContinue: handleContinue });
+        onPriceUpdate({
+            totalCents: grandTotal,
+            disabled: !selectedTier || grandTotal < 100,
+            onContinue: handleContinue,
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [totalPrice.totalCents, tierPriceCents, selectedTier, onPriceUpdate]);
 
@@ -261,6 +341,7 @@ export default function PerformanceConfigurator({
                                     value={cpuCores}
                                     onChange={setCpuCores}
                                     logarithmic
+                                    markers={cpuMarkers}
                                 />
                             </SliderSection>
 
@@ -275,8 +356,30 @@ export default function PerformanceConfigurator({
                                     onChange={setRamGb}
                                     unit="GiB"
                                     logarithmic
+                                    markers={ramMarkers}
                                 />
                             </SliderSection>
+
+                            {/* Recommendation note */}
+                            {activeRecommendation && (
+                                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+                                    <InfoButton className="w-3.5 h-3.5 mt-0.5 shrink-0" text="" />
+                                    <div>
+                                        <span>{t('recommendation.note' as any)}</span>
+                                        <span className="inline-flex items-center gap-1.5 ml-2">
+                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />
+                                            <span>{t('recommendation.min' as any)}</span>
+                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 ml-1" />
+                                            <span>{t('recommendation.recommended' as any)}</span>
+                                        </span>
+                                        {activeRecommendation.note && (
+                                            <p className="mt-1 text-muted-foreground/80">
+                                                {activeRecommendation.note}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Resource Tiers */}
                             {resourceTiers.length > 0 && (
@@ -346,7 +449,6 @@ function SliderSection({
         </div>
     );
 }
-
 
 // ── Utility: parse hardware config from URL search params ────────────────
 export function configuredHardwareFromParams(

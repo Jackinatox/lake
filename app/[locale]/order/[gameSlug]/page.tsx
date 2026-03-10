@@ -18,7 +18,24 @@ export default async function GameLandingPage({
     const [game, performanceGroups, resourceTiers, freeLocations] = await Promise.all([
         prisma.gameData.findUnique({
             where: { slug: gameSlug, enabled: true },
-            select: { id: true, name: true, slug: true },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                hardwareRecommendations: {
+                    orderBy: { sorting: 'asc' },
+                    select: {
+                        id: true,
+                        eggId: true,
+                        minCpuPercent: true,
+                        recCpuPercent: true,
+                        minramMb: true,
+                        recRamMb: true,
+                        preSelectedResourceTierId: true,
+                        note: true,
+                    },
+                },
+            },
         }),
         fetchPerformanceGroups(),
         prisma.resourceTier.findMany({
@@ -58,6 +75,7 @@ export default async function GameLandingPage({
                 resourceTiers={resourceTiers}
                 game={game}
                 hasFreeServers={freeLocations.length > 0}
+                hardwareRecommendations={game.hardwareRecommendations}
             />
         </Suspense>
     );

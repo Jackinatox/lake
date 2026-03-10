@@ -3,6 +3,19 @@ import { Prisma } from '@/app/client/generated/browser';
 export type ResourceTier = Prisma.ResourceTierGetPayload<Record<string, never>>;
 export type GameData = Prisma.GameDataGetPayload<Record<string, never>>;
 
+export type HardwareRecommendationSlim = Prisma.HardwareRecommendationGetPayload<{
+    select: {
+        id: true;
+        eggId: true;
+        minCpuPercent: true;
+        recCpuPercent: true;
+        minramMb: true;
+        recRamMb: true;
+        preSelectedResourceTierId: true;
+        note: true;
+    };
+}>;
+
 export type PerformanceGroup = Prisma.LocationGetPayload<{
     include: { cpu: true; ram: true };
 }>;
