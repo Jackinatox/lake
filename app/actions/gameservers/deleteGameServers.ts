@@ -27,7 +27,7 @@ export async function deleteGameServers(ids: string[]) {
                 logger.warn('GameServer Deletion: ', 'SYSTEM', {
                     userId: session.user.id,
                     gameServerId: id,
-                    details: { error: `Game server with ID ${id} missing ptAdminId` },
+                    details: { error: `Gameserver with ID ${id} missing ptAdminId` },
                 });
                 deletedIds.push(id);
                 continue;

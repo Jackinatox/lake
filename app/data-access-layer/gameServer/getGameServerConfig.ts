@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 
 import { HardwareConfig } from '@/models/config';
 
-// Helper funcion that fetches the current hardware conf of a game server - used to calc upgrade prioce or show current hardware
+// Helper funcion that fetches the current hardware conf of a gameserver - used to calc upgrade prioce or show current hardware
 export async function getGameServerConfig(
     server_id: string,
     userId: string,

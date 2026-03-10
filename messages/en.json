@@ -71,9 +71,9 @@
   },
   "landingpage": {
     "heroBadge": "Simple Game Hosting",
-    "header1": "Game Server Hosting",
+    "header1": "Gameserver Hosting",
     "header2": "made easy",
-    "heroSubtitle": "Launch your game server in seconds — reliable hardware and a friendly control panel.",
+    "heroSubtitle": "Launch your gameserver in seconds — reliable hardware and a friendly control panel.",
     "statUptime": "99.0%",
     "statUptimeLabel": "Uptime",
     "statSupport": "Fast",
@@ -102,7 +102,7 @@
     "fileManagerFeature2": "Upload & download",
     "fileManagerFeature3": "Advanced actions via FTP",
     "backupTitle": "Backups you can trust",
-    "backupDesc": "Automatic backups of your entire game server. (Coming soon :))",
+    "backupDesc": "Automatic backups of your entire gameserver. (Coming soon :))",
     "backupFeature1": "Automatic scheduled backups",
     "backupFeature2": "One-click restore",
     "backupFeature3": "Download backups",
@@ -943,7 +943,7 @@
   },
   "freeServerUpgrade": {
     "title": "Extend or Upgrade Your Free Server",
-    "description": "Choose how you want to continue with your free game server.",
+    "description": "Choose how you want to continue with your free gameserver.",
     "backToOptions": "Back to options",
     "badge": {
       "freeServer": "Free Server"

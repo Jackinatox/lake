@@ -70,7 +70,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
 
         toast({
             title: result.success ? 'Success' : 'Error',
-            description: result.success ? 'Game servers deleted successfully.' : result.error,
+            description: result.success ? 'Gameservers deleted successfully.' : result.error,
             variant: result.success ? 'default' : 'destructive',
         });
 

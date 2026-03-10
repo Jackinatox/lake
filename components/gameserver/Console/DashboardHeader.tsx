@@ -183,7 +183,7 @@ function MobilePowerDropdown({
 }
 
 /**
- * DashboardHeader - Responsive header bar for the game server dashboard
+ * DashboardHeader - Responsive header bar for the gameserver dashboard
  *
  * Layout strategy:
  * - Mobile (<640px): Status dot + Power dropdown + Upgrade button (single row)

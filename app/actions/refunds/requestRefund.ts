@@ -30,7 +30,7 @@ export async function checkWithdrawalEligibility(orderId: string): Promise<Withd
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
-    // Check if there are subsequent orders (e.g. upgrades) on the same game server.
+    // Check if there are subsequent orders (e.g. upgrades) on the same gameserver.
     // If the user bought a server and then upgraded it, we can't refund the original
     // order because suspending the server would also void the upgrade they paid for.
     let hasUpgradeOrders = false;

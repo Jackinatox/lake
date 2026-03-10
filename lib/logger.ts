@@ -27,7 +27,7 @@ export interface LogContext {
     // User context
     userId?: string;
 
-    // Game server context
+    // Gameserver context
     gameServerId?: string;
 
     // Additional structured data
@@ -381,7 +381,7 @@ class Logger {
     }
 
     /**
-     * Get logs for a specific game server
+     * Get logs for a specific gameserver
      */
     async getGameServerLogs(gameServerId: string, limit: number = 100) {
         return await this.query({

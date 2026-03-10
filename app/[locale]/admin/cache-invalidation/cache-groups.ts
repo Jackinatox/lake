@@ -7,7 +7,7 @@ export const CACHE_GROUPS = {
         keys: ['keyValue'],
     },
     gameServers: {
-        name: 'Game Servers',
+        name: 'Gameservers',
         keys: ['gameServers', 'gameServer'],
     },
     users: {

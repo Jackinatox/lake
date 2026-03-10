@@ -61,7 +61,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
             {
                 price_data: {
                     currency: 'eur',
-                    product_data: { name: `${params.type} Game Server` }, // TODO: translation maybe
+                    product_data: { name: `${params.type} Gameserver` }, // TODO: translation maybe
                     unit_amount: Math.round(price.totalCents),
                 },
                 quantity: 1,

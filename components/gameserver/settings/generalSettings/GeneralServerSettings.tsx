@@ -17,7 +17,7 @@ export function GeneralServerSettings({ server }: ServerSettingsCardProps) {
                     Server Settings
                 </CardTitle>
                 <CardDescription className="text-sm">
-                    Configure your game server settings
+                    Configure your gameserver settings
                 </CardDescription>
             </CardHeader>
             <CardContent className="p-3 pt-2 space-y-4">

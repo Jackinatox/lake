@@ -154,7 +154,7 @@ export async function checkoutAction(
                     {
                         price_data: {
                             currency: 'eur',
-                            product_data: { name: 'Game Server' },
+                            product_data: { name: 'Gameserver' },
                             unit_amount: Math.round(totalCents),
                         },
                         quantity: 1,
@@ -231,7 +231,7 @@ export async function checkoutAction(
                     {
                         price_data: {
                             currency: 'eur',
-                            product_data: { name: `${params.type} Game Server` },
+                            product_data: { name: `${params.type} Gameserver` },
                             unit_amount: Math.round(price.totalCents),
                         },
                         quantity: 1,
@@ -350,7 +350,7 @@ export async function checkoutAction(
                         price_data: {
                             currency: 'eur',
                             product_data: {
-                                name: `Upgrade Game Server to ${cpuPercent}% CPU, ${ramMb}MB RAM`,
+                                name: `Upgrade Gameserver to ${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM`,
                             },
                             unit_amount: Math.round(price.totalCents),
                         },
@@ -449,7 +449,7 @@ export async function checkoutAction(
                         price_data: {
                             currency: 'eur',
                             product_data: {
-                                name: `${packageData.name} - Game Server Package`,
+                                name: `${packageData.name} - Gameserver Package`,
                                 description: `${packageData.cpuPercent / 100} vCPU, ${formatMBToGiB(packageData.ramMB)} RAM, ${formatMBToGiB(packageData.diskMB)} Storage`,
                             },
                             unit_amount: Math.round(price.totalCents),

@@ -137,7 +137,7 @@ const StatusPage = () => {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <div className="text-sm text-muted-foreground">Game Servers</div>
+                            <div className="text-sm text-muted-foreground">Gameservers</div>
                             <div className="text-2xl font-bold">
                                 {status.database.stats.gameServers.total}
                             </div>

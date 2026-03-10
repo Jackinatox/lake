@@ -17,7 +17,7 @@ export async function expireGameServer(id: string) {
     try {
         const res = await toggleSuspendGameServer(id, 'suspend');
         if (!res || !res.success) {
-            throw new Error('Failed to suspend game server');
+            throw new Error('Failed to suspend gameserver');
         }
         await prisma.gameServer.update({
             where: { id },

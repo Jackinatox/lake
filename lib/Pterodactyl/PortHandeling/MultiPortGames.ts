@@ -41,7 +41,7 @@ interface PortConfigurationResult {
 }
 
 /**
- * Main orchestrator function to correctly configure ports for a game server
+ * Main orchestrator function to correctly configure ports for a gameserver
  * This function:
  * 1. Determines the required number of allocations for the game
  * 2. Ensures the server has the correct number of allocations
