@@ -1,5 +1,6 @@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface StartupCommandProps {
@@ -7,9 +8,10 @@ interface StartupCommandProps {
 }
 
 function StartupCommand({ command }: StartupCommandProps) {
+    const t = useTranslations('gameserver.settings.startupCommand');
     return (
         <div className="space-y-2">
-            <Label htmlFor="startup-command">Startup Command</Label>
+            <Label htmlFor="startup-command">{t('label')}</Label>
             <Textarea
                 id="startup-command"
                 value={command}
@@ -18,7 +20,7 @@ function StartupCommand({ command }: StartupCommandProps) {
                 rows={3}
             />
             <p className="text-xs text-muted-foreground">
-                This command is automatically generated and cannot be modified.
+                {t('description')}
             </p>
         </div>
     );

@@ -162,7 +162,7 @@ export default function FreeGameServerBooking({
                                 {game.name}
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                                Configure your free game server
+                                Configure your free gameserver
                             </p>
                         </div>
                     </div>
@@ -189,7 +189,7 @@ export default function FreeGameServerBooking({
                             <Button
                                 onClick={handleCreateFreeServer}
                                 disabled={isCreationDisabled || loading}
-                                className="w-full sm:w-auto sm:ml-auto bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                                className="w-full sm:w-auto sm:ml-auto bg-green-600 hover:bg-green-700"
                             >
                                 {loading ? 'Creating...' : 'Create Free Server'}
                                 <Gift className="ml-2 h-4 w-4" />

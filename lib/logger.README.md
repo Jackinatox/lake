@@ -6,7 +6,7 @@ A unified logging solution for the Lake project that writes to the `ApplicationL
 
 - **Unified Interface**: Single import for all logging needs
 - **Type-Safe**: Full TypeScript support with Prisma types
-- **Contextual**: Automatically captures request context, user info, and game server associations
+- **Contextual**: Automatically captures request context, user info, and gameserver associations
 - **Categorized**: Logs are categorized by type (System, Auth, Payment, etc.) and level (Info, Warn, Error, Fatal)
 - **Queryable**: Built-in methods to query and filter logs
 - **Error Handling**: Graceful fallback to console if database logging fails
@@ -53,7 +53,7 @@ await logger.payment('Payment processed', 'INFO', {
     details: { amount: 1000, currency: 'USD' },
 });
 
-// Game server events
+// Gameserver events
 await logger.gameServer('Server created', 'INFO', {
     gameServerId: 'server456',
     userId: 'user123',
@@ -143,7 +143,7 @@ const recentErrors = await logger.getRecentErrors(50);
 const userLogs = await logger.getUserLogs('user123', 100);
 ```
 
-### Get Game Server Logs
+### Get Gameserver Logs
 
 ```typescript
 const serverLogs = await logger.getGameServerLogs('server456', 100);

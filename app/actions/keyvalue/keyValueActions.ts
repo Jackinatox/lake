@@ -6,6 +6,8 @@ import { Prisma } from '@/app/client/generated/client';
 import { KeyValueType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
 
+const MAX_CATEGORY_LENGTH = 30;
+
 async function requireAdmin() {
     const session = await auth.api.getSession({ headers: await headers() });
     if (session?.user.role !== 'admin') throw new Error('Unauthorized');
@@ -20,6 +22,7 @@ export type KeyValueRow = {
     number: number | null;
     boolean: boolean | null;
     note: string | null;
+    category: string | null;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -38,6 +41,7 @@ export type UpsertKeyValueInput = {
     number?: number | null;
     boolean?: boolean | null;
     note?: string | null;
+    category?: string | null;
 };
 
 export async function upsertKeyValueAction(input: UpsertKeyValueInput): Promise<KeyValueRow> {
@@ -54,6 +58,7 @@ export async function upsertKeyValueAction(input: UpsertKeyValueInput): Promise<
         number: input.type === 'NUMBER' ? (input.number ?? null) : null,
         boolean: input.type === 'BOOLEAN' ? (input.boolean ?? null) : null,
         note: input.note ?? null,
+        category: input.category ? input.category.slice(0, MAX_CATEGORY_LENGTH) : null,
     };
 
     if (input.id) {

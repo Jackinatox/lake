@@ -44,6 +44,7 @@ function PowerControls({
     serverStatus,
     onPowerAction,
 }: PowerControlsProps) {
+    const t = useTranslations('gameserver.dashboard.power');
     return (
         <>
             <Tooltip>
@@ -63,7 +64,7 @@ function PowerControls({
                         <Play className="h-4 w-4" />
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent>Start</TooltipContent>
+                <TooltipContent>{t('start')}</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -78,7 +79,7 @@ function PowerControls({
                         <RefreshCw className="h-4 w-4" />
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent>Restart</TooltipContent>
+                <TooltipContent>{t('restart')}</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -93,7 +94,7 @@ function PowerControls({
                         <Square className="h-4 w-4" />
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent>Stop</TooltipContent>
+                <TooltipContent>{t('stop')}</TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -108,7 +109,7 @@ function PowerControls({
                         <Power className="h-4 w-4" />
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent>Kill</TooltipContent>
+                <TooltipContent>{t('kill')}</TooltipContent>
             </Tooltip>
         </>
     );
@@ -130,6 +131,7 @@ function MobilePowerDropdown({
     serverStatus,
     onPowerAction,
 }: MobilePowerDropdownProps) {
+    const t = useTranslations('gameserver.dashboard.power');
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -150,7 +152,7 @@ function MobilePowerDropdown({
                     className="gap-2"
                 >
                     <Play className="h-4 w-4 text-green-500" />
-                    Start
+                    {t('start')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() => onPowerAction('restart')}
@@ -158,7 +160,7 @@ function MobilePowerDropdown({
                     className="gap-2"
                 >
                     <RefreshCw className="h-4 w-4" />
-                    Restart
+                    {t('restart')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() => onPowerAction('stop')}
@@ -166,7 +168,7 @@ function MobilePowerDropdown({
                     className="gap-2"
                 >
                     <Square className="h-4 w-4" />
-                    Stop
+                    {t('stop')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -175,7 +177,7 @@ function MobilePowerDropdown({
                     className="gap-2 text-destructive focus:text-destructive"
                 >
                     <Power className="h-4 w-4" />
-                    Kill
+                    {t('kill')}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -183,7 +185,7 @@ function MobilePowerDropdown({
 }
 
 /**
- * DashboardHeader - Responsive header bar for the game server dashboard
+ * DashboardHeader - Responsive header bar for the gameserver dashboard
  *
  * Layout strategy:
  * - Mobile (<640px): Status dot + Power dropdown + Upgrade button (single row)
@@ -275,7 +277,7 @@ export function DashboardHeader({
                     {/* Center section: Address + Game Info (flexible width) */}
                     <div className="flex items-center gap-2 flex-1 justify-center min-w-0">
                         {/* Game Info - hidden on smaller tablets */}
-                        <div className="hidden xl:block shrink-0">
+                        <div className="hidden lg:block shrink-0 text-sm">
                             <GameInfo server={server} apiKey={ptApiKey} />
                         </div>
 

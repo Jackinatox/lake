@@ -146,7 +146,7 @@ export default function VerifyEmailPage() {
                             </>
                         )}
                     </CardContent>
-                    <CardFooter className="flex flex-col gap-3">
+                    <CardFooter className="flex flex-col items-stretch gap-3">
                         {showVerifiedState ? (
                             <Button asChild className="w-full">
                                 <Link href="/">{t('cta.dashboard')}</Link>

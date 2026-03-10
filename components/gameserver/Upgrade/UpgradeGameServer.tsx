@@ -12,6 +12,7 @@ import React from 'react';
 import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface UpgradeGameServerProps {
     serverId: string;
@@ -28,6 +29,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const locale = useLakeLocale();
+    const t = useTranslations('upgradeCheckout');
 
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
@@ -53,8 +55,8 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
         } catch (error) {
             console.error('Error during checkout:', error);
             toast({
-                title: 'Checkout Error',
-                description: 'An error occurred during the checkout process.',
+                title: t('errorTitle'),
+                description: t('errorDescription'),
                 variant: 'destructive',
             });
         } finally {
@@ -67,7 +69,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             {step === 'configure' && (
                 <>
                     <Button variant="outline" size="sm" asChild>
-                        <Link href={`/gameserver/${serverId}`}>← Go back</Link>
+                        <Link href={`/gameserver/${serverId}`}>{t('goBack')}</Link>
                     </Button>
                     <UpgradeHardwareConfig
                         performanceOptions={performanceOptions}
@@ -81,7 +83,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             {step === 'pay' && clientSecret && (
                 <Card className="w-full max-w-4xl mx-auto space-y-6 p-4 md:p-6">
                     <Button variant="outline" onClick={() => handleBackToConfigure()}>
-                        ← Back to configuration
+                        {t('backToConfig')}
                     </Button>
                     <div className="w-full">
                         <CustomServerPaymentElements
@@ -92,7 +94,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
                 </Card>
             )}
 
-            {loading && <div className="text-sm text-muted-foreground">Preparing checkout…</div>}
+            {loading && <div className="text-sm text-muted-foreground">{t('preparing')}</div>}
         </div>
     );
 }

@@ -1,0 +1,485 @@
+'use client';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
+import type { HardwareConfig } from '@/models/config';
+import { PerformanceGroup } from '@/models/prisma';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import InfoButton from '@/components/InfoButton';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
+import PriceOverview from './PriceOverview';
+import ResourceTierSelector from './ResourceTierSelector';
+import type { HardwareRecommendationSlim } from '@/models/prisma';
+
+// ── Logarithmic scales ──────────────────────────────────────────────────
+const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
+const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
+
+// ── Duration config ──────────────────────────────────────────────────────
+const DURATIONS: readonly { value: number; labelKey: string; discount?: number }[] = [
+    { value: 7, labelKey: 'durations.week' },
+    { value: 30, labelKey: 'durations.month' },
+    { value: 90, labelKey: 'durations.threeMonths', discount: 10 },
+    { value: 180, labelKey: 'durations.sixMonths', discount: 15 },
+];
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+function clampToNearest(value: number, stops: number[]): number {
+    return stops.reduce((best, v) => (Math.abs(v - value) < Math.abs(best - value) ? v : best));
+}
+
+// ── Types ────────────────────────────────────────────────────────────────
+export interface ResourceTierDisplay {
+    id: number;
+    name: string;
+    diskMB: number;
+    backups: number;
+    ports: number;
+    priceCents: number;
+}
+
+interface PerformanceConfiguratorProps {
+    performanceOptions: PerformanceGroup[];
+    resourceTiers: ResourceTierDisplay[];
+    /** Hardware recommendations from the database (left-joined on GameData) */
+    hardwareRecommendations?: HardwareRecommendationSlim[];
+    /** Where to navigate on continue. Receives the current search params string. */
+    continueHref: (params: string) => string;
+    /** Button label override */
+    continueLabel?: string;
+    /** Called whenever price or continue state changes, for parent to render in sticky header/footer */
+    onPriceUpdate?: (info: {
+        totalCents: number;
+        disabled: boolean;
+        onContinue: () => void;
+    }) => void;
+}
+
+// ── Component ────────────────────────────────────────────────────────────
+export default function PerformanceConfigurator({
+    performanceOptions,
+    resourceTiers,
+    hardwareRecommendations,
+    continueHref,
+    continueLabel,
+    onPriceUpdate,
+}: PerformanceConfiguratorProps) {
+    const t = useTranslations('buyGameServer.hardware');
+    const tl = useTranslations('buyGameServer.hardware.labels');
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    // ── Initial state from URL params ────────────────────────────────────
+    const initialPfId = searchParams.get('pf')
+        ? Number(searchParams.get('pf'))
+        : (performanceOptions[0]?.id ?? null);
+
+    const initialCpu = searchParams.get('cpu') ? Number(searchParams.get('cpu')) : 4;
+    const initialRam = searchParams.get('ram') ? Number(searchParams.get('ram')) : 4;
+    const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
+    const initialTier = searchParams.get('tier') ? Number(searchParams.get('tier')) : null;
+
+    // ── State ────────────────────────────────────────────────────────────
+    const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(
+        performanceOptions.find((pf) => pf.id === initialPfId) ?? performanceOptions[0] ?? null,
+    );
+    const [cpuCores, setCpuCores] = useState(clampToNearest(initialCpu, CPU_SCALE));
+    const [ramGb, setRamGb] = useState(clampToNearest(initialRam, RAM_SCALE));
+    const [days, setDays] = useState(initialDays);
+    const [selectedTierId, setSelectedTierId] = useState<number | null>(
+        initialTier ?? resourceTiers[0]?.id ?? null,
+    );
+
+    const selectedTier = resourceTiers.find((t) => t.id === selectedTierId) ?? null;
+
+    // ── Available stops filtered by performance group constraints ────────
+    const availableCpuStops = useMemo(() => {
+        if (!selectedPFGroup) return [];
+        const { minThreads, maxThreads } = selectedPFGroup.cpu;
+        const filtered = CPU_SCALE.filter((v) => v >= minThreads && v <= maxThreads);
+        const allCpuOptions = new Set(filtered).add(maxThreads);
+        return Array.from(allCpuOptions);
+    }, [selectedPFGroup]);
+
+    const availableRamStops = useMemo(() => {
+        if (!selectedPFGroup) return [];
+        const { minGb, maxGb } = selectedPFGroup.ram;
+        const filtered = RAM_SCALE.filter((v) => v >= minGb && v <= maxGb);
+        const withBounds = new Set([minGb, ...filtered, maxGb]);
+        return [...withBounds].sort((a, b) => a - b);
+    }, [selectedPFGroup]);
+
+    // Clamp CPU/RAM when performance group changes
+    useEffect(() => {
+        if (availableCpuStops.length > 0 && !availableCpuStops.includes(cpuCores)) {
+            setCpuCores(clampToNearest(cpuCores, availableCpuStops));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [availableCpuStops]);
+
+    useEffect(() => {
+        if (availableRamStops.length > 0 && !availableRamStops.includes(ramGb)) {
+            setRamGb(clampToNearest(ramGb, availableRamStops));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [availableRamStops]);
+
+    // ── Hardware recommendation (use the first one without an eggId, i.e. general) ──
+    // For games like Minecraft with multiple eggs, eggId-specific recommendations
+    // won't be shown here since the egg isn't selected yet at this stage.
+    const activeRecommendation = useMemo(() => {
+        if (!hardwareRecommendations || hardwareRecommendations.length === 0) return null;
+        // Prefer a recommendation without eggId (general for the game)
+        const general = hardwareRecommendations.find((r) => r.eggId === null);
+        if (general) return general;
+        // If ALL recommendations are eggId-specific, don't show any at this stage
+        return null;
+    }, [hardwareRecommendations]);
+
+    // Pre-select resource tier from recommendation (only on mount)
+    const [hasAppliedTierPreselect, setHasAppliedTierPreselect] = useState(false);
+    useEffect(() => {
+        if (hasAppliedTierPreselect) return;
+        if (!activeRecommendation?.preSelectedResourceTierId) return;
+        // Only preselect if the user hasn't explicitly chosen a tier via URL
+        if (searchParams.get('tier')) return;
+        const tierExists = resourceTiers.some(
+            (t) => t.id === activeRecommendation.preSelectedResourceTierId,
+        );
+        if (tierExists) {
+            setSelectedTierId(activeRecommendation.preSelectedResourceTierId);
+        }
+        setHasAppliedTierPreselect(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeRecommendation]);
+
+    // Build slider markers from the recommendation
+    const cpuMarkers = useMemo<SliderMarker[]>(() => {
+        if (!activeRecommendation) return [];
+        const markers: SliderMarker[] = [];
+        // Convert from cpuPercent (e.g. 200) to vCores (e.g. 2)
+        const minCores = activeRecommendation.minCpuPercent / 100;
+        const recCores = activeRecommendation.recCpuPercent / 100;
+        markers.push({
+            value: minCores,
+            color: 'bg-yellow-500',
+            label: 'Min',
+        });
+        markers.push({
+            value: recCores,
+            color: 'bg-green-500',
+            label: 'Rec',
+        });
+        return markers;
+    }, [activeRecommendation]);
+
+    const ramMarkers = useMemo<SliderMarker[]>(() => {
+        if (!activeRecommendation) return [];
+        const markers: SliderMarker[] = [];
+        // Convert from MB to GB
+        const minGb = activeRecommendation.minramMb / 1024;
+        const recGb = activeRecommendation.recRamMb / 1024;
+        markers.push({
+            value: minGb,
+            color: 'bg-yellow-500',
+            label: 'Min',
+        });
+        markers.push({
+            value: recGb,
+            color: 'bg-green-500',
+            label: 'Rec',
+        });
+        return markers;
+    }, [activeRecommendation]);
+
+    // ── URL sync ─────────────────────────────────────────────────────────
+    const buildParams = useCallback(() => {
+        const params = new URLSearchParams();
+        if (selectedPFGroup) params.set('pf', String(selectedPFGroup.id));
+        params.set('cpu', String(cpuCores));
+        params.set('ram', String(ramGb));
+        params.set('days', String(days));
+        if (selectedTierId) params.set('tier', String(selectedTierId));
+        return params.toString();
+    }, [selectedPFGroup, cpuCores, ramGb, days, selectedTierId]);
+
+    useEffect(() => {
+        const newParams = buildParams();
+        if (newParams !== searchParams.toString()) {
+            window.history.replaceState(null, '', `${pathname}?${newParams}`);
+        }
+    }, [buildParams, pathname, searchParams]);
+
+    // ── Price calculation ────────────────────────────────────────────────
+    const tierPriceCents = selectedTier?.priceCents ?? 0;
+
+    const totalPrice = useMemo<NewPriceDef>(() => {
+        if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
+            return calculateNew(selectedPFGroup, cpuCores * 100, ramGb * 1024, days);
+        }
+        return {
+            cents: { cpu: 0, ram: 0 },
+            discount: { cents: 0, percent: 0 },
+            totalCents: 0,
+        };
+    }, [selectedPFGroup, cpuCores, ramGb, days]);
+
+    const handleContinue = () => {
+        router.push(continueHref(buildParams()));
+    };
+
+    useEffect(() => {
+        if (!onPriceUpdate) return;
+        const grandTotal = totalPrice.totalCents + tierPriceCents;
+        onPriceUpdate({
+            totalCents: grandTotal,
+            disabled: !selectedTier || grandTotal < 100,
+            onContinue: handleContinue,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [totalPrice.totalCents, tierPriceCents, selectedTier, onPriceUpdate]);
+
+    if (!selectedPFGroup) return <div>...</div>;
+
+    // ── Render ───────────────────────────────────────────────────────────
+    return (
+        <div className="w-full max-w-7xl mx-auto">
+            <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
+                {/* ── Configuration panel ──────────────────────────────── */}
+                <div className="lg:col-span-2 order-1 lg:order-1">
+                    <Card className="shadow-lg">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-lg sm:text-xl">{t('title')}</CardTitle>
+                            <CardDescription className="text-sm">
+                                {t('description')}
+                            </CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="space-y-6">
+                            {/* Performance tier */}
+                            <Section label={t('performanceTier')}>
+                                <Tabs
+                                    value={selectedPFGroup.id.toString()}
+                                    onValueChange={(v) => {
+                                        const pf = performanceOptions.find(
+                                            (p) => p.id.toString() === v,
+                                        );
+                                        if (pf) setSelectedPFGroup(pf);
+                                    }}
+                                >
+                                    <TabsList className="grid grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-1 bg-muted/50">
+                                        {performanceOptions.map((pf) => (
+                                            <TabsTrigger
+                                                key={pf.id}
+                                                value={pf.id.toString()}
+                                                className="flex items-center justify-center gap-2 p-4 text-sm font-medium rounded-md transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-muted/80"
+                                            >
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <span className="font-semibold">{pf.name}</span>
+                                                    <div className="flex items-center gap-1 text-xs opacity-80">
+                                                        <span>{pf.cpu.name}</span>
+                                                        <InfoButton
+                                                            className="w-3 h-3"
+                                                            text="kleine info"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </TabsTrigger>
+                                        ))}
+                                    </TabsList>
+                                </Tabs>
+                            </Section>
+
+                            {/* Billing period */}
+                            <Section label={t('billingPeriod')}>
+                                <Tabs
+                                    value={days.toString()}
+                                    onValueChange={(v) => setDays(Number(v))}
+                                >
+                                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
+                                        {DURATIONS.map((d) => (
+                                            <TabsTrigger
+                                                key={d.value}
+                                                value={d.value.toString()}
+                                                className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                                            >
+                                                <div className="text-center">
+                                                    <div className="font-medium">
+                                                        {t(d.labelKey as any)}
+                                                    </div>
+                                                    {d.discount ? (
+                                                        <div className="text-xs opacity-80 text-green-600">
+                                                            -{d.discount}%
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-xs opacity-80">
+                                                            {t('durations.days', {
+                                                                days: d.value,
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </TabsTrigger>
+                                        ))}
+                                    </TabsList>
+                                </Tabs>
+                            </Section>
+
+                            {/* CPU */}
+                            <SliderSection
+                                label={formatVCores(cpuCores)}
+                                sublabel={selectedPFGroup.cpu.name}
+                                detail={`${(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)} ${tl('perVcore')}`}
+                            >
+                                <LogarithmicSlider
+                                    stops={availableCpuStops}
+                                    value={cpuCores}
+                                    onChange={setCpuCores}
+                                    logarithmic
+                                    markers={cpuMarkers}
+                                />
+                            </SliderSection>
+
+                            {/* RAM */}
+                            <SliderSection
+                                label={`${ramGb} ${tl('ramUnit')}`}
+                                detail={`${(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)} ${tl('perGiB')}`}
+                            >
+                                <LogarithmicSlider
+                                    stops={availableRamStops}
+                                    value={ramGb}
+                                    onChange={setRamGb}
+                                    unit="GiB"
+                                    logarithmic
+                                    markers={ramMarkers}
+                                />
+                            </SliderSection>
+
+                            {/* Recommendation note */}
+                            {activeRecommendation && (
+                                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+                                    <InfoButton className="w-3.5 h-3.5 mt-0.5 shrink-0" text="" />
+                                    <div>
+                                        <span>{t('recommendation.note' as any)}</span>
+                                        <span className="inline-flex items-center gap-1.5 ml-2">
+                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />
+                                            <span>{t('recommendation.min' as any)}</span>
+                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 ml-1" />
+                                            <span>{t('recommendation.recommended' as any)}</span>
+                                        </span>
+                                        {activeRecommendation.note && (
+                                            <p className="mt-1 text-muted-foreground/80">
+                                                {activeRecommendation.note}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Resource Tiers */}
+                            {resourceTiers.length > 0 && (
+                                <ResourceTierSelector
+                                    tiers={resourceTiers}
+                                    selectedId={selectedTierId}
+                                    onSelect={setSelectedTierId}
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* ── Price overview ───────────────────────────────────── */}
+                <div className="order-2 lg:order-2">
+                    <div className="lg:sticky lg:top-4">
+                        <PriceOverview
+                            cpuCores={cpuCores}
+                            ramGb={ramGb}
+                            days={days}
+                            totalPrice={totalPrice}
+                            tierPriceCents={tierPriceCents}
+                            onContinue={handleContinue}
+                            continueLabel={continueLabel}
+                            disableContinue={!selectedTier}
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── Tiny layout helpers ──────────────────────────────────────────────────
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+    return (
+        <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">{label}</h3>
+            {children}
+        </div>
+    );
+}
+
+function SliderSection({
+    label,
+    sublabel,
+    detail,
+    children,
+}: {
+    label: string;
+    sublabel?: string;
+    detail?: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                <div className="flex items-center gap-2">
+                    <div className="text-base sm:text-lg font-semibold">{label}</div>
+                    {sublabel && (
+                        <span className="text-xs sm:text-sm text-muted-foreground">{sublabel}</span>
+                    )}
+                </div>
+                {detail && <div className="text-xs sm:text-sm text-muted-foreground">{detail}</div>}
+            </div>
+            <div className="px-2">{children}</div>
+        </div>
+    );
+}
+
+// ── Utility: parse hardware config from URL search params ────────────────
+export function configuredHardwareFromParams(
+    searchParams: URLSearchParams,
+    resourceTiers: ResourceTierDisplay[],
+): { hardwareConfig: HardwareConfig; tierId: number } | null {
+    const pf = searchParams.get('pf');
+    const cpu = searchParams.get('cpu');
+    const ram = searchParams.get('ram');
+    const days = searchParams.get('days');
+    const tier = searchParams.get('tier');
+
+    if (!pf || !cpu || !ram || !days || !tier) return null;
+
+    const tierId = Number(tier);
+    const selectedTier = resourceTiers.find((t) => t.id === tierId);
+    if (!selectedTier) return null;
+
+    const cpuPercent = Number(cpu) * 100;
+    const ramMb = Number(ram) * 1024;
+
+    return {
+        hardwareConfig: {
+            pfGroupId: Number(pf),
+            cpuPercent,
+            ramMb,
+            diskMb: selectedTier.diskMB,
+            backupCount: selectedTier.backups,
+            allocations: selectedTier.ports,
+            durationsDays: Number(days),
+        },
+        tierId,
+    };
+}

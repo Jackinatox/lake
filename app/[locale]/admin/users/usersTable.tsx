@@ -14,6 +14,7 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { User } from '@/app/client/generated/browser';
 
 interface UsersTableProps {
@@ -30,6 +31,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                     <TableHead>Name</TableHead>
                     <TableHead>Last Login Method</TableHead>
                     <TableHead>Email</TableHead>
+                    <TableHead>Verified</TableHead>
                     <TableHead>Edit</TableHead>
                 </TableRow>
             </TableHeader>
@@ -53,6 +55,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ users }) => {
                         </TableCell>
                         <TableCell>{user.name}</TableCell>
                         <TableCell>{user.lastLoginMethod}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                            {user.emailVerified ? (
+                                <Badge variant="default">Verified</Badge>
+                            ) : (
+                                <Badge variant="secondary">Unverified</Badge>
+                            )}
+                        </TableCell>
                         <TableCell>
                             <Button asChild variant="ghost" size="icon">
                                 <Link href={`users/${user.ptUserId}`}>

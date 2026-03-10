@@ -1,9 +1,12 @@
 import prisma from '@/lib/prisma';
+import { fetchPerformanceGroups } from '@/lib/actions';
 import { notFound } from 'next/navigation';
-import GameLandingClient from './GameLandingClient';
-import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
+import ConfiguredOrderClient from './ConfiguredOrderClient';
+import { Suspense } from 'react';
 
-const PACKAGE_DISPLAY_DAYS = 30;
+// Old imports — kept so the file is easy to restore
+// import GameLandingClient from './GameLandingClient';
+// import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 
 export default async function GameLandingPage({
     params,
@@ -12,23 +15,40 @@ export default async function GameLandingPage({
 }) {
     const { gameSlug } = await params;
 
-    const [game, packages, freeLocations] = await Promise.all([
+    const [game, performanceGroups, resourceTiers, freeLocations] = await Promise.all([
         prisma.gameData.findUnique({
             where: { slug: gameSlug, enabled: true },
-            include: {
+            select: {
+                id: true,
+                name: true,
+                slug: true,
                 hardwareRecommendations: {
                     orderBy: { sorting: 'asc' },
+                    select: {
+                        id: true,
+                        eggId: true,
+                        minCpuPercent: true,
+                        recCpuPercent: true,
+                        minramMb: true,
+                        recRamMb: true,
+                        preSelectedResourceTierId: true,
+                        note: true,
+                    },
                 },
             },
         }),
-        prisma.package.findMany({
+        fetchPerformanceGroups(),
+        prisma.resourceTier.findMany({
             where: { enabled: true },
-            include: {
-                location: {
-                    include: { cpu: true, ram: true },
-                },
-            },
             orderBy: { sorting: 'asc' },
+            select: {
+                id: true,
+                name: true,
+                diskMB: true,
+                backups: true,
+                ports: true,
+                priceCents: true,
+            },
         }),
         prisma.location.findMany({
             where: { freeServer: true, enabled: true },
@@ -40,44 +60,23 @@ export default async function GameLandingPage({
         notFound();
     }
 
-    const hasFreeServers = freeLocations.length > 0;
-    const recommendation = game.hardwareRecommendations[0] ?? null;
-
-    // Precompute package prices for display
-    const packagesWithPrices = packages.map((pkg) => {
-        const price = calculateNew(pkg.location, pkg.cpuPercent, pkg.ramMB, PACKAGE_DISPLAY_DAYS);
-        return {
-            id: pkg.id,
-            name: pkg.name,
-            description: pkg.description,
-            imageName: pkg.imageName,
-            diskMB: pkg.diskMB,
-            ramMB: pkg.ramMB,
-            cpuPercent: pkg.cpuPercent,
-            backups: pkg.backups,
-            locationName: pkg.location.name,
-            priceCents: price.totalCents,
-            preselected: recommendation?.preselectedPackageId === pkg.id,
-        };
-    });
+    if (!performanceGroups || performanceGroups.length === 0) {
+        return (
+            <div className="p-8 text-center text-muted-foreground">
+                No hardware options available.
+            </div>
+        );
+    }
 
     return (
-        <GameLandingClient
-            game={{
-                id: game.id,
-                name: game.name,
-                slug: game.slug,
-            }}
-            packages={packagesWithPrices}
-            hasFreeServers={hasFreeServers}
-            recommendation={
-                recommendation
-                    ? {
-                          recCpuPercent: recommendation.recCpuPercent,
-                          recRamMb: recommendation.recRamMb,
-                      }
-                    : null
-            }
-        />
+        <Suspense>
+            <ConfiguredOrderClient
+                performanceGroups={performanceGroups}
+                resourceTiers={resourceTiers}
+                game={game}
+                hasFreeServers={freeLocations.length > 0}
+                hardwareRecommendations={game.hardwareRecommendations}
+            />
+        </Suspense>
     );
 }

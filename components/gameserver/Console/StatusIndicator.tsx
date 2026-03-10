@@ -54,10 +54,11 @@ export function StatusIndicator({
     showTooltip = true,
     className,
 }: StatusIndicatorProps) {
+    const t = useTranslations('gameserver.statusIndicator');
     const normalizedState = state?.toLowerCase() || 'unknown';
     const colorClass = statusColors[normalizedState] || statusColors.unknown;
     const shouldPulse = statusPulse[normalizedState] || false;
-    const displayText = state || 'Loading';
+    const displayText = state || t('loading');
 
     const dot = (
         <div

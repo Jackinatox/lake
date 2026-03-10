@@ -1,4 +1,4 @@
-import { Heading, Hr, Img, Section, Text } from '@react-email/components';
+import { Heading, Img, Section, Text } from '@react-email/components';
 import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
@@ -28,7 +28,7 @@ interface InvoiceTemplateProps {
     location: string;
     price: number;
     expiresAt: Date;
-    receiptUrl?: string;
+    invoicePdfUrl: string;
 }
 
 const formatPrice = (cents: number) => {
@@ -65,25 +65,23 @@ export default function InvoiceTemplate({
     location,
     price,
     expiresAt,
-    receiptUrl,
+    invoicePdfUrl,
 }: InvoiceTemplateProps) {
-    const netPrice = price / 1.19; // Price without VAT (19%)
-    const vatAmount = price - netPrice;
-
     return (
         <EmailLayout
-            preview={`Rechnung für deinen ${gameName} Server`}
-            footerNote="Diese Rechnung wurde elektronisch erstellt und ist ohne Unterschrift gültig."
+            preview={`Rechnungsübersicht für deinen ${gameName} Server`}
+            footerNote="Diese E-Mail dient als Übersicht. Die vollständige Rechnung findest du im angehängten PDF."
             hideSupport
         >
-            <Heading style={headingStyle}>Rechnung</Heading>
+            <Heading style={headingStyle}>Rechnungsübersicht</Heading>
             <Text style={{ ...mutedTextStyle, marginTop: 6 }}>
                 Rechnungsnummer: {invoiceNumber}
             </Text>
 
             <Text style={textStyle}>Hallo {userName},</Text>
             <Text style={textStyle}>
-                vielen Dank für deine Zahlung. Hier ist deine Rechnung für den gebuchten Gameserver.
+                vielen Dank für deine Zahlung. Hier ist eine Übersicht deiner Bestellung. Die
+                vollständige Rechnung kannst du als PDF herunterladen.
             </Text>
 
             <EmailCard style={{ marginTop: 16 }}>
@@ -198,19 +196,6 @@ export default function InvoiceTemplate({
                 <table style={{ width: '100%' }} cellPadding="0" cellSpacing="0">
                     <tbody>
                         <tr>
-                            <td style={priceLabelStyle}>Nettobetrag:</td>
-                            <td style={priceValueStyle}>{formatPrice(Math.round(netPrice))}</td>
-                        </tr>
-                        <tr>
-                            <td style={priceLabelStyle}>MwSt. (19%):</td>
-                            <td style={priceValueStyle}>{formatPrice(Math.round(vatAmount))}</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2} style={{ padding: '10px 0' }}>
-                                <Hr style={{ borderColor: '#cbd5e1', margin: '6px 0' }} />
-                            </td>
-                        </tr>
-                        <tr>
                             <td style={{ ...priceLabelStyle, fontWeight: 700 }}>Gesamtbetrag:</td>
                             <td style={{ ...priceValueStyle, fontSize: '18px', fontWeight: 700 }}>
                                 {formatPrice(price)}
@@ -218,6 +203,11 @@ export default function InvoiceTemplate({
                         </tr>
                     </tbody>
                 </table>
+                <Text
+                    style={{ ...mutedTextStyle, fontSize: '12px', marginTop: 8, marginBottom: 0 }}
+                >
+                    Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
+                </Text>
             </EmailCard>
 
             <EmailCard tone="success" style={{ marginTop: 16 }}>
@@ -229,9 +219,9 @@ export default function InvoiceTemplate({
                 </Text>
             </EmailCard>
 
-            {receiptUrl ? (
+            {invoicePdfUrl ? (
                 <Section style={{ marginTop: 16, textAlign: 'center' }}>
-                    <EmailButton href={receiptUrl}>Zahlungsbeleg herunterladen</EmailButton>
+                    <EmailButton href={invoicePdfUrl}>Rechnung als PDF herunterladen</EmailButton>
                 </Section>
             ) : null}
 

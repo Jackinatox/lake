@@ -13,6 +13,7 @@ import { CreateBackupDialog } from './CreateBackupDialog';
 import type { Backup, BackupStatus } from './types';
 import { formatBytes } from './utils';
 import PTUserServerPowerAction from '@/lib/Pterodactyl/Functions/StopPTUserServer';
+import { useTranslations } from 'next-intl';
 
 interface BackupManagerProps {
     apiKey: string;
@@ -45,6 +46,7 @@ function mapBackup(raw: any): Backup {
 function BackupManager({ apiKey, server }: BackupManagerProps) {
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const { toast } = useToast();
+    const t = useTranslations('backupManager');
     const [backups, setBackups] = useState<Backup[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -67,7 +69,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const fetchBackups = useCallback(
         async (options?: { silent?: boolean }) => {
             if (!ptUrl) {
-                setError('Pterodactyl URL is not configured.');
+                setError(t('toasts.notConfigured'));
                 setIsLoading(false);
                 return;
             }
@@ -90,7 +92,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (!response.ok) {
                     const message = await response.text();
-                    throw new Error(message || 'Failed to load backups');
+                    throw new Error(message || t('toasts.failedToLoad'));
                 }
 
                 const payload = await response.json();
@@ -101,10 +103,10 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                 setBackups(items);
                 setError(null);
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to load backups';
+                const message = err instanceof Error ? err.message : t('toasts.failedToLoad');
                 setError(message);
                 toast({
-                    title: 'Unable to load backups',
+                    title: t('unableToLoad'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -139,8 +141,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         async (payload: { name?: string; ignoredPatterns: string[]; isLocked: boolean }) => {
             if (!ptUrl) {
                 toast({
-                    title: 'Missing configuration',
-                    description: 'NEXT_PUBLIC_PTERODACTYL_URL is not set.',
+                    title: t('toasts.missingConfig'),
+                    description: t('toasts.missingConfigDescription'),
                     variant: 'destructive',
                 });
                 return false;
@@ -170,8 +172,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (response.status === 429) {
                     toast({
-                        title: 'Rate limit exceeded',
-                        description: 'You can only create 2 Backups every 10 minutes.',
+                        title: t('toasts.rateLimitTitle'),
+                        description: t('toasts.rateLimitDescription'),
                         variant: 'destructive',
                     });
                     await fetchBackups({ silent: true });
@@ -183,16 +185,16 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                 }
 
                 toast({
-                    title: 'Backup scheduled',
-                    description: 'The backup has been queued. Refresh to monitor progress.',
+                    title: t('toasts.backupScheduled'),
+                    description: t('toasts.backupScheduledDescription'),
                 });
 
                 await fetchBackups({ silent: true });
                 return true;
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to create backup';
+                const message = err instanceof Error ? err.message : t('toasts.creationFailed');
                 toast({
-                    title: 'Backup creation failed',
+                    title: t('toasts.creationFailed'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -208,8 +210,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         async (backup: Backup) => {
             if (!ptUrl) {
                 toast({
-                    title: 'Missing configuration',
-                    description: 'NEXT_PUBLIC_PTERODACTYL_URL is not set.',
+                    title: t('toasts.missingConfig'),
+                    description: t('toasts.missingConfigDescription'),
                     variant: 'destructive',
                 });
                 return;
@@ -228,20 +230,20 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (!response.ok) {
                     const message = await response.text();
-                    throw new Error(message || 'Failed to generate download URL');
+                    throw new Error(message || t('toasts.failedToGenerateUrl'));
                 }
 
                 const payload = await response.json();
                 const url = payload?.attributes?.url;
                 if (!url) {
-                    throw new Error('Download URL missing from response');
+                    throw new Error(t('toasts.downloadUrlMissing'));
                 }
 
                 window.open(url, '_blank', 'noopener');
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to download backup';
+                const message = err instanceof Error ? err.message : t('toasts.failedToDownload');
                 toast({
-                    title: 'Download failed',
+                    title: t('toasts.downloadFailed'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -256,8 +258,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         async (backup: Backup, options: { truncate: boolean }) => {
             if (!ptUrl) {
                 toast({
-                    title: 'Missing configuration',
-                    description: 'NEXT_PUBLIC_PTERODACTYL_URL is not set.',
+                    title: t('toasts.missingConfig'),
+                    description: t('toasts.missingConfigDescription'),
                     variant: 'destructive',
                 });
                 return false;
@@ -285,20 +287,20 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (!response.ok) {
                     const message = await response.text();
-                    throw new Error(message || 'Failed to start restore');
+                    throw new Error(message || t('toasts.failedToStartRestore'));
                 }
 
                 toast({
-                    title: 'Restore started',
-                    description: 'The server will revert to the selected backup shortly.',
+                    title: t('toasts.restoreStarted'),
+                    description: t('toasts.restoreStartedDescription'),
                 });
 
                 // await fetchBackups({ silent: true })
                 return true;
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to restore backup';
+                const message = err instanceof Error ? err.message : t('toasts.failedToRestore');
                 toast({
-                    title: 'Restore failed',
+                    title: t('toasts.restoreFailed'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -312,8 +314,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         async (backup: Backup) => {
             if (!ptUrl) {
                 toast({
-                    title: 'Missing configuration',
-                    description: 'NEXT_PUBLIC_PTERODACTYL_URL is not set.',
+                    title: t('toasts.missingConfig'),
+                    description: t('toasts.missingConfigDescription'),
                     variant: 'destructive',
                 });
                 return false;
@@ -330,20 +332,20 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (!response.ok) {
                     const message = await response.text();
-                    throw new Error(message || 'Failed to delete backup');
+                    throw new Error(message || t('toasts.failedToDelete'));
                 }
 
                 toast({
-                    title: 'Backup deleted',
-                    description: 'The backup was deleted successfully.',
+                    title: t('toasts.backupDeleted'),
+                    description: t('toasts.backupDeletedDescription'),
                 });
 
                 await fetchBackups({ silent: true });
                 return true;
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to delete backup';
+                const message = err instanceof Error ? err.message : t('toasts.failedToDelete');
                 toast({
-                    title: 'Deletion failed',
+                    title: t('toasts.deletionFailed'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -357,8 +359,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         async (backup: Backup) => {
             if (!ptUrl) {
                 toast({
-                    title: 'Missing configuration',
-                    description: 'NEXT_PUBLIC_PTERODACTYL_URL is not set.',
+                    title: t('toasts.missingConfig'),
+                    description: t('toasts.missingConfigDescription'),
                     variant: 'destructive',
                 });
                 return false;
@@ -377,20 +379,20 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 if (!response.ok) {
                     const message = await response.text();
-                    throw new Error(message || 'Failed to unlock backup');
+                    throw new Error(message || t('toasts.failedToUnlock'));
                 }
 
                 toast({
-                    title: 'Backup unlocked',
-                    description: 'The backup can now be deleted or modified.',
+                    title: t('toasts.backupUnlocked'),
+                    description: t('toasts.backupUnlockedDescription'),
                 });
 
                 await fetchBackups({ silent: true });
                 return true;
             } catch (err) {
-                const message = err instanceof Error ? err.message : 'Failed to unlock backup';
+                const message = err instanceof Error ? err.message : t('toasts.failedToUnlock');
                 toast({
-                    title: 'Unlock failed',
+                    title: t('toasts.unlockFailed'),
                     description: message,
                     variant: 'destructive',
                 });
@@ -413,9 +415,9 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
             <div className="space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h2 className="text-base font-semibold">Backups</h2>
+                        <h2 className="text-base font-semibold">{t('title')}</h2>
                         <p className="text-xs text-muted-foreground">
-                            Create, download, and restore snapshots of your server.
+                            {t('description')}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -430,7 +432,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                             ) : (
                                 <RefreshCw className="mr-2 h-4 w-4" />
                             )}
-                            Refresh
+                            {t('refresh')}
                         </Button>
                         <Button
                             size="sm"
@@ -442,43 +444,42 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                             ) : (
                                 <Plus className="mr-2 h-4 w-4" />
                             )}
-                            New backup
+                            {t('newBackup')}
                         </Button>
                     </div>
                 </div>
 
                 {backupLimit > 0 ? (
                     <p className="text-xs text-muted-foreground">
-                        Using {backups.length}/{backupLimit} backup slots · Total size{' '}
-                        {formatBytes(totalSize)}
+                        {t('slotsUsed', { used: backups.length, limit: backupLimit, size: formatBytes(totalSize) })}
                     </p>
                 ) : (
                     <p className="text-xs text-muted-foreground">
-                        Unlimited backup slots · Total size {formatBytes(totalSize)}
+                        {t('slotsUnlimited', { size: formatBytes(totalSize) })}
                     </p>
                 )}
 
                 {limitReached && (
                     <Alert>
-                        <AlertTitle>Backup limit reached</AlertTitle>
+                        <AlertTitle>{t('limitReachedTitle')}</AlertTitle>
                         <AlertDescription>
-                            Delete an existing backup to free up space before creating a new one.
+                            {t('limitReachedDescription')}
                         </AlertDescription>
                     </Alert>
                 )}
 
                 {!ptUrl && (
                     <Alert variant="destructive">
-                        <AlertTitle>Configuration required</AlertTitle>
+                        <AlertTitle>{t('configRequiredTitle')}</AlertTitle>
                         <AlertDescription>
-                            Please set NEXT_PUBLIC_PTERODACTYL_URL to enable backup management.
+                            {t('configRequiredDescription')}
                         </AlertDescription>
                     </Alert>
                 )}
 
                 {error && backups.length === 0 && (
                     <Alert variant="destructive">
-                        <AlertTitle>Unable to load backups</AlertTitle>
+                        <AlertTitle>{t('unableToLoad')}</AlertTitle>
                         <AlertDescription>{error}</AlertDescription>
                     </Alert>
                 )}
@@ -494,7 +495,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                     </div>
                 ) : backups.length === 0 ? (
                     <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                        No backups yet. Create your first snapshot to protect the server state.
+                        {t('noBackups')}
                     </div>
                 ) : (
                     <div className="grid gap-3 grid-cols-1 md:grid-cols-2">

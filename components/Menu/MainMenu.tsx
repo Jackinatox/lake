@@ -31,11 +31,10 @@ import { LanguageSwitcher } from './language-switcher';
 import { authClient } from '@/lib/auth-client';
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
-type SubItem = { label: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };
+type SubItem = { labelKey: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };
 type MenuItem = {
-    label: string;
+    labelKey: string;
     Icon: React.FC<React.SVGProps<SVGSVGElement>>;
-    // If `subItems` is present, we render a dropdown; else it's a single link
     subItems?: SubItem[];
     href?: string;
 };
@@ -43,17 +42,17 @@ type MenuItem = {
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
     {
-        label: 'Games',
+        labelKey: 'games',
         Icon: Gamepad2,
         href: '/order',
     },
     {
-        label: 'Dashboard',
+        labelKey: 'dashboard',
         Icon: LayoutDashboard,
         href: '/gameserver',
     },
     {
-        label: 'Support',
+        labelKey: 'support',
         Icon: HeadphonesIcon,
         href: '/support',
     },
@@ -68,6 +67,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
     const [open, setOpen] = React.useState(false);
     const pathname = usePathname();
     const t = useTranslations('freeServer');
+    const tm = useTranslations('menu');
 
     const isActive = (href: string) => {
         // Remove locale prefix for comparison
@@ -89,7 +89,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                             {MENU.map((item) =>
                                 item.subItems ? (
                                     // Dropdown for items with subItems
-                                    <NavigationMenuItem key={item.label}>
+                                    <NavigationMenuItem key={item.labelKey}>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button
@@ -97,19 +97,19 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                     className="flex items-center"
                                                 >
                                                     <item.Icon className="h-4 w-4 mr-1.5" />
-                                                    {item.label}
+                                                    {tm(item.labelKey)}
                                                     <ChevronDown className="ml-1 h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
                                                 {item.subItems.map((sub) => (
-                                                    <DropdownMenuItem asChild key={sub.label}>
+                                                    <DropdownMenuItem asChild key={sub.labelKey}>
                                                         <Link
                                                             href={sub.href}
                                                             className="flex items-center"
                                                         >
                                                             <sub.Icon className="h-4 w-4 mr-2" />
-                                                            {sub.label}
+                                                            {tm(sub.labelKey)}
                                                         </Link>
                                                     </DropdownMenuItem>
                                                 ))}
@@ -118,7 +118,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     </NavigationMenuItem>
                                 ) : (
                                     // Simple link for items without subItems
-                                    <NavigationMenuItem key={item.label}>
+                                    <NavigationMenuItem key={item.labelKey}>
                                         <Link
                                             href={item.href!}
                                             className={cn(
@@ -129,7 +129,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             )}
                                         >
                                             <item.Icon className="h-4 w-4 mr-1.5" />
-                                            {item.label}
+                                            {tm(item.labelKey)}
                                         </Link>
                                     </NavigationMenuItem>
                                 ),
@@ -140,7 +140,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     asChild
                                     size="default"
                                     variant="secondary"
-                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                    className="bg-green-600 hover:bg-green-700 text-background"
                                 >
                                     <Link href="/order/free" className="flex items-center">
                                         <Gift className="h-4 w-4 mr-1.5" />
@@ -204,7 +204,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             )}
                                         >
                                             <LayoutDashboard className="h-6 w-6 mr-3" />
-                                            Dashboard
+                                            {tm('dashboard')}
                                         </Link>
                                     )}
 
@@ -225,10 +225,10 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     <div className="border-t my-2" />
 
                                     {/* Other menu items */}
-                                    {MENU.filter((item) => item.label !== 'Dashboard').map(
+                                    {MENU.filter((item) => item.labelKey !== 'dashboard').map(
                                         (item) =>
                                             item.subItems ? (
-                                                <DropdownMenu key={item.label}>
+                                                <DropdownMenu key={item.labelKey}>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button
                                                             variant="ghost"
@@ -236,7 +236,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                         >
                                                             <span className="flex items-center">
                                                                 <item.Icon className="h-5 w-5 mr-2" />
-                                                                {item.label}
+                                                                {tm(item.labelKey)}
                                                             </span>
                                                             <ChevronDown className="h-5 w-5" />
                                                         </Button>
@@ -245,7 +245,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                         {item.subItems.map((sub) => (
                                                             <DropdownMenuItem
                                                                 asChild
-                                                                key={sub.label}
+                                                                key={sub.labelKey}
                                                             >
                                                                 <Link
                                                                     href={sub.href}
@@ -253,7 +253,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                                     onClick={() => setOpen(false)}
                                                                 >
                                                                     <sub.Icon className="h-5 w-5 mr-2" />
-                                                                    {sub.label}
+                                                                    {tm(sub.labelKey)}
                                                                 </Link>
                                                             </DropdownMenuItem>
                                                         ))}
@@ -261,7 +261,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                 </DropdownMenu>
                                             ) : (
                                                 <Link
-                                                    key={item.label}
+                                                    key={item.labelKey}
                                                     href={item.href!}
                                                     onClick={() => setOpen(false)}
                                                     className={cn(
@@ -272,7 +272,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                                     )}
                                                 >
                                                     <item.Icon className="h-5 w-5 mr-3" />
-                                                    {item.label}
+                                                    {tm(item.labelKey)}
                                                 </Link>
                                             ),
                                     )}

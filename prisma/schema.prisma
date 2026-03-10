@@ -134,7 +134,8 @@ model GameServerOrder {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade deletion for compliance with the EU
 
-  workerJobId String? // Job that processed this order
+  workerJobId        String? // Job that processed this order
+  provisioningStatus ProvisioningStatus @default(PENDING)
 
   type        OrderType
   ramMB       Int
@@ -177,6 +178,12 @@ enum OrderStatus {
   EXPIRED // Just to keep the entry, i dont know why yet
   REFUNDED // Fully refunded
   PARTIALLY_REFUNDED // Partial refund applied
+}
+
+enum ProvisioningStatus {
+  PENDING // Awaiting provisioning
+  SUBMITTED // Job successfully submitted to worker
+  FAILED // Worker unreachable after retries; manual intervention needed
 }
 
 enum RefundStatus {
@@ -237,6 +244,7 @@ enum OrderType {
   FREE_SERVER
   TO_PAYED
   PACKAGE
+  CONFIGURED // New unified configurator order flow
 }
 
 enum TicketCategory {
@@ -531,23 +539,25 @@ enum KeyValueType {
   JSON
   NUMBER
   BOOLEAN
-  TEXT  // same a s string, but the admin page will show the monaco editor to edit it
+  TEXT // same a s string, but the admin page will show the monaco editor to edit it
 }
 
 model KeyValue {
-  id      Int      @id @default(autoincrement())
-  key     String   @unique
-  type    KeyValueType
-  string  String?
-  json    Json?
-  number  Float?
-  boolean Boolean?
-  note    String?
+  id       Int          @id @default(autoincrement())
+  key      String       @unique
+  type     KeyValueType
+  string   String?
+  json     Json?
+  number   Float?
+  boolean  Boolean?
+  note     String?
+  category String?      @db.VarChar(30)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([key])
+  @@index([category])
 }
 
 model Package {
@@ -566,8 +576,23 @@ model Package {
   discountPercent Float    @default(0)
   enabled         Boolean  @default(true)
 
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ResourceTier {
+  id         Int     @id @default(autoincrement())
+  name       String
+  diskMB     Int
+  backups    Int
+  ports      Int
+  priceCents Int     @default(0) // Flat fee in cents added on top of CPU+RAM price
+  sorting    Int     @default(0)
+  enabled    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   hardwareRecommendations HardwareRecommendation[]
 }
 
@@ -600,18 +625,18 @@ model GameDataFeature {
 }
 
 model HardwareRecommendation {
-  id                   Int      @id @default(autoincrement())
-  eggId                Int? // Optinal egg id for games like minecraft which uses many eggs
-  gameDataId           Int
-  gameData             GameData @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
-  minCpuPercent        Int
-  recCpuPercent        Int
-  minramMb             Int
-  recRamMb             Int
-  preselectedPackageId Int?
-  preselectedPackage   Package? @relation(fields: [preselectedPackageId], references: [id], onDelete: SetNull)
-  note                 String?
-  sorting              Int      @default(0)
+  id                        Int           @id @default(autoincrement())
+  eggId                     Int? // Optinal egg id for games like minecraft which uses many eggs
+  gameDataId                Int
+  gameData                  GameData      @relation(fields: [gameDataId], references: [id], onDelete: Restrict)
+  minCpuPercent             Int
+  recCpuPercent             Int
+  minramMb                  Int
+  recRamMb                  Int
+  preSelectedResourceTierId Int?
+  preSelectedResourceTier   ResourceTier? @relation(fields: [preSelectedResourceTierId], references: [id], onDelete: SetNull)
+  note                      String?
+  sorting                   Int           @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

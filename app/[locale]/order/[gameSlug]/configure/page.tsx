@@ -1,7 +1,15 @@
+import { notFound } from 'next/navigation';
+
+// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
+export default function ConfigurePage() {
+    notFound();
+}
+
+/*
+// ── Original implementation (preserved for re-enablement) ──────────────
 import { Suspense } from 'react';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
 import ConfigurePageClient from './ConfigurePageClient';
 
 export default async function ConfigurePage({
@@ -36,3 +44,4 @@ export default async function ConfigurePage({
         </Suspense>
     );
 }
+*/

@@ -19,6 +19,8 @@ interface PriceOverviewProps {
     ramGb: number;
     days: number;
     totalPrice: NewPriceDef;
+    /** Optional flat fee from a selected resource tier (in cents) */
+    tierPriceCents?: number;
     onContinue: () => void;
     continueLabel?: string;
     disableContinue?: boolean;
@@ -29,6 +31,7 @@ export default function PriceOverview({
     ramGb,
     days,
     totalPrice,
+    tierPriceCents = 0,
     onContinue,
     continueLabel,
     disableContinue,
@@ -36,8 +39,10 @@ export default function PriceOverview({
     const t = useTranslations('buyGameServer.hardware');
     const tp = useTranslations('buyGameServer.hardware.price');
     const tb = useTranslations('buyGameServer.hardware.button');
+    const to = useTranslations('order');
 
-    const priceTooSmall = totalPrice.totalCents < 100;
+    const grandTotalCents = totalPrice.totalCents + tierPriceCents;
+    const priceTooSmall = grandTotalCents < 100;
 
     const totalResourceCents = totalPrice.cents.cpu + totalPrice.cents.ram;
     const discountCpu =
@@ -90,6 +95,14 @@ export default function PriceOverview({
                                 </TableCell>
                             </TableRow>
                         )}
+                        {tierPriceCents > 0 && (
+                            <TableRow>
+                                <TableCell className="font-medium">{to('storageTier')}</TableCell>
+                                <TableCell colSpan={2}>
+                                    {(tierPriceCents / 100).toFixed(2)} €
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
@@ -97,7 +110,7 @@ export default function PriceOverview({
                 <div className="flex justify-between items-center w-full text-lg">
                     <span className="text-primary">{tp('total')}</span>
                     <span className="text-2xl font-bold text-primary">
-                        {(totalPrice.totalCents / 100).toFixed(2)} €
+                        {(grandTotalCents / 100).toFixed(2)} €
                     </span>
                 </div>
                 <Button

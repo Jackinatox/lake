@@ -12,6 +12,20 @@ import {
 } from './lib/email/sendEmailEmailsFromLake';
 import prisma from './lib/prisma';
 import { logger } from './lib/logger';
+import { captureServerEvent } from './lib/posthog';
+
+function extractIp(request?: Request | null): string | undefined {
+    if (!request) return undefined;
+    return (
+        request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+        request.headers.get('x-real-ip') ||
+        undefined
+    );
+}
+
+function extractUserAgent(request?: Request | null): string | undefined {
+    return request?.headers.get('user-agent') || undefined;
+}
 
 function generateRandomPassword(length: number = 32): string {
     return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');
@@ -101,6 +115,12 @@ export const auth = betterAuth({
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }, request) => {
+            await logger.info(`Verification email sent to ${user.email}`, 'AUTHENTICATION', {
+                userId: user.id,
+                ipAddress: extractIp(request),
+                userAgent: extractUserAgent(request),
+                details: { email: user.email },
+            });
             await sendConfirmEmail(user.email, url);
         },
         sendOnSignUp: true,
@@ -117,6 +137,34 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, context) => {
+                    const req = (context as any)?.request as Request | undefined;
+                    const ip = extractIp(req);
+                    const ua = extractUserAgent(req);
+                    const path = req ? new URL(req.url).pathname : undefined;
+
+                    // Email/password signups: defer PT account creation until email is verified
+                    const isEmailSignup = path?.includes('/sign-up/email');
+
+                    await logger.info(`New user signup attempt: ${user.email}`, 'AUTHENTICATION', {
+                        ipAddress: ip,
+                        userAgent: ua,
+                        path,
+                        details: { email: user.email, name: user.name, isEmailSignup },
+                    });
+
+                    captureServerEvent(user.email, 'user_signup_attempt', {
+                        email: user.email,
+                        ip,
+                        userAgent: ua,
+                        signupPath: path,
+                        isEmailSignup,
+                    });
+
+                    if (isEmailSignup) {
+                        // PT account will be provisioned in session.create.after once email is verified
+                        return { data: user };
+                    }
+
                     try {
                         const ptAdmin = createPtClient();
                         const ptUsername = await generateUniqueUserName(user.email);
@@ -131,6 +179,28 @@ export const auth = betterAuth({
                         });
 
                         const newKey = await createUserApiKey(newPTUser.id);
+
+                        await logger.info(
+                            `User account created successfully: ${user.email}`,
+                            'AUTHENTICATION',
+                            {
+                                ipAddress: ip,
+                                userAgent: ua,
+                                details: {
+                                    email: user.email,
+                                    ptUsername,
+                                    ptUserId: newPTUser.id,
+                                },
+                            },
+                        );
+
+                        captureServerEvent(user.email, 'user_signup_success', {
+                            email: user.email,
+                            ip,
+                            userAgent: ua,
+                            ptUsername,
+                        });
+
                         return {
                             data: {
                                 ...user,
@@ -140,8 +210,119 @@ export const auth = betterAuth({
                             },
                         };
                     } catch (error) {
-                        console.error('Error creating user:', error);
+                        await logger.error(
+                            `Failed to create user: ${user.email}`,
+                            'AUTHENTICATION',
+                            {
+                                ipAddress: ip,
+                                userAgent: ua,
+                                details: {
+                                    email: user.email,
+                                    error: error instanceof Error ? error.message : String(error),
+                                },
+                            },
+                        );
+                        captureServerEvent(user.email, 'user_signup_failed', {
+                            email: user.email,
+                            ip,
+                            userAgent: ua,
+                            error: error instanceof Error ? error.message : String(error),
+                        });
                         throw new Error('Failed to create user');
+                    }
+                },
+            },
+        },
+        session: {
+            create: {
+                after: async (session, context) => {
+                    const req = (context as any)?.request as Request | undefined;
+                    const ip = extractIp(req);
+                    const ua = extractUserAgent(req);
+                    const path = req ? new URL(req.url).pathname : undefined;
+
+                    await logger.info(
+                        `Session created for user ${session.userId}`,
+                        'AUTHENTICATION',
+                        {
+                            userId: session.userId,
+                            ipAddress: ip,
+                            userAgent: ua,
+                            path,
+                            details: { sessionId: session.id },
+                        },
+                    );
+
+                    captureServerEvent(session.userId, 'user_sign_in', {
+                        userId: session.userId,
+                        ip,
+                        userAgent: ua,
+                        signInPath: path,
+                    });
+
+                    // Provision PT account for email-verified users who don't have one yet
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: session.userId },
+                        select: { ptUserId: true, email: true, name: true },
+                    });
+
+                    if (dbUser && !dbUser.ptUserId) {
+                        try {
+                            const ptAdmin = createPtClient();
+                            const ptUsername = await generateUniqueUserName(dbUser.email);
+
+                            const newPTUser = await ptAdmin.createUser({
+                                firstName: dbUser.name,
+                                lastName: 'Scyed',
+                                username: ptUsername,
+                                email: dbUser.email,
+                                password: generateRandomPassword(),
+                                externalId: session.userId,
+                            });
+
+                            const newKey = await createUserApiKey(newPTUser.id);
+
+                            await prisma.user.update({
+                                where: { id: session.userId },
+                                data: {
+                                    ptUserId: newPTUser.id,
+                                    ptKey: newKey,
+                                    ptUsername,
+                                },
+                            });
+
+                            await logger.info(
+                                `PT account provisioned after email verification: ${dbUser.email}`,
+                                'AUTHENTICATION',
+                                {
+                                    userId: session.userId,
+                                    ipAddress: ip,
+                                    userAgent: ua,
+                                    details: { email: dbUser.email, ptUsername, ptUserId: newPTUser.id },
+                                },
+                            );
+
+                            captureServerEvent(session.userId, 'user_signup_success', {
+                                email: dbUser.email,
+                                ip,
+                                userAgent: ua,
+                                ptUsername,
+                            });
+                        } catch (error) {
+                            await logger.error(
+                                `Failed to provision PT account after email verification: ${dbUser.email}`,
+                                'AUTHENTICATION',
+                                {
+                                    userId: session.userId,
+                                    ipAddress: ip,
+                                    userAgent: ua,
+                                    details: {
+                                        email: dbUser.email,
+                                        error: error instanceof Error ? error.message : String(error),
+                                    },
+                                },
+                            );
+                        }
                     }
                 },
             },

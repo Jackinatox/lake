@@ -71,9 +71,9 @@
   },
   "landingpage": {
     "heroBadge": "Simple Game Hosting",
-    "header1": "Game Server Hosting",
+    "header1": "Gameserver Hosting",
     "header2": "made easy",
-    "heroSubtitle": "Launch your game server in seconds — reliable hardware and a friendly control panel.",
+    "heroSubtitle": "Launch your gameserver in seconds — reliable hardware and a friendly control panel.",
     "statUptime": "99.0%",
     "statUptimeLabel": "Uptime",
     "statSupport": "Fast",
@@ -102,7 +102,7 @@
     "fileManagerFeature2": "Upload & download",
     "fileManagerFeature3": "Advanced actions via FTP",
     "backupTitle": "Backups you can trust",
-    "backupDesc": "Automatic backups of your entire game server. (Coming soon :))",
+    "backupDesc": "Automatic backups of your entire gameserver. (Coming soon :))",
     "backupFeature1": "Automatic scheduled backups",
     "backupFeature2": "One-click restore",
     "backupFeature3": "Download backups",
@@ -330,9 +330,9 @@
     },
     "hardware": {
       "title": "Performance Configuration",
-      "description": "Customize your server hardware.",
+      "description": "Choose your hardware and how long you need it — one-time purchase, no subscription.",
       "performanceTier": "Performance Tier",
-      "billingPeriod": "Billing Period",
+      "billingPeriod": "Duration",
       "durations": {
         "week": "1 Week",
         "month": "1 Month",
@@ -342,7 +342,7 @@
       },
       "price": {
         "overviewTitle": "Price Overview",
-        "overviewDescription": "Summary of your configuration.",
+        "overviewDescription": "One-time payment for the selected duration.",
         "resources": "Resources",
         "discount": "Discount (-{percent}%)",
         "total": "Total",
@@ -361,6 +361,11 @@
       },
       "button": {
         "continue": "Continue"
+      },
+      "recommendation": {
+        "note": "The colored markers on the sliders show hardware recommendations for this game.",
+        "min": "Minimum",
+        "recommended": "Recommended"
       }
     },
     "gameConfig": {
@@ -568,7 +573,8 @@
       "RENEW": "Renewal",
       "FREE_SERVER": "Free server",
       "TO_PAYED": "From Free to Paid",
-      "PACKAGE": "Package"
+      "PACKAGE": "Package",
+      "CONFIGURED": "New server"
     },
     "status": {
       "created": "Active",
@@ -776,6 +782,12 @@
         "current": "Current",
         "limit": "Limit",
         "memoryGiB": "{amount} GiB"
+      },
+      "power": {
+        "start": "Start",
+        "restart": "Restart",
+        "stop": "Stop",
+        "kill": "Kill"
       }
     },
     "fileManager": {
@@ -938,12 +950,46 @@
       "save": "Save",
       "saving": "Saving...",
       "notes": "Notes",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "fixPorts": "Fix assigned Ports",
+      "fixPortsDialogTitle": "Fix Assigned Ports",
+      "fixPortsDialogDescription": "This action will try to reassign some ports and reconfigure the server.",
+      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesnt work for all games (issues with Minecraft).",
+      "fixPortsConfirm": "Fix Ports",
+      "fixingPorts": "Fixing...",
+      "fixPortsSuccess": "Ports reassigned successfully",
+      "fixPortsFailed": "Failed to reassign ports",
+      "fixPortsRestartNow": "Restart now",
+      "fixPortsRetry": "Retry"
+    },
+    "settings": {
+      "serverName": {
+        "label": "Server Name",
+        "placeholder": "Enter server name",
+        "save": "Save",
+        "updated": "Server name updated",
+        "updatedDescription": "The server name has been successfully updated.",
+        "updateFailed": "Server name update failed",
+        "updateFailedDescription": "The server name update has failed"
+      },
+      "expiry": {
+        "label": "Server Expiry",
+        "expired": "Expired",
+        "daysLeft": "{days}d left",
+        "extend": "Extend"
+      },
+      "startupCommand": {
+        "label": "Startup Command",
+        "description": "This command is automatically generated and cannot be modified."
+      }
+    },
+    "statusIndicator": {
+      "loading": "Loading"
     }
   },
   "freeServerUpgrade": {
     "title": "Extend or Upgrade Your Free Server",
-    "description": "Choose how you want to continue with your free game server.",
+    "description": "Choose how you want to continue with your free gameserver.",
     "backToOptions": "Back to options",
     "badge": {
       "freeServer": "Free Server"
@@ -1061,5 +1107,164 @@
     "decline": "Decline",
     "privacyPolicy": "Privacy Policy",
     "cookieSettings": "Cookie Settings"
+  },
+  "backupManager": {
+    "title": "Backups",
+    "description": "Create, download, and restore snapshots of your server.",
+    "refresh": "Refresh",
+    "newBackup": "New backup",
+    "slotsUsed": "Using {used}/{limit} backup slots · Total size {size}",
+    "slotsUnlimited": "Unlimited backup slots · Total size {size}",
+    "limitReachedTitle": "Backup limit reached",
+    "limitReachedDescription": "Delete an existing backup to free up space before creating a new one.",
+    "configRequiredTitle": "Configuration required",
+    "configRequiredDescription": "Please set NEXT_PUBLIC_PTERODACTYL_URL to enable backup management.",
+    "unableToLoad": "Unable to load backups",
+    "noBackups": "No backups yet. Create your first snapshot to protect the server state.",
+    "toasts": {
+      "notConfigured": "Pterodactyl URL is not configured.",
+      "missingConfig": "Missing configuration",
+      "missingConfigDescription": "NEXT_PUBLIC_PTERODACTYL_URL is not set.",
+      "failedToLoad": "Failed to load backups",
+      "rateLimitTitle": "Rate limit exceeded",
+      "rateLimitDescription": "You can only create 2 Backups every 10 minutes.",
+      "backupScheduled": "Backup scheduled",
+      "backupScheduledDescription": "The backup has been queued. Refresh to monitor progress.",
+      "creationFailed": "Backup creation failed",
+      "downloadFailed": "Download failed",
+      "failedToGenerateUrl": "Failed to generate download URL",
+      "failedToDownload": "Failed to download backup",
+      "downloadUrlMissing": "Download URL missing from response",
+      "restoreStarted": "Restore started",
+      "restoreStartedDescription": "The server will revert to the selected backup shortly.",
+      "restoreFailed": "Restore failed",
+      "failedToRestore": "Failed to restore backup",
+      "failedToStartRestore": "Failed to start restore",
+      "backupDeleted": "Backup deleted",
+      "backupDeletedDescription": "The backup was deleted successfully.",
+      "deletionFailed": "Deletion failed",
+      "failedToDelete": "Failed to delete backup",
+      "backupUnlocked": "Backup unlocked",
+      "backupUnlockedDescription": "The backup can now be deleted or modified.",
+      "unlockFailed": "Unlock failed",
+      "failedToUnlock": "Failed to unlock backup"
+    },
+    "deleteDialog": {
+      "title": "Delete this backup?",
+      "description": "This action permanently removes {name}. Deleted backups cannot be recovered.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting"
+    },
+    "restoreDialog": {
+      "title": "Restore this backup?",
+      "description": "Restoring {name} will replace all current server files with the backup contents. The server stops automatically during the restore process.",
+      "backupDetails": "Backup details",
+      "createdAt": "Created at {date}",
+      "status": "Status: {status}",
+      "size": "Size: {size}",
+      "truncateLabel": "Delete existing files first",
+      "truncateDescription": "Keeps the backup clean by removing leftover files. Recommended for most restores.",
+      "cancel": "Cancel",
+      "restore": "Restore",
+      "restoring": "Restoring"
+    },
+    "unlockDialog": {
+      "title": "Unlock this backup?",
+      "description": "Unlocking {name} allows it to be deleted or updated.",
+      "cancel": "Cancel",
+      "unlock": "Unlock",
+      "unlocking": "Unlocking"
+    },
+    "createDialog": {
+      "title": "Create backup",
+      "description": "Capture the server state. You can optionally name the backup, lock it from accidental deletion, and exclude temporary files.",
+      "nameLabel": "Backup name",
+      "namePlaceholder": "Pre-update backup",
+      "ignoredLabel": "Ignored files",
+      "ignoredHint": "One pattern per line. Leave empty to include all files.",
+      "lockLabel": "Lock backup",
+      "lockDescription": "Prevent this backup from being deleted until unlocked.",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "create": "Create backup"
+    },
+    "card": {
+      "created": "Created {date}",
+      "locked": "Locked",
+      "backupSize": "Backup size",
+      "completed": "Completed",
+      "ignored": "Ignored",
+      "patterns": "{count} {count, plural, =1 {pattern} other {patterns}}",
+      "noFiles": "No files",
+      "download": "Download",
+      "get": "Get",
+      "restore": "Restore",
+      "unlock": "Unlock",
+      "delete": "Delete"
+    }
+  },
+  "adminLogs": {
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search in messages...",
+      "logLevel": "Log Level",
+      "category": "Category",
+      "timeRange": "Time Range",
+      "timeRanges": {
+        "ALL": "All Time",
+        "1m": "Last Minute",
+        "10m": "Last 10 Minutes",
+        "1h": "Last Hour",
+        "1d": "Last Day",
+        "7d": "Last Week",
+        "30d": "Last Month"
+      }
+    },
+    "list": {
+      "noLogs": "No logs found",
+      "showing": "Showing {count} of {total} logs (Page {page} of {totalPages})",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {totalPages}"
+    },
+    "entry": {
+      "showDetails": "Show details",
+      "hideDetails": "Hide details",
+      "ip": "IP:",
+      "userAgent": "User Agent:",
+      "details": "Details:",
+      "user": "User: {name}",
+      "server": "Server: {name}"
+    }
+  },
+  "order": {
+    "storageTier": "Storage Tier",
+    "resourceTier": {
+      "free": "Free",
+      "disk": "Disk",
+      "backups": "Backups",
+      "ports": "Ports"
+    },
+    "package": {
+      "recommended": "Recommended",
+      "ram": "RAM",
+      "storage": "Storage",
+      "backups": "Backups",
+      "perMonth": "/month",
+      "select": "Select"
+    }
+  },
+  "upgradeCheckout": {
+    "errorTitle": "Checkout Error",
+    "errorDescription": "An error occurred during the checkout process.",
+    "backToConfig": "← Back to configuration",
+    "preparing": "Preparing checkout…",
+    "goBack": "← Go back"
+  },
+  "menu": {
+    "games": "Games",
+    "dashboard": "Dashboard",
+    "support": "Support"
   }
 }

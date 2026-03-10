@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,6 +26,7 @@ interface DeleteBackupDialogProps {
 export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupDialogProps) {
     const [open, setOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const t = useTranslations('backupManager.deleteDialog');
 
     const handleOpenChange = (nextOpen: boolean) => {
         setOpen(nextOpen);
@@ -50,15 +52,13 @@ export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupD
             <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Delete this backup?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('title')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action permanently removes{' '}
-                        <span className="font-medium">{backup.name}</span>. Deleted backups cannot
-                        be recovered.
+                        {t('description', { name: backup.name })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isSubmitting}>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={handleDelete}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -66,10 +66,10 @@ export function DeleteBackupDialog({ backup, trigger, onConfirm }: DeleteBackupD
                     >
                         {isSubmitting ? (
                             <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" /> Deleting
+                                <Loader2 className="h-4 w-4 animate-spin" /> {t('deleting')}
                             </span>
                         ) : (
-                            'Delete'
+                            t('delete')
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>

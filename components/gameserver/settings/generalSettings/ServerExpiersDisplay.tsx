@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import formatDate from '@/lib/formatDate';
 import { ArrowUpCircle, Calendar } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface ServerExpiersDisplayProps {
     ptServerId: string;
@@ -11,6 +12,7 @@ interface ServerExpiersDisplayProps {
 }
 
 function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayProps) {
+    const t = useTranslations('gameserver.settings.expiry');
     const now = new Date();
     const diffDays = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     const isExpired = diffDays < 0;
@@ -25,14 +27,12 @@ function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayPr
           : 'border-transparent bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400';
 
     const badgeLabel = isExpired
-        ? 'Expired'
-        : isExpiringSoon
-          ? `${diffDays}d left`
-          : `${diffDays}d left`;
+        ? t('expired')
+        : t('daysLeft', { days: diffDays });
 
     return (
         <div>
-            <Label>Server Expiry</Label>
+            <Label>{t('label')}</Label>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-1.5 rounded-md border px-1.5 py-1.5">
                 <div className="flex items-center justify-between gap-2 min-w-0 sm:justify-start">
                     <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayPr
                 >
                     <Link href={`/gameserver/${ptServerId}/upgrade?extend=30`}>
                         <ArrowUpCircle className="h-3.5 w-3.5" />
-                        Extend
+                        {t('extend')}
                     </Link>
                 </Button>
             </div>

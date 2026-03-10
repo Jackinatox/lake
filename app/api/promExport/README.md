@@ -36,7 +36,7 @@ scrape_configs:
 | `lake_users_with_active_server_total` | —                         | Distinct users owning an active server |
 | `lake_active_sessions_total`          | —                         | Non-expired sessions                   |
 
-### Game Servers
+### Gameservers
 
 | Metric                                  | Labels             | Description                                  |
 | --------------------------------------- | ------------------ | -------------------------------------------- |

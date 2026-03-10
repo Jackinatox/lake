@@ -128,7 +128,7 @@ export function CompactServerAddress({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 px-2 font-mono text-xs gap-1"
+                                className="h-8 px-2 font-mono text-sm gap-1"
                                 aria-label={`Connection details for ${address}`}
                             >
                                 <EthernetPort className="h-3 w-3 text-foreground" />
@@ -191,7 +191,7 @@ export function CompactServerAddress({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 px-2 font-mono text-xs gap-1"
+                                className="h-8 px-2 font-mono text-sm gap-1"
                                 aria-label={`Connection address ${ipPortCombo}`}
                             >
                                 <EthernetPort className="h-3 w-3 text-foreground" />
@@ -268,7 +268,7 @@ export function CompactServerAddress({
     if (needsSeparateDisplay) {
         // Satisfactory: Show IP and Port separately inline
         return (
-            <div className={cn('flex items-center gap-3 text-xs font-mono', className)}>
+            <div className={cn('flex items-center gap-3 text-sm font-mono', className)}>
                 <div className="flex items-center gap-1.5">
                     <span className="text-muted-foreground">IP:</span>
                     <span className="truncate max-w-32">{address}</span>
@@ -317,7 +317,7 @@ export function CompactServerAddress({
                         <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 px-2 font-mono text-xs gap-1"
+                            className="h-8 px-2 font-mono text-sm gap-1"
                         >
                             <EthernetPort className="h-3 w-3 text-foreground" />
                             <span className="max-w-20 sm:max-w-28 lg:max-w-40 truncate">
@@ -378,7 +378,7 @@ export function CompactServerAddress({
                         <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 px-2 font-mono text-xs gap-1"
+                            className="h-8 px-2 font-mono text-sm gap-1"
                             aria-label={`Copy connection ${ipPortCombo}`}
                             onClick={() => handleCopy(ipPortCombo, 'main')}
                         >
@@ -410,7 +410,7 @@ export function CompactServerAddress({
     // Single allocation - simple combined IP:Port display inline
     return (
         <div className={cn('flex items-center gap-1 text-sm', className)}>
-            <span className="font-mono text-xs truncate max-w-32">{ipPortCombo}</span>
+            <span className="font-mono text-sm truncate max-w-32">{ipPortCombo}</span>
             <CopyButton
                 text={ipPortCombo}
                 copyKey="main"

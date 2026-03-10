@@ -1,14 +1,13 @@
 import prisma from '@/lib/prisma';
 
+import { GameServerOrder } from '@/app/client/generated/browser';
+import { logger } from '@/lib/logger';
 import { env } from 'next-runtime-env';
 import { createPtClient } from '../ptAdminClient';
-import { logger } from '@/lib/logger';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
-import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { GameServerOrder } from '@/app/client/generated/browser';
 
 /**
- * Upgrades a game server's resources (CPU and RAM) based on a server order.
+ * Upgrades a gameserver's resources (CPU and RAM) based on a server order.
  *
  * @remarks
  * This function does not perform user authentication. Ensure proper authentication
@@ -68,7 +67,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             },
         });
     } catch (error) {
-        logger.fatal('Error upgrading game server', 'GAME_SERVER', {
+        logger.fatal('Error upgrading gameserver', 'GAME_SERVER', {
             details: {
                 error,
                 gameServerId: gameServer.id,
@@ -78,7 +77,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             gameServerId: gameServer.id,
             userId: gameServer.userId,
         });
-        throw new Error('Failed to upgrade game server');
+        throw new Error('Failed to upgrade gameserver');
     } finally {
         await prisma.gameServerOrder.update({
             where: { id: serverOrder.id },

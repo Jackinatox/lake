@@ -15,7 +15,10 @@ async function requireAdmin() {
 export async function expireGameServer(id: string) {
     await requireAdmin();
     try {
-        await toggleSuspendGameServer(id, 'suspend');
+        const res = await toggleSuspendGameServer(id, 'suspend');
+        if (!res || !res.success) {
+            throw new Error('Failed to suspend gameserver');
+        }
         await prisma.gameServer.update({
             where: { id },
             data: { expires: new Date() },

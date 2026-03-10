@@ -12,6 +12,7 @@ import {
 import { LogLevel, LogType } from '@/app/client/generated/enums';
 import { Search, Clock } from 'lucide-react';
 import { TimeRange } from '@/app/actions/logs/getApplicationLogs';
+import { useTranslations } from 'next-intl';
 
 type LogFiltersProps = {
     search: string;
@@ -38,14 +39,14 @@ const LOG_TYPES: Array<LogType | 'ALL'> = [
     'TELEGRAM',
 ];
 
-const TIME_RANGES: Array<{ value: TimeRange; label: string }> = [
-    { value: 'ALL', label: 'All Time' },
-    { value: '1m', label: 'Last Minute' },
-    { value: '10m', label: 'Last 10 Minutes' },
-    { value: '1h', label: 'Last Hour' },
-    { value: '1d', label: 'Last Day' },
-    { value: '7d', label: 'Last Week' },
-    { value: '30d', label: 'Last Month' },
+const TIME_RANGES: Array<{ value: TimeRange; labelKey: string }> = [
+    { value: 'ALL', labelKey: 'ALL' },
+    { value: '1m', labelKey: '1m' },
+    { value: '10m', labelKey: '10m' },
+    { value: '1h', labelKey: '1h' },
+    { value: '1d', labelKey: '1d' },
+    { value: '7d', labelKey: '7d' },
+    { value: '30d', labelKey: '30d' },
 ];
 
 export default function LogFilters({
@@ -58,17 +59,18 @@ export default function LogFilters({
     onTypeChange,
     onTimeRangeChange,
 }: LogFiltersProps) {
+    const t = useTranslations('adminLogs.filters');
     return (
         <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {/* Search */}
                 <div className="space-y-2">
-                    <Label htmlFor="search">Search</Label>
+                    <Label htmlFor="search">{t('search')}</Label>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             id="search"
-                            placeholder="Search in messages..."
+                            placeholder={t('searchPlaceholder')}
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
                             className="pl-9"
@@ -78,7 +80,7 @@ export default function LogFilters({
 
                 {/* Log Level */}
                 <div className="space-y-2">
-                    <Label htmlFor="level">Log Level</Label>
+                    <Label htmlFor="level">{t('logLevel')}</Label>
                     <Select value={level} onValueChange={onLevelChange}>
                         <SelectTrigger id="level">
                             <SelectValue />
@@ -95,7 +97,7 @@ export default function LogFilters({
 
                 {/* Log Type */}
                 <div className="space-y-2">
-                    <Label htmlFor="type">Category</Label>
+                    <Label htmlFor="type">{t('category')}</Label>
                     <Select value={type} onValueChange={onTypeChange}>
                         <SelectTrigger id="type">
                             <SelectValue />
@@ -112,7 +114,7 @@ export default function LogFilters({
 
                 {/* Time Range */}
                 <div className="space-y-2">
-                    <Label htmlFor="timeRange">Time Range</Label>
+                    <Label htmlFor="timeRange">{t('timeRange')}</Label>
                     <Select value={timeRange} onValueChange={onTimeRangeChange}>
                         <SelectTrigger id="timeRange">
                             <SelectValue />
@@ -120,7 +122,7 @@ export default function LogFilters({
                         <SelectContent>
                             {TIME_RANGES.map((range) => (
                                 <SelectItem key={range.value} value={range.value}>
-                                    {range.label}
+                                    {t(`timeRanges.${range.labelKey}`)}
                                 </SelectItem>
                             ))}
                         </SelectContent>

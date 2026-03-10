@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -37,6 +38,7 @@ export function RestoreBackupDialog({
     const [open, setOpen] = useState(false);
     const [truncate, setTruncate] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const t = useTranslations('backupManager.restoreDialog');
 
     const handleOpenChange = (nextOpen: boolean) => {
         setOpen(nextOpen);
@@ -79,43 +81,40 @@ export function RestoreBackupDialog({
             <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Restore this backup?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('title')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Restoring <span className="font-medium">{backup.name}</span> will replace
-                        all current server files with the backup contents. The server stops
-                        automatically during the restore process.
+                        {t('description', { name: backup.name })}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
                 <div className="rounded-md border p-3 text-sm">
-                    <p className="mb-2 font-medium">Backup details</p>
+                    <p className="mb-2 font-medium">{t('backupDetails')}</p>
                     <ul className="list-disc space-y-1 pl-4 text-muted-foreground">
-                        <li>Created at {formatDateTime(backup.createdAt)}</li>
-                        <li>Status: {statusLabel}</li>
-                        <li>Size: {formatBytes(backup.bytes)}</li>
+                        <li>{t('createdAt', { date: formatDateTime(backup.createdAt) })}</li>
+                        <li>{t('status', { status: statusLabel })}</li>
+                        <li>{t('size', { size: formatBytes(backup.bytes) })}</li>
                     </ul>
                 </div>
 
                 <div className="flex items-center justify-between rounded-md border p-3">
                     <Label htmlFor="truncate-switch" className="flex flex-col gap-1 text-sm">
-                        <span>Delete existing files first</span>
+                        <span>{t('truncateLabel')}</span>
                         <span className="text-xs text-muted-foreground">
-                            Keeps the backup clean by removing leftover files. Recommended for most
-                            restores.
+                            {t('truncateDescription')}
                         </span>
                     </Label>
                     <Switch id="truncate-switch" checked={truncate} onCheckedChange={setTruncate} />
                 </div>
 
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isSubmitting}>{t('cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleConfirm} disabled={isSubmitting}>
                         {isSubmitting ? (
                             <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" /> Restoring
+                                <Loader2 className="h-4 w-4 animate-spin" /> {t('restoring')}
                             </span>
                         ) : (
-                            'Restore'
+                            t('restore')
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>

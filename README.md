@@ -5,9 +5,9 @@
 
 # Lake
 
-### Scyed Game Server Hosting Platform
+### Scyed Gameserver Hosting Platform
 
-A full-stack game server hosting platform with Stripe payments, Pterodactyl integration, and a free-tier system. Built with Next.js 16, TypeScript, and Prisma.
+A full-stack gameserver hosting platform with Stripe payments, Pterodactyl integration, and a free-tier system. Built with Next.js 16, TypeScript, and Prisma.
 
 ## Features
 

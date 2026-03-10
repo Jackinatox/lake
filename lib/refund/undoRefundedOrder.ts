@@ -35,7 +35,7 @@ export async function undoRefundedOrder(
     });
 
     if (!order.gameServer) {
-        logger.error('undoRefundedOrder: No game server linked to order, skipping', 'PAYMENT', {
+        logger.error('undoRefundedOrder: No gameserver linked to order, skipping', 'PAYMENT', {
             userId: order.userId,
             details: { orderId },
         });

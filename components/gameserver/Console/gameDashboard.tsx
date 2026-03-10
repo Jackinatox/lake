@@ -22,6 +22,7 @@ import {
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import BackupManager from '../BackupManager/BackupManager';
 import { ConnectionStatusBanner } from '../ConnectionStatusBanner';
 import { TabsComponent } from '../GameserverTabs';
@@ -186,9 +187,17 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
             {/* CPU Chart */}
             <Card className="border-0 shadow-sm">
                 <CardContent className="p-2 md:p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Cpu className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm font-medium">CPU</span>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <Cpu className="h-4 w-4 text-blue-500" />
+                            <span className="text-sm font-medium">CPU</span>
+                        </div>
+                        <span className="text-sm font-medium tabular-nums">
+                            {(((serverStats?.cpu_absolute || 0) / server.limits.cpu) * 100).toFixed(
+                                0,
+                            )}
+                            %/{formatVCores(server.limits.cpu / 100)}
+                        </span>
                     </div>
                     <CPUChart
                         newData={{
@@ -203,9 +212,15 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
             {/* RAM Chart */}
             <Card className="border-0 shadow-sm">
                 <CardContent className="p-2 md:p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                        <MemoryStickIcon className="h-4 w-4 text-purple-500" />
-                        <span className="text-sm font-medium">RAM</span>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <MemoryStickIcon className="h-4 w-4 text-purple-500" />
+                            <span className="text-sm font-medium">RAM</span>
+                        </div>
+                        <span className="text-sm font-medium tabular-nums">
+                            {formatBytes(serverStats?.memory_bytes || 0)}/
+                            {formatBytes((server.limits.memory || 0) * 1024 * 1024)}
+                        </span>
                     </div>
                     <RAMChart
                         newData={{

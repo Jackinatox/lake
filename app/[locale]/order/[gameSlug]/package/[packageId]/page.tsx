@@ -1,5 +1,13 @@
-import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+
+// Route disabled — unified configurator at /order/[gameSlug] replaces this flow
+export default function PackageOrderPage() {
+    notFound();
+}
+
+/*
+// ── Original implementation (preserved for re-enablement) ──────────────
+import prisma from '@/lib/prisma';
 import { Suspense } from 'react';
 import PackageBookingClient from './PackageBookingClient';
 import type { Game } from '@/models/config';
@@ -58,3 +66,4 @@ export default async function PackageOrderPage({
         </Suspense>
     );
 }
+*/

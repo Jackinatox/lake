@@ -21,6 +21,9 @@ export const FREE_TIER_BACKUP_COUNT = 'free_tier_backup_count';
 export const FREE_TIER_ALLOCATIONS = 'free_tier_allocations';
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
 
+// Legal grace period added to every booking duration for compliance (5 minutes)
+export const LEGAL_GRACE_PERIOD_MS = 5 * 60 * 1000;
+
 // User Limits
 export const CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS = 'delete_gameserver_after_days';
 

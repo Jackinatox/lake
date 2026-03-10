@@ -45,10 +45,10 @@ const collectors: Metric[] = [
         },
     },
 
-    // --- Game Servers ---
+    // --- Gameservers ---
     {
         name: 'lake_game_servers_total',
-        help: 'Number of game servers by status',
+        help: 'Number of gameservers by status',
         type: 'gauge',
         collect: async () => {
             const rows = await prisma.gameServer.groupBy({
@@ -62,7 +62,7 @@ const collectors: Metric[] = [
     },
     {
         name: 'lake_game_servers_by_type_total',
-        help: 'Number of game servers by type',
+        help: 'Number of gameservers by type',
         type: 'gauge',
         collect: async () => {
             const rows = await prisma.gameServer.groupBy({
@@ -205,7 +205,7 @@ const collectors: Metric[] = [
     // Hardware Stats
     {
         name: 'lake_total_given_cpu_percent',
-        help: 'Total CPU percent allocated across all active game servers',
+        help: 'Total CPU percent allocated across all active gameservers',
         type: 'gauge',
         collect: async () => {
             const result = await prisma.gameServer.aggregate({
@@ -221,7 +221,7 @@ const collectors: Metric[] = [
     },
     {
         name: 'lake_total_given_memory_mb',
-        help: 'Total memory allocated across all active game servers in MB',
+        help: 'Total memory allocated across all active gameservers in MB',
         type: 'gauge',
         collect: async () => {
             const result = await prisma.gameServer.aggregate({
@@ -237,7 +237,7 @@ const collectors: Metric[] = [
     },
     {
         name: 'lake_total_given_disk_mb',
-        help: 'Total disk space allocated across all active game servers in MB',
+        help: 'Total disk space allocated across all active gameservers in MB',
         type: 'gauge',
         collect: async () => {
             const result = await prisma.gameServer.aggregate({
@@ -381,7 +381,7 @@ const collectors: Metric[] = [
     },
     {
         name: 'lake_users_with_active_server_total',
-        help: 'Number of distinct users who own at least one ACTIVE game server',
+        help: 'Number of distinct users who own at least one ACTIVE gameserver',
         type: 'gauge',
         collect: async () => {
             const result = await prisma.gameServer.findMany({
@@ -403,11 +403,11 @@ const collectors: Metric[] = [
     },
 
     // ---------------------------------------------------------------------------
-    // Game Servers — richer breakdowns
+    // Gameservers — richer breakdowns
     // ---------------------------------------------------------------------------
     {
         name: 'lake_game_servers_by_game_total',
-        help: 'Number of active game servers grouped by gameDataId',
+        help: 'Number of active gameservers grouped by gameDataId',
         type: 'gauge',
         collect: async () => {
             const rows = await prisma.gameServer.groupBy({
@@ -423,7 +423,7 @@ const collectors: Metric[] = [
     },
     {
         name: 'lake_game_servers_by_location_total',
-        help: 'Number of active game servers grouped by locationId',
+        help: 'Number of active gameservers grouped by locationId',
         type: 'gauge',
         collect: async () => {
             const rows = await prisma.gameServer.groupBy({

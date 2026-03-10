@@ -6,6 +6,7 @@ import { LogLevel, LogType } from '@/app/client/generated/enums';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 type LogEntryProps = {
     log: {
@@ -56,6 +57,7 @@ const getTypeColor = (type: LogType) => {
 
 export default function LogEntry({ log }: LogEntryProps) {
     const [expanded, setExpanded] = useState(false);
+    const t = useTranslations('adminLogs.entry');
 
     return (
         <Card className={cn('transition-all hover:shadow-md')}>
@@ -92,8 +94,8 @@ export default function LogEntry({ log }: LogEntryProps) {
                                 <span className="font-medium">{log.method}</span> {log.path}
                             </span>
                         )}
-                        {log.user && <span>User: {log.user.name}</span>}
-                        {log.gameServer && <span>Server: {log.gameServer.name}</span>}
+                        {log.user && <span>{t('user', { name: log.user.name })}</span>}
+                        {log.gameServer && <span>{t('server', { name: log.gameServer.name })}</span>}
                     </div>
 
                     {/* Expandable Details */}
@@ -108,25 +110,25 @@ export default function LogEntry({ log }: LogEntryProps) {
                                 ) : (
                                     <ChevronRight className="h-3 w-3" />
                                 )}
-                                {expanded ? 'Hide' : 'Show'} details
+                                {expanded ? t('hideDetails') : t('showDetails')}
                             </button>
 
                             {expanded && (
                                 <div className="mt-2 space-y-2 rounded-md bg-muted p-3">
                                     {log.ipAddress && (
                                         <div className="text-xs">
-                                            <span className="font-medium">IP:</span> {log.ipAddress}
+                                            <span className="font-medium">{t('ip')}</span> {log.ipAddress}
                                         </div>
                                     )}
                                     {log.userAgent && (
                                         <div className="text-xs">
-                                            <span className="font-medium">User Agent:</span>{' '}
+                                            <span className="font-medium">{t('userAgent')}</span>{' '}
                                             {log.userAgent}
                                         </div>
                                     )}
                                     {log.details && (
                                         <div className="text-xs">
-                                            <span className="font-medium">Details:</span>
+                                            <span className="font-medium">{t('details')}</span>
                                             <pre className="mt-1 overflow-x-auto whitespace-pre-wrap rounded bg-background p-2">
                                                 {JSON.stringify(log.details, null, 2)}
                                             </pre>

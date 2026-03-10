@@ -13,7 +13,7 @@ import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
-import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
+import { FREE_SERVERS_LOCATION_ID, LEGAL_GRACE_PERIOD_MS } from '../../GlobalConstants';
 
 /**
  * Resolves a gameSlug to a gameData ID. Falls back to gameId for backward compat
@@ -33,11 +33,18 @@ async function resolveGameDataId(gameConfig: GameConfig): Promise<number> {
     throw new Error('GameConfig must have gameSlug or gameId');
 }
 
+// locale is to put the right agb text in stripe checkout
 export type CheckoutParams =
     | {
           type: 'NEW';
           locale: 'de' | 'en';
           creationServerConfig: ServerConfig; // Needed for Server Creation!!!
+      }
+    | {
+          type: 'CONFIGURED';
+          locale: 'de' | 'en';
+          creationServerConfig: ServerConfig;
+          resourceTierId: number;
       }
     | {
           type: 'UPGRADE';
@@ -92,6 +99,86 @@ export async function checkoutAction(
     }
 
     switch (params.type) {
+        case 'CONFIGURED': {
+            const { creationServerConfig, resourceTierId } = params;
+            if (!creationServerConfig) throw new Error('No Serverconfigration given');
+
+            // Look up the resource tier to get its flat-fee price
+            const tier = await prisma.resourceTier.findUnique({
+                where: { id: resourceTierId, enabled: true },
+            });
+            if (!tier) throw new Error(`ResourceTier not found: ${resourceTierId}`);
+
+            const location = await prisma.location.findFirstOrThrow({
+                where: { id: creationServerConfig.hardwareConfig.pfGroupId },
+                include: { cpu: true, ram: true },
+            });
+            const hardwareConfig = creationServerConfig.hardwareConfig;
+            const cpuPercent = hardwareConfig.cpuPercent;
+            const ramMB = hardwareConfig.ramMb;
+            const diskMB = tier.diskMB;
+            const backupCount = tier.backups;
+            const duration = hardwareConfig.durationsDays;
+            const allocations = tier.ports;
+
+            const price = calculateNew(location, cpuPercent, ramMB, duration);
+            const totalCents = price.totalCents + tier.priceCents;
+
+            const creationGameDataId = await resolveGameDataId(creationServerConfig.gameConfig);
+
+            const order = await prisma.gameServerOrder.create({
+                data: {
+                    type: 'CONFIGURED',
+                    gameServerId: null,
+                    userId: user.id,
+                    ramMB,
+                    cpuPercent,
+                    diskMB,
+                    backupCount,
+                    allocations,
+                    price: totalCents,
+                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
+                    status: 'PENDING',
+                    creationGameDataId,
+                    creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
+                    gameConfig: creationServerConfig.gameConfig as any,
+                },
+            });
+
+            const stripeSession = await stripe.checkout.sessions.create({
+                locale: 'auto',
+                mode: 'payment',
+                ui_mode: 'embedded',
+                invoice_creation: { enabled: true },
+                line_items: [
+                    {
+                        price_data: {
+                            currency: 'eur',
+                            product_data: { name: 'Gameserver' },
+                            unit_amount: Math.round(totalCents),
+                        },
+                        quantity: 1,
+                    },
+                ],
+                custom_text: {
+                    terms_of_service_acceptance: {
+                        message: getTermsMessage(params.locale),
+                    },
+                },
+                consent_collection: { terms_of_service: 'required' },
+                metadata: { orderId: String(order.id) },
+                customer: stripeUserId,
+                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+            });
+
+            const client_secret = stripeSession.client_secret;
+            await prisma.gameServerOrder.update({
+                where: { id: order.id },
+                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
+            });
+
+            return { client_secret, orderId: order.id };
+        }
         case 'NEW': {
             const { creationServerConfig } = params;
             if (!creationServerConfig) throw new Error('No Serverconfigration given');
@@ -124,7 +211,7 @@ export async function checkoutAction(
                     backupCount,
                     allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
@@ -144,7 +231,7 @@ export async function checkoutAction(
                     {
                         price_data: {
                             currency: 'eur',
-                            product_data: { name: `${params.type} Game Server` },
+                            product_data: { name: `${params.type} Gameserver` },
                             unit_amount: Math.round(price.totalCents),
                         },
                         quantity: 1,
@@ -244,7 +331,8 @@ export async function checkoutAction(
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
-                            durationsDays * 24 * 60 * 60 * 1000,
+                            durationsDays * 24 * 60 * 60 * 1000 +
+                            LEGAL_GRACE_PERIOD_MS,
                     ),
                     status: 'PENDING',
                 },
@@ -263,7 +351,7 @@ export async function checkoutAction(
                         price_data: {
                             currency: 'eur',
                             product_data: {
-                                name: `Upgrade Game Server to ${cpuPercent}% CPU, ${ramMb}MB RAM`,
+                                name: `Upgrade Gameserver to ${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM`,
                             },
                             unit_amount: Math.round(price.totalCents),
                         },
@@ -341,7 +429,7 @@ export async function checkoutAction(
                     backupCount: packageData.backups,
                     allocations: packageData.allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
                     status: 'PENDING',
                     creationGameDataId: packageGameDataId,
                     creationLocationId: packageData.locationId,
@@ -362,7 +450,7 @@ export async function checkoutAction(
                         price_data: {
                             currency: 'eur',
                             product_data: {
-                                name: `${packageData.name} - Game Server Package`,
+                                name: `${packageData.name} - Gameserver Package`,
                                 description: `${packageData.cpuPercent / 100} vCPU, ${formatMBToGiB(packageData.ramMB)} RAM, ${formatMBToGiB(packageData.diskMB)} Storage`,
                             },
                             unit_amount: Math.round(price.totalCents),
@@ -419,7 +507,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             backupCount: freeServerStats.backupCount,
             allocations: freeServerStats.allocations,
             price: 0,
-            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
+            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
             status: 'PAID',
             creationGameDataId: freeGameDataId,
             gameConfig: gameConfig as any,

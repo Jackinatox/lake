@@ -13,7 +13,7 @@ import Link from 'next/link';
 // Sub-component for the page header
 const PageHeader = () => (
     <div className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">Game Servers</h1>
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">Gameservers</h1>
         <p className="text-slate-600 dark:text-slate-400">All Deine Server</p>
     </div>
 );
@@ -42,7 +42,7 @@ const NoServersMessage = () => (
             No servers found
         </h3>
         <p className="text-slate-600 dark:text-slate-400 mb-6">
-            Get started by creating your first game server
+            Get started by creating your first gameserver
         </p>
     </div>
 );
