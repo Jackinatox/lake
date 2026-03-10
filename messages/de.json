@@ -945,7 +945,17 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Speichern...",
-      "refresh": "Aktualiseren"
+      "refresh": "Aktualisieren",
+      "fixPorts": "Ports neu zuweisen",
+      "fixPortsDialogTitle": "Ports neu zuweisen",
+      "fixPortsDialogDescription": "Manchmal kann es vorkommen, dass die Port-Zuweisungen deines Servers nicht korrekt sind, was zu Verbindungsproblemen führen kann.",
+      "fixPortsDialogDetail": "Du kannst probieren die Ports neu zuzuweisen, was aber nicht immer funktioniert. Der Server muss danach neu gestartet werden (Minecraft-Server haben Probleme damit)",
+      "fixPortsConfirm": "Ports neu zuweisen",
+      "fixingPorts": "Ports werden neu zugewiesen...",
+      "fixPortsSuccess": "Ports erfolgreich neu zugewiesen",
+      "fixPortsFailed": "Ports konnten nicht neu zugewiesen werden",
+      "fixPortsRestartNow": "Jetzt neu starten",
+      "fixPortsRetry": "Erneut versuchen"
     },
     "settings": {
       "serverName": {

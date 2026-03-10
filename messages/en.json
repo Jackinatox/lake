@@ -945,7 +945,17 @@
       "save": "Save",
       "saving": "Saving...",
       "notes": "Notes",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "fixPorts": "Fix assigned Ports",
+      "fixPortsDialogTitle": "Fix Assigned Ports",
+      "fixPortsDialogDescription": "This action will try to reassign some ports and reconfigure the server.",
+      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesnt work for all games (issues with Minecraft).",
+      "fixPortsConfirm": "Fix Ports",
+      "fixingPorts": "Fixing...",
+      "fixPortsSuccess": "Ports reassigned successfully",
+      "fixPortsFailed": "Failed to reassign ports",
+      "fixPortsRestartNow": "Restart now",
+      "fixPortsRetry": "Retry"
     },
     "settings": {
       "serverName": {

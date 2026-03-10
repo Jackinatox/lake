@@ -9,8 +9,11 @@ import { GameServer } from '@/models/gameServerModel';
 import { AlertCircle, Network, Plus, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useSendCommand } from '@/hooks/useServerWebSocket';
 import AllocationCard from './AllocationCard';
 import AllocationNotesDialog from './AllocationNotesDialog';
+import FixPortsDialog from './FixPortsDialog';
+import { reassignPortsAction } from './reassignPortsAction';
 import type { Allocation } from './types';
 import { useAllocations } from './useAllocations';
 
@@ -22,6 +25,7 @@ interface NetworkManagerProps {
 export default function NetworkManager({ server, apiKey }: NetworkManagerProps) {
     const t = useTranslations('gameserver.networkManager');
     const { toast } = useToast();
+    const { sendPowerAction } = useSendCommand();
     const {
         allocations,
         loading,
@@ -36,6 +40,7 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
     const [notesDialogOpen, setNotesDialogOpen] = useState(false);
     const [editingAllocation, setEditingAllocation] = useState<Allocation | null>(null);
     const [adding, setAdding] = useState(false);
+    const [fixPortsDialogOpen, setFixPortsDialogOpen] = useState(false);
 
     const allocationLimit = server.feature_limits.allocations;
     const canAddMore = allocationLimit === 0 || allocations.length < allocationLimit;
@@ -76,6 +81,12 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
         setNotesDialogOpen(true);
     };
 
+    const handleFixPorts = async (): Promise<boolean> => {
+        const result = await reassignPortsAction(server.identifier);
+        if (result.success) refetch();
+        return result.success;
+    };
+
     const handleSaveNotes = async (allocationId: number, notes: string) => {
         const success = await updateNotes(allocationId, notes);
         if (success) {
@@ -90,17 +101,33 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
         <>
             <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-0 p-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <CardTitle className="flex items-center gap-2 text-base">
                             <Network className="h-5 w-5" />
                             {t('title')}
                         </CardTitle>
-                        <Button variant="outline" onClick={refetch} disabled={loading}>
-                            <RefreshCw
-                                className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
-                            />
-                            {t('refresh')}
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 md:flex-none"
+                                onClick={() => setFixPortsDialogOpen(true)}
+                                disabled={loading}
+                            >
+                                {t('fixPorts')}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={refetch}
+                                disabled={loading}
+                            >
+                                <RefreshCw
+                                    className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                                />
+                                {t('refresh')}
+                            </Button>
+                        </div>
                     </div>
                     <p className="text-xs text-muted-foreground">{t('description')}</p>
                 </CardHeader>
@@ -176,6 +203,14 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
                 open={notesDialogOpen}
                 onOpenChange={setNotesDialogOpen}
                 onSave={handleSaveNotes}
+            />
+
+            {/* Fix Ports Dialog */}
+            <FixPortsDialog
+                open={fixPortsDialogOpen}
+                onOpenChange={setFixPortsDialogOpen}
+                onConfirm={handleFixPorts}
+                onRestart={() => sendPowerAction('restart')}
             />
         </>
     );
