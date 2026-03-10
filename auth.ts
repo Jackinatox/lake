@@ -12,6 +12,20 @@ import {
 } from './lib/email/sendEmailEmailsFromLake';
 import prisma from './lib/prisma';
 import { logger } from './lib/logger';
+import { captureServerEvent } from './lib/posthog';
+
+function extractIp(request?: Request | null): string | undefined {
+    if (!request) return undefined;
+    return (
+        request.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+        request.headers.get('x-real-ip') ||
+        undefined
+    );
+}
+
+function extractUserAgent(request?: Request | null): string | undefined {
+    return request?.headers.get('user-agent') || undefined;
+}
 
 function generateRandomPassword(length: number = 32): string {
     return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');
@@ -101,6 +115,12 @@ export const auth = betterAuth({
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }, request) => {
+            await logger.info(`Verification email sent to ${user.email}`, 'AUTHENTICATION', {
+                userId: user.id,
+                ipAddress: extractIp(request),
+                userAgent: extractUserAgent(request),
+                details: { email: user.email },
+            });
             await sendConfirmEmail(user.email, url);
         },
         sendOnSignUp: true,
@@ -117,6 +137,25 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, context) => {
+                    const req = (context as any)?.request as Request | undefined;
+                    const ip = extractIp(req);
+                    const ua = extractUserAgent(req);
+                    const path = req ? new URL(req.url).pathname : undefined;
+
+                    await logger.info(`New user signup attempt: ${user.email}`, 'AUTHENTICATION', {
+                        ipAddress: ip,
+                        userAgent: ua,
+                        path,
+                        details: { email: user.email, name: user.name },
+                    });
+
+                    captureServerEvent(user.email, 'user_signup_attempt', {
+                        email: user.email,
+                        ip,
+                        userAgent: ua,
+                        signupPath: path,
+                    });
+
                     try {
                         const ptAdmin = createPtClient();
                         const ptUsername = await generateUniqueUserName(user.email);
@@ -131,6 +170,28 @@ export const auth = betterAuth({
                         });
 
                         const newKey = await createUserApiKey(newPTUser.id);
+
+                        await logger.info(
+                            `User account created successfully: ${user.email}`,
+                            'AUTHENTICATION',
+                            {
+                                ipAddress: ip,
+                                userAgent: ua,
+                                details: {
+                                    email: user.email,
+                                    ptUsername,
+                                    ptUserId: newPTUser.id,
+                                },
+                            },
+                        );
+
+                        captureServerEvent(user.email, 'user_signup_success', {
+                            email: user.email,
+                            ip,
+                            userAgent: ua,
+                            ptUsername,
+                        });
+
                         return {
                             data: {
                                 ...user,
@@ -140,9 +201,55 @@ export const auth = betterAuth({
                             },
                         };
                     } catch (error) {
-                        console.error('Error creating user:', error);
+                        await logger.error(
+                            `Failed to create user: ${user.email}`,
+                            'AUTHENTICATION',
+                            {
+                                ipAddress: ip,
+                                userAgent: ua,
+                                details: {
+                                    email: user.email,
+                                    error: error instanceof Error ? error.message : String(error),
+                                },
+                            },
+                        );
+                        captureServerEvent(user.email, 'user_signup_failed', {
+                            email: user.email,
+                            ip,
+                            userAgent: ua,
+                            error: error instanceof Error ? error.message : String(error),
+                        });
                         throw new Error('Failed to create user');
                     }
+                },
+            },
+        },
+        session: {
+            create: {
+                after: async (session, context) => {
+                    const req = (context as any)?.request as Request | undefined;
+                    const ip = extractIp(req);
+                    const ua = extractUserAgent(req);
+                    const path = req ? new URL(req.url).pathname : undefined;
+
+                    await logger.info(
+                        `Session created for user ${session.userId}`,
+                        'AUTHENTICATION',
+                        {
+                            userId: session.userId,
+                            ipAddress: ip,
+                            userAgent: ua,
+                            path,
+                            details: { sessionId: session.id },
+                        },
+                    );
+
+                    captureServerEvent(session.userId, 'user_sign_in', {
+                        userId: session.userId,
+                        ip,
+                        userAgent: ua,
+                        signInPath: path,
+                    });
                 },
             },
         },

@@ -73,6 +73,7 @@
         "nodemailer": "^7.0.13",
         "pg": "^8.18.0",
         "posthog-js": "^1.356.1",
+        "posthog-node": "^5.28.0",
         "prettier": "^3.8.1",
         "pterodactyl-api-wrapper": "^2.0.8",
         "pterodactyl.js": "^2.1.1",
