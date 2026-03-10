@@ -1,6 +1,6 @@
 'use server';
 
-import { Logger, logger } from '@/lib/logger';
+import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
