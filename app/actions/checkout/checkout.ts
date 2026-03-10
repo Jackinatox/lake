@@ -13,7 +13,7 @@ import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
-import { FREE_SERVERS_LOCATION_ID } from '../../GlobalConstants';
+import { FREE_SERVERS_LOCATION_ID, LEGAL_GRACE_PERIOD_MS } from '../../GlobalConstants';
 
 /**
  * Resolves a gameSlug to a gameData ID. Falls back to gameId for backward compat
@@ -137,7 +137,7 @@ export async function checkoutAction(
                     backupCount,
                     allocations,
                     price: totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
@@ -211,7 +211,7 @@ export async function checkoutAction(
                     backupCount,
                     allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
@@ -331,7 +331,8 @@ export async function checkoutAction(
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
-                            durationsDays * 24 * 60 * 60 * 1000,
+                            durationsDays * 24 * 60 * 60 * 1000 +
+                            LEGAL_GRACE_PERIOD_MS,
                     ),
                     status: 'PENDING',
                 },
@@ -428,7 +429,7 @@ export async function checkoutAction(
                     backupCount: packageData.backups,
                     allocations: packageData.allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000),
+                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
                     status: 'PENDING',
                     creationGameDataId: packageGameDataId,
                     creationLocationId: packageData.locationId,
@@ -506,7 +507,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             backupCount: freeServerStats.backupCount,
             allocations: freeServerStats.allocations,
             price: 0,
-            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000),
+            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
             status: 'PAID',
             creationGameDataId: freeGameDataId,
             gameConfig: gameConfig as any,

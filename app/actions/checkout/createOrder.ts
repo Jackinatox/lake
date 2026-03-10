@@ -5,6 +5,7 @@ import { stripe } from '@/lib/stripe';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { User } from '@/app/client/generated/client';
+import { LEGAL_GRACE_PERIOD_MS } from '@/app/GlobalConstants';
 
 export default async function upgradeToPayed(params: CheckoutParams, user: User): Promise<string> {
     if (params.type !== 'TO_PAYED') {
@@ -41,7 +42,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
             diskMB: diskMb,
             allocations: hardwareConfig.allocations,
             price: price.totalCents,
-            expiresAt: new Date(Date.now() + durationsDays * 24 * 60 * 60 * 1000),
+            expiresAt: new Date(Date.now() + durationsDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
             status: 'PENDING',
             creationGameDataId: server.gameDataId,
             creationLocationId: hardwareConfig.pfGroupId,
