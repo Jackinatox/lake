@@ -568,7 +568,8 @@
       "RENEW": "Verlängerung",
       "FREE_SERVER": "Kostenloser Server",
       "TO_PAYED": "Von Gratis zu Bezahlt",
-      "PACKAGE": "Paket"
+      "PACKAGE": "Paket",
+      "CONFIGURED": "Neuer Server"
     },
     "status": {
       "created": "Aktiv",

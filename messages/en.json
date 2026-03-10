@@ -568,7 +568,8 @@
       "RENEW": "Renewal",
       "FREE_SERVER": "Free server",
       "TO_PAYED": "From Free to Paid",
-      "PACKAGE": "Package"
+      "PACKAGE": "Package",
+      "CONFIGURED": "New server"
     },
     "status": {
       "created": "Active",

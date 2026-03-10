@@ -68,7 +68,7 @@ export default async function upgradeToPayed(params: CheckoutParams, user: User)
             },
         ],
         metadata: {
-            orderId: String(order.id),
+            orderId: order.id,
         },
         customer: user.stripeUserId!,
         return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,

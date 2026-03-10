@@ -170,7 +170,7 @@ interface InvoiceEmailData {
     location: string;
     price: number;
     expiresAt: Date;
-    receiptUrl?: string;
+    invoicePdfUrl: string;
 }
 
 export async function sendInvoiceEmail(data: InvoiceEmailData) {
@@ -189,11 +189,11 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
             location: data.location,
             price: data.price,
             expiresAt: data.expiresAt,
-            receiptUrl: data.receiptUrl,
+            invoicePdfUrl: data.invoicePdfUrl,
         }),
     );
 
-    await sendMail(data.userEmail, `Rechnung für deinen ${data.gameName} Server`, html, 'INVOICE');
+    await sendMail(data.userEmail, `Rechnungsübersicht für deinen ${data.gameName} Server`, html, 'INVOICE');
 }
 
 interface FreeServerCreatedEmailData {

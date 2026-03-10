@@ -181,7 +181,7 @@ export default async function handleCheckoutSessionCompleted(
                     location: updatedOrder.creationLocation.name || 'Unknown',
                     price: updatedOrder.price,
                     expiresAt: updatedOrder.expiresAt,
-                    receiptUrl: receiptUrl || '',
+                    invoicePdfUrl: receiptUrl || '',
                 });
 
                 logger.info('Sent booking confirmation and invoice emails', 'EMAIL', {
