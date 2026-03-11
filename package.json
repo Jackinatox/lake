@@ -79,6 +79,7 @@
         "prettier": "^3.8.1",
         "pterodactyl-api-wrapper": "^2.0.8",
         "pterodactyl.js": "^2.1.1",
+        "radix-ui": "^1.4.3",
         "react": "19.2.3",
         "react-dom": "19.2.3",
         "react-email": "^5.2.8",

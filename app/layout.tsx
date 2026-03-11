@@ -7,9 +7,13 @@ import { NextIntlClientProvider, useLocale } from 'next-intl';
 import { getLocale } from 'next-intl/server';
 import { PublicEnvScript, env } from 'next-runtime-env';
 import { ThemeProvider } from 'next-themes';
-import { Geist } from 'next/font/google';
+import { Geist, Inter } from 'next/font/google';
 import './globals.css';
 import DevSessionInfo from '@/components/auth/DevSessionInfo';
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+
 
 export async function generateMetadata(): Promise<Metadata> {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
@@ -45,7 +49,7 @@ export default async function RootLayout({
     const messages = (await import(`../messages/${locale}.json`)).default;
 
     return (
-        <html lang={locale} className={geistSans.className} suppressHydrationWarning>
+        <html lang={locale} className={cn(geistSans.className, "font-sans", inter.variable)} suppressHydrationWarning>
             <head>
                 <PublicEnvScript />
             </head>
