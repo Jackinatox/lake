@@ -307,6 +307,15 @@ async function main() {
             },
         ],
     });
+
+    await prisma.resourceTier.create({
+        data: {
+            backups: 1,
+            diskMB: 1024,
+            name: 'Free Tier',
+            ports: 2,
+        }
+    })
 }
 
 main()
