@@ -66,6 +66,18 @@ export default function Footer() {
                                 {t('datenschutz')}
                             </Link>
                             <Link
+                                href="/legal/returns"
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('returns')}
+                            </Link>
+                            <Link
+                                href="/legal/payments"
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('payments')}
+                            </Link>
+                            <Link
                                 href="/legal/contact"
                                 className="hover:text-foreground transition-colors"
                             >
@@ -138,7 +150,7 @@ export default function Footer() {
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">
-                            © 2025 Scyed. All rights reserved.
+                            2026 Scyed. All rights reserved.
                         </span>
                     </div>
                     <ThemeSwitcher />

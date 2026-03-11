@@ -106,12 +106,8 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
 
                         <div className="w-px h-5 bg-border shrink-0" />
 
-                        {/* Secondary specs */}
-                        <Chip color="muted" label="Duration">
-                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                            {days}{daysSuffix}
-                        </Chip>
 
+                        {/* Secondary specs */}
                         {selectedTier && (
                             <>
                                 <Chip color="muted" label="Backups">
@@ -125,6 +121,11 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
                                 </Chip>
                             </>
                         )}
+
+                        <Chip color="muted" label="Duration">
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                            {days}{daysSuffix}
+                        </Chip>
 
                         {totalCents != null && (
                             <>

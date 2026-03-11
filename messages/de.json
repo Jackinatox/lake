@@ -87,7 +87,7 @@
     "boxLabel3": "Zuverlässig",
     "boxDesc3": "Hohe Verfügbarkeit",
     "buttonStartNow": "Jetzt starten",
-    "buttonComparePlans": "Pakete vergleichen",
+    "buttonComparePlans": "Hardware vergleichen",
     "supportedGames": "Unterstützte Spiele",
     "showAllGames": "Alle Spiele anzeigen",
     "toolsHeader": "Unsere Tools",
@@ -708,7 +708,9 @@
     "company": "Unternehmen",
     "sourcecode": "Quellcode",
     "contactUs": "Kontakt",
-    "withdrawal": "Widerruf"
+    "withdrawal": "Verträge widerrufen",
+    "payments": "Zahlungsbedingungen",
+    "returns": "Widerrufsrecht"
   },
   "gameserver": {
     "freeServer": "Kostenloser Server",
@@ -954,7 +956,7 @@
       "fixPorts": "Ports neu zuweisen",
       "fixPortsDialogTitle": "Ports neu zuweisen",
       "fixPortsDialogDescription": "Manchmal kann es vorkommen, dass die Port-Zuweisungen deines Servers nicht korrekt sind, was zu Verbindungsproblemen führen kann.",
-      "fixPortsDialogDetail": "Du kannst probieren die Ports neu zuzuweisen, was aber nicht immer funktioniert. Der Server muss danach neu gestartet werden (Minecraft-Server haben Probleme damit)",
+      "fixPortsDialogDetail": "Du kannst probieren die Ports neu zuzuweisen, was aber nicht immer funktioniert. (Minecraft-Server haben Probleme damit) \n Der Server muss danach neu gestartet werden.",
       "fixPortsConfirm": "Ports neu zuweisen",
       "fixingPorts": "Ports werden neu zugewiesen...",
       "fixPortsSuccess": "Ports erfolgreich neu zugewiesen",

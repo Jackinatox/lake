@@ -38,7 +38,7 @@ async function LegalPageTemplate({ pageType, locale }: LegalPageTemplateProps) {
             <Card>
                 <CardContent>
                     <div
-                        className="prose prose-sm dark:prose-invert max-w-none"
+                        className="prose prose-sm dark:prose-invert max-w-none [&_a]:text-blue-500 [&_a]:underline"
                         dangerouslySetInnerHTML={{ __html: htmlContent }}
                     />
                 </CardContent>
