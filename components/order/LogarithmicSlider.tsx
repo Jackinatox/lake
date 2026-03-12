@@ -130,7 +130,7 @@ export default function LogarithmicSlider({
     const currentPercent = totalRange === 0 ? 0 : (sliderValue / totalRange) * 100;
 
     return (
-        <div className="space-y-0">
+        <div className="space-y-0 isolate">
             <div className="relative">
                 {/* Range bands: red before min, amber→green from min to rec */}
                 {markerPositions.length >= 2 && (
@@ -185,6 +185,12 @@ export default function LogarithmicSlider({
                     step={1}
                     onValueChange={handleChange}
                     className="w-full"
+                />
+
+                {/* Visual-only thumb overlay rendered above all markers (pointer-events-none so real thumb handles interaction) */}
+                <div
+                    className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-5 h-5 rounded-full border-2 border-primary bg-background pointer-events-none"
+                    style={{ left: `calc(10px + (100% - 20px) * ${currentPercent / 100})` }}
                 />
             </div>
 

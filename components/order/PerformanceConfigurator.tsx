@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
@@ -20,8 +21,8 @@ const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
 
 // ── Duration config ──────────────────────────────────────────────────────
-const DURATIONS: readonly { value: number; labelKey: string; discount?: number }[] = [
-    { value: 7, labelKey: 'durations.week' },
+const DURATIONS: readonly { value: number; labelKey: string; discount?: number; surcharge?: number }[] = [
+    { value: 7, labelKey: 'durations.week', surcharge: 15 },
     { value: 30, labelKey: 'durations.month' },
     { value: 90, labelKey: 'durations.threeMonths', discount: 10 },
     { value: 180, labelKey: 'durations.sixMonths', discount: 15 },
@@ -287,22 +288,33 @@ export default function PerformanceConfigurator({
 
                             {/* Billing period */}
                             <Section label={t('billingPeriod')}>
-                                <Tabs
-                                    value={days.toString()}
-                                    onValueChange={(v) => setDays(Number(v))}
-                                >
-                                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
-                                        {DURATIONS.map((d) => (
-                                            <TabsTrigger
-                                                key={d.value}
-                                                value={d.value.toString()}
-                                                className="text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                            >
-                                                {t('durations.days', { days: d.value })}
-                                            </TabsTrigger>
-                                        ))}
-                                    </TabsList>
-                                </Tabs>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 p-1 rounded-lg bg-muted/50">
+                                    {DURATIONS.map((d) => (
+                                        <button
+                                            key={d.value}
+                                            type="button"
+                                            onClick={() => setDays(d.value)}
+                                            className={cn(
+                                                'flex flex-col items-center justify-center gap-0.5 rounded-md p-2 sm:p-3 text-sm font-medium transition-all',
+                                                days === d.value
+                                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                            )}
+                                        >
+                                            <span>{t('durations.days', { days: d.value })}</span>
+                                            {d.discount && (
+                                                <span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-bold shadow-sm">
+                                                    -{d.discount}%
+                                                </span>
+                                            )}
+                                            {d.surcharge && (
+                                                <span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-orange-500 text-white font-bold shadow-sm">
+                                                    +{d.surcharge}%
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </Section>
 
                             {/* CPU */}
@@ -336,23 +348,21 @@ export default function PerformanceConfigurator({
                             </SliderSection>
 
                             {/* Recommendation note */}
-                            {activeRecommendation && (
-                                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
-                                    <InfoButton className="w-3.5 h-3.5 mt-0.5 shrink-0" text="" />
-                                    <div>
-                                        <span>{t('recommendation.note' as any)}</span>
-                                        <span className="inline-flex items-center gap-1.5 ml-2">
-                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
-                                            <span>{t('recommendation.min' as any)}</span>
-                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
-                                            <span>{t('recommendation.recommended' as any)}</span>
+                            {activeRecommendation && cpuMarkers.length > 0 && (
+                                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+                                    <InfoButton className="w-3.5 h-3.5 shrink-0" text="" />
+                                    <span>{t('recommendation.note' as any)}</span>
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
+                                        <span>{t('recommendation.min' as any)}</span>
+                                        <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
+                                        <span>{t('recommendation.recommended' as any)}</span>
+                                    </span>
+                                    {activeRecommendation.note && (
+                                        <span className="w-full text-muted-foreground/80">
+                                            {activeRecommendation.note}
                                         </span>
-                                        {activeRecommendation.note && (
-                                            <p className="mt-1 text-muted-foreground/80">
-                                                {activeRecommendation.note}
-                                            </p>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             )}
 
@@ -370,7 +380,7 @@ export default function PerformanceConfigurator({
 
                 {/* ── Price overview ───────────────────────────────────── */}
                 <div className="order-2 lg:order-2">
-                    <div className="lg:sticky lg:top-4">
+                    <div className="lg:sticky lg:top-22">
                         <PriceOverview
                             cpuCores={cpuCores}
                             ramGb={ramGb}

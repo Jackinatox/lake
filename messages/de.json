@@ -345,6 +345,7 @@
         "overviewDescription": "Einmalige Zahlung für die gewählte Laufzeit.",
         "resources": "Ressourcen",
         "discount": "Rabatt (-{percent}%)",
+        "surcharge": "Kurzzeitaufschlag (+{percent}%)",
         "total": "Gesamt",
         "minOrderHint": "Mindestbestellwert ist 1,00 €"
       },

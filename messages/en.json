@@ -345,6 +345,7 @@
         "overviewDescription": "One-time payment for the selected duration.",
         "resources": "Resources",
         "discount": "Discount (-{percent}%)",
+        "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
         "minOrderHint": "Minimum order value is 1.00 €"
       },

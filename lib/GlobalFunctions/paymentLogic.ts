@@ -89,16 +89,23 @@ export function calculateBase(
     return { totalCents: toPay, cents: { cpu: cpuPrice, ram: ramPrice } };
 }
 
-const DISCOUNT_THRESHOLDS: { days: number; percent: number }[] = [
+// Negative percent = surcharge (adds to price), positive = discount (subtracts from price)
+const DURATION_MODIFIERS: { days: number; percent: number; exact?: boolean }[] = [
+    { days: 7, percent: -15, exact: true }, // short-term surcharge
     { days: 180, percent: 15 },
     { days: 90, percent: 10 },
 ];
 
 function calculateDiscount(days: number, totalPrice: number): Discount {
-    const applicable = DISCOUNT_THRESHOLDS.find((threshold) => days >= threshold.days);
-
+    // Exact-match first (surcharges)
+    const exact = DURATION_MODIFIERS.find((m) => m.exact && m.days === days);
+    if (exact) {
+        const amount = -Math.round(totalPrice * (Math.abs(exact.percent) / 100));
+        return { cents: amount, percent: exact.percent };
+    }
+    // Threshold-based discounts
+    const applicable = DURATION_MODIFIERS.filter((m) => !m.exact).find((m) => days >= m.days);
     const percent = applicable ? applicable.percent : 0;
     const amount = Math.round(totalPrice * (percent / 100));
-
     return { cents: amount, percent };
 }

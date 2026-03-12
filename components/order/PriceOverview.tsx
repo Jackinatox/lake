@@ -1,25 +1,17 @@
 'use client';
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import type { NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import { useTranslations } from 'next-intl';
+import { Cpu, MemoryStick, HardDrive, Tag, TrendingUp } from 'lucide-react';
 
 interface PriceOverviewProps {
     cpuCores: number;
     ramGb: number;
     days: number;
     totalPrice: NewPriceDef;
-    /** Optional flat fee from a selected resource tier (in cents) */
     tierPriceCents?: number;
     onContinue: () => void;
     continueLabel?: string;
@@ -43,76 +35,72 @@ export default function PriceOverview({
 
     const grandTotalCents = totalPrice.totalCents + tierPriceCents;
     const priceTooSmall = grandTotalCents < 100;
-
-    const totalResourceCents = totalPrice.cents.cpu + totalPrice.cents.ram;
-    const discountCpu =
-        totalPrice.discount.cents > 0 && totalResourceCents > 0
-            ? Math.round(totalPrice.discount.cents * (totalPrice.cents.cpu / totalResourceCents))
-            : 0;
-    const discountRam = totalPrice.discount.cents - discountCpu;
+    const duration = t('durations.days', { days });
 
     return (
-        <Card className="shadow-lg border-2 border-primary/20">
-            <CardHeader className="pb-4 bg-primary/5">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <CardTitle className="text-lg sm:text-xl">{tp('overviewTitle')}</CardTitle>
+        <Card className="shadow-lg overflow-hidden">
+            {/* Resource cards */}
+            <div className="grid grid-cols-2 gap-px bg-border">
+                <ResourceTile
+                    icon={Cpu}
+                    label={formatVCores(cpuCores)}
+                    sublabel="vCPU"
+                    price={totalPrice.cents.cpu}
+                />
+                <ResourceTile
+                    icon={MemoryStick}
+                    label={`${ramGb} GiB`}
+                    sublabel="RAM"
+                    price={totalPrice.cents.ram}
+                />
+            </div>
+
+            <CardContent className="pt-3 pb-0 space-y-1.5 sm:space-y-2">
+                {/* Duration tag */}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{tp('resources')}</span>
+                    <span className="font-medium">{duration}</span>
                 </div>
-                <CardDescription className="text-sm">{tp('overviewDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell className="font-medium">vCPU</TableCell>
-                            <TableCell className="font-medium">RAM</TableCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium">{tp('resources')}</TableCell>
-                            <TableCell>{formatVCores(cpuCores)}</TableCell>
-                            <TableCell>{ramGb} GiB</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell className="font-medium">
-                                {t('durations.days', { days })}
-                            </TableCell>
-                            <TableCell>{(totalPrice.cents.cpu / 100).toFixed(2)} €</TableCell>
-                            <TableCell>{(totalPrice.cents.ram / 100).toFixed(2)} €</TableCell>
-                        </TableRow>
-                        {totalPrice.discount.cents > 0 && (
-                            <TableRow>
-                                <TableCell className="text-green-600 dark:text-green-400 font-medium">
-                                    {tp('discount', { percent: totalPrice.discount.percent })}
-                                </TableCell>
-                                <TableCell className="text-green-600 dark:text-green-400">
-                                    - {(discountCpu / 100).toFixed(2)} €
-                                </TableCell>
-                                <TableCell className="text-green-600 dark:text-green-400">
-                                    - {(discountRam / 100).toFixed(2)} €
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {tierPriceCents > 0 && (
-                            <TableRow>
-                                <TableCell className="font-medium">{to('storageTier')}</TableCell>
-                                <TableCell colSpan={2}>
-                                    {(tierPriceCents / 100).toFixed(2)} €
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-            <CardFooter className="border-t pt-4 bg-muted/20 flex flex-col space-y-3 font-semibold">
-                <div className="flex justify-between items-center w-full text-lg">
-                    <span className="text-primary">{tp('total')}</span>
-                    <span className="text-2xl font-bold text-primary">
+
+                {/* Storage tier */}
+                {tierPriceCents > 0 && (
+                    <Row icon={HardDrive} label={to('storageTier')}>
+                        +{(tierPriceCents / 100).toFixed(2)} €
+                    </Row>
+                )}
+
+                {/* Discount */}
+                {totalPrice.discount.cents > 0 && (
+                    <Row
+                        icon={Tag}
+                        label={tp('discount', { percent: totalPrice.discount.percent })}
+                        green
+                    >
+                        -{(totalPrice.discount.cents / 100).toFixed(2)} €
+                    </Row>
+                )}
+
+                {/* Surcharge (negative discount = price increase) */}
+                {totalPrice.discount.cents < 0 && (
+                    <Row
+                        icon={TrendingUp}
+                        label={tp('surcharge', { percent: Math.abs(totalPrice.discount.percent) })}
+                        orange
+                    >
+                        +{(Math.abs(totalPrice.discount.cents) / 100).toFixed(2)} €
+                    </Row>
+                )}
+
+                {/* Total */}
+                <div className="flex items-baseline justify-between border-t pt-2 mt-1 sm:pt-3 sm:mt-3">
+                    <span className="text-sm text-muted-foreground">{tp('total')}</span>
+                    <span className="text-2xl font-bold tabular-nums">
                         {(grandTotalCents / 100).toFixed(2)} €
                     </span>
                 </div>
+            </CardContent>
+
+            <CardFooter className="pt-3 flex flex-col gap-2">
                 <Button
                     className="w-full font-bold"
                     size="lg"
@@ -126,5 +114,59 @@ export default function PriceOverview({
                 )}
             </CardFooter>
         </Card>
+    );
+}
+
+function ResourceTile({
+    icon: Icon,
+    label,
+    sublabel,
+    price,
+}: {
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+    sublabel: string;
+    price: number;
+}) {
+    return (
+        <div className="flex flex-col gap-1 sm:gap-2 bg-card px-3 py-2 sm:px-4 sm:py-3">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+                <Icon className="h-3.5 w-3.5" />
+                <span className="text-xs">{sublabel}</span>
+            </div>
+            <div className="font-semibold text-sm">{label}</div>
+            <div className="text-xs text-muted-foreground tabular-nums">
+                {(price / 100).toFixed(2)} €
+            </div>
+        </div>
+    );
+}
+
+function Row({
+    icon: Icon,
+    label,
+    green,
+    orange,
+    children,
+}: {
+    icon: React.ComponentType<{ className?: string }>;
+    label: string;
+    green?: boolean;
+    orange?: boolean;
+    children: React.ReactNode;
+}) {
+    const color = green
+        ? 'text-green-600 dark:text-green-400'
+        : orange
+          ? 'text-orange-600 dark:text-orange-400'
+          : 'text-foreground';
+    return (
+        <div className={`flex items-center justify-between text-sm ${color}`}>
+            <div className="flex items-center gap-1.5">
+                <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span>{label}</span>
+            </div>
+            <span className="tabular-nums font-medium">{children}</span>
+        </div>
     );
 }

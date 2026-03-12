@@ -582,7 +582,7 @@ model Package {
 
 model ResourceTier {
   id         Int     @id @default(autoincrement())
-  name       String
+  name       String?
   diskMB     Int
   backups    Int
   ports      Int
