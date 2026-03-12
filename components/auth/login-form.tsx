@@ -10,6 +10,8 @@ import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Turnstile } from '@marsidev/react-turnstile';
+import { env } from 'next-runtime-env';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');
@@ -19,6 +21,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState('');
 
     const handleSubmit = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,6 +34,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     email: trimmedEmail,
                     password,
                     callbackURL: '/gameserver',
+                    fetchOptions: {
+                        headers: {
+                            'X-captcha-response': turnstileToken,
+                        },
+                    },
                 });
                 if (error) {
                     const message = error.message || t('errors.loginFailed');
@@ -55,7 +63,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                 setLoading(false);
             }
         },
-        [email, password, router, t],
+        [email, password, router, t, turnstileToken],
     );
 
     return (
@@ -153,7 +161,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                             autoComplete="current-password"
                                         />
                                     </div>
-                                    <Button type="submit" className="w-full" disabled={loading}>
+                                    <Turnstile
+                                        siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
+                                        onSuccess={setTurnstileToken}
+                                        onError={() => setTurnstileToken('')}
+                                        onExpire={() => setTurnstileToken('')}
+                                    />
+                                    <Button
+                                        type="submit"
+                                        className="w-full"
+                                        disabled={loading || !turnstileToken}
+                                    >
                                         {loading ? t('button.loggingIn') : t('button.login')}
                                     </Button>
                                     {error && (

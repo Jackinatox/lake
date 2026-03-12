@@ -80,6 +80,8 @@ const ENV_VARS_REQUIRED = [
     'OTEL_EXPORTER_OTLP_ENDPOINT',
     'INSTANCE_ID',
     'DEPLOYMENT_ENV',
+    'NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY',
+    'CF_TURNSTILE_SECRET_KEY',
 ];
 
 export async function performVerification(): Promise<void> {

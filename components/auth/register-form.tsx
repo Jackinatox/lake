@@ -11,10 +11,21 @@ import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { Turnstile } from '@marsidev/react-turnstile';
+import { env } from 'next-runtime-env';
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<'div'>) {
     const router = useRouter();
     const t = useTranslations('RegisterLogin');
+
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState('');
 
     const registerUser = useCallback(
         async ({
@@ -36,6 +47,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                     callbackURL: '/verify-email',
                 },
                 {
+                    headers: {
+                        'X-captcha-response': turnstileToken,
+                    },
                     onRequest: () => {
                         setLoading(true);
                     },
@@ -49,16 +63,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
             );
             return { success: !!data, error: error?.message };
         },
-        [t, router],
+        [t, router, turnstileToken],
     );
-
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
 
     const passwordMinLength = 8;
     const passwordsMatch = password === confirmPassword && password.length >= passwordMinLength;
@@ -243,6 +249,14 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             {success}
                                         </div>
                                     )}
+
+                                    <Turnstile
+                                        siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
+                                        onSuccess={setTurnstileToken}
+                                        onError={() => setTurnstileToken('')}
+                                        onExpire={() => setTurnstileToken('')}
+                                    />
+
                                     <Button
                                         type="submit"
                                         className="w-full"
@@ -250,7 +264,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             loading ||
                                             !passwordsMatch ||
                                             passwordTooShort ||
-                                            !emailValid
+                                            !emailValid ||
+                                            !turnstileToken
                                         }
                                     >
                                         {loading ? t('button.registering') : t('button.register')}
