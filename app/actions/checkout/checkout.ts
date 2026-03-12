@@ -137,7 +137,9 @@ export async function checkoutAction(
                     backupCount,
                     allocations,
                     price: totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
+                    expiresAt: new Date(
+                        Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
+                    ),
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
@@ -145,11 +147,20 @@ export async function checkoutAction(
                 },
             });
 
+            //TODO:  unite this to use accross teh codebase
             const stripeSession = await stripe.checkout.sessions.create({
                 locale: 'auto',
                 mode: 'payment',
                 ui_mode: 'embedded',
-                invoice_creation: { enabled: true },
+                invoice_creation: {
+                    enabled: true,
+                    invoice_data: {
+                        custom_fields: [],
+                        rendering_options: {
+                            amount_tax_display: 'exclude_tax'
+                        },
+                    },
+                },
                 line_items: [
                     {
                         price_data: {
@@ -211,7 +222,9 @@ export async function checkoutAction(
                     backupCount,
                     allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
+                    expiresAt: new Date(
+                        Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
+                    ),
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
@@ -429,7 +442,9 @@ export async function checkoutAction(
                     backupCount: packageData.backups,
                     allocations: packageData.allocations,
                     price: price.totalCents,
-                    expiresAt: new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
+                    expiresAt: new Date(
+                        Date.now() + durationDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
+                    ),
                     status: 'PENDING',
                     creationGameDataId: packageGameDataId,
                     creationLocationId: packageData.locationId,
@@ -507,7 +522,9 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             backupCount: freeServerStats.backupCount,
             allocations: freeServerStats.allocations,
             price: 0,
-            expiresAt: new Date(Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS),
+            expiresAt: new Date(
+                Date.now() + freeServerStats.duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
+            ),
             status: 'PAID',
             creationGameDataId: freeGameDataId,
             gameConfig: gameConfig as any,

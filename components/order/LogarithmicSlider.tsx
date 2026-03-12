@@ -126,37 +126,54 @@ export default function LogarithmicSlider({
 
     if (stops.length === 0) return null;
 
-    return (
-        <div className="space-y-1">
-            <div className="relative">
-                {/* Tick marks */}
-                <div className="absolute inset-0 pointer-events-none">
-                    {ticks.map((tick) => (
-                        <div
-                            key={tick.value}
-                            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-0.5 h-3 bg-muted-foreground/40 rounded-full z-10"
-                            style={{
-                                left: `calc(10px + (100% - 20px) * ${tick.percent / 100})`,
-                            }}
-                        />
-                    ))}
-                </div>
+    // Current value percent (for deciding whether a range segment is "ahead" of thumb)
+    const currentPercent = totalRange === 0 ? 0 : (sliderValue / totalRange) * 100;
 
-                {/* Recommendation markers */}
+    return (
+        <div className="space-y-0">
+            <div className="relative">
+                {/* Range bands: red before min, amber→green from min to rec */}
+                {markerPositions.length >= 2 && (
+                    <div className="absolute inset-0 pointer-events-none z-10">
+                        {currentPercent < markerPositions[0].percent && (
+                            <div
+                                className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full"
+                                style={{
+                                    left: `calc(10px + (100% - 20px) * ${currentPercent / 100})`,
+                                    width: `calc((100% - 20px) * ${(markerPositions[0].percent - currentPercent) / 100})`,
+                                    backgroundColor: 'rgba(239, 68, 68, 0.35)',
+                                }}
+                            />
+                        )}
+                        {markerPositions.slice(0, -1).map((from, i) => {
+                            const to = markerPositions[i + 1];
+                            const visibleFrom = Math.max(from.percent, currentPercent);
+                            if (visibleFrom >= to.percent) return null;
+                            return (
+                                <div
+                                    key={i}
+                                    className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full"
+                                    style={{
+                                        left: `calc(10px + (100% - 20px) * ${visibleFrom / 100})`,
+                                        width: `calc((100% - 20px) * ${(to.percent - visibleFrom) / 100})`,
+                                        backgroundImage: `linear-gradient(to right, rgba(234, 179, 8, 0.4), rgba(34, 197, 94, 0.4))`,
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Recommendation marker lines */}
                 {markerPositions.length > 0 && (
-                    <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute inset-0 pointer-events-none z-20">
                         {markerPositions.map((m, i) => (
                             <div
                                 key={i}
-                                className="absolute top-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
-                                style={{
-                                    left: `calc(10px + (100% - 20px) * ${m.percent / 100})`,
-                                    transform: 'translateX(-50%) translateY(-50%)',
-                                }}
+                                className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-5 rounded-full ${m.color}`}
+                                style={{ left: `calc(10px + (100% - 20px) * ${m.percent / 100})` }}
                                 title={m.label}
-                            >
-                                <div className={`w-0.5 h-5 rounded-full ${m.color}`} />
-                            </div>
+                            />
                         ))}
                     </div>
                 )}
@@ -171,25 +188,32 @@ export default function LogarithmicSlider({
                 />
             </div>
 
-            {/* Marker labels below slider */}
-            {markerPositions.length > 0 && (
-                <div className="relative h-3">
-                    {markerPositions.map((m, i) => (
+            {/* Tick ruler row */}
+            <div className="relative h-3 pointer-events-none">
+                {ticks.map((tick, i) => {
+                    const isEdge = i === 0 || i === ticks.length - 1;
+                    return (
                         <div
-                            key={i}
-                            className="absolute -translate-x-1/2 text-[10px] leading-none whitespace-nowrap"
-                            style={{
-                                left: `calc(10px + (100% - 20px) * ${m.percent / 100})`,
-                            }}
-                        >
-                            <span className={m.color.replace('bg-', 'text-')}>{m.label}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
+                            key={tick.value}
+                            className={`absolute top-0 -translate-x-1/2 ${isEdge ? 'h-2.5 bg-muted-foreground/50' : 'h-1.5 bg-muted-foreground/30'} w-px`}
+                            style={{ left: `calc(10px + (100% - 20px) * ${tick.percent / 100})` }}
+                        />
+                    );
+                })}
+                {/* Marker labels pinned to the same row */}
+                {markerPositions.map((m, i) => (
+                    <div
+                        key={`label-${i}`}
+                        className="absolute top-0 -translate-x-1/2 text-[9px] leading-none mt-[11px] whitespace-nowrap"
+                        style={{ left: `calc(10px + (100% - 20px) * ${m.percent / 100})` }}
+                    >
+                        <span className={m.color.replace('bg-', 'text-')}>{m.label}</span>
+                    </div>
+                ))}
+            </div>
 
-            {/* Labels under the slider */}
-            <div className="flex justify-between text-xs text-muted-foreground">
+            {/* Min / max value labels */}
+            <div className="flex justify-between text-xs text-muted-foreground mt-2">
                 <span>
                     {stops[0]}
                     {unit ? ` ${unit}` : ''}

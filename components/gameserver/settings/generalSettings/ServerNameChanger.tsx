@@ -52,6 +52,7 @@ export function ServerNameChanger({ server }: ServerSettingsCardProps) {
                     />
                     <Button
                         variant="outline"
+                        size={'lg'}
                         onClick={handleSaveServerName}
                         disabled={serverName === server.name || serverName.trim() === ''}
                         className="flex items-center gap-2"

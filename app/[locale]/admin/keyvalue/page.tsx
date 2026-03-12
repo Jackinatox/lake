@@ -57,7 +57,7 @@ export default async function KeyValuePage() {
     ].sort();
 
     return (
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full mx-auto">
             <div className="mb-4">
                 <Breadcrumb>
                     <BreadcrumbList>

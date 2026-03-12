@@ -1,5 +1,7 @@
 'use client';
 
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Archive, HardDrive, Network } from 'lucide-react';
 import type { ResourceTierDisplay } from './PerformanceConfigurator';
@@ -16,31 +18,36 @@ export default function ResourceTierSelector({
     selectedId,
     onSelect,
 }: ResourceTierSelectorProps) {
-    if (tiers.length === 0) return null;
     const t = useTranslations('order.resourceTier');
+    if (tiers.length === 0) return null;
 
     return (
-        <div className="flex flex-col gap-2">
+        <RadioGroup
+            value={selectedId?.toString() ?? ''}
+            onValueChange={(v) => onSelect(Number(v))}
+            className="gap-2"
+        >
             {tiers.map((tier) => (
-                <button
+                <Label
                     key={tier.id}
-                    type="button"
-                    onClick={() => onSelect(tier.id)}
+                    htmlFor={`tier-${tier.id}`}
                     className={cn(
-                        'flex items-center justify-between gap-4 rounded-lg border-2 px-4 py-3 text-left transition-all duration-200 cursor-pointer',
+                        'flex items-center gap-4 rounded-lg border px-4 py-3 cursor-pointer transition-colors',
                         selectedId === tier.id
-                            ? 'border-primary bg-primary/5 shadow-md'
-                            : 'border-border hover:border-muted-foreground/50 hover:bg-muted/30',
+                            ? 'border-primary bg-primary/5'
+                            : 'border-input hover:bg-accent/50',
                     )}
                 >
-                    {/* Price — left */}
+                    <RadioGroupItem id={`tier-${tier.id}`} value={tier.id.toString()} />
+
+                    {/* Price */}
                     <div className="shrink-0 w-16 text-center">
                         {tier.priceCents > 0 ? (
-                            <span className="text-base font-bold text-primary">
+                            <span className="text-sm font-semibold">
                                 {(tier.priceCents / 100).toFixed(2)} €
                             </span>
                         ) : (
-                            <span className="text-base font-bold text-green-600 dark:text-green-400">
+                            <span className="text-sm font-semibold text-green-600 dark:text-green-400">
                                 {t('free')}
                             </span>
                         )}
@@ -49,18 +56,17 @@ export default function ResourceTierSelector({
                         )}
                     </div>
 
-                    {/* Divider */}
                     <div className="w-px self-stretch bg-border" />
 
-                    {/* Stats — right */}
+                    {/* Stats */}
                     <div className="flex flex-1 items-center justify-around gap-3 text-sm">
                         <Stat icon={HardDrive} value={`${tier.diskMB / 1024} GiB`} label={t('disk')} />
                         <Stat icon={Archive} value={String(tier.backups)} label={t('backups')} />
                         <Stat icon={Network} value={String(tier.ports)} label={t('ports')} />
                     </div>
-                </button>
+                </Label>
             ))}
-        </div>
+        </RadioGroup>
     );
 }
 
@@ -76,7 +82,7 @@ function Stat({
     return (
         <div className="flex flex-col items-center gap-0.5">
             <Icon className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold">{value}</span>
+            <span className="font-medium text-sm">{value}</span>
             <span className="text-xs text-muted-foreground">{label}</span>
         </div>
     );

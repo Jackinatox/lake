@@ -86,8 +86,8 @@
     "boxDesc2": "Protected infrastructure",
     "boxLabel3": "Reliable",
     "boxDesc3": "High availability",
-    "buttonStartNow": "Get Started",
-    "buttonComparePlans": "Compare Plans",
+    "buttonStartNow": "Get started",
+    "buttonComparePlans": "Compare hardware",
     "supportedGames": "Supported Games",
     "showAllGames": "Show all games",
     "toolsHeader": "Our tools",
@@ -708,7 +708,9 @@
     "company": "Company",
     "sourcecode": "Source Code",
     "contactUs": "Contact",
-    "withdrawal": "Withdrawal"
+    "withdrawal": "Withdrawal contracts",
+    "payments": "Payment terms",
+    "returns": "Withdrawal rights"
   },
   "gameserver": {
     "freeServer": "Free Server",
