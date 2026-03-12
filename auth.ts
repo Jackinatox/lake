@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, lastLoginMethod, twoFactor } from 'better-auth/plugins';
+import { admin, lastLoginMethod, twoFactor, captcha  } from 'better-auth/plugins';
 import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
@@ -132,6 +132,10 @@ export const auth = betterAuth({
             storeInDatabase: true,
         }),
         admin(),
+        captcha({
+            provider: 'cloudflare-turnstile',
+            secretKey: env('CF_TURNSTILE_SECRET_KEY')!,
+        })
     ],
     databaseHooks: {
         user: {
