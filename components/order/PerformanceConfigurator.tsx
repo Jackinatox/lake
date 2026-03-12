@@ -296,24 +296,9 @@ export default function PerformanceConfigurator({
                                             <TabsTrigger
                                                 key={d.value}
                                                 value={d.value.toString()}
-                                                className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                                                className="text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                             >
-                                                <div className="text-center">
-                                                    <div className="font-medium">
-                                                        {t(d.labelKey as any)}
-                                                    </div>
-                                                    {d.discount ? (
-                                                        <div className="text-xs opacity-80 text-green-600">
-                                                            -{d.discount}%
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-xs opacity-80">
-                                                            {t('durations.days', {
-                                                                days: d.value,
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                {t('durations.days', { days: d.value })}
                                             </TabsTrigger>
                                         ))}
                                     </TabsList>
