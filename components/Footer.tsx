@@ -150,7 +150,7 @@ export default function Footer() {
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">
-                            2026 Scyed. All rights reserved.
+                            © 2026 Scyed. All rights reserved.
                         </span>
                     </div>
                     <ThemeSwitcher />

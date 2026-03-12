@@ -137,8 +137,8 @@ export default function PerformanceConfigurator({
         // Prefer a recommendation without eggId (general for the game)
         const general = hardwareRecommendations.find((r) => r.eggId === null);
         if (general) return general;
-        // If ALL recommendations are eggId-specific, don't show any at this stage
-        return null;
+        // Fall back to the first recommendation even if egg-specific
+        return hardwareRecommendations[0];
     }, [hardwareRecommendations]);
 
     // Pre-select resource tier from recommendation (only on mount)
@@ -161,40 +161,30 @@ export default function PerformanceConfigurator({
     // Build slider markers from the recommendation
     const cpuMarkers = useMemo<SliderMarker[]>(() => {
         if (!activeRecommendation) return [];
-        const markers: SliderMarker[] = [];
-        // Convert from cpuPercent (e.g. 200) to vCores (e.g. 2)
-        const minCores = activeRecommendation.minCpuPercent / 100;
-        const recCores = activeRecommendation.recCpuPercent / 100;
-        markers.push({
-            value: minCores,
-            color: 'bg-yellow-500',
-            label: 'Min',
-        });
-        markers.push({
-            value: recCores,
-            color: 'bg-green-500',
-            label: 'Rec',
-        });
-        return markers;
+        return [
+            {
+                value: activeRecommendation.minCpuPercent / 100,
+                color: 'bg-yellow-500/70',
+                label: 'Min',
+            },
+            {
+                value: activeRecommendation.recCpuPercent / 100,
+                color: 'bg-green-500/70',
+                label: 'Rec',
+            },
+        ];
     }, [activeRecommendation]);
 
     const ramMarkers = useMemo<SliderMarker[]>(() => {
         if (!activeRecommendation) return [];
-        const markers: SliderMarker[] = [];
-        // Convert from MB to GB
-        const minGb = activeRecommendation.minramMb / 1024;
-        const recGb = activeRecommendation.recRamMb / 1024;
-        markers.push({
-            value: minGb,
-            color: 'bg-yellow-500',
-            label: 'Min',
-        });
-        markers.push({
-            value: recGb,
-            color: 'bg-green-500',
-            label: 'Rec',
-        });
-        return markers;
+        return [
+            {
+                value: activeRecommendation.minramMb / 1024,
+                color: 'bg-yellow-500/70',
+                label: 'Min',
+            },
+            { value: activeRecommendation.recRamMb / 1024, color: 'bg-green-500/70', label: 'Rec' },
+        ];
     }, [activeRecommendation]);
 
     // ── URL sync ─────────────────────────────────────────────────────────
@@ -367,9 +357,9 @@ export default function PerformanceConfigurator({
                                     <div>
                                         <span>{t('recommendation.note' as any)}</span>
                                         <span className="inline-flex items-center gap-1.5 ml-2">
-                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />
+                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
                                             <span>{t('recommendation.min' as any)}</span>
-                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500 ml-1" />
+                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
                                             <span>{t('recommendation.recommended' as any)}</span>
                                         </span>
                                         {activeRecommendation.note && (
