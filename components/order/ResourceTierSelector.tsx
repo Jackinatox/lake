@@ -1,8 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { ResourceTierDisplay } from '@/models/prisma';
 import { Archive, HardDrive, Network } from 'lucide-react';
-import type { ResourceTierDisplay } from './PerformanceConfigurator';
 import { useTranslations } from 'next-intl';
 
 interface ResourceTierSelectorProps {

@@ -3,26 +3,23 @@
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { hardwareConfigFromParams } from '@/components/order/HardwareConfigurator';
-import {
-    configuredHardwareFromParams,
-    ResourceTierDisplay,
-} from '@/components/order/PerformanceConfigurator';
+import { configuredHardwareFromParams } from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
+import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { fetchOrderForRestore } from '@/lib/orderUtils';
 import type { Game, GameConfig } from '@/models/config';
-import { PerformanceGroup } from '@/models/prisma';
+import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Clock, Cpu, Info, MemoryStick, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useRef, useState, useMemo, useEffect } from 'react';
-import { fetchOrderForRestore } from '@/lib/orderUtils';
-import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface SetupPageClientProps {
     game: Game;

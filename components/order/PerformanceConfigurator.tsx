@@ -14,7 +14,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
-import type { HardwareRecommendationSlim } from '@/models/prisma';
+import type { HardwareRecommendationSlim, ResourceTierDisplay } from '@/models/prisma';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -31,16 +31,6 @@ const DURATIONS: readonly { value: number; labelKey: string; discount?: number; 
 // ── Helpers ──────────────────────────────────────────────────────────────
 function clampToNearest(value: number, stops: number[]): number {
     return stops.reduce((best, v) => (Math.abs(v - value) < Math.abs(best - value) ? v : best));
-}
-
-// ── Types ────────────────────────────────────────────────────────────────
-export interface ResourceTierDisplay {
-    id: number;
-    name: string;
-    diskMB: number;
-    backups: number;
-    ports: number;
-    priceCents: number;
 }
 
 interface PerformanceConfiguratorProps {

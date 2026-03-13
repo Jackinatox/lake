@@ -1,13 +1,11 @@
 'use client';
 
-import PerformanceConfigurator, {
-    ResourceTierDisplay,
-} from '@/components/order/PerformanceConfigurator';
+import PerformanceConfigurator from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
-import { PerformanceGroup } from '@/models/prisma';
+import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, Wrench } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface ConfigureHardwareClientProps {
     performanceGroups: PerformanceGroup[];

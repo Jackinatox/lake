@@ -93,3 +93,14 @@ export type WithdrawalPageOrder = Prisma.GameServerOrderGetPayload<{
         };
     };
 }>;
+
+export type ResourceTierDisplay = Prisma.ResourceTierGetPayload<{
+    select: {
+        id: true;
+        name: true;
+        diskMB: true;
+        backups: true;
+        ports: true;
+        priceCents: true;
+    };
+}>;

@@ -1,10 +1,8 @@
 'use client';
 
-import PerformanceConfigurator, {
-    ResourceTierDisplay,
-} from '@/components/order/PerformanceConfigurator';
+import PerformanceConfigurator from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
-import { HardwareRecommendationSlim, PerformanceGroup } from '@/models/prisma';
+import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
