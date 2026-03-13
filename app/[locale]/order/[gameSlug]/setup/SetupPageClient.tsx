@@ -2,19 +2,18 @@
 
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
+import HardwareChipBar from '@/components/order/HardwareChipBar';
 import { configuredHardwareFromParams } from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
-import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
-import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { fetchOrderForRestore } from '@/lib/orderUtils';
 import type { Game, GameConfig } from '@/models/config';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
-import { ArrowLeft, ArrowRight, Clock, Cpu, Info, MemoryStick, Pencil } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Info, Pencil } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -211,30 +210,19 @@ export default function SetupPageClient({
             {/* Main content */}
             <div className="w-full pt-4 pb-28 max-w-7xl mx-auto">
                 {/* Hardware summary card */}
-                <Card className="p-3 md:p-4 mb-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 justify-between">
-                        <div className="flex flex-wrap items-center gap-3 text-sm">
-                            <span className="font-semibold text-muted-foreground">Hardware:</span>
-                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10">
-                                <Cpu className="h-4 w-4 text-blue-500" />
-                                <span className="font-medium">
-                                    {formatVCoresFromPercent(hardwareConfig.cpuPercent)}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/10">
-                                <MemoryStick className="h-4 w-4 text-purple-500" />
-                                <span className="font-medium">
-                                    {formatMBToGiB(hardwareConfig.ramMb)} RAM
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted">
-                                <Clock className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">
-                                    {hardwareConfig.durationsDays} days
-                                </span>
-                            </div>
-                        </div>
-                        <Button variant="outline" size="sm" asChild>
+                <Card className="mb-6">
+                    <div className="flex items-center gap-2 p-3">
+                        <HardwareChipBar
+                            cpu={hardwareConfig.cpuPercent / 100}
+                            ram={hardwareConfig.ramMb / 1024}
+                            days={hardwareConfig.durationsDays}
+                            diskGB={hardwareConfig.diskMb / 1024}
+                            backups={hardwareConfig.backupCount}
+                            ports={hardwareConfig.allocations}
+                            totalCents={price?.totalCents ?? 0}
+                            className="flex-1"
+                        />
+                        <Button variant="outline" size="sm" asChild className="shrink-0">
                             <Link href={backHref}>
                                 <Pencil className="h-3 w-3 mr-1.5" />
                                 Edit
@@ -282,6 +270,14 @@ export default function SetupPageClient({
             {/* Sticky bottom navigation */}
             <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-4">
                 <div className="w-full max-w-7xl mx-auto">
+                    {!isLoggedIn && (
+                        <div className="flex items-center justify-center gap-2 mb-3 sm:hidden">
+                            <Info className="shrink-0 h-4 w-4" />
+                            <span className="text-sm text-muted-foreground">
+                                Log in to continue
+                            </span>
+                        </div>
+                    )}
                     <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
                         <Button variant="outline" asChild className="w-full sm:w-auto">
                             <Link href={backHref}>
@@ -291,7 +287,7 @@ export default function SetupPageClient({
                         </Button>
                         <div className="flex items-center gap-4 w-full sm:w-auto">
                             {!isLoggedIn && (
-                                <div className="flex items-center gap-2">
+                                <div className="hidden sm:flex items-center gap-2">
                                     <Info className="shrink-0 h-4 w-4" />
                                     <span className="text-sm text-muted-foreground">
                                         Log in to continue
