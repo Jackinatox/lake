@@ -152,6 +152,7 @@ export default function HardwareConfigurator({
             cents: { cpu: 0, ram: 0 },
             discount: { cents: 0, percent: 0 },
             totalCents: 0,
+            tierPriceCents: 0,
         };
     }, [selectedPFGroup, cpuCores, ramGb, days]);
 

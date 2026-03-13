@@ -8,7 +8,7 @@ type PriceBreakdown = {
 
 type Discount = { cents: number; percent: number };
 
-export type NewPriceDef = PriceBreakdown & { discount: Discount };
+export type NewPriceDef = PriceBreakdown & { discount: Discount; tierPriceCents: number };
 export type UpgradePriceDef = {
     totalCents: number;
     upgradeCents: { cpu: number; ram: number };
@@ -21,14 +21,18 @@ export function calculateNew(
     cpuPercent: number,
     ramMB: number,
     duration: number,
+    tierPriceCentsPerMonth: number = 0,
 ): NewPriceDef {
     const baseCalc = calculateBase(pf, cpuPercent, ramMB, duration);
+    const proratedTierCents = Math.round((tierPriceCentsPerMonth / 30) * duration);
 
-    const { cents, percent } = calculateDiscount(duration, baseCalc.totalCents);
+    const subtotal = baseCalc.totalCents + proratedTierCents;
+    const { cents, percent } = calculateDiscount(duration, subtotal);
     const totalPrice: NewPriceDef = {
-        totalCents: baseCalc.totalCents - cents,
+        totalCents: subtotal - cents,
         cents: { cpu: baseCalc.cents.cpu, ram: baseCalc.cents.ram },
         discount: { cents: cents, percent: percent },
+        tierPriceCents: proratedTierCents,
     };
 
     return totalPrice;

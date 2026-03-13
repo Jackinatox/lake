@@ -65,6 +65,7 @@ export function UpgradeHardwareConfigToPayed({
         cents: { cpu: 0, ram: 0 },
         totalCents: 0,
         discount: { cents: 0, percent: 0 },
+        tierPriceCents: 0,
     });
 
     // Set initial values

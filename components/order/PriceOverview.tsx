@@ -12,7 +12,6 @@ interface PriceOverviewProps {
     ramGb: number;
     days: number;
     totalPrice: NewPriceDef;
-    tierPriceCents?: number;
     onContinue: () => void;
     continueLabel?: string;
     disableContinue?: boolean;
@@ -23,7 +22,6 @@ export default function PriceOverview({
     ramGb,
     days,
     totalPrice,
-    tierPriceCents = 0,
     onContinue,
     continueLabel,
     disableContinue,
@@ -33,7 +31,7 @@ export default function PriceOverview({
     const tb = useTranslations('buyGameServer.hardware.button');
     const to = useTranslations('order');
 
-    const grandTotalCents = totalPrice.totalCents + tierPriceCents;
+    const grandTotalCents = totalPrice.totalCents;
     const priceTooSmall = grandTotalCents < 100;
     const duration = t('durations.days', { days });
 
@@ -63,9 +61,9 @@ export default function PriceOverview({
                 </div>
 
                 {/* Storage tier */}
-                {tierPriceCents > 0 && (
+                {totalPrice.tierPriceCents > 0 && (
                     <Row icon={HardDrive} label={to('storageTier')}>
-                        +{(tierPriceCents / 100).toFixed(2)} €
+                        +{(totalPrice.tierPriceCents / 100).toFixed(2)} €
                     </Row>
                 )}
 

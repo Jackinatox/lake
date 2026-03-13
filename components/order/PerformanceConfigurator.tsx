@@ -21,7 +21,12 @@ const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
 
 // ── Duration config ──────────────────────────────────────────────────────
-const DURATIONS: readonly { value: number; labelKey: string; discount?: number; surcharge?: number }[] = [
+const DURATIONS: readonly {
+    value: number;
+    labelKey: string;
+    discount?: number;
+    surcharge?: number;
+}[] = [
     { value: 7, labelKey: 'durations.week', surcharge: 15 },
     { value: 30, labelKey: 'durations.month' },
     { value: 90, labelKey: 'durations.threeMonths', discount: 10 },
@@ -201,14 +206,21 @@ export default function PerformanceConfigurator({
 
     const totalPrice = useMemo<NewPriceDef>(() => {
         if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-            return calculateNew(selectedPFGroup, cpuCores * 100, ramGb * 1024, days);
+            return calculateNew(
+                selectedPFGroup,
+                cpuCores * 100,
+                ramGb * 1024,
+                days,
+                tierPriceCents,
+            );
         }
         return {
             cents: { cpu: 0, ram: 0 },
             discount: { cents: 0, percent: 0 },
             totalCents: 0,
+            tierPriceCents: 0,
         };
-    }, [selectedPFGroup, cpuCores, ramGb, days]);
+    }, [selectedPFGroup, cpuCores, ramGb, days, tierPriceCents]);
 
     const handleContinue = () => {
         router.push(continueHref(buildParams()));
@@ -216,10 +228,9 @@ export default function PerformanceConfigurator({
 
     useEffect(() => {
         if (!onPriceUpdate) return;
-        const grandTotal = totalPrice.totalCents + tierPriceCents;
         onPriceUpdate({
-            totalCents: grandTotal,
-            disabled: !selectedTier || grandTotal < 100,
+            totalCents: totalPrice.totalCents,
+            disabled: !selectedTier || totalPrice.totalCents < 100,
             onContinue: handleContinue,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -311,7 +322,7 @@ export default function PerformanceConfigurator({
                             <SliderSection
                                 label={formatVCores(cpuCores)}
                                 sublabel={selectedPFGroup.cpu.name}
-                                detail={`${(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)} ${tl('perVcore')}`}
+                                detail={`${((selectedPFGroup.cpu.pricePerCore / 100 / 30) * days).toFixed(2)} ${tl('perVcore')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableCpuStops}
@@ -325,7 +336,7 @@ export default function PerformanceConfigurator({
                             {/* RAM */}
                             <SliderSection
                                 label={`${ramGb} ${tl('ramUnit')}`}
-                                detail={`${(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)} ${tl('perGiB')}`}
+                                detail={`${((selectedPFGroup.ram.pricePerGb / 100 / 30) * days).toFixed(2)} ${tl('perGiB')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableRamStops}
@@ -362,6 +373,7 @@ export default function PerformanceConfigurator({
                                     tiers={resourceTiers}
                                     selectedId={selectedTierId}
                                     onSelect={setSelectedTierId}
+                                    days={days}
                                 />
                             )}
                         </CardContent>
@@ -376,7 +388,6 @@ export default function PerformanceConfigurator({
                             ramGb={ramGb}
                             days={days}
                             totalPrice={totalPrice}
-                            tierPriceCents={tierPriceCents}
                             onContinue={handleContinue}
                             continueLabel={continueLabel}
                             disableContinue={!selectedTier}
@@ -429,7 +440,7 @@ function SliderSection({
 export function configuredHardwareFromParams(
     searchParams: URLSearchParams,
     resourceTiers: ResourceTierDisplay[],
-): { hardwareConfig: HardwareConfig; tierId: number } | null {
+): { hardwareConfig: HardwareConfig; tierId: number; tierPriceCents: number } | null {
     const pf = searchParams.get('pf');
     const cpu = searchParams.get('cpu');
     const ram = searchParams.get('ram');
@@ -456,5 +467,6 @@ export function configuredHardwareFromParams(
             durationsDays: Number(days),
         },
         tierId,
+        tierPriceCents: selectedTier.priceCents,
     };
 }

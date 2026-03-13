@@ -11,7 +11,9 @@ import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { percentToVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { GameData, PerformanceGroup, ResourceTier } from '@/models/prisma';
 
-type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & { images: { dark: string; light: string } };
+type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & {
+    images: { dark: string; light: string };
+};
 
 interface Props {
     games: GameCard[];
@@ -19,7 +21,11 @@ interface Props {
     performanceGroups: PerformanceGroup[];
 }
 
-export default function GamesAfterHardwareClient({ games, resourceTiers, performanceGroups }: Props) {
+export default function GamesAfterHardwareClient({
+    games,
+    resourceTiers,
+    performanceGroups,
+}: Props) {
     const searchParams = useSearchParams();
     const locale = useLocale();
     const daysSuffix = locale === 'de' ? 'T' : 'd';
@@ -39,8 +45,14 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
 
     const totalCents = (() => {
         if (!selectedPfGroup) return null;
-        const price = calculateNew(selectedPfGroup, parseFloat(cpu) * 100, parseFloat(ram) * 1024, Number(days));
-        return price.totalCents + (selectedTier?.priceCents ?? 0);
+        const price = calculateNew(
+            selectedPfGroup,
+            parseFloat(cpu) * 100,
+            parseFloat(ram) * 1024,
+            Number(days),
+            selectedTier?.priceCents ?? 0,
+        );
+        return price.totalCents;
     })();
 
     // Carry hardware params forward to the setup page
@@ -106,7 +118,6 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
 
                         <div className="w-px h-5 bg-border shrink-0" />
 
-
                         {/* Secondary specs */}
                         {selectedTier && (
                             <>
@@ -124,15 +135,14 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
 
                         <Chip color="muted" label="Duration">
                             <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                            {days}{daysSuffix}
+                            {days}
+                            {daysSuffix}
                         </Chip>
 
                         {totalCents != null && (
                             <>
                                 <div className="w-px h-5 bg-border shrink-0 ml-auto" />
-                                <Chip color="primary">
-                                    {(totalCents / 100).toFixed(2)} €
-                                </Chip>
+                                <Chip color="primary">{(totalCents / 100).toFixed(2)} €</Chip>
                             </>
                         )}
                     </div>
@@ -179,7 +189,9 @@ function Chip({
             className={`shrink-0 flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${bg[color]}`}
         >
             {children}
-            {label && <span className="hidden sm:inline text-muted-foreground font-normal">{label}</span>}
+            {label && (
+                <span className="hidden sm:inline text-muted-foreground font-normal">{label}</span>
+            )}
         </div>
     );
 }

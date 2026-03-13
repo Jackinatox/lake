@@ -9,12 +9,15 @@ interface ResourceTierSelectorProps {
     tiers: ResourceTierDisplay[];
     selectedId: number | null;
     onSelect: (id: number) => void;
+    /** Selected duration in days — used to prorate the displayed price */
+    days?: number;
 }
 
 export default function ResourceTierSelector({
     tiers,
     selectedId,
     onSelect,
+    days = 30,
 }: ResourceTierSelectorProps) {
     const t = useTranslations('order.resourceTier');
     if (tiers.length === 0) return null;
@@ -44,7 +47,7 @@ export default function ResourceTierSelector({
                         <div className="shrink-0 w-16 text-center">
                             {tier.priceCents > 0 ? (
                                 <span className="text-sm font-semibold tabular-nums">
-                                    +{(tier.priceCents / 100).toFixed(2)} €
+                                    +{(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)} €
                                 </span>
                             ) : (
                                 <span className="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -101,7 +104,7 @@ export default function ResourceTierSelector({
                         <div className="mt-3 pt-3 border-t border-border">
                             {tier.priceCents > 0 ? (
                                 <span className="text-base font-semibold tabular-nums">
-                                    +{(tier.priceCents / 100).toFixed(2)} €
+                                    +{(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)} €
                                 </span>
                             ) : (
                                 <span className="text-base font-semibold text-green-600 dark:text-green-400">

@@ -15,6 +15,74 @@ import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID, LEGAL_GRACE_PERIOD_MS } from '../../GlobalConstants';
 
+type LineItem = {
+    name: string;
+    description?: string;
+    amountCents: number;
+};
+
+type CreateCheckoutSessionParams = {
+    lineItems: LineItem[];
+    orderId: string;
+    stripeUserId: string;
+    locale?: 'de' | 'en';
+    startDate: Date;
+    endDate: Date;
+};
+
+async function createCheckoutSession(params: CreateCheckoutSessionParams) {
+    const { lineItems, orderId, stripeUserId, locale, startDate, endDate } = params;
+
+    const formatDate = (d: Date) =>
+        d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    return stripe.checkout.sessions.create({
+        locale: 'auto',
+        mode: 'payment',
+        ui_mode: 'embedded',
+        invoice_creation: {
+            enabled: true,
+            invoice_data: {
+                custom_fields: [
+                    {
+                        name: 'Leistungsdatum',
+                        value: `${formatDate(startDate)} - ${formatDate(endDate)}`,
+                    },
+                ],
+                rendering_options: {
+                    amount_tax_display: 'exclude_tax',
+                },
+            },
+        },
+        line_items: lineItems
+            .filter((item) => item.amountCents > 0)
+            .map((item) => ({
+                price_data: {
+                    currency: 'eur',
+                    product_data: {
+                        name: item.name,
+                        ...(item.description && { description: item.description }),
+                    },
+                    unit_amount: Math.round(item.amountCents),
+                },
+                quantity: 1,
+            })),
+        ...(locale && {
+            custom_text: {
+                terms_of_service_acceptance: {
+                    message: getTermsMessage(locale),
+                },
+            },
+            consent_collection: {
+                terms_of_service: 'required',
+            },
+        }),
+        metadata: { orderId },
+        customer: stripeUserId,
+        return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+    });
+}
+
 /**
  * Resolves a gameSlug to a gameData ID. Falls back to gameId for backward compat
  * with configs that were persisted before the slug migration.
@@ -36,11 +104,6 @@ async function resolveGameDataId(gameConfig: GameConfig): Promise<number> {
 // locale is to put the right agb text in stripe checkout
 export type CheckoutParams =
     | {
-          type: 'NEW';
-          locale: 'de' | 'en';
-          creationServerConfig: ServerConfig; // Needed for Server Creation!!!
-      }
-    | {
           type: 'CONFIGURED';
           locale: 'de' | 'en';
           creationServerConfig: ServerConfig;
@@ -57,13 +120,6 @@ export type CheckoutParams =
           locale: 'de' | 'en';
           ptServerId: string;
           hardwareConfig: HardwareConfig;
-      }
-    | {
-          type: 'PACKAGE';
-          locale: 'de' | 'en';
-          gameConfig: GameConfig;
-          packageId: number;
-          durationDays: number;
       };
 
 export async function checkoutAction(
@@ -121,99 +177,13 @@ export async function checkoutAction(
             const duration = hardwareConfig.durationsDays;
             const allocations = tier.ports;
 
-            const price = calculateNew(location, cpuPercent, ramMB, duration);
-            const totalCents = price.totalCents + tier.priceCents;
+            const price = calculateNew(location, cpuPercent, ramMB, duration, tier.priceCents);
 
             const creationGameDataId = await resolveGameDataId(creationServerConfig.gameConfig);
 
             const order = await prisma.gameServerOrder.create({
                 data: {
                     type: 'CONFIGURED',
-                    gameServerId: null,
-                    userId: user.id,
-                    ramMB,
-                    cpuPercent,
-                    diskMB,
-                    backupCount,
-                    allocations,
-                    price: totalCents,
-                    expiresAt: new Date(
-                        Date.now() + duration * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
-                    ),
-                    status: 'PENDING',
-                    creationGameDataId,
-                    creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
-                    gameConfig: creationServerConfig.gameConfig as any,
-                },
-            });
-
-            //TODO:  unite this to use accross teh codebase
-            const stripeSession = await stripe.checkout.sessions.create({
-                locale: 'auto',
-                mode: 'payment',
-                ui_mode: 'embedded',
-                invoice_creation: {
-                    enabled: true,
-                    invoice_data: {
-                        custom_fields: [],
-                        rendering_options: {
-                            amount_tax_display: 'exclude_tax'
-                        },
-                    },
-                },
-                line_items: [
-                    {
-                        price_data: {
-                            currency: 'eur',
-                            product_data: { name: 'Gameserver' },
-                            unit_amount: Math.round(totalCents),
-                        },
-                        quantity: 1,
-                    },
-                ],
-                custom_text: {
-                    terms_of_service_acceptance: {
-                        message: getTermsMessage(params.locale),
-                    },
-                },
-                consent_collection: { terms_of_service: 'required' },
-                metadata: { orderId: String(order.id) },
-                customer: stripeUserId,
-                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-            });
-
-            const client_secret = stripeSession.client_secret;
-            await prisma.gameServerOrder.update({
-                where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
-            });
-
-            return { client_secret, orderId: order.id };
-        }
-        case 'NEW': {
-            const { creationServerConfig } = params;
-            if (!creationServerConfig) throw new Error('No Serverconfigration given');
-            const location = await prisma.location.findFirstOrThrow({
-                where: { id: creationServerConfig.hardwareConfig.pfGroupId },
-                include: { cpu: true, ram: true },
-            });
-            const hardwareConfig = creationServerConfig.hardwareConfig;
-            const cpuPercent = hardwareConfig.cpuPercent;
-            const ramMB = hardwareConfig.ramMb;
-            const diskMB = hardwareConfig.diskMb;
-            const backupCount = hardwareConfig.backupCount;
-            const duration = hardwareConfig.durationsDays;
-            const allocations = hardwareConfig.allocations;
-
-            const price = calculateNew(location, cpuPercent, ramMB, duration);
-
-            const creationGameDataId = await resolveGameDataId(creationServerConfig.gameConfig);
-
-            // 1. Create the ServerOrder
-
-            const order = await prisma.gameServerOrder.create({
-                data: {
-                    type: params.type,
                     gameServerId: null,
                     userId: user.id,
                     ramMB,
@@ -232,46 +202,27 @@ export async function checkoutAction(
                 },
             });
 
-            // 2. Create Stripe Checkout Session
-            const stripeSession = await stripe.checkout.sessions.create({
-                locale: 'auto',
-                mode: 'payment',
-                ui_mode: 'embedded',
-                invoice_creation: {
-                    enabled: true,
-                },
-                line_items: [
+            const stripeSession = await createCheckoutSession({
+                lineItems: [
                     {
-                        price_data: {
-                            currency: 'eur',
-                            product_data: { name: `${params.type} Gameserver` },
-                            unit_amount: Math.round(price.totalCents),
-                        },
-                        quantity: 1,
+                        name: 'Gameserver',
+                        description: `${cpuPercent}% CPU, ${formatMBToGiB(ramMB)} RAM, ${duration} Tage`,
+                        amountCents: price.totalCents - price.tierPriceCents,
+                    },
+                    {
+                        name: `${tier.name ?? 'Ressourcen'} Paket`,
+                        description: `${formatMBToGiB(diskMB)} Speicher, ${backupCount} Backups, ${allocations} Ports`,
+                        amountCents: price.tierPriceCents,
                     },
                 ],
-                custom_text: {
-                    terms_of_service_acceptance: {
-                        message: getTermsMessage(params.locale),
-                    },
-                },
-
-                // Require acceptance
-                consent_collection: {
-                    terms_of_service: 'required',
-                },
-                metadata: {
-                    orderId: String(order.id),
-                },
-                customer: stripeUserId,
-                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-
-                // success_url: `${env('NEXT_PUBLIC_APP_URL')}/success`,
-                // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
+                orderId: String(order.id),
+                stripeUserId,
+                locale: params.locale,
+                startDate: new Date(),
+                endDate: order.expiresAt,
             });
 
             const client_secret = stripeSession.client_secret;
-            // 3. Save Stripe Session ID and Client Secret
             await prisma.gameServerOrder.update({
                 where: { id: order.id },
                 data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
@@ -352,32 +303,27 @@ export async function checkoutAction(
             });
 
             // 2. Create Stripe Checkout Session
-            const stripeSession = await stripe.checkout.sessions.create({
-                locale: 'auto',
-                mode: 'payment',
-                ui_mode: 'embedded',
-                invoice_creation: {
-                    enabled: true,
-                },
-                line_items: [
+            const upgradeCentsTotal = price.upgradeCents.cpu + price.upgradeCents.ram;
+            const extendCentsTotal = price.extendCents.cpu + price.extendCents.ram;
+
+            const stripeSession = await createCheckoutSession({
+                lineItems: [
                     {
-                        price_data: {
-                            currency: 'eur',
-                            product_data: {
-                                name: `Upgrade Gameserver to ${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM`,
-                            },
-                            unit_amount: Math.round(price.totalCents),
-                        },
-                        quantity: 1,
+                        name: 'Upgrade',
+                        description: `Auf ${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM für verbleibende ${oldConfig.durationsDays} Tage`,
+                        amountCents: upgradeCentsTotal,
+                    },
+                    {
+                        name: 'Verlängerung',
+                        description: `${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM für ${durationsDays} Tage`,
+                        amountCents: extendCentsTotal,
                     },
                 ],
-                metadata: {
-                    orderId: String(order.id),
-                },
-                customer: stripeUserId,
-                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`, // TODO: new return url and cancel
-                // success_url: `${env('NEXT_PUBLIC_APP_URL')}/success`,
-                // cancel_url: `${env('NEXT_PUBLIC_APP_URL')}/cancel`
+                orderId: String(order.id),
+                stripeUserId,
+                locale: params.locale,
+                startDate: new Date(),
+                endDate: order.expiresAt,
             });
 
             const client_secret = stripeSession.client_secret;
@@ -394,100 +340,6 @@ export async function checkoutAction(
             throw new Error('Feature not implemented yet.');
             // const client_secret = await upgradeToPayed(params, dbUser);
             // return { client_secret: client_secret };
-        }
-        case 'PACKAGE': {
-            const { gameConfig, packageId } = params;
-
-            // Fetch the package with location details for pricing
-            const packageData = await prisma.package.findUnique({
-                where: { id: packageId, enabled: true },
-                include: {
-                    location: {
-                        include: { cpu: true, ram: true },
-                    },
-                },
-            });
-
-            if (!packageData) {
-                throw new Error('Package not found or not available');
-            }
-
-            // Validate gameConfig has required fields
-            if (!gameConfig.gameSlug && !gameConfig.gameId) {
-                throw new Error('Game configuration is required');
-            }
-
-            // Use provided duration
-            const durationDays = params.durationDays;
-
-            // Calculate price based on package specs
-            const price = calculateNew(
-                packageData.location,
-                packageData.cpuPercent,
-                packageData.ramMB,
-                durationDays,
-            );
-
-            const packageGameDataId = await resolveGameDataId(gameConfig);
-
-            // Create the order
-            const order = await prisma.gameServerOrder.create({
-                data: {
-                    type: 'PACKAGE',
-                    gameServerId: null,
-                    userId: user.id,
-                    ramMB: packageData.ramMB,
-                    cpuPercent: packageData.cpuPercent,
-                    diskMB: packageData.diskMB,
-                    backupCount: packageData.backups,
-                    allocations: packageData.allocations,
-                    price: price.totalCents,
-                    expiresAt: new Date(
-                        Date.now() + durationDays * 24 * 60 * 60 * 1000 + LEGAL_GRACE_PERIOD_MS,
-                    ),
-                    status: 'PENDING',
-                    creationGameDataId: packageGameDataId,
-                    creationLocationId: packageData.locationId,
-                    gameConfig: gameConfig as any,
-                },
-            });
-
-            // Create Stripe Checkout Session
-            const stripeSession = await stripe.checkout.sessions.create({
-                locale: 'auto',
-                mode: 'payment',
-                ui_mode: 'embedded',
-                invoice_creation: {
-                    enabled: true,
-                },
-                line_items: [
-                    {
-                        price_data: {
-                            currency: 'eur',
-                            product_data: {
-                                name: `${packageData.name} - Gameserver Package`,
-                                description: `${packageData.cpuPercent / 100} vCPU, ${formatMBToGiB(packageData.ramMB)} RAM, ${formatMBToGiB(packageData.diskMB)} Storage`,
-                            },
-                            unit_amount: Math.round(price.totalCents),
-                        },
-                        quantity: 1,
-                    },
-                ],
-                metadata: {
-                    orderId: String(order.id),
-                },
-                customer: stripeUserId,
-                return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-            });
-
-            const client_secret = stripeSession.client_secret;
-            // Save Stripe Session ID and Client Secret
-            await prisma.gameServerOrder.update({
-                where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
-            });
-
-            return { client_secret, orderId: order.id };
         }
     }
 }

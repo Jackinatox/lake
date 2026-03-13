@@ -2,7 +2,6 @@
 
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
-import { hardwareConfigFromParams } from '@/components/order/HardwareConfigurator';
 import { configuredHardwareFromParams } from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -25,7 +24,7 @@ interface SetupPageClientProps {
     game: Game;
     gameSlug: string;
     performanceGroups: PerformanceGroup[];
-    resourceTiers?: ResourceTierDisplay[]; // TODO: remove optionality once configured mode is fully enabled
+    resourceTiers: ResourceTierDisplay[];
 }
 
 export default function SetupPageClient({
@@ -41,9 +40,6 @@ export default function SetupPageClient({
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
     const [loading, setLoading] = useState(false);
-
-    // Detect which order mode we're in
-    const isConfiguredMode = searchParams.get('mode') === 'configured';
 
     // Order restoration state
     const orderIdParam = searchParams.get('orderId');
@@ -70,13 +66,11 @@ export default function SetupPageClient({
 
     const isLoggedIn = Boolean(session.data?.user);
 
-    // Read hardware config from URL params — pick parser based on mode
-    const configuredResult =
-        isConfiguredMode && resourceTiers
-            ? configuredHardwareFromParams(searchParams, resourceTiers)
-            : null;
-    const hardwareConfig =
-        configuredResult?.hardwareConfig ?? hardwareConfigFromParams(searchParams);
+    // Read hardware config from URL params
+    const configuredResult = resourceTiers
+        ? configuredHardwareFromParams(searchParams, resourceTiers)
+        : null;
+    const hardwareConfig = configuredResult?.hardwareConfig ?? null;
 
     // Find the matching performance group for price display
     const performanceGroup = performanceGroups.find((pg) => pg.id === hardwareConfig?.pfGroupId);
@@ -89,8 +83,9 @@ export default function SetupPageClient({
             hardwareConfig.cpuPercent,
             hardwareConfig.ramMb,
             hardwareConfig.durationsDays,
+            configuredResult?.tierPriceCents ?? 0,
         );
-    }, [hardwareConfig, performanceGroup]);
+    }, [hardwareConfig, performanceGroup, configuredResult]);
 
     if (!hardwareConfig) {
         return (
@@ -108,10 +103,8 @@ export default function SetupPageClient({
     const imgName = `${game.name.toLowerCase()}.webp`;
     const hwParamsStr = searchParams.toString();
 
-    // Preserve orderId in back link — route depends on mode
-    const backHref = isConfiguredMode
-        ? `/order/${gameSlug}?${hwParamsStr}`
-        : `/order/${gameSlug}/configure?${hwParamsStr}`;
+    // Preserve orderId in back link
+    const backHref = `/order/${gameSlug}?${hwParamsStr}`;
 
     const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
         if (!isLoggedIn) {
@@ -125,24 +118,15 @@ export default function SetupPageClient({
 
         setLoading(true);
         try {
-            const checkoutParams: CheckoutParams = isConfiguredMode
-                ? {
-                      type: 'CONFIGURED',
-                      locale,
-                      creationServerConfig: {
-                          gameConfig,
-                          hardwareConfig,
-                      },
-                      resourceTierId: configuredResult!.tierId,
-                  }
-                : {
-                      type: 'NEW',
-                      locale,
-                      creationServerConfig: {
-                          gameConfig,
-                          hardwareConfig,
-                      },
-                  };
+            const checkoutParams: CheckoutParams = {
+                type: 'CONFIGURED',
+                locale,
+                creationServerConfig: {
+                    gameConfig,
+                    hardwareConfig,
+                },
+                resourceTierId: configuredResult!.tierId,
+            };
 
             const result = await checkoutAction(checkoutParams);
             if (!result?.client_secret) {
