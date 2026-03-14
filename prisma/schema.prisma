@@ -660,6 +660,7 @@ model BlogPost {
   content     String
   category    String   @default("")
   published   Boolean  @default(false)
+  listed      Boolean  @default(true)
   publishedAt DateTime
 
   createdAt DateTime @default(now())

@@ -84,7 +84,7 @@ export async function ChangelogStrip() {
                         return entry.blogPost?.slug ? (
                             <Link
                                 key={entry.id}
-                                href={`/blog/${entry.blogPost.slug}`}
+                                href={`/blog/${entry.blogPost.slug}?from=changelog`}
                                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
                             >
                                 {inner}

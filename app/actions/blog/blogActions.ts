@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ChangelogEntryType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -25,10 +26,19 @@ export async function createBlogPost(data: {
     content: string;
     category: string;
     published: boolean;
+    listed: boolean;
     publishedAt?: string | null;
+    changelog?: {
+        text: string;
+        type: string;
+        published: boolean;
+        publishedAt?: string | null;
+    };
 }) {
     await requireAdmin();
     const slug = data.slug?.trim() || slugify(data.title);
+    const publishedAt = data.publishedAt ? new Date(data.publishedAt) : new Date();
+
     const post = await prisma.blogPost.create({
         data: {
             title: data.title,
@@ -36,9 +46,26 @@ export async function createBlogPost(data: {
             content: data.content,
             category: data.category,
             published: data.published,
-            publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
+            listed: data.listed,
+            publishedAt,
         },
     });
+
+    if (data.changelog) {
+        await prisma.changelogEntry.create({
+            data: {
+                title: data.title,
+                text: data.changelog.text,
+                type: data.changelog.type as ChangelogEntryType,
+                published: data.changelog.published,
+                publishedAt: data.changelog.publishedAt
+                    ? new Date(data.changelog.publishedAt)
+                    : publishedAt,
+                blogPostId: post.id,
+            },
+        });
+    }
+
     return { success: true, id: post.id, slug: post.slug };
 }
 
@@ -50,6 +77,7 @@ export async function updateBlogPost(
         content?: string;
         category?: string;
         published?: boolean;
+        listed?: boolean;
         publishedAt?: string | null;
     },
 ) {
@@ -57,7 +85,12 @@ export async function updateBlogPost(
     await prisma.blogPost.update({
         where: { id },
         data: {
-            ...data,
+            title: data.title,
+            slug: data.slug,
+            content: data.content,
+            category: data.category,
+            published: data.published,
+            listed: data.listed,
             publishedAt:
                 data.publishedAt !== undefined
                     ? data.publishedAt
@@ -87,6 +120,7 @@ export async function listBlogPostsAdmin() {
             slug: true,
             category: true,
             published: true,
+            listed: true,
             publishedAt: true,
             createdAt: true,
         },
@@ -111,6 +145,7 @@ export async function getPublishedBlogPosts(category?: string) {
     return prisma.blogPost.findMany({
         where: {
             ...publishedFilter(),
+            listed: true,
             ...(category ? { category } : {}),
         },
         orderBy: { publishedAt: 'desc' },
@@ -135,7 +170,7 @@ export async function getBlogPostBySlug(slug: string) {
 export async function getBlogCategories(): Promise<string[]> {
     const result = await prisma.blogPost.groupBy({
         by: ['category'],
-        where: { ...publishedFilter(), category: { not: '' } },
+        where: { ...publishedFilter(), listed: true, category: { not: '' } },
     });
     return result.map((r) => r.category).filter(Boolean);
 }

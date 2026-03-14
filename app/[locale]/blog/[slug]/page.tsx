@@ -6,23 +6,32 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<{ from?: string }>;
+}) {
     const t = await getTranslations('blog');
-    const { slug } = await params;
+    const [{ slug }, { from }] = await Promise.all([params, searchParams]);
     const post = await getBlogPostBySlug(slug);
 
     if (!post) notFound();
 
     const date = post.publishedAt ?? post.createdAt;
 
+    const backHref = from === 'changelog' ? '/changelog' : '/blog';
+    const backLabel = t('title');
+
     return (
         <div className="mx-auto max-w-4xl w-full p-2">
             <Link
-                href="/blog"
+                href={backHref}
                 className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
             >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                {t('title')}
+                {backLabel}
             </Link>
 
             <article>

@@ -15,10 +15,11 @@ import Link from 'next/link';
 import { listBlogPostsAdmin } from '@/app/actions/blog/blogActions';
 import { DeleteBlogPostButton } from './BlogAdminClient';
 
-function getStatus(post: { published: boolean; publishedAt: Date | null }) {
+function getStatus(post: { published: boolean; listed: boolean; publishedAt: Date }) {
     if (!post.published) return { label: 'Draft', color: 'text-muted-foreground' };
-    if (post.publishedAt && post.publishedAt > new Date())
+    if (post.publishedAt > new Date())
         return { label: 'Scheduled', color: 'text-amber-600 dark:text-amber-400' };
+    if (!post.listed) return { label: 'Unlisted', color: 'text-blue-600 dark:text-blue-400' };
     return { label: 'Published', color: 'text-green-600 dark:text-green-400' };
 }
 
@@ -81,7 +82,7 @@ export default async function AdminBlogPage() {
                             </div>
                             {posts.map((post) => {
                                 const status = getStatus(post);
-                                const date = post.publishedAt ?? post.createdAt;
+                                const date = post.publishedAt;
                                 return (
                                     <div
                                         key={post.id}

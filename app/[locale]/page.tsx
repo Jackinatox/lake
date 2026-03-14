@@ -285,9 +285,9 @@ export default async function LandingPage() {
             <ChangelogStrip />
 
             {/* Tools Section */}
-            <Card className="hidden md:block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
-                {stuff}
-            </Card>
+            <div className="hidden md:block mt-5 w-full px-2 max-w-screen-2xl mx-auto">
+                <Card className="py-20">{stuff}</Card>
+            </div>
             <div className="md:hidden block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
                 {stuff}
             </div>
