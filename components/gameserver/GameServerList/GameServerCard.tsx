@@ -33,7 +33,15 @@ const expiryColor: Record<ExpirationUrgency, string> = {
     expired: 'text-red-600 dark:text-red-400',
 };
 
-function ServerCard({ server, apiKey, isFreeServer }: { server: ClientServer; apiKey: string, isFreeServer: boolean }) {
+function ServerCard({
+    server,
+    apiKey,
+    isFreeServer,
+}: {
+    server: ClientServer;
+    apiKey: string;
+    isFreeServer: boolean;
+}) {
     const t = useTranslations('gameserver');
     const isExpired = server.status === 'EXPIRED';
     const isCreationFailed = server.status === 'CREATION_FAILED';
@@ -148,7 +156,9 @@ function ServerCard({ server, apiKey, isFreeServer }: { server: ClientServer; ap
             {isCreationFailed ? (
                 inner
             ) : (
-                <Link href={`/gameserver/${server.ptServerId}${isExpired ? `/upgrade${isFreeServer ? '' : '?extend=30'}` : ''}`}>
+                <Link
+                    href={`/gameserver/${server.ptServerId}${isExpired ? `/upgrade${isFreeServer ? '' : '?extend=30'}` : ''}`}
+                >
                     {inner}
                 </Link>
             )}

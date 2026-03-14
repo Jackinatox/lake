@@ -12,7 +12,7 @@ export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
     const bookingPages = ['/booking', '/upgrade/freeServer/pay', '/order'];
     const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
-    const isDevMode = env("NEXT_PUBLIC_DEPLOYMENT_ENV") === "development";
+    const isDevMode = env('NEXT_PUBLIC_DEPLOYMENT_ENV') === 'development';
 
     return (
         <nav

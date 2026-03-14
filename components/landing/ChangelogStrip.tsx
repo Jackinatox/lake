@@ -5,11 +5,31 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
 const TYPE_CONFIG: Record<string, { label: string; className: string; dot: string }> = {
-    NEW: { label: 'New', className: 'border-blue-500/30 bg-blue-500/10 text-blue-400', dot: 'bg-blue-400' },
-    IMPROVED: { label: 'Improved', className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400', dot: 'bg-emerald-400' },
-    FIXED: { label: 'Fixed', className: 'border-amber-500/30 bg-amber-500/10 text-amber-400', dot: 'bg-amber-400' },
-    SECURITY: { label: 'Security', className: 'border-red-500/30 bg-red-500/10 text-red-400', dot: 'bg-red-400' },
-    REMOVED: { label: 'Removed', className: 'border-zinc-500/30 bg-zinc-500/10 text-zinc-400', dot: 'bg-zinc-400' },
+    NEW: {
+        label: 'New',
+        className: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
+        dot: 'bg-blue-400',
+    },
+    IMPROVED: {
+        label: 'Improved',
+        className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+        dot: 'bg-emerald-400',
+    },
+    FIXED: {
+        label: 'Fixed',
+        className: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+        dot: 'bg-amber-400',
+    },
+    SECURITY: {
+        label: 'Security',
+        className: 'border-red-500/30 bg-red-500/10 text-red-400',
+        dot: 'bg-red-400',
+    },
+    REMOVED: {
+        label: 'Removed',
+        className: 'border-zinc-500/30 bg-zinc-500/10 text-zinc-400',
+        dot: 'bg-zinc-400',
+    },
 };
 
 export async function ChangelogStrip() {
@@ -44,10 +64,17 @@ export async function ChangelogStrip() {
                                 >
                                     {cfg.label}
                                 </Badge>
-                                <span className={`sm:hidden shrink-0 h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
-                                <span className="min-w-0 flex-1 text-sm truncate">{entry.title}</span>
+                                <span
+                                    className={`sm:hidden shrink-0 h-1.5 w-1.5 rounded-full ${cfg.dot}`}
+                                />
+                                <span className="min-w-0 flex-1 text-sm truncate">
+                                    {entry.title}
+                                </span>
                                 <span className="shrink-0 text-xs text-muted-foreground">
-                                    {date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    {date.toLocaleDateString(undefined, {
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}
                                 </span>
                                 {entry.blogPost?.slug && (
                                     <Link

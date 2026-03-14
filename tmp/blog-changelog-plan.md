@@ -8,6 +8,7 @@ Two new features:
 2. **Changelog** — Short "what's new" entries with an optional link to a blog post. Displayed as a compact strip on the landing page (after the hero section, before the Tools section).
 
 **Decisions already made:**
+
 - Images: deferred — markdown supports external image URLs natively; no upload infra yet
 - Single language: no per-locale content, one `content` field per post
 - Blog editor: Monaco split-pane (left markdown source, right live preview)
@@ -52,15 +53,18 @@ model ChangelogEntry {
 ```
 
 **Publishing rule (used in all public queries):**
+
 ```
 published = true AND (publishedAt IS NULL OR publishedAt <= NOW())
 ```
+
 - `publishedAt = null` → visible immediately once `published = true`
 - `publishedAt` = past date → visible
 - `publishedAt` = future date → scheduled, not visible publicly yet
 
-dont migrate, just generate the 
+dont migrate, just generate the
 **Migration command:**
+
 ```bash
 bunx prisma generate
 ```
@@ -70,14 +74,17 @@ bunx prisma generate
 ## Phase 2 — Dependencies + Typography
 
 ### Install
+
 ```bash
 bun add react-markdown remark-gfm
 ```
 
 ### Enable Typography Plugin
+
 `@tailwindcss/typography` is already in `package.json` as a devDependency but **not configured**.
 
 **Edit `app/globals.css`** — add near the top after existing `@import`/`@plugin` directives:
+
 ```css
 @plugin "@tailwindcss/typography";
 ```
@@ -99,15 +106,14 @@ import remarkGfm from 'remark-gfm';
 export function MarkdownRenderer({ content }: { content: string }) {
     return (
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content}
-            </ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
     );
 }
 ```
 
 Notes:
+
 - Uses standard `<img>` (via rehype default) for images — works with any external URL
 - `remark-gfm` adds tables, strikethrough, task lists, autolinks
 - `max-w-none` lets the parent container control width
@@ -144,11 +150,11 @@ function slugify(title: string): string {
 
 export async function createBlogPost(data: {
     title: string;
-    slug?: string;        // if empty, auto-generated from title
+    slug?: string; // if empty, auto-generated from title
     content: string;
     category: string;
     published: boolean;
-    publishedAt?: string | null;  // ISO string
+    publishedAt?: string | null; // ISO string
 }) {
     await requireAdmin();
     const slug = data.slug?.trim() || slugify(data.title);
@@ -165,22 +171,28 @@ export async function createBlogPost(data: {
     return { success: true, id: post.id, slug: post.slug };
 }
 
-export async function updateBlogPost(id: string, data: {
-    title?: string;
-    slug?: string;
-    content?: string;
-    category?: string;
-    published?: boolean;
-    publishedAt?: string | null;
-}) {
+export async function updateBlogPost(
+    id: string,
+    data: {
+        title?: string;
+        slug?: string;
+        content?: string;
+        category?: string;
+        published?: boolean;
+        publishedAt?: string | null;
+    },
+) {
     await requireAdmin();
     await prisma.blogPost.update({
         where: { id },
         data: {
             ...data,
-            publishedAt: data.publishedAt !== undefined
-                ? (data.publishedAt ? new Date(data.publishedAt) : null)
-                : undefined,
+            publishedAt:
+                data.publishedAt !== undefined
+                    ? data.publishedAt
+                        ? new Date(data.publishedAt)
+                        : null
+                    : undefined,
         },
     });
     return { success: true };
@@ -219,10 +231,7 @@ export async function getBlogPostForEdit(id: string) {
 
 const publishedFilter = {
     published: true,
-    OR: [
-        { publishedAt: null },
-        { publishedAt: { lte: new Date() } },
-    ],
+    OR: [{ publishedAt: null }, { publishedAt: { lte: new Date() } }],
 };
 
 export async function getPublishedBlogPosts(category?: string) {
@@ -297,21 +306,27 @@ export async function createChangelogEntry(data: {
     return { success: true };
 }
 
-export async function updateChangelogEntry(id: string, data: {
-    title?: string;
-    text?: string;
-    published?: boolean;
-    publishedAt?: string | null;
-    blogPostId?: string | null;
-}) {
+export async function updateChangelogEntry(
+    id: string,
+    data: {
+        title?: string;
+        text?: string;
+        published?: boolean;
+        publishedAt?: string | null;
+        blogPostId?: string | null;
+    },
+) {
     await requireAdmin();
     await prisma.changelogEntry.update({
         where: { id },
         data: {
             ...data,
-            publishedAt: data.publishedAt !== undefined
-                ? (data.publishedAt ? new Date(data.publishedAt) : null)
-                : undefined,
+            publishedAt:
+                data.publishedAt !== undefined
+                    ? data.publishedAt
+                        ? new Date(data.publishedAt)
+                        : null
+                    : undefined,
         },
     });
     return { success: true };
@@ -387,6 +402,7 @@ components/admin/blog/
 ### `app/[locale]/admin/blog/page.tsx`
 
 Server component. Calls `listBlogPostsAdmin()`. Renders a table with:
+
 - Title (link to edit)
 - Slug
 - Category badge
@@ -397,6 +413,7 @@ Server component. Calls `listBlogPostsAdmin()`. Renders a table with:
 - "New Post" button → `/admin/blog/new`
 
 Status calculation:
+
 ```ts
 function getStatus(post: { published: boolean; publishedAt: Date | null }) {
     if (!post.published) return 'Draft';
@@ -422,6 +439,7 @@ Form fields:
 | `content` | Monaco (left) + MarkdownRenderer (right) | split pane |
 
 **Monaco loading pattern** (same as `KeyValueClient.tsx`):
+
 ```tsx
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
     ssr: false,
@@ -430,6 +448,7 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.
 ```
 
 **Layout:**
+
 ```
 ┌─────────────────────────────────────────┐
 │  Title  [input]        Slug  [input]    │
@@ -451,6 +470,7 @@ Save calls `createBlogPost` or `updateBlogPost`, then `router.push('/admin/blog'
 ### Admin tile addition — `app/[locale]/admin/adminPage.tsx`
 
 Add two tiles to the `tiles` array:
+
 ```ts
 { name: 'Blog', link: '/admin/blog', Icon: BookOpen, color: 'from-teal-500 to-cyan-600' },
 { name: 'Changelog', link: '/admin/changelog', Icon: History, color: 'from-violet-500 to-purple-600' },
@@ -533,9 +553,9 @@ Server component.
 - Fetches `getBlogPostBySlug(params.slug)`
 - Returns 404 if not found or not published
 - Renders:
-  - Title (`h1`)
-  - Category badge + published date
-  - `<MarkdownRenderer content={post.content} />`
+    - Title (`h1`)
+    - Category badge + published date
+    - `<MarkdownRenderer content={post.content} />`
 
 ---
 
@@ -559,6 +579,7 @@ Mar 1   Launched Lake 1.5
 ```
 
 Each row:
+
 - Date (`publishedAt ?? createdAt`), formatted compact (e.g. `Mar 13`)
 - Title
 - Optional "Read more →" link to `/blog/[slug]` if `blogPost` is set
@@ -575,7 +596,7 @@ Insert between hero section close and the Tools Card section:
 import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 
 // ... inside return, after </section> (hero end) and before the Card (tools):
-<ChangelogStrip />
+<ChangelogStrip />;
 ```
 
 ---
@@ -586,49 +607,49 @@ import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 
 ```json
 {
-  "blog": {
-    "title": "Blog",
-    "listTitle": "Latest Posts",
-    "readMore": "Read more",
-    "noPosts": "No posts yet.",
-    "allCategories": "All",
-    "publishedOn": "Published on",
-    "draft": "Draft",
-    "scheduled": "Scheduled",
-    "published": "Published",
-    "category": "Category"
-  },
-  "changelog": {
-    "title": "What's New",
-    "readMore": "Read more",
-    "viewAll": "View all changes"
-  },
-  "adminBlog": {
-    "title": "Blog Posts",
-    "new": "New Post",
-    "edit": "Edit Post",
-    "slug": "Slug",
-    "category": "Category",
-    "publishedAt": "Publish Date",
-    "published": "Published",
-    "content": "Content (Markdown)",
-    "preview": "Preview",
-    "saveSuccess": "Post saved.",
-    "deleteSuccess": "Post deleted.",
-    "noPostsYet": "No blog posts yet.",
-    "draft": "Draft",
-    "scheduled": "Scheduled"
-  },
-  "adminChangelog": {
-    "title": "Changelog",
-    "new": "New Entry",
-    "edit": "Edit Entry",
-    "text": "Short description",
-    "blogPost": "Related blog post",
-    "noBlogPost": "None",
-    "saveSuccess": "Entry saved.",
-    "deleteSuccess": "Entry deleted."
-  }
+    "blog": {
+        "title": "Blog",
+        "listTitle": "Latest Posts",
+        "readMore": "Read more",
+        "noPosts": "No posts yet.",
+        "allCategories": "All",
+        "publishedOn": "Published on",
+        "draft": "Draft",
+        "scheduled": "Scheduled",
+        "published": "Published",
+        "category": "Category"
+    },
+    "changelog": {
+        "title": "What's New",
+        "readMore": "Read more",
+        "viewAll": "View all changes"
+    },
+    "adminBlog": {
+        "title": "Blog Posts",
+        "new": "New Post",
+        "edit": "Edit Post",
+        "slug": "Slug",
+        "category": "Category",
+        "publishedAt": "Publish Date",
+        "published": "Published",
+        "content": "Content (Markdown)",
+        "preview": "Preview",
+        "saveSuccess": "Post saved.",
+        "deleteSuccess": "Post deleted.",
+        "noPostsYet": "No blog posts yet.",
+        "draft": "Draft",
+        "scheduled": "Scheduled"
+    },
+    "adminChangelog": {
+        "title": "Changelog",
+        "new": "New Entry",
+        "edit": "Edit Entry",
+        "text": "Short description",
+        "blogPost": "Related blog post",
+        "noBlogPost": "None",
+        "saveSuccess": "Entry saved.",
+        "deleteSuccess": "Entry deleted."
+    }
 }
 ```
 
@@ -638,28 +659,28 @@ import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 
 ## Full File Inventory
 
-| File | Action | Notes |
-|---|---|---|
-| `prisma/schema.prisma` | Edit — add 2 models | `BlogPost`, `ChangelogEntry` |
-| `app/globals.css` | Edit — 1 line | Enable typography plugin |
-| `app/actions/blog/blogActions.ts` | **New** | CRUD + public queries |
-| `app/actions/changelog/changelogActions.ts` | **New** | CRUD + public query |
-| `components/blog/MarkdownRenderer.tsx` | **New** | react-markdown + remark-gfm |
-| `components/admin/blog/BlogPostForm.tsx` | **New** | Monaco split-editor form |
-| `components/admin/changelog/ChangelogEntryForm.tsx` | **New** | Changelog form |
-| `components/landing/ChangelogStrip.tsx` | **New** | Landing page widget |
-| `app/[locale]/blog/page.tsx` | **New** | Public blog list |
-| `app/[locale]/blog/[slug]/page.tsx` | **New** | Public post detail |
-| `app/[locale]/admin/blog/page.tsx` | **New** | Admin: list posts |
-| `app/[locale]/admin/blog/new/page.tsx` | **New** | Admin: create post |
-| `app/[locale]/admin/blog/[id]/edit/page.tsx` | **New** | Admin: edit post |
-| `app/[locale]/admin/changelog/page.tsx` | **New** | Admin: list entries |
-| `app/[locale]/admin/changelog/new/page.tsx` | **New** | Admin: create entry |
-| `app/[locale]/admin/changelog/[id]/edit/page.tsx` | **New** | Admin: edit entry |
-| `app/[locale]/admin/adminPage.tsx` | Edit — add 2 tiles | Blog + Changelog |
-| `app/[locale]/page.tsx` | Edit — insert 1 component | ChangelogStrip |
-| `messages/en.json` | Edit — add 4 key groups | blog, changelog, adminBlog, adminChangelog |
-| `messages/de.json` | Edit — add 4 key groups | Same structure, German |
+| File                                                | Action                    | Notes                                      |
+| --------------------------------------------------- | ------------------------- | ------------------------------------------ |
+| `prisma/schema.prisma`                              | Edit — add 2 models       | `BlogPost`, `ChangelogEntry`               |
+| `app/globals.css`                                   | Edit — 1 line             | Enable typography plugin                   |
+| `app/actions/blog/blogActions.ts`                   | **New**                   | CRUD + public queries                      |
+| `app/actions/changelog/changelogActions.ts`         | **New**                   | CRUD + public query                        |
+| `components/blog/MarkdownRenderer.tsx`              | **New**                   | react-markdown + remark-gfm                |
+| `components/admin/blog/BlogPostForm.tsx`            | **New**                   | Monaco split-editor form                   |
+| `components/admin/changelog/ChangelogEntryForm.tsx` | **New**                   | Changelog form                             |
+| `components/landing/ChangelogStrip.tsx`             | **New**                   | Landing page widget                        |
+| `app/[locale]/blog/page.tsx`                        | **New**                   | Public blog list                           |
+| `app/[locale]/blog/[slug]/page.tsx`                 | **New**                   | Public post detail                         |
+| `app/[locale]/admin/blog/page.tsx`                  | **New**                   | Admin: list posts                          |
+| `app/[locale]/admin/blog/new/page.tsx`              | **New**                   | Admin: create post                         |
+| `app/[locale]/admin/blog/[id]/edit/page.tsx`        | **New**                   | Admin: edit post                           |
+| `app/[locale]/admin/changelog/page.tsx`             | **New**                   | Admin: list entries                        |
+| `app/[locale]/admin/changelog/new/page.tsx`         | **New**                   | Admin: create entry                        |
+| `app/[locale]/admin/changelog/[id]/edit/page.tsx`   | **New**                   | Admin: edit entry                          |
+| `app/[locale]/admin/adminPage.tsx`                  | Edit — add 2 tiles        | Blog + Changelog                           |
+| `app/[locale]/page.tsx`                             | Edit — insert 1 component | ChangelogStrip                             |
+| `messages/en.json`                                  | Edit — add 4 key groups   | blog, changelog, adminBlog, adminChangelog |
+| `messages/de.json`                                  | Edit — add 4 key groups   | Same structure, German                     |
 
 **Total: 4 edited files, 16 new files**
 

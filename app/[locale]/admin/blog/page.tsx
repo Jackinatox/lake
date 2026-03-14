@@ -112,10 +112,7 @@ export default async function AdminBlogPage() {
                                                     <Pencil className="h-3.5 w-3.5" />
                                                 </Link>
                                             </Button>
-                                            <DeleteBlogPostButton
-                                                id={post.id}
-                                                title={post.title}
-                                            />
+                                            <DeleteBlogPostButton id={post.id} title={post.title} />
                                         </div>
                                     </div>
                                 );

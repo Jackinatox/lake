@@ -35,10 +35,7 @@ export default async function NewBlogPostPage() {
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin/blog"
-                                className="text-muted-foreground"
-                            >
+                            <BreadcrumbLink href="/admin/blog" className="text-muted-foreground">
                                 Blog Posts
                             </BreadcrumbLink>
                         </BreadcrumbItem>

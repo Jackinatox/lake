@@ -70,7 +70,11 @@ export async function adminRefund(
             data: {
                 orderId: order.id,
                 amount: amountCents,
-                reason: reason ?? (type === 'WITHDRAWAL' ? 'Admin-initiated withdrawal (Widerruf)' : 'Admin-initiated refund'),
+                reason:
+                    reason ??
+                    (type === 'WITHDRAWAL'
+                        ? 'Admin-initiated withdrawal (Widerruf)'
+                        : 'Admin-initiated refund'),
                 internalNote: internalNote ?? null,
                 status: 'PENDING',
                 type,
@@ -100,12 +104,9 @@ export async function adminRefund(
             refundParams.charge = order.stripeChargeId;
         }
 
-        const stripeRefund = await stripe.refunds.create(
-            refundParams,
-            {
-                idempotencyKey: `admin-refund-${order.id}-${refundRecord.id}`,
-            },
-        );
+        const stripeRefund = await stripe.refunds.create(refundParams, {
+            idempotencyKey: `admin-refund-${order.id}-${refundRecord.id}`,
+        });
 
         // Update the refund record with Stripe refund ID
         await prisma.refund.update({

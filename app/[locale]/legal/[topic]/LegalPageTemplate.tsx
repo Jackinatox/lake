@@ -23,7 +23,6 @@ const LEGAL_CONSTANTS_MAP: Record<LegalTopic, { de: string; en: string }> = {
     returns: { de: LEGAL_RETURNS_DE, en: LEGAL_RETURNS_EN },
 };
 
-
 interface LegalPageTemplateProps {
     pageType: LegalTopic;
     locale: string;

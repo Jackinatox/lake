@@ -30,7 +30,11 @@ export default async function GamesAfterHardwarePage() {
 
     return (
         <Suspense>
-            <GamesAfterHardwareClient games={gameCards} resourceTiers={resourceTiers} performanceGroups={performanceGroups ?? []} />
+            <GamesAfterHardwareClient
+                games={gameCards}
+                resourceTiers={resourceTiers}
+                performanceGroups={performanceGroups ?? []}
+            />
         </Suspense>
     );
 }

@@ -5,11 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-export default async function BlogPostPage({
-    params,
-}: {
-    params: Promise<{ slug: string }>;
-}) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const t = await getTranslations('blog');
     const { slug } = await params;
     const post = await getBlogPostBySlug(slug);

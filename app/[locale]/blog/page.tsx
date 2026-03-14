@@ -71,7 +71,10 @@ export default async function BlogPage({
                         const date = post.publishedAt ?? post.createdAt;
                         const excerpt = stripMarkdown(post.content).slice(0, 150);
                         return (
-                            <Card key={post.id} className="p-4 md:p-6 transition-colors hover:bg-accent/50">
+                            <Card
+                                key={post.id}
+                                className="p-4 md:p-6 transition-colors hover:bg-accent/50"
+                            >
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
                                     {post.category && (
                                         <span className="font-medium text-foreground">

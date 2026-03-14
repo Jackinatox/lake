@@ -14,11 +14,7 @@ import { getBlogPostForEdit, getBlogCategories } from '@/app/actions/blog/blogAc
 import BlogPostForm from '@/components/admin/blog/BlogPostForm';
 import { notFound } from 'next/navigation';
 
-export default async function EditBlogPostPage({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
+export default async function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (session?.user.role !== 'admin') return <NoAdmin />;
 
@@ -49,10 +45,7 @@ export default async function EditBlogPostPage({
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin/blog"
-                                className="text-muted-foreground"
-                            >
+                            <BreadcrumbLink href="/admin/blog" className="text-muted-foreground">
                                 Blog Posts
                             </BreadcrumbLink>
                         </BreadcrumbItem>

@@ -73,9 +73,7 @@ export function CreateBackupDialog({
             <DialogContent className="max-w-lg">
                 <DialogHeader>
                     <DialogTitle>{t('title')}</DialogTitle>
-                    <DialogDescription>
-                        {t('description')}
-                    </DialogDescription>
+                    <DialogDescription>{t('description')}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-2">
@@ -99,9 +97,7 @@ export function CreateBackupDialog({
                             onChange={(event) => setIgnored(event.target.value)}
                             rows={4}
                         />
-                        <p className="text-xs text-muted-foreground">
-                            {t('ignoredHint')}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{t('ignoredHint')}</p>
                     </div>
 
                     <div className="flex items-center justify-between rounded-md border p-3">

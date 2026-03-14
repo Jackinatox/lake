@@ -118,9 +118,7 @@ export default function FreeServerUpgradeClient({
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.cpu')}</p>
-                            <p className="font-semibold">
-                                {formatVCores(server.cpuPercent / 100)}
-                            </p>
+                            <p className="font-semibold">{formatVCores(server.cpuPercent / 100)}</p>
                         </div>
                         <div>
                             <p className="text-muted-foreground">{t('serverInfo.ram')}</p>

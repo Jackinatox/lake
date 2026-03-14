@@ -140,7 +140,10 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         <div className="flex justify-between font-medium text-green-600 dark:text-green-400">
                                             <span>{t('withdrawalAmount')}:</span>
                                             <span>
-                                                {(eligibility.refundableAmountCents / 100).toFixed(2)} €
+                                                {(eligibility.refundableAmountCents / 100).toFixed(
+                                                    2,
+                                                )}{' '}
+                                                €
                                             </span>
                                         </div>
                                     </div>
@@ -160,9 +163,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                     <AlertDialogCancel disabled={isPending}>{t('cancel')}</AlertDialogCancel>
                     {eligibility?.eligible && !eligibility?.hasUpgradeOrders && (
                         <AlertDialogAction onClick={handleConfirmWithdrawal} disabled={isPending}>
-                            {isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : null}
+                            {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             {t('confirm')}
                         </AlertDialogAction>
                     )}

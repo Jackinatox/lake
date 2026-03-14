@@ -30,10 +30,7 @@ export default function HardwareChipBar({
 
     return (
         <div
-            className={cn(
-                'flex items-center gap-2 md:gap-3 overflow-x-auto',
-                className,
-            )}
+            className={cn('flex items-center gap-2 md:gap-3 overflow-x-auto', className)}
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
         >
             <Chip color="blue" label="CPU">

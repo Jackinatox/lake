@@ -43,7 +43,9 @@ export default function ConfigureHardwareClient({
                             <Wrench className="h-4 w-4 text-primary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h1 className="text-base sm:text-lg font-bold leading-tight">Configure Hardware</h1>
+                            <h1 className="text-base sm:text-lg font-bold leading-tight">
+                                Configure Hardware
+                            </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
                                 Configure your hardware, then choose a game
                             </p>

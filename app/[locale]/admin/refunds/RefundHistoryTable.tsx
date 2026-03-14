@@ -116,7 +116,11 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                             </TableCell>
                             <TableCell>
                                 <Badge variant="outline" className="text-[10px]">
-                                    {refund.serverAction === 'SUSPEND' ? 'Suspend' : refund.serverAction === 'SHORTEN' ? 'Revert' : 'None'}
+                                    {refund.serverAction === 'SUSPEND'
+                                        ? 'Suspend'
+                                        : refund.serverAction === 'SHORTEN'
+                                          ? 'Revert'
+                                          : 'None'}
                                 </Badge>
                             </TableCell>
                             <TableCell>
