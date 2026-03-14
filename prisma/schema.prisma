@@ -456,11 +456,12 @@ enum LogType {
 }
 
 model ApplicationLog {
-  id      Int      @id @default(autoincrement())
-  level   LogLevel
-  type    LogType
-  message String
-  details Json?
+  id         Int      @id @default(autoincrement())
+  level      LogLevel
+  type       LogType
+  instanceId String
+  message    String
+  details    Json?
 
   // Request context
   method    String?
@@ -640,4 +641,33 @@ model HardwareRecommendation {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  content     String
+  category    String    @default("")
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  changelogEntries ChangelogEntry[]
+}
+
+model ChangelogEntry {
+  id          String    @id @default(cuid())
+  title       String
+  text        String
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blogPostId String?
+  blogPost   BlogPost? @relation(fields: [blogPostId], references: [id], onDelete: SetNull)
 }

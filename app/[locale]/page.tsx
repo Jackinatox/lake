@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
+import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { ArrowRight, CheckCircle, Gift } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
@@ -280,6 +281,8 @@ export default async function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            <ChangelogStrip />
 
             {/* Tools Section */}
             <Card className="hidden md:block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
