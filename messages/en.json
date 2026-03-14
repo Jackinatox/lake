@@ -1284,6 +1284,7 @@
   },
   "changelog": {
     "title": "What's New",
+    "subtitle": "The latest updates, improvements, and fixes.",
     "readMore": "Read more",
     "viewAll": "View all changes"
   },

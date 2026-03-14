@@ -3,6 +3,7 @@ import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
 import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
+import { env } from 'next-runtime-env';
 
 const SEVERITY_MAP: Record<LogLevel, SeverityNumber> = {
     TRACE: SeverityNumber.TRACE,
@@ -41,6 +42,7 @@ export interface LogEntry extends LogContext {
 }
 
 class Logger {
+    private instanceId = env('INSTANCE_ID') || 'unknown-instance';
     private prisma: PrismaClient;
 
     constructor(prismaClient: PrismaClient) {
@@ -125,6 +127,7 @@ class Logger {
                     level: entry.level,
                     type: entry.type,
                     message: entry.message,
+                    instanceId: this.instanceId,
                     details: entry.details
                         ? (entry.details as Prisma.InputJsonValue)
                         : Prisma.JsonNull,

@@ -21,11 +21,14 @@ import {
     updateChangelogEntry,
 } from '@/app/actions/changelog/changelogActions';
 
+const CHANGELOG_TYPES = ['NEW', 'IMPROVED', 'FIXED', 'SECURITY', 'REMOVED'] as const;
+
 interface ChangelogEntryFormProps {
     entry?: {
         id: string;
         title: string;
         text: string;
+        type: string;
         published: boolean;
         publishedAt: Date | null;
         blogPost: { id: string; title: string } | null;
@@ -40,6 +43,7 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
 
     const [title, setTitle] = useState(entry?.title ?? '');
     const [text, setText] = useState(entry?.text ?? '');
+    const [type, setType] = useState(entry?.type ?? 'NEW');
     const [published, setPublished] = useState(entry?.published ?? false);
     const [publishedAt, setPublishedAt] = useState(
         entry?.publishedAt ? toDatetimeLocal(entry.publishedAt) : '',
@@ -58,6 +62,7 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
             const data = {
                 title,
                 text,
+                type,
                 published,
                 publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
                 blogPostId: blogPostId || null,
@@ -100,6 +105,22 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
                     placeholder="Brief description of the change..."
                     rows={3}
                 />
+            </div>
+
+            <div className="space-y-1.5">
+                <Label>Type</Label>
+                <Select value={type} onValueChange={setType}>
+                    <SelectTrigger className="w-40">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {CHANGELOG_TYPES.map((t) => (
+                            <SelectItem key={t} value={t}>
+                                {t.charAt(0) + t.slice(1).toLowerCase()}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             <div className="space-y-1.5">

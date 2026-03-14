@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ChangelogEntryType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -14,6 +15,7 @@ async function requireAdmin() {
 export async function createChangelogEntry(data: {
     title: string;
     text: string;
+    type: string;
     published: boolean;
     publishedAt?: string | null;
     blogPostId?: string | null;
@@ -23,6 +25,7 @@ export async function createChangelogEntry(data: {
         data: {
             title: data.title,
             text: data.text,
+            type: data.type as ChangelogEntryType,
             published: data.published,
             publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
             blogPostId: data.blogPostId ?? null,
@@ -36,6 +39,7 @@ export async function updateChangelogEntry(
     data: {
         title?: string;
         text?: string;
+        type?: string;
         published?: boolean;
         publishedAt?: string | null;
         blogPostId?: string | null;
@@ -45,7 +49,11 @@ export async function updateChangelogEntry(
     await prisma.changelogEntry.update({
         where: { id },
         data: {
-            ...data,
+            title: data.title,
+            text: data.text,
+            type: data.type as ChangelogEntryType,
+            published: data.published,
+            blogPostId: data.blogPostId,
             publishedAt:
                 data.publishedAt !== undefined
                     ? data.publishedAt
@@ -95,6 +103,7 @@ export async function getPublishedChangelog(limit = 5) {
             id: true,
             title: true,
             text: true,
+            type: true,
             publishedAt: true,
             createdAt: true,
             blogPost: { select: { slug: true } },
