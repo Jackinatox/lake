@@ -54,10 +54,12 @@ export default async function handleCheckoutSessionCompleted(
         }
 
         const session = await stripe.checkout.sessions.retrieve(checkoutSession.id, {
-            expand: ['payment_intent.latest_charge'],
+            expand: ['payment_intent.latest_charge', 'invoice'],
         });
 
         let receiptUrl: string | null = null;
+        let invoicePdfUrl: string | null = null;
+        let receiptPdfUrl: string | null = null;
         let paymentIntentId: string | null = null;
         let chargeId: string | null = null;
 
@@ -69,10 +71,19 @@ export default async function handleCheckoutSessionCompleted(
                 typeof session.payment_intent.latest_charge !== 'string'
             ) {
                 receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                receiptPdfUrl = session.payment_intent.latest_charge.receipt_url;
                 chargeId = session.payment_intent.latest_charge.id;
             }
         } else if (typeof session.payment_intent === 'string') {
             paymentIntentId = session.payment_intent;
+        }
+
+        // Extract invoice PDF URL if an invoice was created
+        if (typeof session.invoice !== 'string' && session.invoice) {
+            invoicePdfUrl = session.invoice.invoice_pdf ?? null;
+        } else if (typeof session.invoice === 'string') {
+            const invoice = await stripe.invoices.retrieve(session.invoice);
+            invoicePdfUrl = invoice.invoice_pdf ?? null;
         }
 
         await prisma.gameServerOrder.update({
@@ -85,6 +96,8 @@ export default async function handleCheckoutSessionCompleted(
                 stripeChargeId: chargeId,
                 status: 'PAID',
                 receipt_url: receiptUrl,
+                invoicePdfUrl,
+                receiptPdfUrl,
             },
         });
 

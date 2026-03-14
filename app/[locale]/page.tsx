@@ -293,7 +293,7 @@ export default async function LandingPage() {
             </div>
 
             {/* CTA Section */}
-            <div className="mt-4 mx-auto w-full max-w-screen-2xl px-2 md:px-0 py-8 md:py-0">
+            <div className="mt-4 mx-auto w-full max-w-screen-2xl px-2 py-8 md:py-0">
                 <Card className="bg-primary/10 border border-primary/20 text-center px-2 md:px-6 py-2 md:py-10">
                     <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('ctaHeader')}</h2>
                     <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-sm md:text-base">

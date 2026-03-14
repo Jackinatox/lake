@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import formatDate from '@/lib/formatDate';
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const t = await getTranslations('blog');
@@ -15,7 +16,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     const date = post.publishedAt ?? post.createdAt;
 
     return (
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl w-full p-2">
             <Link
                 href="/blog"
                 className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
@@ -31,7 +32,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                             <span className="font-medium text-foreground">{post.category}</span>
                         )}
                         <span>
-                            {t('publishedOn')} {date.toLocaleDateString()}
+                            {t('publishedOn')} {formatDate(date)}
                         </span>
                     </div>
                     <h1 className="text-3xl font-bold md:text-4xl">{post.title}</h1>

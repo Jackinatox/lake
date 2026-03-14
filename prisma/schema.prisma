@@ -146,6 +146,8 @@ model GameServerOrder {
   price       Float
 
   receipt_url         String?
+  invoicePdfUrl       String?
+  receiptPdfUrl       String?
   stripeSessionId     String?      @unique
   stripePaymentIntent String?      @unique
   stripeChargeId      String?      @unique

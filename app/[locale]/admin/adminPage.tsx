@@ -91,7 +91,7 @@ const tiles: AdminTile[] = [
     },
     { name: 'Blog', link: '/admin/blog', Icon: BookOpen, color: 'from-sky-500 to-blue-600' },
     {
-        name: 'Changelog',
+        name: 'Neuigkeiten',
         link: '/admin/changelog',
         Icon: History,
         color: 'from-violet-500 to-purple-600',

@@ -706,7 +706,6 @@
     "documentation": "Dokumentation (Bald verfügbar)",
     "about": "Über uns (Bald verfügbar)",
     "blog": "Blog",
-    "changelog": "Changelog",
     "company": "Unternehmen",
     "sourcecode": "Quellcode",
     "contactUs": "Kontakt",
@@ -1287,7 +1286,7 @@
     "title": "Neuigkeiten",
     "subtitle": "Die neuesten Updates, Verbesserungen und Fehlerbehebungen.",
     "readMore": "Weiterlesen",
-    "viewAll": "Alle Änderungen anzeigen"
+    "viewAll": "Alle Neuigkeiten anzeigen"
   },
   "adminBlog": {
     "title": "Blog-Beiträge",

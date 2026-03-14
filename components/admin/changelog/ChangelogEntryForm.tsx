@@ -147,11 +147,11 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
                 <div className="flex items-center gap-3">
                     <Switch id="cl-published" checked={published} onCheckedChange={setPublished} />
                     <Label htmlFor="cl-published" className="cursor-pointer">
-                        Published
+                        Enabled
                     </Label>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="cl-publishedAt">Publish Date (optional)</Label>
+                    <Label htmlFor="cl-publishedAt">Publish Date</Label>
                     <Input
                         id="cl-publishedAt"
                         type="datetime-local"

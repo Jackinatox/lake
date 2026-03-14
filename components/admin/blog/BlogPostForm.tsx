@@ -163,11 +163,11 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                         onCheckedChange={setPublished}
                     />
                     <Label htmlFor="blog-published" className="cursor-pointer">
-                        Published
+                        Enabled
                     </Label>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="blog-publishedAt">Publish Date (optional)</Label>
+                    <Label htmlFor="blog-publishedAt">Publish Date</Label>
                     <Input
                         id="blog-publishedAt"
                         type="datetime-local"
