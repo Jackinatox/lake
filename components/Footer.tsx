@@ -100,9 +100,12 @@ export default function Footer() {
                             >
                                 {t('sourcecode')}
                             </Link>
-                            {/* <Link href="/" className="hover:text-foreground transition-colors">
+                            <Link href="/blog" className="hover:text-foreground transition-colors">
                                 {t('blog')}
-                            </Link> */}
+                            </Link>
+                            <Link href="/changelog" className="hover:text-foreground transition-colors">
+                                {t('changelog')}
+                            </Link>
                             <a
                                 href="https://scyed.com"
                                 target="_blank"

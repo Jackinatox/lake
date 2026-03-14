@@ -27,7 +27,7 @@ export async function createChangelogEntry(data: {
             text: data.text,
             type: data.type as ChangelogEntryType,
             published: data.published,
-            publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
+            publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
             blogPostId: data.blogPostId ?? null,
         },
     });
@@ -58,7 +58,7 @@ export async function updateChangelogEntry(
                 data.publishedAt !== undefined
                     ? data.publishedAt
                         ? new Date(data.publishedAt)
-                        : null
+                        : new Date()
                     : undefined,
         },
     });
@@ -92,10 +92,11 @@ export async function getChangelogEntryForEdit(id: string) {
 // ── Public queries ───────────────────────────────────────────
 
 export async function getPublishedChangelog(limit = 5) {
-    return prisma.changelogEntry.findMany({
+    const now = new Date();
+    const entries = await prisma.changelogEntry.findMany({
         where: {
             published: true,
-            OR: [{ publishedAt: null }, { publishedAt: { lte: new Date() } }],
+            publishedAt: { lte: now },
         },
         orderBy: { publishedAt: 'desc' },
         take: limit,
@@ -105,8 +106,19 @@ export async function getPublishedChangelog(limit = 5) {
             text: true,
             type: true,
             publishedAt: true,
-            createdAt: true,
-            blogPost: { select: { slug: true } },
+            blogPost: {
+                select: { slug: true, published: true, publishedAt: true },
+            },
         },
+    });
+
+    // Only expose the blog link if the blog post is actually visible
+    return entries.map((entry) => {
+        const bp = entry.blogPost;
+        const blogPostVisible = bp?.published && bp.publishedAt <= now;
+        return {
+            ...entry,
+            blogPost: blogPostVisible ? { slug: bp.slug } : null,
+        };
     });
 }

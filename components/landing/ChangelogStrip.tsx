@@ -2,7 +2,7 @@ import { getPublishedChangelog } from '@/app/actions/changelog/changelogActions'
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 const TYPE_CONFIG: Record<string, { label: string; className: string; dot: string }> = {
     NEW: {
@@ -55,9 +55,9 @@ export async function ChangelogStrip() {
                 <div className="divide-y">
                     {entries.map((entry) => {
                         const cfg = TYPE_CONFIG[entry.type] ?? TYPE_CONFIG['NEW'];
-                        const date = entry.publishedAt ?? entry.createdAt;
-                        return (
-                            <div key={entry.id} className="flex items-center gap-3 px-4 py-2.5">
+                        const date = entry.publishedAt;
+                        const inner = (
+                            <>
                                 <Badge
                                     variant="outline"
                                     className={`hidden sm:inline-flex shrink-0 px-1.5 py-0 text-[10px] font-medium leading-4 ${cfg.className}`}
@@ -77,14 +77,21 @@ export async function ChangelogStrip() {
                                     })}
                                 </span>
                                 {entry.blogPost?.slug && (
-                                    <Link
-                                        href={`/blog/${entry.blogPost.slug}`}
-                                        className="shrink-0 text-primary hover:text-primary/80"
-                                        aria-label="Read more"
-                                    >
-                                        <ArrowRight className="h-3.5 w-3.5" />
-                                    </Link>
+                                    <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary" />
                                 )}
+                            </>
+                        );
+                        return entry.blogPost?.slug ? (
+                            <Link
+                                key={entry.id}
+                                href={`/blog/${entry.blogPost.slug}`}
+                                className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
+                            >
+                                {inner}
+                            </Link>
+                        ) : (
+                            <div key={entry.id} className="flex items-center gap-3 px-4 py-2.5">
+                                {inner}
                             </div>
                         );
                     })}

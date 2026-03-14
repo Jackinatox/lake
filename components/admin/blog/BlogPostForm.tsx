@@ -39,7 +39,7 @@ interface BlogPostFormProps {
         content: string;
         category: string;
         published: boolean;
-        publishedAt: Date | null;
+        publishedAt: Date;
     };
     existingCategories: string[];
 }

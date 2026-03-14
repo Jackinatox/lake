@@ -30,7 +30,7 @@ interface ChangelogEntryFormProps {
         text: string;
         type: string;
         published: boolean;
-        publishedAt: Date | null;
+        publishedAt: Date;
         blogPost: { id: string; title: string } | null;
     };
     publishedBlogPosts: { id: string; title: string }[];

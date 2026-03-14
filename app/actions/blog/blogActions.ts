@@ -36,7 +36,7 @@ export async function createBlogPost(data: {
             content: data.content,
             category: data.category,
             published: data.published,
-            publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
+            publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
         },
     });
     return { success: true, id: post.id, slug: post.slug };
@@ -62,7 +62,7 @@ export async function updateBlogPost(
                 data.publishedAt !== undefined
                     ? data.publishedAt
                         ? new Date(data.publishedAt)
-                        : null
+                        : new Date()
                     : undefined,
         },
     });
@@ -103,7 +103,7 @@ export async function getBlogPostForEdit(id: string) {
 function publishedFilter() {
     return {
         published: true,
-        OR: [{ publishedAt: null }, { publishedAt: { lte: new Date() } }],
+        publishedAt: { lte: new Date() },
     };
 }
 
@@ -135,7 +135,7 @@ export async function getBlogPostBySlug(slug: string) {
 export async function getBlogCategories(): Promise<string[]> {
     const result = await prisma.blogPost.groupBy({
         by: ['category'],
-        where: { published: true, category: { not: '' } },
+        where: { ...publishedFilter(), category: { not: '' } },
     });
     return result.map((r) => r.category).filter(Boolean);
 }

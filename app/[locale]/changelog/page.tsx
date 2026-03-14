@@ -1,8 +1,7 @@
 import { getPublishedChangelog } from '@/app/actions/changelog/changelogActions';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 type ChangelogEntry = Awaited<ReturnType<typeof getPublishedChangelog>>[number];
 
@@ -39,7 +38,7 @@ function groupByMonth(entries: ChangelogEntry[]) {
     const map = new Map<string, ChangelogEntry[]>();
 
     for (const entry of entries) {
-        const date = entry.publishedAt ?? entry.createdAt;
+        const date = entry.publishedAt;
         const key = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push(entry);
@@ -80,7 +79,34 @@ export default async function ChangelogPage() {
                             <div className="space-y-6">
                                 {group.entries.map((entry) => {
                                     const cfg = TYPE_CONFIG[entry.type] ?? TYPE_CONFIG['NEW'];
-                                    const date = entry.publishedAt ?? entry.createdAt;
+                                    const date = entry.publishedAt;
+                                    const slug = entry.blogPost?.slug;
+                                    const content = (
+                                        <div className="min-w-0 flex-1 pb-6 group-last:pb-0">
+                                            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={`px-2 py-0 text-[11px] font-medium ${cfg.className}`}
+                                                >
+                                                    {cfg.label}
+                                                </Badge>
+                                                <span className="text-xs text-muted-foreground">
+                                                    {date.toLocaleDateString(undefined, {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    })}
+                                                </span>
+                                            </div>
+                                            <h2
+                                                className={`text-sm font-semibold leading-snug ${slug ? 'group-hover:underline' : ''}`}
+                                            >
+                                                {entry.title}
+                                            </h2>
+                                            <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                                                {entry.text}
+                                            </p>
+                                        </div>
+                                    );
                                     return (
                                         <div key={entry.id} className="group flex gap-4">
                                             <div className="flex flex-col items-center pt-1">
@@ -89,38 +115,16 @@ export default async function ChangelogPage() {
                                                 />
                                                 <div className="mt-2 w-px flex-1 bg-border group-last:hidden" />
                                             </div>
-
-                                            <div className="min-w-0 flex-1 pb-6 group-last:pb-0">
-                                                <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={`px-2 py-0 text-[11px] font-medium ${cfg.className}`}
-                                                    >
-                                                        {cfg.label}
-                                                    </Badge>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {date.toLocaleDateString(undefined, {
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                        })}
-                                                    </span>
-                                                </div>
-                                                <h2 className="text-sm font-semibold leading-snug">
-                                                    {entry.title}
-                                                </h2>
-                                                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                                                    {entry.text}
-                                                </p>
-                                                {entry.blogPost?.slug && (
-                                                    <Link
-                                                        href={`/blog/${entry.blogPost.slug}`}
-                                                        className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                                                    >
-                                                        {t('readMore')}
-                                                        <ArrowRight className="h-3 w-3" />
-                                                    </Link>
-                                                )}
-                                            </div>
+                                            {slug ? (
+                                                <Link
+                                                    href={`/blog/${slug}`}
+                                                    className="group min-w-0 flex-1"
+                                                >
+                                                    {content}
+                                                </Link>
+                                            ) : (
+                                                content
+                                            )}
                                         </div>
                                     );
                                 })}
