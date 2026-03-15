@@ -95,7 +95,9 @@ export default function LogEntry({ log }: LogEntryProps) {
                             </span>
                         )}
                         {log.user && <span>{t('user', { name: log.user.name })}</span>}
-                        {log.gameServer && <span>{t('server', { name: log.gameServer.name })}</span>}
+                        {log.gameServer && (
+                            <span>{t('server', { name: log.gameServer.name })}</span>
+                        )}
                     </div>
 
                     {/* Expandable Details */}
@@ -117,7 +119,8 @@ export default function LogEntry({ log }: LogEntryProps) {
                                 <div className="mt-2 space-y-2 rounded-md bg-muted p-3">
                                     {log.ipAddress && (
                                         <div className="text-xs">
-                                            <span className="font-medium">{t('ip')}</span> {log.ipAddress}
+                                            <span className="font-medium">{t('ip')}</span>{' '}
+                                            {log.ipAddress}
                                         </div>
                                     )}
                                     {log.userAgent && (

@@ -208,9 +208,9 @@ export default function WithdrawalTemplate({
             </EmailCard>
 
             <Text style={{ ...mutedTextStyle, marginTop: 16, fontSize: '12px' }}>
-                Diese Bestätigung dient als Nachweis deines Widerrufs gemäß §355 BGB
-                (Widerrufsrecht bei Fernabsatzverträgen). Der anteilige Erstattungsbetrag wurde
-                basierend auf der ungenutzten Vertragslaufzeit berechnet.
+                Diese Bestätigung dient als Nachweis deines Widerrufs gemäß §355 BGB (Widerrufsrecht
+                bei Fernabsatzverträgen). Der anteilige Erstattungsbetrag wurde basierend auf der
+                ungenutzten Vertragslaufzeit berechnet.
             </Text>
 
             <Section style={{ marginTop: 20 }}>

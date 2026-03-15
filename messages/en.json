@@ -345,6 +345,7 @@
         "overviewDescription": "One-time payment for the selected duration.",
         "resources": "Resources",
         "discount": "Discount (-{percent}%)",
+        "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
         "minOrderHint": "Minimum order value is 1.00 €"
       },
@@ -1268,5 +1269,49 @@
     "games": "Games",
     "dashboard": "Dashboard",
     "support": "Support"
+  },
+  "blog": {
+    "title": "Back to overview",
+    "listTitle": "Latest Posts",
+    "readMore": "Read more",
+    "noPosts": "No posts yet.",
+    "allCategories": "All",
+    "publishedOn": "Published on",
+    "draft": "Draft",
+    "scheduled": "Scheduled",
+    "published": "Published",
+    "category": "Category"
+  },
+  "changelog": {
+    "title": "What's New",
+    "subtitle": "The latest updates, improvements, and fixes.",
+    "readMore": "Read more",
+    "viewAll": "View all changes"
+  },
+  "adminBlog": {
+    "title": "Blog Posts",
+    "new": "New Post",
+    "edit": "Edit Post",
+    "slug": "Slug",
+    "category": "Category",
+    "publishedAt": "Publish Date",
+    "published": "Published",
+    "content": "Content (Markdown)",
+    "preview": "Preview",
+    "saveSuccess": "Post saved.",
+    "deleteSuccess": "Post deleted.",
+    "noPostsYet": "No blog posts yet.",
+    "draft": "Draft",
+    "scheduled": "Scheduled"
+  },
+  "adminChangelog": {
+    "title": "Changelog",
+    "new": "New Entry",
+    "edit": "Edit Entry",
+    "text": "Short description",
+    "blogPost": "Related blog post",
+    "noBlogPost": "None",
+    "saveSuccess": "Entry saved.",
+    "deleteSuccess": "Entry deleted."
   }
 }

@@ -76,7 +76,7 @@ export function formatBytes(bytes: number): string {
 
 /**
  * Converts megabytes (MB as mebibytes) to gibibytes (GiB) and formats as a string.
- * 
+ *
  * @param mb - The value in megabytes (mebibytes).
  * @param decimals - Number of decimal places (default: 0).
  * @returns Formatted string with GiB unit.
@@ -88,7 +88,7 @@ export function formatMBToGiB(mb: number, decimals: number = 0): string {
 
 /**
  * Converts megabytes to formatted string with appropriate binary unit (MiB or GiB).
- * 
+ *
  * @param mb - The value in megabytes (mebibytes).
  * @returns Formatted string with MiB or GiB unit.
  */
@@ -101,7 +101,7 @@ export function formatMB(mb: number): string {
 
 /**
  * Formats a value already in GiB with appropriate unit (MiB or GiB).
- * 
+ *
  * @param gib - The value in gibibytes.
  * @returns Formatted string with MiB or GiB unit.
  */

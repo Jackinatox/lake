@@ -10,10 +10,9 @@ import { ThemeProvider } from 'next-themes';
 import { Geist, Inter } from 'next/font/google';
 import './globals.css';
 import DevSessionInfo from '@/components/auth/DevSessionInfo';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export async function generateMetadata(): Promise<Metadata> {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
@@ -21,10 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
         metadataBase: appUrl ? new URL(appUrl) : undefined,
         title: 'Scyed Hosting',
         description: 'A little above average Gameserver hosting platform',
-        robots: {
-            index: false,
-            follow: false,
-        },
     };
 }
 
@@ -49,7 +44,11 @@ export default async function RootLayout({
     const messages = (await import(`../messages/${locale}.json`)).default;
 
     return (
-        <html lang={locale} className={cn(geistSans.className, "font-sans", inter.variable)} suppressHydrationWarning>
+        <html
+            lang={locale}
+            className={cn(geistSans.className, 'font-sans', inter.variable)}
+            suppressHydrationWarning
+        >
             <head>
                 <PublicEnvScript />
             </head>

@@ -1,17 +1,18 @@
 'use client';
 
 import GameCard from '@/components/order/game/gameCard';
+import HardwareChipBar from '@/components/order/HardwareChipBar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Archive, Clock, Cpu, HardDrive, MemoryStick, Network } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
-import { percentToVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { GameData, PerformanceGroup, ResourceTier } from '@/models/prisma';
 
-type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & { images: { dark: string; light: string } };
+type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & {
+    images: { dark: string; light: string };
+};
 
 interface Props {
     games: GameCard[];
@@ -19,10 +20,12 @@ interface Props {
     performanceGroups: PerformanceGroup[];
 }
 
-export default function GamesAfterHardwareClient({ games, resourceTiers, performanceGroups }: Props) {
+export default function GamesAfterHardwareClient({
+    games,
+    resourceTiers,
+    performanceGroups,
+}: Props) {
     const searchParams = useSearchParams();
-    const locale = useLocale();
-    const daysSuffix = locale === 'de' ? 'T' : 'd';
     const cpu = searchParams.get('cpu') ?? '4';
     const ram = searchParams.get('ram') ?? '4';
     const days = searchParams.get('days') ?? '30';
@@ -39,8 +42,14 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
 
     const totalCents = (() => {
         if (!selectedPfGroup) return null;
-        const price = calculateNew(selectedPfGroup, parseFloat(cpu) * 100, parseFloat(ram) * 1024, Number(days));
-        return price.totalCents + (selectedTier?.priceCents ?? 0);
+        const price = calculateNew(
+            selectedPfGroup,
+            parseFloat(cpu) * 100,
+            parseFloat(ram) * 1024,
+            Number(days),
+            selectedTier?.priceCents ?? 0,
+        );
+        return price.totalCents;
     })();
 
     // Carry hardware params forward to the setup page
@@ -85,57 +94,16 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
             {/* Hardware summary */}
             <div className="w-full max-w-6xl mx-auto pt-4 px-2 md:px-6">
                 <Card className="mb-6">
-                    <div className="flex items-center gap-2 md:gap-3 p-3 overflow-x-auto scrollbar-none">
-                        {/* Primary specs */}
-                        <Chip color="blue" label="CPU">
-                            <Cpu className="h-3.5 w-3.5 text-blue-500" />
-                            {percentToVCores(parseFloat(cpu) * 100)}
-                        </Chip>
-
-                        <Chip color="purple" label="RAM">
-                            <MemoryStick className="h-3.5 w-3.5 text-purple-500" />
-                            {ram}
-                        </Chip>
-
-                        {selectedTier && (
-                            <Chip color="green" label="Disk">
-                                <HardDrive className="h-3.5 w-3.5 text-emerald-500" />
-                                {selectedTier.diskMB / 1024}
-                            </Chip>
-                        )}
-
-                        <div className="w-px h-5 bg-border shrink-0" />
-
-
-                        {/* Secondary specs */}
-                        {selectedTier && (
-                            <>
-                                <Chip color="muted" label="Backups">
-                                    <Archive className="h-3.5 w-3.5 text-muted-foreground" />
-                                    {selectedTier.backups}
-                                </Chip>
-
-                                <Chip color="muted" label="Ports">
-                                    <Network className="h-3.5 w-3.5 text-muted-foreground" />
-                                    {selectedTier.ports}
-                                </Chip>
-                            </>
-                        )}
-
-                        <Chip color="muted" label="Duration">
-                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                            {days}{daysSuffix}
-                        </Chip>
-
-                        {totalCents != null && (
-                            <>
-                                <div className="w-px h-5 bg-border shrink-0 ml-auto" />
-                                <Chip color="primary">
-                                    {(totalCents / 100).toFixed(2)} €
-                                </Chip>
-                            </>
-                        )}
-                    </div>
+                    <HardwareChipBar
+                        cpu={parseFloat(cpu)}
+                        ram={parseFloat(ram)}
+                        days={Number(days)}
+                        diskGB={selectedTier ? selectedTier.diskMB / 1024 : 0}
+                        backups={selectedTier?.backups ?? 0}
+                        ports={selectedTier?.ports ?? 0}
+                        totalCents={totalCents ?? 0}
+                        className="p-3"
+                    />
                 </Card>
             </div>
 
@@ -154,32 +122,6 @@ export default function GamesAfterHardwareClient({ games, resourceTiers, perform
                     ))}
                 </div>
             </div>
-        </div>
-    );
-}
-
-function Chip({
-    color,
-    label,
-    children,
-}: {
-    color: 'blue' | 'purple' | 'green' | 'muted' | 'primary';
-    label?: string;
-    children: React.ReactNode;
-}) {
-    const bg: Record<string, string> = {
-        blue: 'bg-blue-500/10',
-        purple: 'bg-purple-500/10',
-        green: 'bg-emerald-500/10',
-        muted: 'bg-muted',
-        primary: 'bg-primary/10 text-primary font-semibold',
-    };
-    return (
-        <div
-            className={`shrink-0 flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${bg[color]}`}
-        >
-            {children}
-            {label && <span className="hidden sm:inline text-muted-foreground font-normal">{label}</span>}
         </div>
     );
 }

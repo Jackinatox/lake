@@ -345,6 +345,7 @@
         "overviewDescription": "Einmalige Zahlung für die gewählte Laufzeit.",
         "resources": "Ressourcen",
         "discount": "Rabatt (-{percent}%)",
+        "surcharge": "Kurzzeitaufschlag (+{percent}%)",
         "total": "Gesamt",
         "minOrderHint": "Mindestbestellwert ist 1,00 €"
       },
@@ -1268,5 +1269,49 @@
     "games": "Spiele",
     "dashboard": "Dashboard",
     "support": "Support"
+  },
+  "blog": {
+    "title": "Zurück zur Übersicht",
+    "listTitle": "Neueste Beiträge",
+    "readMore": "Weiterlesen",
+    "noPosts": "Noch keine Beiträge.",
+    "allCategories": "Alle",
+    "publishedOn": "Veröffentlicht am",
+    "draft": "Entwurf",
+    "scheduled": "Geplant",
+    "published": "Veröffentlicht",
+    "category": "Kategorie"
+  },
+  "changelog": {
+    "title": "Neuigkeiten",
+    "subtitle": "Die neuesten Updates, Verbesserungen und Fehlerbehebungen.",
+    "readMore": "Weiterlesen",
+    "viewAll": "Alle Neuigkeiten anzeigen"
+  },
+  "adminBlog": {
+    "title": "Blog-Beiträge",
+    "new": "Neuer Beitrag",
+    "edit": "Beitrag bearbeiten",
+    "slug": "Slug",
+    "category": "Kategorie",
+    "publishedAt": "Veröffentlichungsdatum",
+    "published": "Veröffentlicht",
+    "content": "Inhalt (Markdown)",
+    "preview": "Vorschau",
+    "saveSuccess": "Beitrag gespeichert.",
+    "deleteSuccess": "Beitrag gelöscht.",
+    "noPostsYet": "Noch keine Blog-Beiträge.",
+    "draft": "Entwurf",
+    "scheduled": "Geplant"
+  },
+  "adminChangelog": {
+    "title": "Changelog",
+    "new": "Neuer Eintrag",
+    "edit": "Eintrag bearbeiten",
+    "text": "Kurzbeschreibung",
+    "blogPost": "Zugehöriger Blog-Beitrag",
+    "noBlogPost": "Keiner",
+    "saveSuccess": "Eintrag gespeichert.",
+    "deleteSuccess": "Eintrag gelöscht."
   }
 }

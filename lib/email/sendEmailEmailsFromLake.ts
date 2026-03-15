@@ -193,7 +193,12 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
         }),
     );
 
-    await sendMail(data.userEmail, `Rechnungsübersicht für deinen ${data.gameName} Server`, html, 'INVOICE');
+    await sendMail(
+        data.userEmail,
+        `Rechnungsübersicht für deinen ${data.gameName} Server`,
+        html,
+        'INVOICE',
+    );
 }
 
 interface FreeServerCreatedEmailData {

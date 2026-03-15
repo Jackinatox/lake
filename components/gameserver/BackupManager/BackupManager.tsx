@@ -416,9 +416,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-base font-semibold">{t('title')}</h2>
-                        <p className="text-xs text-muted-foreground">
-                            {t('description')}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{t('description')}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         <Button
@@ -451,7 +449,11 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
 
                 {backupLimit > 0 ? (
                     <p className="text-xs text-muted-foreground">
-                        {t('slotsUsed', { used: backups.length, limit: backupLimit, size: formatBytes(totalSize) })}
+                        {t('slotsUsed', {
+                            used: backups.length,
+                            limit: backupLimit,
+                            size: formatBytes(totalSize),
+                        })}
                     </p>
                 ) : (
                     <p className="text-xs text-muted-foreground">
@@ -462,18 +464,14 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                 {limitReached && (
                     <Alert>
                         <AlertTitle>{t('limitReachedTitle')}</AlertTitle>
-                        <AlertDescription>
-                            {t('limitReachedDescription')}
-                        </AlertDescription>
+                        <AlertDescription>{t('limitReachedDescription')}</AlertDescription>
                     </Alert>
                 )}
 
                 {!ptUrl && (
                     <Alert variant="destructive">
                         <AlertTitle>{t('configRequiredTitle')}</AlertTitle>
-                        <AlertDescription>
-                            {t('configRequiredDescription')}
-                        </AlertDescription>
+                        <AlertDescription>{t('configRequiredDescription')}</AlertDescription>
                     </Alert>
                 )}
 

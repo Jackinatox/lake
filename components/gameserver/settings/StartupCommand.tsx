@@ -19,9 +19,7 @@ function StartupCommand({ command }: StartupCommandProps) {
                 className="font-mono text-sm bg-muted/50"
                 rows={3}
             />
-            <p className="text-xs text-muted-foreground">
-                {t('description')}
-            </p>
+            <p className="text-xs text-muted-foreground">{t('description')}</p>
         </div>
     );
 }

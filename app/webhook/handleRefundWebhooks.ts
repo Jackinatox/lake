@@ -377,3 +377,44 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
         });
     }
 }
+
+
+export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
+    try {
+        if (!invoice.invoice_pdf) {
+            logger.info('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
+                details: { invoiceId: invoice.id },
+            });
+            return;
+        }
+
+        const order = await prisma.gameServerOrder.findFirst({
+            where: { stripeInvoiceId: invoice.id },
+            select: { id: true, userId: true, gameServerId: true },
+        });
+
+        if (!order) {
+            logger.warn(
+                'invoice.payment_succeeded: No order found for invoice',
+                'PAYMENT_LOG',
+                { details: { invoiceId: invoice.id } },
+            );
+            return;
+        }
+
+        await prisma.gameServerOrder.update({
+            where: { id: order.id },
+            data: { invoicePdfUrl: invoice.invoice_pdf },
+        });
+
+        logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT_LOG', {
+            userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
+            details: { orderId: order.id, invoiceId: invoice.id },
+        });
+    } catch (error) {
+        logger.error('Error handling invoice.payment_succeeded', 'PAYMENT_LOG', {
+            details: { invoiceId: invoice.id, error },
+        });
+    }
+}

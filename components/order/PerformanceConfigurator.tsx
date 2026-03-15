@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
@@ -13,15 +14,20 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
-import type { HardwareRecommendationSlim } from '@/models/prisma';
+import type { HardwareRecommendationSlim, ResourceTierDisplay } from '@/models/prisma';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
 
 // ── Duration config ──────────────────────────────────────────────────────
-const DURATIONS: readonly { value: number; labelKey: string; discount?: number }[] = [
-    { value: 7, labelKey: 'durations.week' },
+const DURATIONS: readonly {
+    value: number;
+    labelKey: string;
+    discount?: number;
+    surcharge?: number;
+}[] = [
+    { value: 7, labelKey: 'durations.week', surcharge: 15 },
     { value: 30, labelKey: 'durations.month' },
     { value: 90, labelKey: 'durations.threeMonths', discount: 10 },
     { value: 180, labelKey: 'durations.sixMonths', discount: 15 },
@@ -30,16 +36,6 @@ const DURATIONS: readonly { value: number; labelKey: string; discount?: number }
 // ── Helpers ──────────────────────────────────────────────────────────────
 function clampToNearest(value: number, stops: number[]): number {
     return stops.reduce((best, v) => (Math.abs(v - value) < Math.abs(best - value) ? v : best));
-}
-
-// ── Types ────────────────────────────────────────────────────────────────
-export interface ResourceTierDisplay {
-    id: number;
-    name: string;
-    diskMB: number;
-    backups: number;
-    ports: number;
-    priceCents: number;
 }
 
 interface PerformanceConfiguratorProps {
@@ -210,14 +206,21 @@ export default function PerformanceConfigurator({
 
     const totalPrice = useMemo<NewPriceDef>(() => {
         if (selectedPFGroup?.cpu && selectedPFGroup?.ram) {
-            return calculateNew(selectedPFGroup, cpuCores * 100, ramGb * 1024, days);
+            return calculateNew(
+                selectedPFGroup,
+                cpuCores * 100,
+                ramGb * 1024,
+                days,
+                tierPriceCents,
+            );
         }
         return {
             cents: { cpu: 0, ram: 0 },
             discount: { cents: 0, percent: 0 },
             totalCents: 0,
+            tierPriceCents: 0,
         };
-    }, [selectedPFGroup, cpuCores, ramGb, days]);
+    }, [selectedPFGroup, cpuCores, ramGb, days, tierPriceCents]);
 
     const handleContinue = () => {
         router.push(continueHref(buildParams()));
@@ -225,10 +228,9 @@ export default function PerformanceConfigurator({
 
     useEffect(() => {
         if (!onPriceUpdate) return;
-        const grandTotal = totalPrice.totalCents + tierPriceCents;
         onPriceUpdate({
-            totalCents: grandTotal,
-            disabled: !selectedTier || grandTotal < 100,
+            totalCents: totalPrice.totalCents,
+            disabled: !selectedTier || totalPrice.totalCents < 100,
             onContinue: handleContinue,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -287,44 +289,40 @@ export default function PerformanceConfigurator({
 
                             {/* Billing period */}
                             <Section label={t('billingPeriod')}>
-                                <Tabs
-                                    value={days.toString()}
-                                    onValueChange={(v) => setDays(Number(v))}
-                                >
-                                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
-                                        {DURATIONS.map((d) => (
-                                            <TabsTrigger
-                                                key={d.value}
-                                                value={d.value.toString()}
-                                                className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                            >
-                                                <div className="text-center">
-                                                    <div className="font-medium">
-                                                        {t(d.labelKey as any)}
-                                                    </div>
-                                                    {d.discount ? (
-                                                        <div className="text-xs opacity-80 text-green-600">
-                                                            -{d.discount}%
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-xs opacity-80">
-                                                            {t('durations.days', {
-                                                                days: d.value,
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TabsTrigger>
-                                        ))}
-                                    </TabsList>
-                                </Tabs>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 p-1 rounded-lg bg-muted/50">
+                                    {DURATIONS.map((d) => (
+                                        <button
+                                            key={d.value}
+                                            type="button"
+                                            onClick={() => setDays(d.value)}
+                                            className={cn(
+                                                'flex flex-col items-center justify-center gap-0.5 rounded-md p-2 sm:p-3 text-sm font-medium transition-all',
+                                                days === d.value
+                                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                            )}
+                                        >
+                                            <span>{t('durations.days', { days: d.value })}</span>
+                                            {d.discount && (
+                                                <span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-bold shadow-sm">
+                                                    -{d.discount}%
+                                                </span>
+                                            )}
+                                            {d.surcharge && (
+                                                <span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-orange-500 text-white font-bold shadow-sm">
+                                                    +{d.surcharge}%
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </Section>
 
                             {/* CPU */}
                             <SliderSection
                                 label={formatVCores(cpuCores)}
                                 sublabel={selectedPFGroup.cpu.name}
-                                detail={`${(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)} ${tl('perVcore')}`}
+                                detail={`${((selectedPFGroup.cpu.pricePerCore / 100 / 30) * days).toFixed(2)} ${tl('perVcore')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableCpuStops}
@@ -338,7 +336,7 @@ export default function PerformanceConfigurator({
                             {/* RAM */}
                             <SliderSection
                                 label={`${ramGb} ${tl('ramUnit')}`}
-                                detail={`${(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)} ${tl('perGiB')}`}
+                                detail={`${((selectedPFGroup.ram.pricePerGb / 100 / 30) * days).toFixed(2)} ${tl('perGiB')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableRamStops}
@@ -351,23 +349,21 @@ export default function PerformanceConfigurator({
                             </SliderSection>
 
                             {/* Recommendation note */}
-                            {activeRecommendation && (
-                                <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
-                                    <InfoButton className="w-3.5 h-3.5 mt-0.5 shrink-0" text="" />
-                                    <div>
-                                        <span>{t('recommendation.note' as any)}</span>
-                                        <span className="inline-flex items-center gap-1.5 ml-2">
-                                            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
-                                            <span>{t('recommendation.min' as any)}</span>
-                                            <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
-                                            <span>{t('recommendation.recommended' as any)}</span>
+                            {activeRecommendation && cpuMarkers.length > 0 && (
+                                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+                                    <InfoButton className="w-3.5 h-3.5 shrink-0" text="" />
+                                    <span>{t('recommendation.note' as any)}</span>
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
+                                        <span>{t('recommendation.min' as any)}</span>
+                                        <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
+                                        <span>{t('recommendation.recommended' as any)}</span>
+                                    </span>
+                                    {activeRecommendation.note && (
+                                        <span className="w-full text-muted-foreground/80">
+                                            {activeRecommendation.note}
                                         </span>
-                                        {activeRecommendation.note && (
-                                            <p className="mt-1 text-muted-foreground/80">
-                                                {activeRecommendation.note}
-                                            </p>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
                             )}
 
@@ -377,6 +373,7 @@ export default function PerformanceConfigurator({
                                     tiers={resourceTiers}
                                     selectedId={selectedTierId}
                                     onSelect={setSelectedTierId}
+                                    days={days}
                                 />
                             )}
                         </CardContent>
@@ -385,13 +382,12 @@ export default function PerformanceConfigurator({
 
                 {/* ── Price overview ───────────────────────────────────── */}
                 <div className="order-2 lg:order-2">
-                    <div className="lg:sticky lg:top-4">
+                    <div className="lg:sticky lg:top-22">
                         <PriceOverview
                             cpuCores={cpuCores}
                             ramGb={ramGb}
                             days={days}
                             totalPrice={totalPrice}
-                            tierPriceCents={tierPriceCents}
                             onContinue={handleContinue}
                             continueLabel={continueLabel}
                             disableContinue={!selectedTier}
@@ -444,7 +440,7 @@ function SliderSection({
 export function configuredHardwareFromParams(
     searchParams: URLSearchParams,
     resourceTiers: ResourceTierDisplay[],
-): { hardwareConfig: HardwareConfig; tierId: number } | null {
+): { hardwareConfig: HardwareConfig; tierId: number; tierPriceCents: number } | null {
     const pf = searchParams.get('pf');
     const cpu = searchParams.get('cpu');
     const ram = searchParams.get('ram');
@@ -471,5 +467,6 @@ export function configuredHardwareFromParams(
             durationsDays: Number(days),
         },
         tierId,
+        tierPriceCents: selectedTier.priceCents,
     };
 }

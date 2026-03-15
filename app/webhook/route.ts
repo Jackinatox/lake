@@ -8,7 +8,12 @@ import { env } from 'next-runtime-env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import handleCheckoutSessionCompleted from './handleCheckoutSessionCompleted';
-import { handleRefundUpdated, handleChargeRefunded, handleChargeDisputeCreated } from './handleRefundWebhooks';
+import {
+    handleRefundUpdated,
+    handleChargeRefunded,
+    handleChargeDisputeCreated,
+    handlePaymentSucceded,
+} from './handleRefundWebhooks';
 
 export async function POST(req: NextRequest) {
     const body = await req.text();
@@ -154,6 +159,14 @@ export async function POST(req: NextRequest) {
                 details: { disputeId: dispute.id, chargeId: dispute.charge },
             });
             await handleChargeDisputeCreated(dispute);
+            break;
+
+        case 'invoice.payment_succeeded':
+            const invoice = event.data.object as Stripe.Invoice;
+            logger.info('Invoice payment succeeded', 'PAYMENT_LOG', {
+                details: { invoiceId: invoice.id },
+            });
+            await handlePaymentSucceded(invoice);
             break;
 
         default:

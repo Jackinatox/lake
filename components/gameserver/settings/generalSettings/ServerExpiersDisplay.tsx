@@ -26,9 +26,7 @@ function ServerExpiersDisplay({ ptServerId, expiryDate }: ServerExpiersDisplayPr
           ? 'border-transparent bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400'
           : 'border-transparent bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400';
 
-    const badgeLabel = isExpired
-        ? t('expired')
-        : t('daysLeft', { days: diffDays });
+    const badgeLabel = isExpired ? t('expired') : t('daysLeft', { days: diffDays });
 
     return (
         <div>

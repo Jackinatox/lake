@@ -77,9 +77,7 @@ export default function AllocationNotesDialog({
                         rows={3}
                         className="resize-none"
                     />
-                    <p className="text-xs text-muted-foreground text-right">
-                        {notes.length}/255
-                    </p>
+                    <p className="text-xs text-muted-foreground text-right">{notes.length}/255</p>
                 </div>
 
                 <DialogFooter>

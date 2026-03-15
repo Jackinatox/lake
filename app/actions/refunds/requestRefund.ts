@@ -21,7 +21,9 @@ export type WithdrawalEligibilityResult = {
 /**
  * Check if the current user is eligible for a withdrawal (Widerruf) on a specific order.
  */
-export async function checkWithdrawalEligibility(orderId: string): Promise<WithdrawalEligibilityResult> {
+export async function checkWithdrawalEligibility(
+    orderId: string,
+): Promise<WithdrawalEligibilityResult> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
 

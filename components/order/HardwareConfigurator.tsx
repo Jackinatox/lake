@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
@@ -151,6 +152,7 @@ export default function HardwareConfigurator({
             cents: { cpu: 0, ram: 0 },
             discount: { cents: 0, percent: 0 },
             totalCents: 0,
+            tierPriceCents: 0,
         };
     }, [selectedPFGroup, cpuCores, ramGb, days]);
 
@@ -211,37 +213,28 @@ export default function HardwareConfigurator({
 
                             {/* Billing period */}
                             <Section label={t('billingPeriod')}>
-                                <Tabs
-                                    value={days.toString()}
-                                    onValueChange={(v) => setDays(Number(v))}
-                                >
-                                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
-                                        {DURATIONS.map((d) => (
-                                            <TabsTrigger
-                                                key={d.value}
-                                                value={d.value.toString()}
-                                                className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                            >
-                                                <div className="text-center">
-                                                    <div className="font-medium">
-                                                        {t(d.labelKey as any)}
-                                                    </div>
-                                                    {d.discount ? (
-                                                        <div className="text-xs opacity-80 text-green-600">
-                                                            -{d.discount}%
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-xs opacity-80">
-                                                            {t('durations.days', {
-                                                                days: d.value,
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </TabsTrigger>
-                                        ))}
-                                    </TabsList>
-                                </Tabs>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 p-1 rounded-lg bg-muted/50">
+                                    {DURATIONS.map((d) => (
+                                        <button
+                                            key={d.value}
+                                            type="button"
+                                            onClick={() => setDays(d.value)}
+                                            className={cn(
+                                                'flex flex-col items-center justify-center gap-0.5 rounded-md p-2 sm:p-3 text-xs sm:text-sm font-medium transition-all',
+                                                days === d.value
+                                                    ? 'bg-primary text-primary-foreground shadow-sm'
+                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                            )}
+                                        >
+                                            <span>{t(d.labelKey as any)}</span>
+                                            {d.discount && (
+                                                <span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-emerald-500 text-white font-bold shadow-sm">
+                                                    -{d.discount}%
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
                             </Section>
 
                             {/* CPU */}

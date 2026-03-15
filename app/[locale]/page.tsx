@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
+import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { ArrowRight, CheckCircle, Gift } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
@@ -281,16 +282,18 @@ export default async function LandingPage() {
                 </div>
             </section>
 
+            <ChangelogStrip />
+
             {/* Tools Section */}
-            <Card className="hidden md:block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
-                {stuff}
-            </Card>
+            <div className="hidden md:block mt-5 w-full px-2 max-w-screen-2xl mx-auto">
+                <Card className="py-20">{stuff}</Card>
+            </div>
             <div className="md:hidden block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
                 {stuff}
             </div>
 
             {/* CTA Section */}
-            <div className="mt-4 mx-auto w-full max-w-screen-2xl px-2 md:px-0 py-8 md:py-0">
+            <div className="mt-4 mx-auto w-full max-w-screen-2xl px-2 py-8 md:py-0">
                 <Card className="bg-primary/10 border border-primary/20 text-center px-2 md:px-6 py-2 md:py-10">
                     <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('ctaHeader')}</h2>
                     <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-sm md:text-base">

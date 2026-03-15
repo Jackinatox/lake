@@ -16,7 +16,7 @@ export default function CookieSettingsButton() {
     return (
         <button
             onClick={openBanner}
-            type='button'
+            type="button"
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
             <Cookie className="h-3.5 w-3.5" />

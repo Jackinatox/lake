@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import {
     Activity,
+    BookOpen,
     CalendarClock,
     Cog,
     Database,
     FileText,
     Gamepad2Icon,
+    History,
     MonitorX,
     RefreshCw,
     SquarePlay,
@@ -86,6 +88,13 @@ const tiles: AdminTile[] = [
         link: '/admin/keyvalue',
         Icon: Database,
         color: 'from-teal-500 to-cyan-600',
+    },
+    { name: 'Blog', link: '/admin/blog', Icon: BookOpen, color: 'from-sky-500 to-blue-600' },
+    {
+        name: 'Neuigkeiten',
+        link: '/admin/changelog',
+        Icon: History,
+        color: 'from-violet-500 to-purple-600',
     },
 ];
 
