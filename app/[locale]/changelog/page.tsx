@@ -2,6 +2,7 @@ import { getPublishedChangelog } from '@/app/actions/changelog/changelogActions'
 import { Badge } from '@/components/ui/badge';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import formatDate from '@/lib/formatDate';
 
 type ChangelogEntry = Awaited<ReturnType<typeof getPublishedChangelog>>[number];
 
@@ -39,7 +40,7 @@ function groupByMonth(entries: ChangelogEntry[], locale: string) {
 
     for (const entry of entries) {
         const date = entry.publishedAt;
-        const key = date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+        const key = formatDate(date);
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push(entry);
     }
@@ -92,10 +93,7 @@ export default async function ChangelogPage() {
                                                     {cfg.label}
                                                 </Badge>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {date.toLocaleDateString("de", {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                    })}
+                                                    {formatDate(date)}
                                                 </span>
                                             </div>
                                             <h2

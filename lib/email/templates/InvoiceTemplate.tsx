@@ -38,19 +38,6 @@ const formatPrice = (cents: number) => {
     }).format(cents / 100);
 };
 
-const getOrderTypeLabel = (type: string) => {
-    switch (type) {
-        case 'NEW':
-            return 'Neue Buchung';
-        case 'UPGRADE':
-            return 'Upgrade';
-        case 'RENEW':
-            return 'Verlängerung';
-        default:
-            return type;
-    }
-};
-
 export default function InvoiceTemplate({
     userName,
     invoiceNumber,
@@ -168,15 +155,8 @@ export default function InvoiceTemplate({
                 <Heading style={{ ...subheadingStyle, marginBottom: 8 }}>
                     Leistungsbeschreibung
                 </Heading>
-                <Text style={{ ...textStyle, fontWeight: 600, marginTop: 4 }}>
-                    {gameName} - {getOrderTypeLabel(orderType)}
-                </Text>
                 <table style={{ width: '100%', marginTop: 8 }} cellPadding="0" cellSpacing="0">
                     <tbody>
-                        <tr>
-                            <td style={smallLabelStyle}>Server:</td>
-                            <td style={smallValueStyle}>{serverName}</td>
-                        </tr>
                         <tr>
                             <td style={smallLabelStyle}>Konfiguration:</td>
                             <td style={smallValueStyle}>

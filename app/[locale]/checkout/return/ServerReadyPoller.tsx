@@ -75,17 +75,21 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
     useEffect(() => {
         if (orderStatus !== 'PAID') return;
+        if (redirectStartedRef.current) return;
 
-        if (redirectStartedRef.current) {
+        let url: string;
+        if (ptServerId) {
+            url = `/gameserver/${ptServerId}`;
+        } else if (orderType === 'UPGRADE' || orderType === 'RENEW') {
+            url = `/gameserver`;
+        } else if (workerJobId) {
+            url = `/products/wait/${workerJobId}`;
+        } else {
+            // workerJobId not available yet — wait for next poll
             return;
         }
 
         redirectStartedRef.current = true;
-        const url = ptServerId
-            ? `/gameserver/${ptServerId}`
-            : orderType === 'UPGRADE' || orderType === 'RENEW'
-              ? `/gameserver`
-              : `/products/wait/${workerJobId}`;
         router.push(url);
     }, [workerJobId, orderStatus, orderType, ptServerId, router]);
 

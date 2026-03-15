@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import { listBlogPostsAdmin } from '@/app/actions/blog/blogActions';
 import { DeleteBlogPostButton } from './BlogAdminClient';
+import formatDate from '@/lib/formatDate';
 
 function getStatus(post: { published: boolean; listed: boolean; publishedAt: Date }) {
     if (!post.published) return { label: 'Draft', color: 'text-muted-foreground' };
@@ -105,7 +106,7 @@ export default async function AdminBlogPage() {
                                             </span>
                                         </div>
                                         <div className="hidden w-32 text-xs text-muted-foreground md:block">
-                                            {date.toLocaleDateString()}
+                                            {formatDate(date)}
                                         </div>
                                         <div className="flex shrink-0 gap-2 justify-end">
                                             <Button size="sm" variant="outline" asChild>

@@ -35,9 +35,6 @@ async function sendTelegramMessage(
 ): Promise<boolean> {
     const deploymentEnv = env('DEPLOYMENT_ENV') || 'development';
     if (deploymentEnv === 'development') {
-        logger.info('Telegram notification skipped in development environment', 'TELEGRAM', {
-            details: { message, options },
-        });
         return false;
     }
     const chat_id = env('TELEGRAM_CHAT_ID');

@@ -184,8 +184,8 @@ export default async function handleCheckoutSessionCompleted(
                 await sendInvoiceEmail({
                     userName: updatedOrder.user.name || 'Spieler',
                     userEmail: updatedOrder.user.email,
-                    invoiceNumber: `INV-${updatedOrder.id.toString().padStart(8, '0')}`,
-                    invoiceDate: new Date(),
+                    invoiceNumber: `${updatedOrder.stripeInvoiceId || updatedOrder.id}`,
+                    invoiceDate: new Date(),    // Todo: Add a date to the order db and let stripe set it once it payed
                     gameName: gameName,
                     gameImageUrl: gameImageUrl,
                     serverName: 'Gameserver',

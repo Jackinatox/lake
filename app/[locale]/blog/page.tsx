@@ -1,5 +1,6 @@
 import { getPublishedBlogPosts, getBlogCategories } from '@/app/actions/blog/blogActions';
 import { Card } from '@/components/ui/card';
+import formatDate from '@/lib/formatDate';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -81,7 +82,7 @@ export default async function BlogPage({
                                             {post.category}
                                         </span>
                                     )}
-                                    <span>{date.toLocaleDateString()}</span>
+                                    <span>{formatDate(date)}</span>
                                 </div>
                                 <Link href={`/blog/${post.slug}`} className="block group">
                                     <h2 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">

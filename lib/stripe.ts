@@ -4,5 +4,5 @@ import 'server-only';
 import Stripe from 'stripe';
 
 export const stripe = new Stripe(env('STRIPE_SECRET_KEY') ?? 'sample_key', {
-    apiVersion: '2025-08-27.basil',
+    apiVersion: '2026-02-25.clover',
 });
