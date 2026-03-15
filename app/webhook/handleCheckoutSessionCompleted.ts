@@ -63,6 +63,7 @@ export default async function handleCheckoutSessionCompleted(
         let paymentIntentId: string | null = null;
         let chargeId: string | null = null;
         let stripeInvoiceId: string | null = null;
+        let paidAt: Date | null = null;
 
         if (typeof session.payment_intent !== 'string' && session.payment_intent) {
             paymentIntentId = session.payment_intent.id;
@@ -74,6 +75,8 @@ export default async function handleCheckoutSessionCompleted(
                 receiptUrl = session.payment_intent.latest_charge.receipt_url;
                 receiptPdfUrl = session.payment_intent.latest_charge.receipt_url;
                 chargeId = session.payment_intent.latest_charge.id;
+                // Use Stripe's authoritative charge timestamp as the legal payment date
+                paidAt = new Date(session.payment_intent.latest_charge.created * 1000);
             }
         } else if (typeof session.payment_intent === 'string') {
             paymentIntentId = session.payment_intent;
@@ -97,6 +100,7 @@ export default async function handleCheckoutSessionCompleted(
                 stripeChargeId: chargeId,
                 stripeInvoiceId,
                 status: 'PAID',
+                paidAt: paidAt ?? new Date(), // Stripe charge timestamp; fallback to webhook receipt time
                 receipt_url: receiptUrl,
                 invoicePdfUrl,
                 receiptPdfUrl,
@@ -185,7 +189,7 @@ export default async function handleCheckoutSessionCompleted(
                     userName: updatedOrder.user.name || 'Spieler',
                     userEmail: updatedOrder.user.email,
                     invoiceNumber: `${updatedOrder.stripeInvoiceId || updatedOrder.id}`,
-                    invoiceDate: new Date(),    // Todo: Add a date to the order db and let stripe set it once it payed
+                    invoiceDate: updatedOrder.paidAt ?? new Date(),
                     gameName: gameName,
                     gameImageUrl: gameImageUrl,
                     serverName: 'Gameserver',

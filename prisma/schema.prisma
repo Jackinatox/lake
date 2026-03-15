@@ -158,6 +158,7 @@ model GameServerOrder {
   errorText           String? // This is just to save any orbitarry error to show the user something
 
   expiresAt DateTime // New expiry date *if* order succeeds
+  paidAt    DateTime? // Set from Stripe charge.created timestamp when webhook is received
 
   gameConfig         Json? // This is the same as the GameConfig in models
   creationGameDataId Int
