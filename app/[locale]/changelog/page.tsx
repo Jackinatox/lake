@@ -37,10 +37,10 @@ const TYPE_CONFIG: Record<string, { label: string; className: string; dot: strin
 function groupByMonth(entries: ChangelogEntry[], locale: string) {
     const groups: { label: string; entries: ChangelogEntry[] }[] = [];
     const map = new Map<string, ChangelogEntry[]>();
+    const fmt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
 
     for (const entry of entries) {
-        const date = entry.publishedAt;
-        const key = formatDate(date);
+        const key = fmt.format(new Date(entry.publishedAt));
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push(entry);
     }
