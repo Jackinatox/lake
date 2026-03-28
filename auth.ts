@@ -32,6 +32,26 @@ function generateRandomPassword(length: number = 32): string {
 }
 
 export const auth = betterAuth({
+    logger: {
+        log: (level, message, ...args) => {
+            const context = args[0] && typeof args[0] === 'object' ? args[0] : undefined;
+            // Better Auth log levels: debug, info, warn, error
+            // Custom logger levels: TRACE, INFO, WARN, ERROR, FATAL (no DEBUG, so debug maps to TRACE)
+            switch (level) {
+                case 'error':
+                    logger.error(message, 'AUTH', context).catch((err) => console.error('[AUTH logger] Failed to write error log:', err));
+                    break;
+                case 'warn':
+                    logger.warn(message, 'AUTH', context).catch((err) => console.error('[AUTH logger] Failed to write warn log:', err));
+                    break;
+                case 'debug':
+                    logger.trace(message, 'AUTH', context).catch((err) => console.error('[AUTH logger] Failed to write debug log:', err));
+                    break;
+                default:
+                    logger.info(message, 'AUTH', context).catch((err) => console.error('[AUTH logger] Failed to write info log:', err));
+            }
+        },
+    },
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
     }),

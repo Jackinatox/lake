@@ -449,6 +449,7 @@ model WorkerLog {
 
 enum LogType {
   SYSTEM
+  AUTH
   AUTHENTICATION
   PAYMENT
   PAYMENT_LOG

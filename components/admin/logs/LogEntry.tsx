@@ -43,6 +43,7 @@ const getLevelColor = (level: LogLevel) => {
 const getTypeColor = (type: LogType) => {
     const colors: Record<LogType, string> = {
         SYSTEM: 'bg-purple-500/10 text-purple-500',
+        AUTH: 'bg-indigo-500/10 text-indigo-500',
         AUTHENTICATION: 'bg-green-500/10 text-green-500',
         PAYMENT: 'bg-emerald-500/10 text-emerald-500',
         PAYMENT_LOG: 'bg-teal-500/10 text-teal-500',

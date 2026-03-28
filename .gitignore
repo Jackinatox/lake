@@ -52,3 +52,4 @@ prismaTesting.ts
 knip.json
 .worker.env
 CLAUDE.md
+package-lock.json
