@@ -32,6 +32,27 @@ function generateRandomPassword(length: number = 32): string {
 }
 
 export const auth = betterAuth({
+    logger: {
+        log: (level, message, ...args) => {
+            const ctx = args.length > 0 ? { details: { args } } : undefined;
+            switch (level) {
+                case 'error':
+                    logger.error(message, 'AUTHENTICATION', ctx).catch(() => {});
+                    break;
+                case 'warn':
+                    logger.warn(message, 'AUTHENTICATION', ctx).catch(() => {});
+                    break;
+                case 'info':
+                    logger.info(message, 'AUTHENTICATION', ctx).catch(() => {});
+                    break;
+                case 'debug':
+                    logger.trace(message, 'AUTHENTICATION', ctx).catch(() => {});
+                    break;
+                default:
+                    logger.info(message, 'AUTHENTICATION', ctx).catch(() => {});
+            }
+        },
+    },
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
     }),
