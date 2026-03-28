@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { GameServer } from '@/models/gameServerModel';
-import { ChevronDown, Gauge, Play, Power, RefreshCw, Square, Zap } from 'lucide-react';
+import { ChevronDown, Gauge, Play, Power, RefreshCw, Square } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
@@ -132,11 +132,30 @@ function MobilePowerDropdown({
     onPowerAction,
 }: MobilePowerDropdownProps) {
     const t = useTranslations('gameserver.dashboard.power');
+
+    const isTransitioning = serverStatus === 'starting' || serverStatus === 'stopping';
+    const primaryAction = isTransitioning ? 'kill' : isRunning ? 'restart' : 'start';
+    const PrimaryIcon = isTransitioning ? Power : isRunning ? RefreshCw : Play;
+    const primaryIconClass = isTransitioning
+        ? 'h-4 w-4 text-destructive'
+        : isRunning
+          ? 'h-4 w-4'
+          : 'h-4 w-4 text-green-500';
+
     return (
-        <DropdownMenu>
+        <div className="flex items-center">
+            <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 rounded-r-none border-r-0"
+                onClick={() => onPowerAction(primaryAction)}
+                disabled={loading}
+            >
+                <PrimaryIcon className={primaryIconClass} />
+            </Button>
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 gap-1 px-2">
-                    <Zap className="h-4 w-4" />
+                <Button variant="outline" size="sm" className="h-8 px-1 rounded-l-none">
                     <ChevronDown className="h-3 w-3" />
                 </Button>
             </DropdownMenuTrigger>
@@ -181,6 +200,7 @@ function MobilePowerDropdown({
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
+        </div>
     );
 }
 
