@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import { useConnectionState } from '@/hooks/useServerWebSocket';
 import { GameServer } from '@/models/gameServerModel';
-import { Check, Loader2, Monitor, Server, Wifi } from 'lucide-react';
+import { Check, Loader2, Monitor, Wifi } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
@@ -223,7 +223,7 @@ export default function ServerLoader({
 
     if (!server) {
         if (loading) {
-            return <LoadingCard serverName={null} gameSlug={initialServer.gameSlug} />;
+            return <LoadingCard serverName={null} />;
         }
         return (
             <div className="min-h-[60vh] pt-[20vh]">
@@ -246,7 +246,6 @@ export default function ServerLoader({
                 server={server}
                 ptApiKey={ptApiKey}
                 features={features}
-                gameSlug={initialServer.gameSlug}
                 loading={loading}
             />
         </WebSocketProvider>
@@ -261,13 +260,11 @@ function WebSocketGate({
     server,
     ptApiKey,
     features,
-    gameSlug,
     loading: dataLoading,
 }: {
     server: GameServer;
     ptApiKey: string;
     features: EggFeature[];
-    gameSlug: string;
     loading: boolean;
 }) {
     const { isConnected, isLoading: wsLoading } = useConnectionState();
@@ -279,7 +276,7 @@ function WebSocketGate({
 
     // Only show the loading card for the initial connection, not reconnects
     if (!hasConnected && (dataLoading || (!isConnected && wsLoading))) {
-        return <LoadingCard serverName={server.name} gameSlug={gameSlug} />;
+        return <LoadingCard serverName={server.name} />;
     }
 
     return (
@@ -292,13 +289,7 @@ function WebSocketGate({
 /**
  * Enhanced loading card that shows server info and step progress.
  */
-function LoadingCard({
-    serverName,
-    gameSlug,
-}: {
-    serverName: string | null;
-    gameSlug: string;
-}) {
+function LoadingCard({ serverName }: { serverName: string | null }) {
     const t = useTranslations();
 
     const dataReady = serverName !== null;
@@ -309,14 +300,8 @@ function LoadingCard({
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Loader2 className="h-5 w-5 animate-spin" />
-                        {t('gameserver.loading')}
+                        {serverName ? `Connecting to ${serverName}` : t('gameserver.loading')}
                     </CardTitle>
-                    {serverName && (
-                        <CardDescription className="flex items-center gap-2 pt-1">
-                            <Server className="h-4 w-4" />
-                            {serverName}
-                        </CardDescription>
-                    )}
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-3 text-sm">
@@ -332,9 +317,6 @@ function LoadingCard({
                             active={dataReady}
                         />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-4 capitalize">
-                        {gameSlug.replace(/-/g, ' ')}
-                    </p>
                 </CardContent>
             </Card>
         </div>

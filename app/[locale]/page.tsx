@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
 import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
-import { ArrowRight, CheckCircle, Gift } from 'lucide-react';
+import { CheckCircle, Gift } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -186,12 +186,6 @@ export default async function LandingPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                         {/* Left Content */}
                         <div className="space-y-6 md:space-y-8 text-center lg:text-left">
-                            {/* Badge */}
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                                <ArrowRight className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">{t('heroBadge')}</span>
-                            </div>
-
                             {/* Main Headline */}
                             <div className="space-y-4">
                                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
