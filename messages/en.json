@@ -718,6 +718,10 @@
     "creationFailed": "Creation Failed",
     "creationFailedMessage": "Our team will resolve this soon",
     "loading": "Loading Server...",
+    "loadingSteps": {
+      "fetchingData": "Fetching server data",
+      "connecting": "Establishing connection"
+    },
     "error": "Error",
     "serverNotFound": "Server Not Found",
     "serverNotFoundDesc": "Unable to load server data",

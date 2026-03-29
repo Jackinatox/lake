@@ -718,6 +718,10 @@
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",
     "loading": "Server wird geladen...",
+    "loadingSteps": {
+      "fetchingData": "Serverdaten werden abgerufen",
+      "connecting": "Verbindung wird hergestellt"
+    },
     "error": "Fehler",
     "serverNotFound": "Server nicht gefunden",
     "serverNotFoundDesc": "Server-Daten konnten nicht geladen werden",

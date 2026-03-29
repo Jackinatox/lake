@@ -5,7 +5,6 @@ import DynamicFeatures from '@/components/gameserver/features/DynamicFeatures';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { WebSocketProvider } from '@/contexts/WebSocketContext';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useServerWebSocket } from '@/hooks/useServerWebSocket';
 import { formatMilliseconds } from '@/lib/formatTime';
@@ -42,14 +41,14 @@ interface serverProps {
 }
 
 /**
- * GameDashboard - Wrapper component that provides WebSocket context
+ * GameDashboard - Main dashboard content (WebSocketProvider is in ServerLoader)
  */
 function GameDashboard({ server, ptApiKey, features }: serverProps) {
     return (
-        <WebSocketProvider serverId={server.identifier} apiKey={ptApiKey} debug>
+        <>
             <GameDashboardContent server={server} ptApiKey={ptApiKey} features={features} />
             <DynamicFeatures features={features} />
-        </WebSocketProvider>
+        </>
     );
 }
 
