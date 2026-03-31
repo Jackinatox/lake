@@ -79,7 +79,7 @@ export default function FreeGameServerBooking({
     const imgName = `${game.name.toLowerCase()}.webp`;
 
     return (
-        <div className="md:-my-4">
+        <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Sticky header */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
                 <div className="w-full px-2 md:px-6 max-w-7xl mx-auto">
@@ -120,7 +120,7 @@ export default function FreeGameServerBooking({
             </div>
 
             {/* Main content */}
-            <div className="w-full pt-4 pb-24 max-w-7xl mx-auto px-0 md:px-6">
+            <div className="w-full pt-4 pb-4 max-w-7xl mx-auto px-0 md:px-6 flex-1">
                 {/* Disabled notice */}
                 {isCreationDisabled && (
                     <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-4 text-sm text-muted-foreground">
@@ -135,7 +135,7 @@ export default function FreeGameServerBooking({
             </div>
 
             {/* Sticky bottom bar */}
-            <div className="fixed bottom-0 left-0 right-0 z-10 bg-background/95 backdrop-blur-md border-t p-3">
+            <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-3">
                 <div className="w-full max-w-5xl mx-auto flex items-center justify-between gap-3">
                     {isCreationDisabled && (
                         <p className="text-xs text-muted-foreground hidden sm:block">
