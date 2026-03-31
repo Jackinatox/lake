@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
 import GameCard from '@/components/order/game/gameCard';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export default async function OrderPage() {
     const games = await prisma.gameData.findMany({
@@ -55,6 +57,15 @@ export default async function OrderPage() {
                                 images={game.images}
                             />
                         ))}
+                    </div>
+                    <div className="mt-6 flex justify-center">
+                        <Link
+                            href="/order/free"
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                        >
+                            Or get a free server
+                            <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
                     </div>
                 </div>
             </section>
