@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
 import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
-import { CheckCircle, Gift } from 'lucide-react';
+import { Clock, Gift, Shield } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,122 +33,69 @@ export default async function LandingPage() {
         };
     });
 
-    const stuff = (
-        <div className="p-2 md:p-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t('toolsHeader')}</h2>
+    const tools = [
+        {
+            title: t('panelTitle'),
+            desc: t('panelDesc'),
+            darkImg: '/images/dark/home/panel.webp',
+            lightImg: '/images/light/home/panel.webp',
+            width: 2074,
+            height: 1412,
+            alt: 'Control panel screenshot',
+        },
+        {
+            title: t('fileManagerTitle'),
+            desc: t('fileManagerDesc'),
+            darkImg: '/images/dark/home/filemanager.webp',
+            lightImg: '/images/light/home/filemanager.webp',
+            width: 1812,
+            height: 906,
+            alt: 'File manager screenshot',
+        },
+        {
+            title: t('backupTitle'),
+            desc: t('backupDesc'),
+            darkImg: '/images/dark/home/backups.webp',
+            lightImg: '/images/light/home/backups.webp',
+            width: 1608,
+            height: 818,
+            alt: 'Backups screenshot',
+        },
+    ];
 
-            {/* Control Panel */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-                <div className="order-2 lg:order-1">
-                    <h3 className="text-2xl font-bold mb-4">{t('panelTitle')}</h3>
-                    <p className="text-muted-foreground mb-6">{t('panelDesc')}</p>
-                    <ul className="space-y-2 mb-6">
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('panelFeature1')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('panelFeature2')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('panelFeature3')}</span>
-                        </li>
-                    </ul>
-                </div>
-                <div className="order-1 lg:order-2">
-                    <Image
-                        src="/images/dark/home/panel.webp"
-                        width={2074}
-                        height={1412}
-                        alt="Control panel screenshot"
-                        className="rounded-lg shadow-lg border hidden dark:block"
-                    />
-                    <Image
-                        src="/images/light/home/panel.webp"
-                        width={2074}
-                        height={1412}
-                        alt="Control panel screenshot"
-                        className="rounded-lg shadow-lg border block dark:hidden"
-                    />
-                </div>
-            </div>
-
-            {/* File Manager */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-                <div>
-                    <Image
-                        src="/images/dark/home/filemanager.webp"
-                        width={1812}
-                        height={906}
-                        alt="Filemanager screenshot"
-                        className="rounded-lg shadow-lg border hidden dark:block"
-                    />
-                    <Image
-                        src="/images/light/home/filemanager.webp"
-                        width={1812}
-                        height={906}
-                        alt="Filemanager screenshot"
-                        className="rounded-lg shadow-lg border block dark:hidden"
-                    />
-                </div>
-                <div>
-                    <h3 className="text-2xl font-bold mb-4">{t('fileManagerTitle')}</h3>
-                    <p className="text-muted-foreground mb-6">{t('fileManagerDesc')}</p>
-                    <ul className="space-y-2 mb-6">
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('fileManagerFeature1')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('fileManagerFeature2')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('fileManagerFeature3')}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            {/* Backup Manager */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="order-2 lg:order-1">
-                    <h3 className="text-2xl font-bold mb-4">{t('backupTitle')}</h3>
-                    <p className="text-muted-foreground mb-6">{t('backupDesc')}</p>
-                    <ul className="space-y-2 mb-6">
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('backupFeature1')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('backupFeature2')}</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-primary" />
-                            <span>{t('backupFeature3')}</span>
-                        </li>
-                    </ul>
-                </div>
-                <div className="order-1 lg:order-2">
-                    <Image
-                        src="/images/dark/home/backups.webp"
-                        width={1608}
-                        height={818}
-                        alt="Backups screenshot"
-                        className="rounded-lg shadow-lg border hidden dark:block"
-                    />
-                    <Image
-                        src="/images/light/home/backups.webp"
-                        width={1608}
-                        height={818}
-                        alt="Backups screenshot"
-                        className="rounded-lg shadow-lg border block dark:hidden"
-                    />
-                </div>
+    const toolsSection = (
+        <div className="px-0 py-2 md:py-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 md:mb-16">
+                {t('toolsHeader')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                {tools.map((tool) => (
+                    <div
+                        key={tool.alt}
+                        className="group rounded-xl border bg-card overflow-hidden transition-shadow hover:shadow-lg"
+                    >
+                        <div className="overflow-hidden">
+                            <Image
+                                src={tool.darkImg}
+                                width={tool.width}
+                                height={tool.height}
+                                alt={tool.alt}
+                                className="w-full h-auto hidden dark:block transition-transform group-hover:scale-[1.02]"
+                            />
+                            <Image
+                                src={tool.lightImg}
+                                width={tool.width}
+                                height={tool.height}
+                                alt={tool.alt}
+                                className="w-full h-auto block dark:hidden transition-transform group-hover:scale-[1.02]"
+                            />
+                        </div>
+                        <div className="p-4 md:p-5">
+                            <h3 className="text-lg font-semibold mb-1.5">{tool.title}</h3>
+                            <p className="text-sm text-muted-foreground">{tool.desc}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
@@ -242,32 +189,17 @@ export default async function LandingPage() {
                                 </div>
                             </div>
 
-                            {/* Stats Row */}
-                            <div className="grid grid-cols-3 gap-4 pt-8 border-t border-border/50">
-                                <div className="text-center lg:text-left">
-                                    <div className="text-2xl md:text-3xl font-bold text-primary">
-                                        {t('statUptime')}
-                                    </div>
-                                    <div className="text-xs md:text-sm text-muted-foreground mt-1">
-                                        {t('statUptimeLabel')}
-                                    </div>
-                                </div>
-                                <div className="text-center lg:text-left">
-                                    <div className="text-2xl md:text-3xl font-bold text-primary">
-                                        {t('statSupport')}
-                                    </div>
-                                    <div className="text-xs md:text-sm text-muted-foreground mt-1">
-                                        {t('statSupportLabel')}
-                                    </div>
-                                </div>
-                                <div className="text-center lg:text-left">
-                                    <div className="text-2xl md:text-3xl font-bold text-primary">
-                                        {t('statSetup')}
-                                    </div>
-                                    <div className="text-xs md:text-sm text-muted-foreground mt-1">
-                                        {t('statSetupLabel')}
-                                    </div>
-                                </div>
+                            {/* Highlights */}
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-6 text-sm text-muted-foreground justify-center lg:justify-start">
+                                <span className="flex items-center gap-1.5">
+                                    <Shield className="h-4 w-4 text-primary" />
+                                    {t('highlightUptime')}
+                                </span>
+                                <span className="hidden sm:inline text-border">|</span>
+                                <span className="flex items-center gap-1.5">
+                                    <Clock className="h-4 w-4 text-primary" />
+                                    {t('highlightSetup')}
+                                </span>
                             </div>
                         </div>
 
@@ -280,10 +212,10 @@ export default async function LandingPage() {
 
             {/* Tools Section */}
             <div className="hidden md:block mt-5 w-full px-2 max-w-screen-2xl mx-auto">
-                <Card className="py-20">{stuff}</Card>
+                <Card className="py-20">{toolsSection}</Card>
             </div>
-            <div className="md:hidden block mt-5 py-20 px-2 md:px-6 max-w-screen-2xl self-center">
-                {stuff}
+            <div className="md:hidden block mt-5 py-10 px-2 max-w-screen-2xl self-center">
+                {toolsSection}
             </div>
 
             {/* CTA Section */}
