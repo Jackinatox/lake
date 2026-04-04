@@ -32,6 +32,32 @@ function generateRandomPassword(length: number = 32): string {
 }
 
 export const auth = betterAuth({
+    logger: {
+        // Better Auth's log callback must be synchronous, so we fire-and-forget
+        // the async logger calls. The logger's internal try/catch ensures it
+        // never rejects, so unhandled rejection warnings cannot occur.
+        // Without `void` (or some rejection handler), an unhandled rejection
+        // would cause Node.js ≥15 to terminate the process.
+        log: (level, message, ...args) => {
+            const ctx = args.length > 0 ? { details: { args } } : undefined;
+            switch (level) {
+                case 'error':
+                    void logger.error(message, 'AUTHENTICATION', ctx);
+                    break;
+                case 'warn':
+                    void logger.warn(message, 'AUTHENTICATION', ctx);
+                    break;
+                case 'info':
+                    void logger.info(message, 'AUTHENTICATION', ctx);
+                    break;
+                case 'debug':
+                    void logger.trace(message, 'AUTHENTICATION', ctx);
+                    break;
+                default:
+                    void logger.info(message, 'AUTHENTICATION', ctx);
+            }
+        },
+    },
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
     }),

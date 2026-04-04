@@ -142,7 +142,7 @@ function DockerImageSelector({
                     onValueChange={setSelectedDockerImage}
                     disabled={loading || disabled || Object.keys(dockerImages).length === 0}
                 >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="flex-1 min-w-0 h-9">
                         <SelectValue placeholder="Select a docker image" />
                     </SelectTrigger>
                     <SelectContent className="w-full">
@@ -156,7 +156,7 @@ function DockerImageSelector({
                     </SelectContent>
                 </Select>
                 <Button
-                    className="gap-2"
+                    className="shrink-0 gap-2"
                     variant="outline"
                     disabled={
                         selectedDockerImage === savedDockerImage || !selectedDockerImage || saving

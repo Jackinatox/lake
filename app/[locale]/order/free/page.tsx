@@ -1,8 +1,6 @@
 import prisma from '@/lib/prisma';
-import { Gamepad2, Layers, Wrench } from 'lucide-react';
 import GameCard from '@/components/order/game/gameCard';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Gift } from 'lucide-react';
 
 export default async function OrderPage() {
     const games = await prisma.gameData.findMany({
@@ -30,9 +28,8 @@ export default async function OrderPage() {
                 <div className="absolute bottom-0 left-0 right-0 h-32 md:h-44 bg-linear-to-t from-background to-transparent" />
                 <div className="relative z-10 mx-auto max-w-6xl px-2 md:px-6">
                     <div className="text-center space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-                            <Gamepad2 className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium">Gameserver Hosting</span>
+                        <div className="flex justify-center">
+                            <Gift className="h-10 w-10 text-green-500" />
                         </div>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                             Choose Your{' '}
@@ -41,7 +38,8 @@ export default async function OrderPage() {
                             </span>
                         </h1>
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                            Select a game for your free server
+                            Select a game for your{' '}
+                            <span className="text-green-500 font-medium">free</span> server
                         </p>
                     </div>
                 </div>

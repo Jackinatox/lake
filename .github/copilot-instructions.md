@@ -27,9 +27,11 @@
 
 ## Tooling
 
-- **Install & Run** Use bun: `bun install`, `bun dev` (Turbopack), `bun build`, `bun start`; ensure `NEXT_PUBLIC_APP_URL` matches the dev URL for Stripe return links.
-- **Database** Spin up Postgres with `docker compose up db`; run `bun exec prisma migrate dev --name <desc>` followed by `bun exec prisma db seed` (loads demo game data and locations).
+- **Package Manager** This project uses **bun exclusively** — never use `npm`, `yarn`, or `pnpm`. Always use `bun install` (not `npm install`), `bun add <pkg>` (not `npm install <pkg>`), `bun add -d <pkg>` for dev deps, and `bun remove <pkg>` to uninstall.
+- **Scripts** Run package scripts with `bun run <script>` (e.g. `bun run build`, `bun run dev`). The common scripts are: `bun dev` (Turbopack dev server), `bun build`, `bun start`, `bun run worker`.
+- **CLI Tools** Use `bunx <tool>` instead of `npx <tool>` for one-off CLI invocations (e.g. `bunx shadcn@latest add <component>`, `bunx prisma studio`). Never use `npx`.
+- **Database** Spin up Postgres with `docker compose up db`; run `bunx prisma migrate dev --name <desc>` followed by `bunx prisma db seed` (loads demo game data and locations). Use `bunx prisma generate` after schema changes.
 - **Stripe** Set `webhookSecret`, `STRIPE_SECRET_KEY`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`; webhook route expects the raw body so avoid body parsers when adding middleware.
 - **Pterodactyl** Provide `NEXT_PUBLIC_PTERODACTYL_URL` (no trailing slash) and `PTERODACTYL_API_KEY`; user-specific requests rely on `session.user.ptKey` populated during signup.
 - **Secrets** `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, Discord creds, and DB settings live in `.env`; copy from `.env.example` when onboarding.
-- **Formatting** Repository relies on Prettier + `eslint-config-next`; follow existing import aliases from `tsconfig.json` (`@/` root path) when creating new modules.
+- **Formatting** Repository relies on Prettier + `eslint-config-next`; run `bunx prettier --write .` and `bunx eslint .` to lint/format. Follow existing import aliases from `tsconfig.json` (`@/` root path) when creating new modules.

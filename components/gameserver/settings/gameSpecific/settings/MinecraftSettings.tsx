@@ -126,7 +126,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                             isUpdating
                         }
                     >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="flex-1 min-w-0 h-9">
                             <SelectValue placeholder="Select a version" />
                         </SelectTrigger>
                         <SelectContent className="w-full">
@@ -145,7 +145,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                             selectedVersion === lastSavedVersion || !selectedVersion || isUpdating
                         }
                         onClick={() => handleRemoteVersionChange(selectedVersion)}
-                        className="flex items-center gap-2"
+                        className="flex shrink-0 items-center gap-2"
                     >
                         <Save className="h-4 w-4" />
                         <span>Save</span>
