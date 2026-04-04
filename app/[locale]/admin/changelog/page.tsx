@@ -1,16 +1,10 @@
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { History, Pencil, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { listChangelogAdmin } from '@/app/actions/changelog/changelogActions';
 import { DeleteChangelogButton } from './ChangelogAdminClient';
@@ -30,27 +24,7 @@ export default async function AdminChangelogPage() {
 
     return (
         <div className="w-full mx-auto">
-            <div className="mb-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin"
-                                className="flex items-center gap-2 text-muted-foreground"
-                            >
-                                <History className="h-4 w-4" />
-                                Admin Panel
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin/changelog" className="text-foreground">
-                                Changelog
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
+            <AdminBreadcrumb items={[{ label: 'Changelog' }]} />
 
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">

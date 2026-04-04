@@ -5,6 +5,7 @@ import { env } from 'next-runtime-env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 
 async function Wings() {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
@@ -28,6 +29,7 @@ async function Wings() {
 
         return (
             <>
+                <AdminBreadcrumb items={[{ label: 'Wings' }]} />
                 <WingsTable wings={wings}></WingsTable>
             </>
         );

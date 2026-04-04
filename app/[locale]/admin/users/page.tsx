@@ -1,18 +1,15 @@
 'use server';
 
-import { Builder } from '@avionrx/pterodactyl-js';
 import UsersTable from './usersTable';
-import { env } from 'next-runtime-env';
-import { SettingsIcon, UsersIcon } from 'lucide-react';
+import { UsersIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import prisma from '@/lib/prisma';
 
 export default async function AdminPage() {
-    const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const apiKey = env('PTERODACTYL_API_KEY');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -26,6 +23,7 @@ export default async function AdminPage() {
 
         return (
             <>
+                <AdminBreadcrumb items={[{ label: 'Users' }]} />
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle>

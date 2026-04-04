@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { JobStatusPageClient } from './JobStatusPageClient';
 
 export default async function Page() {
@@ -12,5 +13,10 @@ export default async function Page() {
         return <NoAdmin />;
     }
 
-    return <JobStatusPageClient />;
+    return (
+        <>
+            <AdminBreadcrumb items={[{ label: 'Job Status' }]} />
+            <JobStatusPageClient />
+        </>
+    );
 }

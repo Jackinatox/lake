@@ -1,15 +1,9 @@
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { Database } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { getKeyValuesAction, KeyValueRow } from '@/app/actions/keyvalue/keyValueActions';
 import { KeyValueType } from '@/app/client/generated/enums';
 import { EntryDialog, DeleteButton } from './KeyValueClient';
@@ -58,27 +52,7 @@ export default async function KeyValuePage() {
 
     return (
         <div className="w-full mx-auto">
-            <div className="mb-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin"
-                                className="flex items-center gap-2 text-muted-foreground"
-                            >
-                                <Database className="h-4 w-4" />
-                                Admin Panel
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin/keyvalue" className="text-foreground">
-                                Key-Value Store
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
+            <AdminBreadcrumb items={[{ label: 'Key-Value Store' }]} />
 
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">

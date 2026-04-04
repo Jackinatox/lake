@@ -3,6 +3,7 @@
 import { auth } from '@/auth';
 import { env } from 'next-runtime-env';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import {
     Table,
     TableHeader,
@@ -52,6 +53,9 @@ async function User({ params }: { params: Promise<{ userId: string }> }) {
 
         return (
             <>
+                <AdminBreadcrumb
+                    items={[{ label: 'Users', href: '/admin/users' }, { label: userId }]}
+                />
                 <div className="overflow-auto mt-6">
                     <div className="w-full">
                         <Table>
