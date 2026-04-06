@@ -145,7 +145,7 @@ const instanceId = process.env.NEXT_PUBLIC_INSTANCE_ID;
 
 const AdminPage = () => {
     return (
-        <div className="w-full py-4 sm:mx-auto sm:max-w-3xl sm:px-4 md:py-8">
+        <div className="w-full py-4 sm:mx-auto sm:px-4 md:py-8 lg:max-w-5xl xl:max-w-6xl">
             {/* Header */}
             <div className="mb-6 flex items-center gap-3 md:mb-8">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 md:h-12 md:w-12">
@@ -166,16 +166,12 @@ const AdminPage = () => {
                         <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                             {section.title}
                         </h2>
-                        <div className="overflow-hidden rounded-xl border border-border bg-card">
-                            {section.items.map((item, i) => (
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            {section.items.map((item) => (
                                 <Link
                                     key={item.name}
                                     href={item.link}
-                                    className={`flex items-center gap-3 px-3 py-3 transition-colors hover:bg-accent/60 active:bg-accent sm:px-4 sm:py-3.5 ${
-                                        i < section.items.length - 1
-                                            ? 'border-b border-border/60'
-                                            : ''
-                                    }`}
+                                    className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3 transition-colors hover:bg-accent/60 active:bg-accent sm:px-4 sm:py-3.5"
                                 >
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/80 sm:h-10 sm:w-10">
                                         <item.Icon className="h-[18px] w-[18px] text-foreground/70 sm:h-5 sm:w-5" />
