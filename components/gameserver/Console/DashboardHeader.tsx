@@ -134,8 +134,8 @@ function MobilePowerDropdown({
     const t = useTranslations('gameserver.dashboard.power');
 
     const isTransitioning = serverStatus === 'starting' || serverStatus === 'stopping';
-    const primaryAction = isTransitioning ? 'kill' : isRunning ? 'restart' : 'start';
-    const PrimaryIcon = isTransitioning ? Power : isRunning ? RefreshCw : Play;
+    const primaryAction = isTransitioning ? 'kill' : isRunning ? 'stop' : 'start';
+    const PrimaryIcon = isTransitioning ? Power : isRunning ? Square : Play;
     const primaryIconClass = isTransitioning
         ? 'h-4 w-4 text-destructive'
         : isRunning
