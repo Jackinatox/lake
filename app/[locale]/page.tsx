@@ -97,22 +97,20 @@ export default async function LandingPage() {
                         className="object-cover opacity-30 hidden dark:block"
                         priority
                     />
-                    <div className="absolute inset-0 bg-linear-to-r from-background via-background/80 to-background/20" />
                     <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
                 </div>
 
                 {/* Fine grid */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.6)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.6)_1px,transparent_1px)] bg-size-[48px_48px] pointer-events-none z-1" />
 
-                {/* Primary glow orb */}
-                <div className="absolute top-1/4 left-1/3 w-125 h-125 rounded-full bg-primary/8 blur-[100px] pointer-events-none dark:bg-primary/10 z-1" />
-
                 {/* Bottom fade into content */}
                 <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-b from-transparent to-background pointer-events-none z-1" />
 
-                <div className="relative z-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8" style={{zIndex: 10}}>
+                <div
+                    className="relative z-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8"
+                    style={{ zIndex: 10 }}
+                >
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-0 items-center min-h-[80vh] py-16">
-
                         {/* ── Left: copy & CTAs ─────────── */}
                         <div className="space-y-7 lg:py-20">
                             <p className="lp-up d0 text-[0.65rem] font-mono tracking-[0.3em] uppercase text-muted-foreground">
@@ -139,11 +137,8 @@ export default async function LandingPage() {
                                 <Button size="lg" variant="outline" className="text-base" asChild>
                                     <Link href="/order/configure">{t('buttonComparePlans')}</Link>
                                 </Button>
-                            </div>
-
-                            <div className="lp-up d4">
                                 <Button
-                                    size="default"
+                                    size="lg"
                                     className="bg-green-600 hover:bg-green-700 text-white"
                                     asChild
                                 >
@@ -184,8 +179,6 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            <ChangelogStrip />
-
             {/* ── SUPPORTED GAMES ─────────────────────────────────── */}
             <section className="mt-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8">
                 <div className="flex items-center justify-between mb-5">
@@ -221,6 +214,10 @@ export default async function LandingPage() {
                         );
                     })}
                 </div>
+            </section>
+
+            <section className="mt-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8">
+                <ChangelogStrip />
             </section>
 
             {/* ── PLATFORM FEATURES ───────────────────────────────── */}
@@ -261,25 +258,25 @@ export default async function LandingPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {tools.slice(1).map((tool) => (
                         <div key={tool.alt} className="group rounded-2xl border overflow-hidden">
+                            <div className="p-5 border-t">
+                                <h3 className="text-lg font-semibold mb-1">{tool.title}</h3>
+                                <p className="text-sm text-muted-foreground">{tool.desc}</p>
+                            </div>
                             <div className="overflow-hidden">
                                 <Image
                                     src={tool.darkImg}
                                     width={tool.width}
                                     height={tool.height}
                                     alt={tool.alt}
-                                    className="w-full h-auto hidden dark:block group-hover:scale-[1.025] transition-transform duration-500"
+                                    className="w-full h-auto hidden dark:block"
                                 />
                                 <Image
                                     src={tool.lightImg}
                                     width={tool.width}
                                     height={tool.height}
                                     alt={tool.alt}
-                                    className="w-full h-auto block dark:hidden group-hover:scale-[1.025] transition-transform duration-500"
+                                    className="w-full h-auto block dark:hidden"
                                 />
-                            </div>
-                            <div className="p-5 border-t">
-                                <h3 className="text-lg font-semibold mb-1">{tool.title}</h3>
-                                <p className="text-sm text-muted-foreground">{tool.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -288,32 +285,28 @@ export default async function LandingPage() {
 
             {/* ── CTA ─────────────────────────────────────────────── */}
             <div className="mt-14 mb-10 mx-auto w-full max-w-screen-2xl px-4 md:px-8">
-                <div className="relative overflow-hidden rounded-2xl border border-primary/25">
-                    <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.06)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.06)_1px,transparent_1px)] bg-size-[32px_32px]" />
-                    <div className="absolute inset-0 bg-linear-to-br from-primary/6 via-transparent to-transparent" />
-                    <div className="relative z-10 px-6 py-14 md:py-20 text-center">
-                        <h2 className="text-2xl md:text-4xl font-bold mb-3">{t('ctaHeader')}</h2>
-                        <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-sm md:text-base">
-                            {t('ctaDesc')}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <Button size="lg" asChild>
-                                <Link href="/order">{t('ctaButton')}</Link>
-                            </Button>
-                            <Button size="lg" variant="outline" asChild>
-                                <Link href="/order/configure">{t('buttonComparePlans')}</Link>
-                            </Button>
-                            <Button
-                                size="lg"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                                asChild
-                            >
-                                <Link href="/order/free" className="flex items-center gap-2">
-                                    <Gift className="h-4 w-4" />
-                                    {t('getFreeServer')}
-                                </Link>
-                            </Button>
-                        </div>
+                <div className="px-6 py-14 md:py-20 text-center">
+                    <h2 className="text-2xl md:text-4xl font-bold mb-3">{t('ctaHeader')}</h2>
+                    <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-sm md:text-base">
+                        {t('ctaDesc')}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button size="lg" asChild>
+                            <Link href="/order">{t('ctaButton')}</Link>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild>
+                            <Link href="/order/configure">{t('buttonComparePlans')}</Link>
+                        </Button>
+                        <Button
+                            size="lg"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            asChild
+                        >
+                            <Link href="/order/free" className="flex items-center gap-2">
+                                <Gift className="h-4 w-4" />
+                                {t('getFreeServer')}
+                            </Link>
+                        </Button>
                     </div>
                 </div>
             </div>

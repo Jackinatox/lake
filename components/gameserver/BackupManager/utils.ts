@@ -1,3 +1,5 @@
+import formatDate from '@/lib/formatDate';
+
 export function formatBytes(bytes: number | null | undefined): string {
     if (bytes === null || bytes === undefined) return 'Unknown';
     if (bytes === 0) return '0 B';
@@ -16,7 +18,7 @@ export function formatDateTime(value: string | null): string {
     if (!value) return '–';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleString();
+    return formatDate(date, true);
 }
 
 export function deriveStatusLabel(status: 'creating' | 'completed' | 'failed'): string {
