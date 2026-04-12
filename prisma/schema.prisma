@@ -1,3 +1,4 @@
+
 datasource db {
   provider = "postgresql"
 }
@@ -284,6 +285,7 @@ model SupportTicket {
 
 model Verification {
   id         String   @id
+  // Better Auth stores short-lived 2FA challenge and trusted-device records here.
   identifier String
   value      String
   expiresAt  DateTime
@@ -325,8 +327,8 @@ model User {
   UserSettings   Json             @default("{}")
   ApplicationLog ApplicationLog[]
 
-  twoFactorEnabled Boolean?    @default(false)
-  twofactors       TwoFactor[]
+  twoFactorEnabled Boolean?   @default(false)
+  twofactors TwoFactor[]
 
   @@unique([email])
   @@unique([ptUsername])
@@ -613,14 +615,14 @@ model TwoFactor {
   id          String @id
   secret      String
   backupCodes String
-  userId      String
+  userId      String @unique
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   verified Boolean? @default(true)
 
   @@index([secret])
-  @@index([userId])
   @@map("twoFactor")
+  @@index([userId])
 }
 
 model EggFeature {
