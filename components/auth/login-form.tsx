@@ -12,6 +12,23 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { env } from 'next-runtime-env';
+import { ShieldCheck } from 'lucide-react';
+
+type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;
+type SignInEmailData = SignInEmailResult['data'];
+
+function getTwoFactorRedirect(data: SignInEmailData) {
+    return (
+        typeof data === 'object' &&
+        data !== null &&
+        'twoFactorRedirect' in data &&
+        data.twoFactorRedirect === true
+    );
+}
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : null;
+}
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');
@@ -22,6 +39,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState('');
+
+    // 2FA state
+    const [showTwoFactor, setShowTwoFactor] = useState(false);
+    const [useBackupCode, setUseBackupCode] = useState(false);
+    const [twoFactorCode, setTwoFactorCode] = useState('');
 
     const handleSubmit = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,17 +76,135 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     }
 
                     setError(message);
+                } else if (getTwoFactorRedirect(data)) {
+                    // Better Auth signals that 2FA is required — show verification step
+                    setShowTwoFactor(true);
                 } else {
-                    // success path (optional redirect already handled by callbackURL)
+                    // Fully signed in — callbackURL handles redirect
                 }
-            } catch (err: any) {
-                setError(err.message || t('errors.unexpected'));
+            } catch (error: unknown) {
+                setError(getErrorMessage(error) || t('errors.unexpected'));
             } finally {
                 setLoading(false);
             }
         },
         [email, password, router, t, turnstileToken],
     );
+
+    const handleTwoFactorVerify = useCallback(
+        async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            setError(null);
+            setLoading(true);
+            try {
+                const result = useBackupCode
+                    ? await authClient.twoFactor.verifyBackupCode({
+                          code: twoFactorCode.trim(),
+                      })
+                    : await authClient.twoFactor.verifyTotp({
+                          code: twoFactorCode.trim(),
+                      });
+
+                if (result?.error) {
+                    setError(t('twoFactor.error'));
+                } else {
+                    router.push('/gameserver');
+                }
+            } catch (error: unknown) {
+                setError(getErrorMessage(error) || t('twoFactor.error'));
+            } finally {
+                setLoading(false);
+            }
+        },
+        [twoFactorCode, useBackupCode, t, router],
+    );
+
+    // ── 2FA verification step ─────────────────────────────────────────────────
+    if (showTwoFactor) {
+        return (
+            <div className="flex justify-center">
+                <div className={cn('flex flex-col gap-6', className)} {...props}>
+                    <Card>
+                        <CardHeader className="text-center">
+                            <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
+                                <ShieldCheck className="h-6 w-6 text-primary" />
+                            </div>
+                            <CardTitle className="text-xl">{t('twoFactor.title')}</CardTitle>
+                            <CardDescription>{t('twoFactor.subtitle')}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleTwoFactorVerify}>
+                                <div className="grid gap-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="two-factor-code">
+                                            {useBackupCode
+                                                ? t('twoFactor.backupLabel')
+                                                : t('twoFactor.codeLabel')}
+                                        </Label>
+                                        <Input
+                                            id="two-factor-code"
+                                            placeholder={
+                                                useBackupCode
+                                                    ? t('twoFactor.backupPlaceholder')
+                                                    : t('twoFactor.codePlaceholder')
+                                            }
+                                            value={twoFactorCode}
+                                            onChange={(e) =>
+                                                setTwoFactorCode(
+                                                    useBackupCode
+                                                        ? e.target.value
+                                                        : e.target.value
+                                                              .replace(/\D/g, '')
+                                                              .slice(0, 6),
+                                                )
+                                            }
+                                            inputMode={useBackupCode ? 'text' : 'numeric'}
+                                            autoComplete="one-time-code"
+                                            maxLength={useBackupCode ? 32 : 6}
+                                            className={cn(
+                                                !useBackupCode &&
+                                                    'tracking-widest text-center text-lg',
+                                            )}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="w-full"
+                                        disabled={
+                                            loading ||
+                                            (!useBackupCode && twoFactorCode.length !== 6) ||
+                                            (useBackupCode && twoFactorCode.trim().length < 6)
+                                        }
+                                    >
+                                        {loading ? t('twoFactor.verifying') : t('twoFactor.verify')}
+                                    </Button>
+                                    {error && (
+                                        <p className="text-sm text-destructive text-center">
+                                            {error}
+                                        </p>
+                                    )}
+                                    <button
+                                        type="button"
+                                        className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 text-center"
+                                        onClick={() => {
+                                            setUseBackupCode((v) => !v);
+                                            setTwoFactorCode('');
+                                            setError(null);
+                                        }}
+                                    >
+                                        {useBackupCode
+                                            ? t('twoFactor.totpLink')
+                                            : t('twoFactor.backupLink')}
+                                    </button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex justify-center">

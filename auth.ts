@@ -103,6 +103,7 @@ export const auth = betterAuth({
     },
     emailAndPassword: {
         enabled: true,
+        maxPasswordLength: 128,
         requireEmailVerification: true,
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendResetPasswordEmail(user.email, url, token);
@@ -167,7 +168,7 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, context) => {
-                    const req = (context as any)?.request as Request | undefined;
+                    const req = context?.request as Request | undefined;
                     const ip = extractIp(req);
                     const ua = extractUserAgent(req);
                     const path = req ? new URL(req.url).pathname : undefined;
@@ -266,7 +267,7 @@ export const auth = betterAuth({
         session: {
             create: {
                 after: async (session, context) => {
-                    const req = (context as any)?.request as Request | undefined;
+                    const req = context?.request as Request | undefined;
                     const ip = extractIp(req);
                     const ua = extractUserAgent(req);
                     const path = req ? new URL(req.url).pathname : undefined;

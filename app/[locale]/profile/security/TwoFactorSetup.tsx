@@ -95,7 +95,7 @@ export default function TwoFactorSetup() {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await (authClient.twoFactor as any).verifyTotp({ code: verifyCode });
+            const result = await authClient.twoFactor.verifyTotp({ code: verifyCode });
             if (result?.error) {
                 setError(t('twoFactor.verifyError'));
                 return;
@@ -118,7 +118,7 @@ export default function TwoFactorSetup() {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await (authClient.twoFactor as any).disable({
+            const result = await authClient.twoFactor.disable({
                 password: disablePassword,
             });
             if (result?.error) {

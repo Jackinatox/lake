@@ -440,6 +440,19 @@
       "errors": {
         "loginFailed": "Login failed",
         "unexpected": "Unexpected error"
+      },
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "Enter the 6-digit code from your authenticator app.",
+        "codePlaceholder": "000000",
+        "codeLabel": "Verification Code",
+        "verify": "Verify",
+        "verifying": "Verifying...",
+        "backupLink": "Use a backup code instead",
+        "totpLink": "Use authenticator app instead",
+        "backupLabel": "Backup Code",
+        "backupPlaceholder": "xxxxxxxx",
+        "error": "Invalid code. Please try again."
       }
     },
     "forgotPassword": {

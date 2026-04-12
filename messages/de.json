@@ -437,6 +437,19 @@
         "loginFailed": "Anmeldung fehlgeschlagen",
         "unexpected": "Unerwarteter Fehler"
       },
+      "twoFactor": {
+        "title": "Zwei-Faktor-Authentifizierung",
+        "subtitle": "Gib den 6-stelligen Code aus deiner Authenticator-App ein.",
+        "codePlaceholder": "000000",
+        "codeLabel": "Bestätigungscode",
+        "verify": "Bestätigen",
+        "verifying": "Wird geprüft...",
+        "backupLink": "Sicherheitscode verwenden",
+        "totpLink": "Authenticator-App verwenden",
+        "backupLabel": "Sicherheitscode",
+        "backupPlaceholder": "xxxxxxxx",
+        "error": "Ungültiger Code. Bitte versuche es erneut."
+      },
       "noAccount": {
         "signUp": "Registrieren",
         "text": "Noch keinen Account?"
