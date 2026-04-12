@@ -47,7 +47,7 @@ export default function ResourceTierSelector({
                         <div className="shrink-0 w-16 text-center">
                             {tier.priceCents > 0 ? (
                                 <span className="text-sm font-semibold tabular-nums">
-                                    +{(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)}{' '}
+                                    {(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)}{' '}
                                     €
                                 </span>
                             ) : (
@@ -105,7 +105,7 @@ export default function ResourceTierSelector({
                         <div className="mt-3 pt-3 border-t border-border">
                             {tier.priceCents > 0 ? (
                                 <span className="text-base font-semibold tabular-nums">
-                                    +{(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)}{' '}
+                                    {(Math.round((tier.priceCents / 30) * days) / 100).toFixed(2)}{' '}
                                     €
                                 </span>
                             ) : (
