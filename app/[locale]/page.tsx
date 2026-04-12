@@ -1,6 +1,7 @@
 'use server';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
 import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { Gift, ChevronRight } from 'lucide-react';
@@ -118,10 +119,10 @@ export default async function LandingPage() {
                             </p>
 
                             <div className="lp-up d1 leading-none">
-                                <h1 className="text-[clamp(3rem,8.5vw,6.5rem)] font-black tracking-tight uppercase leading-[0.88]">
+                                <h1 className="text-[clamp(2rem,6vw,4.5rem)] font-black tracking-tight uppercase leading-[0.88]">
                                     {t('header1')}
                                 </h1>
-                                <h1 className="text-[clamp(3rem,8.5vw,6.5rem)] font-black tracking-tight uppercase leading-[0.88] text-primary">
+                                <h1 className="text-[clamp(2rem,6vw,4.5rem)] font-black tracking-tight uppercase leading-[0.88] text-primary">
                                     {t('header2')}
                                 </h1>
                             </div>
@@ -180,7 +181,7 @@ export default async function LandingPage() {
             </section>
 
             {/* ── SUPPORTED GAMES ─────────────────────────────────── */}
-            <section className="mt-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8">
+            <section className="mt-10 w-full max-w-screen-2xl mx-auto px-2 md:px-8">
                 <div className="flex items-center justify-between mb-5">
                     <h2 className="text-lg font-semibold">{t('supportedGames')}</h2>
                     <Link
@@ -216,12 +217,12 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            <section className="mt-10 w-full max-w-screen-2xl mx-auto px-4 md:px-8">
+            <section className="mt-10 w-full max-w-screen-2xl mx-auto px-0 md:px-8">
                 <ChangelogStrip />
             </section>
 
             {/* ── PLATFORM FEATURES ───────────────────────────────── */}
-            <section className="mt-20 md:mt-28 w-full max-w-screen-2xl mx-auto px-4 md:px-8">
+            <section className="mt-20 md:mt-28 w-full max-w-screen-2xl mx-auto px-2 md:px-8">
                 <div className="mb-10 md:mb-14">
                     <p className="text-[0.65rem] font-mono tracking-[0.28em] uppercase text-primary/70 mb-2">
                         Platform
@@ -230,38 +231,42 @@ export default async function LandingPage() {
                     <div className="mt-3 h-px w-12 bg-primary/50" />
                 </div>
 
-                {/* Main feature card — file manager (wide screenshot fits better here) */}
-                <div className="group rounded-2xl border overflow-hidden grid grid-cols-1 md:grid-cols-[2fr_3fr] mb-5">
-                    <div className="p-6 md:p-10 flex flex-col justify-center order-2 md:order-1">
-                        <h3 className="text-2xl font-bold mb-3">{tools[0].title}</h3>
-                        <p className="text-muted-foreground leading-relaxed">{tools[0].desc}</p>
-                    </div>
-                    <div className="overflow-hidden order-1 md:order-2 min-h-45">
+                {/* Main feature card — control panel (text left, image right) */}
+                <Card className="group rounded-2xl overflow-hidden mb-5 grid grid-cols-1 md:grid-cols-[2fr_3fr] items-stretch">
+                    <CardHeader className="flex flex-col justify-center border-b md:border-b-0 md:border-r">
+                        <CardTitle className="text-2xl font-bold mb-3">{tools[0].title}</CardTitle>
+                        <CardDescription className="text-base leading-relaxed">
+                            {tools[0].desc}
+                        </CardDescription>
+                    </CardHeader>
+                    <div className="overflow-hidden">
                         <Image
                             src={tools[0].darkImg}
                             width={tools[0].width}
                             height={tools[0].height}
                             alt={tools[0].alt}
-                            className="w-full h-full object-cover hidden dark:block group-hover:scale-[1.025] transition-transform duration-500"
+                            className="w-full h-auto hidden dark:block"
                         />
                         <Image
                             src={tools[0].lightImg}
                             width={tools[0].width}
                             height={tools[0].height}
                             alt={tools[0].alt}
-                            className="w-full h-full object-cover block dark:hidden group-hover:scale-[1.025] transition-transform duration-500"
+                            className="w-full h-auto block dark:hidden"
                         />
                     </div>
-                </div>
+                </Card>
 
                 {/* Secondary feature cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
                     {tools.slice(1).map((tool) => (
-                        <div key={tool.alt} className="group rounded-2xl border overflow-hidden">
-                            <div className="p-5 border-t">
-                                <h3 className="text-lg font-semibold mb-1">{tool.title}</h3>
-                                <p className="text-sm text-muted-foreground">{tool.desc}</p>
-                            </div>
+                        <Card key={tool.alt} className="group rounded-2xl overflow-hidden">
+                            <CardHeader className="border-b">
+                                <CardTitle className="text-lg font-semibold">
+                                    {tool.title}
+                                </CardTitle>
+                                <CardDescription>{tool.desc}</CardDescription>
+                            </CardHeader>
                             <div className="overflow-hidden">
                                 <Image
                                     src={tool.darkImg}
@@ -278,7 +283,7 @@ export default async function LandingPage() {
                                     className="w-full h-auto block dark:hidden"
                                 />
                             </div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </section>
