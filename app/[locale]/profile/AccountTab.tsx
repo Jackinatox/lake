@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -152,9 +152,9 @@ export default function AccountTab() {
                             </p>
                         </div>
                         <Button
-                            variant="outline"
+                            variant="destructive"
                             size="sm"
-                            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+                            className="shrink-0"
                             onClick={() => setShowSignOutAll(true)}
                         >
                             <LogOut className="h-4 w-4 mr-2" />
@@ -177,7 +177,7 @@ export default function AccountTab() {
                         <AlertDialogAction
                             onClick={handleSignOutAll}
                             disabled={signOutLoading}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className={buttonVariants({ variant: 'destructive' })}
                         >
                             {signOutLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {t('account.confirm')}

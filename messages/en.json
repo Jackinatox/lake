@@ -704,7 +704,11 @@
       "disableError": "Failed to disable 2FA. Please check your password.",
       "enabledSuccess": "Two-factor authentication has been enabled.",
       "disabledSuccess": "Two-factor authentication has been disabled.",
-      "close": "Close"
+      "close": "Close",
+      "methodTitle": "Authenticator App",
+      "methodDescription": "Time-based one-time password (TOTP)",
+      "reconfigureButton": "Reconfigure",
+      "notEnabledMessage": "No authentication method is configured."
     },
     "sessions": {
       "title": "Active Sessions",

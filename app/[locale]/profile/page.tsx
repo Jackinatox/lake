@@ -28,7 +28,7 @@ export default async function ProfilePage({
         : 'account';
 
     return (
-        <div className="min-h-screen bg-background p-2 md:p-6">
+        <div className="min-h-screen bg-background p-0 pt-1 md:p-8">
             <div className="mx-auto max-w-2xl">
                 <ProfileTabs
                     defaultTab={defaultTab}

@@ -704,7 +704,11 @@
       "disableError": "2FA konnte nicht deaktiviert werden. Bitte überprüfe dein Passwort.",
       "enabledSuccess": "Zwei-Faktor-Authentifizierung wurde aktiviert.",
       "disabledSuccess": "Zwei-Faktor-Authentifizierung wurde deaktiviert.",
-      "close": "Schließen"
+      "close": "Schließen",
+      "methodTitle": "Authenticator-App",
+      "methodDescription": "Zeitbasiertes Einmalpasswort (TOTP)",
+      "reconfigureButton": "Neu einrichten",
+      "notEnabledMessage": "Es ist keine Authentifizierungsmethode konfiguriert."
     },
     "sessions": {
       "title": "Aktive Sitzungen",

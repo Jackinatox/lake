@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -16,7 +16,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { cn } from '@/lib/utils';
 import { Monitor, Smartphone, Globe, Loader2, X, LogOut } from 'lucide-react';
 
 type SessionObj = {
@@ -29,7 +28,11 @@ type SessionObj = {
     expiresAt: string | Date;
 };
 
-function parseUserAgent(ua: string | null | undefined): { browser: string; os: string; isMobile: boolean } {
+function parseUserAgent(ua: string | null | undefined): {
+    browser: string;
+    os: string;
+    isMobile: boolean;
+} {
     if (!ua) return { browser: 'Unknown Browser', os: 'Unknown OS', isMobile: false };
 
     let browser = 'Unknown Browser';
@@ -125,17 +128,17 @@ export default function SessionManager() {
     return (
         <>
             <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                <CardHeader className="gap-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-1">
                             <CardTitle>{t('sessions.title')}</CardTitle>
                             <CardDescription>{t('sessions.description')}</CardDescription>
                         </div>
-                        {otherSessions.length > 0 && (
+                        {otherSessions.length > 0 && !isLoading && (
                             <Button
-                                variant="outline"
+                                variant="destructive"
                                 size="sm"
-                                className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+                                className="w-full sm:w-auto sm:shrink-0"
                                 onClick={() => setShowRevokeAll(true)}
                             >
                                 <LogOut className="h-4 w-4 mr-2" />
@@ -146,9 +149,32 @@ export default function SessionManager() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                     {isLoading ? (
-                        <div className="flex items-center gap-2 text-muted-foreground py-4 justify-center">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span className="text-sm">{t('sessions.loading')}</span>
+                        <div className="space-y-3">
+                            {/* Current session skeleton */}
+                            <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-3">
+                                <div className="mt-0.5 h-5 w-5 shrink-0 rounded bg-muted animate-pulse" />
+                                <div className="space-y-2 flex-1">
+                                    <div className="h-4 w-36 rounded bg-muted animate-pulse" />
+                                    <div className="h-3 w-56 rounded bg-muted animate-pulse" />
+                                </div>
+                            </div>
+                            <Separator />
+                            {/* Other session skeletons */}
+                            {[0, 1].map((i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-start justify-between gap-3 rounded-lg border p-3"
+                                >
+                                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                                        <div className="mt-0.5 h-5 w-5 shrink-0 rounded bg-muted animate-pulse" />
+                                        <div className="space-y-2 flex-1">
+                                            <div className="h-4 w-44 rounded bg-muted animate-pulse" />
+                                            <div className="h-3 w-64 rounded bg-muted animate-pulse" />
+                                        </div>
+                                    </div>
+                                    <div className="h-7 w-7 shrink-0 rounded bg-muted animate-pulse" />
+                                </div>
+                            ))}
                         </div>
                     ) : (
                         <>
@@ -164,9 +190,7 @@ export default function SessionManager() {
                                 />
                             )}
 
-                            {otherSessions.length > 0 && currentSession && (
-                                <Separator />
-                            )}
+                            {otherSessions.length > 0 && currentSession && <Separator />}
 
                             {/* Other sessions */}
                             {otherSessions.length === 0 ? (
@@ -196,18 +220,23 @@ export default function SessionManager() {
             </Card>
 
             {/* Revoke single session dialog */}
-            <AlertDialog open={!!revokeTarget} onOpenChange={(open) => !open && setRevokeTarget(null)}>
+            <AlertDialog
+                open={!!revokeTarget}
+                onOpenChange={(open) => !open && setRevokeTarget(null)}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>{t('sessions.revokeConfirmTitle')}</AlertDialogTitle>
-                        <AlertDialogDescription>{t('sessions.revokeConfirmDescription')}</AlertDialogDescription>
+                        <AlertDialogDescription>
+                            {t('sessions.revokeConfirmDescription')}
+                        </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t('sessions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleRevoke}
                             disabled={actionLoading}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className={buttonVariants({ variant: 'destructive' })}
                         >
                             {actionLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {t('sessions.confirm')}
@@ -221,14 +250,16 @@ export default function SessionManager() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>{t('sessions.revokeAllConfirmTitle')}</AlertDialogTitle>
-                        <AlertDialogDescription>{t('sessions.revokeAllConfirmDescription')}</AlertDialogDescription>
+                        <AlertDialogDescription>
+                            {t('sessions.revokeAllConfirmDescription')}
+                        </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t('sessions.cancel')}</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleRevokeAll}
                             disabled={actionLoading}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className={buttonVariants({ variant: 'destructive' })}
                         >
                             {actionLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {t('sessions.confirm')}
@@ -264,7 +295,9 @@ function SessionCard({
     const DeviceIcon = isMobile ? Smartphone : Monitor;
 
     return (
-        <div className={`flex items-start justify-between gap-3 rounded-lg p-3 ${isCurrent ? 'bg-muted/50' : 'border'}`}>
+        <div
+            className={`flex items-start justify-between gap-3 rounded-lg p-3 ${isCurrent ? 'bg-muted/50' : 'border'}`}
+        >
             <div className="flex items-start gap-3 min-w-0">
                 <DeviceIcon className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                 <div className="min-w-0 space-y-1">
@@ -286,16 +319,20 @@ function SessionCard({
                                 {maskedIp}
                             </span>
                         )}
-                        <span>{signedInLabel}: {formatDate(s.createdAt)}</span>
-                        <span>{expiresLabel}: {formatDate(s.expiresAt)}</span>
+                        <span>
+                            {signedInLabel}: {formatDate(s.createdAt)}
+                        </span>
+                        <span>
+                            {expiresLabel}: {formatDate(s.expiresAt)}
+                        </span>
                     </div>
                 </div>
             </div>
             {!isCurrent && onRevoke && revokeLabel && (
                 <Button
-                    variant="ghost"
+                    variant="destructive"
                     size="icon"
-                    className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    className="shrink-0 h-7 w-7 self-center"
                     onClick={onRevoke}
                     title={revokeLabel}
                 >

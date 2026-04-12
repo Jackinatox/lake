@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { QRCodeSVG } from 'qrcode.react';
 import { authClient } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
@@ -27,13 +28,23 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { ShieldCheck, ShieldOff, Copy, Check, Loader2 } from 'lucide-react';
+import {
+    ShieldCheck,
+    ShieldOff,
+    Copy,
+    Check,
+    Loader2,
+    Smartphone,
+    CheckCircle2,
+    RefreshCw,
+    AlertTriangle,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Step = 'idle' | 'setup-qr' | 'setup-verify' | 'setup-backup';
 
 export default function TwoFactorSetup() {
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending } = authClient.useSession();
     const t = useTranslations('profile');
     const router = useRouter();
 
@@ -52,6 +63,25 @@ export default function TwoFactorSetup() {
 
     const twoFactorEnabled = session?.user?.twoFactorEnabled ?? false;
     const isEmailUser = authClient.isLastUsedLoginMethod('email');
+
+    if (isPending) {
+        return (
+            <Card>
+                <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 shrink-0 rounded-full bg-muted animate-pulse" />
+                        <div className="space-y-2">
+                            <div className="h-4 w-40 rounded bg-muted animate-pulse" />
+                            <div className="h-3 w-56 rounded bg-muted animate-pulse" />
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-14 w-full rounded-lg bg-muted animate-pulse" />
+                </CardContent>
+            </Card>
+        );
+    }
 
     const openSetup = () => {
         setStep('setup-qr');
@@ -148,61 +178,105 @@ export default function TwoFactorSetup() {
 
     return (
         <>
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between gap-4 flex-wrap">
-                        <div className="space-y-1">
-                            <CardTitle className="flex items-center gap-2">
-                                {twoFactorEnabled ? (
-                                    <ShieldCheck className="h-5 w-5 text-green-500" />
-                                ) : (
-                                    <ShieldOff className="h-5 w-5 text-muted-foreground" />
-                                )}
-                                {t('twoFactor.title')}
-                            </CardTitle>
-                            <CardDescription>{t('twoFactor.description')}</CardDescription>
+            {twoFactorEnabled ? (
+                <Card className="border-green-200 dark:border-green-900/40">
+                    <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                                    <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-base">
+                                        {t('twoFactor.title')}
+                                    </CardTitle>
+                                    <CardDescription className="mt-0.5">
+                                        {t('twoFactor.description')}
+                                    </CardDescription>
+                                </div>
+                            </div>
+                            <Badge
+                                variant="outline"
+                                className="shrink-0 border-green-300 bg-green-50 text-green-700 dark:border-green-700 dark:bg-green-900/20 dark:text-green-400"
+                            >
+                                <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
+                                {t('twoFactor.enabled')}
+                            </Badge>
                         </div>
-                        <span
-                            className={cn(
-                                'text-sm font-medium flex items-center gap-1.5',
-                                twoFactorEnabled
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-muted-foreground',
-                            )}
-                        >
-                            <span
-                                className={cn(
-                                    'h-2 w-2 rounded-full shrink-0',
-                                    twoFactorEnabled ? 'bg-green-500' : 'bg-muted-foreground/40',
-                                )}
-                            />
-                            {twoFactorEnabled ? t('twoFactor.enabled') : t('twoFactor.disabled')}
-                        </span>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    {twoFactorEnabled ? (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                            onClick={() => {
-                                setError(null);
-                                setDisablePassword('');
-                                setShowDisableDialog(true);
-                            }}
-                        >
-                            <ShieldOff className="h-4 w-4 mr-2" />
-                            {t('twoFactor.disableButton')}
-                        </Button>
-                    ) : (
-                        <Button size="sm" onClick={openSetup}>
-                            <ShieldCheck className="h-4 w-4 mr-2" />
-                            {t('twoFactor.enableButton')}
-                        </Button>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center gap-3 rounded-lg border bg-muted/30 px-4 py-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-background">
+                                <Smartphone className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium leading-none">
+                                    {t('twoFactor.methodTitle')}
+                                </p>
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                    {t('twoFactor.methodDescription')}
+                                </p>
+                            </div>
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full sm:w-auto sm:mr-auto"
+                                onClick={openSetup}
+                            >
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                                {t('twoFactor.reconfigureButton')}
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                className="w-full sm:w-auto"
+                                onClick={() => {
+                                    setError(null);
+                                    setDisablePassword('');
+                                    setShowDisableDialog(true);
+                                }}
+                            >
+                                <ShieldOff className="h-4 w-4 mr-2" />
+                                {t('twoFactor.disableButton')}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : (
+                <Card>
+                    <CardHeader className="pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+                                <ShieldOff className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-base">{t('twoFactor.title')}</CardTitle>
+                                <CardDescription className="mt-0.5">
+                                    {t('twoFactor.description')}
+                                </CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-dashed p-4">
+                            <div className="flex items-center gap-2">
+                                <AlertTriangle className="h-4 w-4 shrink-0 text-muted-foreground/60" />
+                                <p className="text-sm text-muted-foreground">
+                                    {t('twoFactor.notEnabledMessage')}
+                                </p>
+                            </div>
+                            <Button size="sm" className="w-full sm:w-auto" onClick={openSetup}>
+                                <ShieldCheck className="h-4 w-4 mr-2" />
+                                {t('twoFactor.enableButton')}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Enable 2FA Dialog */}
             <Dialog
@@ -392,7 +466,7 @@ export default function TwoFactorSetup() {
                         <AlertDialogAction
                             onClick={handleDisable}
                             disabled={isLoading || !disablePassword}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className={buttonVariants({ variant: 'destructive' })}
                         >
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {t('twoFactor.disableConfirm')}
