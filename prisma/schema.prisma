@@ -616,6 +616,8 @@ model TwoFactor {
   userId      String
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  verified Boolean? @default(true)
+
   @@index([secret])
   @@index([userId])
   @@map("twoFactor")

@@ -57,7 +57,7 @@
         "ansi-to-html": "^0.7.2",
         "ansi-to-react": "^6.2.6",
         "autoprefixer": "^10.4.24",
-        "better-auth": "^1.4.18",
+        "better-auth": "^1.6.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
