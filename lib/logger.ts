@@ -122,14 +122,18 @@ class Logger {
                 console.error('Failed to emit OTel log:', error);
             }
 
+            const sanitizedDetails = entry.details
+                ? JSON.parse(JSON.stringify(entry.details, (_, v) => (v === undefined ? null : v)))
+                : null;
+
             await this.prisma.applicationLog.create({
                 data: {
                     level: entry.level,
                     type: entry.type,
                     message: entry.message,
                     instanceId: this.instanceId,
-                    details: entry.details
-                        ? (entry.details as Prisma.InputJsonValue)
+                    details: sanitizedDetails
+                        ? (sanitizedDetails as Prisma.InputJsonValue)
                         : Prisma.JsonNull,
                     method: entry.method || null,
                     path: entry.path || null,
