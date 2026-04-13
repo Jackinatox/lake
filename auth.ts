@@ -1,18 +1,19 @@
+import { apiKey } from "@better-auth/api-key";
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, lastLoginMethod, twoFactor, captcha } from 'better-auth/plugins';
+import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
 import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
-import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
-import createUserApiKey from './lib/Pterodactyl/userApiKey';
 import {
     sendConfirmEmail,
     sendPasswordResetSuccessEmail,
     sendResetPasswordEmail,
 } from './lib/email/sendEmailEmailsFromLake';
-import prisma from './lib/prisma';
 import { logger } from './lib/logger';
 import { captureServerEvent } from './lib/posthog';
+import prisma from './lib/prisma';
+import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
+import createUserApiKey from './lib/Pterodactyl/userApiKey';
 
 function extractIp(request?: Request | null): string | undefined {
     if (!request) return undefined;
@@ -155,6 +156,10 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
+        username({
+            
+        }),
+        apiKey(),
         twoFactor({
             allowPasswordless: true,
             issuer: 'Scyed',

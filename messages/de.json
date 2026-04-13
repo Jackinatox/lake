@@ -424,6 +424,8 @@
       "oauthGoogle": "Mit Google anmelden",
       "orContinueWith": "Oder weiter mit",
       "fields": {
+        "emailOrUsername": "E-Mail oder Benutzername",
+        "emailOrUsernamePlaceholder": "E-Mail oder Benutzername",
         "email": "E-Mail",
         "emailPlaceholder": "mail@beispiel.de",
         "password": "Passwort",
@@ -515,9 +517,15 @@
       "backToLogin": "Zurück zum Login"
     },
     "orContinueWith": "Oder fahre fort mit",
+    "username": {
+      "available": "Benutzername ist verfügbar",
+      "taken": "Benutzername ist bereits vergeben"
+    },
     "fields": {
+      "name": "Vollständiger Name",
+      "namePlaceholder": "Dein Name",
       "username": "Benutzername",
-      "usernamePlaceholder": "dein Benutzername",
+      "usernamePlaceholder": "dein_benutzername",
       "email": "E-Mail",
       "emailPlaceholder": "mail@beispiel.de",
       "password": "Passwort",
@@ -533,6 +541,8 @@
       "passwordMin": "Das Passwort muss mindestens {min} Zeichen lang sein",
       "passwordsDontMatch": "Passwörter stimmen nicht überein",
       "emailRequired": "E-Mail ist erforderlich",
+      "nameRequired": "Name ist erforderlich",
+      "usernameNoAt": "Benutzername darf kein @ enthalten",
       "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
       "invalidCurrentPassword": "Aktuelles Passwort ist falsch"
     },

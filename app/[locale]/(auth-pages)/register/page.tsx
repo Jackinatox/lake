@@ -1,14 +1,13 @@
 import { RegisterForm } from '@/components/auth/register-form';
-import React from 'react';
 
-function page() {
+function Page() {
     return (
-        <div className="flex flex-col items-center justify-center p-0 md:p-10">
-            <div className="w-full md:max-w-3xl">
+        <div className="flex flex-col items-center justify-center sm:px-6 md:p-10">
+            <div className="w-full sm:max-w-md">
                 <RegisterForm />
             </div>
         </div>
     );
 }
 
-export default page;
+export default Page;

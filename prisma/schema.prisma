@@ -1,4 +1,3 @@
-
 datasource db {
   provider = "postgresql"
 }
@@ -327,11 +326,15 @@ model User {
   UserSettings   Json             @default("{}")
   ApplicationLog ApplicationLog[]
 
-  twoFactorEnabled Boolean?   @default(false)
-  twofactors TwoFactor[]
+  twoFactorEnabled Boolean?    @default(false)
+  twofactors       TwoFactor[]
+
+  username        String?
+  displayUsername String?
 
   @@unique([email])
   @@unique([ptUsername])
+  @@unique([username])
   @@index([email])
   @@map("user")
 }
@@ -621,8 +624,8 @@ model TwoFactor {
   verified Boolean? @default(true)
 
   @@index([secret])
-  @@map("twoFactor")
   @@index([userId])
+  @@map("twoFactor")
 }
 
 model EggFeature {
@@ -688,4 +691,34 @@ model ChangelogEntry {
 
   blogPostId String?
   blogPost   BlogPost? @relation(fields: [blogPostId], references: [id], onDelete: SetNull)
+}
+
+model Apikey {
+  id                  String    @id
+  configId            String    @default("default")
+  name                String?
+  start               String?
+  referenceId         String
+  prefix              String?
+  key                 String
+  refillInterval      Int?
+  refillAmount        Int?
+  lastRefillAt        DateTime?
+  enabled             Boolean   @default(true)
+  rateLimitEnabled    Boolean   @default(true)
+  rateLimitTimeWindow Int       @default(86400000)
+  rateLimitMax        Int       @default(10)
+  requestCount        Int       @default(0)
+  remaining           Int?
+  lastRequest         DateTime?
+  expiresAt           DateTime?
+  createdAt           DateTime
+  updatedAt           DateTime
+  permissions         String?
+  metadata            String?
+
+  @@index([configId])
+  @@index([referenceId])
+  @@index([key])
+  @@map("apikey")
 }
