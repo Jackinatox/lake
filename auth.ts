@@ -99,6 +99,7 @@ export const auth = betterAuth({
         google: {
             clientId: env('GOOGLE_CLIENT_ID')!,
             clientSecret: env('GOOGLE_CLIENT_SECRET')!,
+            
         },
     },
     emailAndPassword: {
@@ -154,7 +155,13 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
-        twoFactor(),
+        twoFactor({
+            allowPasswordless: true,
+            issuer: 'Scyed',
+            totpOptions: {
+                allowPasswordless: true,
+            },
+        }),
         lastLoginMethod({
             storeInDatabase: true,
         }),

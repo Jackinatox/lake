@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import {
     ShieldCheck,
     ShieldOff,
@@ -38,6 +37,7 @@ import {
     CheckCircle2,
     RefreshCw,
     AlertTriangle,
+    Info,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -62,7 +62,6 @@ export default function TwoFactorSetup() {
     const [savedConfirmed, setSavedConfirmed] = useState(false);
 
     const twoFactorEnabled = session?.user?.twoFactorEnabled ?? false;
-    const isEmailUser = authClient.isLastUsedLoginMethod('email');
 
     if (isPending) {
         return (
@@ -98,8 +97,18 @@ export default function TwoFactorSetup() {
         setIsLoading(true);
         setError(null);
         try {
+            if (twoFactorEnabled) {
+                const disableResult = await authClient.twoFactor.disable({
+                    password: enablePassword,
+                });
+                if (disableResult?.error) {
+                    setError(t('twoFactor.setupError'));
+                    return;
+                }
+            }
+
             const result = await authClient.twoFactor.enable({
-                ...(isEmailUser && enablePassword ? { password: enablePassword } : {}),
+                ...(enablePassword ? { password: enablePassword } : {}),
             });
             if (result?.error) {
                 setError(t('twoFactor.setupError'));
@@ -244,6 +253,10 @@ export default function TwoFactorSetup() {
                                 {t('twoFactor.disableButton')}
                             </Button>
                         </div>
+                        <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                            <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                            {t('twoFactor.oauthDisclaimer')}
+                        </p>
                     </CardContent>
                 </Card>
             ) : (
@@ -261,7 +274,7 @@ export default function TwoFactorSetup() {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-3">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-dashed p-4">
                             <div className="flex items-center gap-2">
                                 <AlertTriangle className="h-4 w-4 shrink-0 text-muted-foreground/60" />
@@ -274,6 +287,10 @@ export default function TwoFactorSetup() {
                                 {t('twoFactor.enableButton')}
                             </Button>
                         </div>
+                        <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                            <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                            {t('twoFactor.oauthDisclaimer')}
+                        </p>
                     </CardContent>
                 </Card>
             )}
@@ -285,38 +302,39 @@ export default function TwoFactorSetup() {
                     if (!open) handleDone();
                 }}
             >
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md overflow-y-auto max-h-[90dvh]">
                     {step === 'setup-qr' && (
                         <>
                             <DialogHeader>
                                 <DialogTitle>{t('twoFactor.setupTitle')}</DialogTitle>
                                 <DialogDescription>
-                                    {t('twoFactor.setupStep1Title')}
+                                    {t('twoFactor.description')}
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="space-y-4">
-                                {isEmailUser && !totpUri && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="enable-password">
-                                            {t('twoFactor.disablePassword')}
-                                        </Label>
-                                        <Input
-                                            id="enable-password"
-                                            type="password"
-                                            placeholder={t('twoFactor.disablePasswordPlaceholder')}
-                                            value={enablePassword}
-                                            onChange={(e) => setEnablePassword(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && handleEnable()}
-                                        />
-                                    </div>
-                                )}
-                                {error && <p className="text-sm text-destructive">{error}</p>}
-                            </div>
+                            {!totpUri && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="enable-password">
+                                        {t('twoFactor.disablePassword')}
+                                    </Label>
+                                    <Input
+                                        id="enable-password"
+                                        type="password"
+                                        placeholder={t('twoFactor.disablePasswordPlaceholder')}
+                                        value={enablePassword}
+                                        onChange={(e) => setEnablePassword(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleEnable()}
+                                    />
+                                </div>
+                            )}
+                            {error && <p className="text-sm text-destructive">{error}</p>}
                             <DialogFooter>
                                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                     {t('twoFactor.close')}
                                 </Button>
-                                <Button onClick={handleEnable} disabled={isLoading}>
+                                <Button
+                                    onClick={handleEnable}
+                                    disabled={isLoading}
+                                >
                                     {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                                     Next
                                 </Button>

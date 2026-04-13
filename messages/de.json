@@ -708,7 +708,8 @@
       "methodTitle": "Authenticator-App",
       "methodDescription": "Zeitbasiertes Einmalpasswort (TOTP)",
       "reconfigureButton": "Neu einrichten",
-      "notEnabledMessage": "Es ist keine Authentifizierungsmethode konfiguriert."
+      "notEnabledMessage": "Es ist keine Authentifizierungsmethode konfiguriert.",
+      "oauthDisclaimer": "2FA gilt derzeit nur für E-Mail/Passwort-Anmeldungen. OAuth-Anmeldungen (Google, Discord, etc.) werden in einem zukünftigen Update unterstützt."
     },
     "sessions": {
       "title": "Aktive Sitzungen",

@@ -708,7 +708,8 @@
       "methodTitle": "Authenticator App",
       "methodDescription": "Time-based one-time password (TOTP)",
       "reconfigureButton": "Reconfigure",
-      "notEnabledMessage": "No authentication method is configured."
+      "notEnabledMessage": "No authentication method is configured.",
+      "oauthDisclaimer": "2FA currently only applies to email/password logins. OAuth logins (Google, Discord, etc.) will be supported in a future update."
     },
     "sessions": {
       "title": "Active Sessions",
