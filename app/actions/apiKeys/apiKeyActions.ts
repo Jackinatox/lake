@@ -2,7 +2,7 @@
 
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import { type ApiKeyPermission } from '@/lib/apiKeyPermissions';
+import { type ApiKeyPermission, permissionsToRecord } from '@/lib/apiKeyPermissions';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -17,18 +17,27 @@ export async function listApiKeysAction() {
 }
 
 export async function createApiKeyAction(name: string, permissions: ApiKeyPermission[]) {
-    await requireAdmin();
+    const session = await requireAdmin();
 
-    const result = await auth.api.createApiKey({
+    // permissions and userId are server-only fields — call without headers
+    // so better-auth uses the internal (server) code path.
+    const result = (await auth.api.createApiKey({
         body: {
             name,
-            metadata: { permissions },
+            permissions: permissionsToRecord(permissions),
+            userId: session.user.id,
         },
-        headers: await headers(),
+    })) as { id: string; key: string; name: string | null };
+
+    // Persist the last 4 characters so the admin table can identify keys
+    // without ever exposing the full value again.
+    const lastChars = result.key.slice(-4);
+    await prisma.apikey.update({
+        where: { id: result.id },
+        data: { metadata: JSON.stringify({ lastChars }) },
     });
 
-    // The plugin returns the full key value here — only opportunity to surface it.
-    return result as { id: string; key: string; name: string | null; start: string | null };
+    return { id: result.id, key: result.key, name: result.name };
 }
 
 export async function deleteApiKeyAction(keyId: string) {

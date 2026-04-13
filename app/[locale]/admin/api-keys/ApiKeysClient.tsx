@@ -53,6 +53,15 @@ function formatUtc(input: Date | string) {
     return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
 }
 
+function getLastChars(metadata: string | null | undefined): string | null {
+    if (!metadata) return null;
+    try {
+        return (JSON.parse(metadata) as { lastChars?: string }).lastChars ?? null;
+    } catch {
+        return null;
+    }
+}
+
 // ─── Copy button ──────────────────────────────────────────────────────────────
 
 function CopyButton({ value }: { value: string }) {
@@ -350,7 +359,7 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>Prefix</TableHead>
+                            <TableHead>Key</TableHead>
                             <TableHead>Permissions</TableHead>
                             <TableHead>Created</TableHead>
                             <TableHead>Last used</TableHead>
@@ -359,14 +368,15 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                     </TableHeader>
                     <TableBody>
                         {initialKeys.map((k) => {
-                            const perms = parseApiKeyPermissions(k.metadata);
+                            const perms = parseApiKeyPermissions(k.permissions);
+                            const last = getLastChars(k.metadata);
                             return (
                                 <TableRow key={k.id}>
                                     <TableCell className="font-medium">
                                         {k.name ?? <span className="text-muted-foreground italic">unnamed</span>}
                                     </TableCell>
                                     <TableCell className="font-mono text-xs text-muted-foreground">
-                                        {k.start ? `${k.start}…` : '—'}
+                                        {last ? `…${last}` : '—'}
                                     </TableCell>
                                     <TableCell>
                                         <PermissionsCell perms={perms} />

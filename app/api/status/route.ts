@@ -2,61 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import os from 'os';
-import { auth } from '@/auth';
-import { headers } from 'next/headers';
-
-// Local IP ranges for access control
-const LOCAL_IP_RANGES = [
-    '127.0.0.1',
-    '::1',
-    'localhost',
-    '10.',
-    '172.16.',
-    '172.17.',
-    '172.18.',
-    '172.19.',
-    '172.20.',
-    '172.21.',
-    '172.22.',
-    '172.23.',
-    '172.24.',
-    '172.25.',
-    '172.26.',
-    '172.27.',
-    '172.28.',
-    '172.29.',
-    '172.30.',
-    '172.31.',
-    '192.168.',
-];
-
-export function isLocalIP(ip: string | null): boolean {
-    if (!ip) return false;
-    return LOCAL_IP_RANGES.some((range) => ip.startsWith(range) || ip === range);
-}
-
-export function getClientIP(req: NextRequest): string | null {
-    // Check various headers for the real IP
-    const xForwardedFor = req.headers.get('x-forwarded-for');
-    if (xForwardedFor) {
-        // x-forwarded-for can contain multiple IPs, take the first one
-        return xForwardedFor.split(',')[0].trim();
-    }
-
-    const xRealIP = req.headers.get('x-real-ip');
-    if (xRealIP) {
-        return xRealIP.trim();
-    }
-
-    // Fallback to connection info if available
-    const cfConnectingIP = req.headers.get('cf-connecting-ip');
-    if (cfConnectingIP) {
-        return cfConnectingIP.trim();
-    }
-
-    // For local development, assume localhost
-    return '127.0.0.1';
-}
+import { ApiKeyPermission } from '@/lib/apiKeyPermissions';
+import { requireApiKeyOrAdmin } from '@/lib/apiRouteAuth';
 
 async function getDatabaseStats() {
     const [
@@ -182,14 +129,8 @@ function formatBytes(bytes: number): string {
 }
 
 export async function GET(req: NextRequest) {
-    const clientIP = getClientIP(req);
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!(isLocalIP(clientIP) || session?.user.role === 'admin')) {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const denied = await requireApiKeyOrAdmin(req, ApiKeyPermission.READ_STATUS_GENERAL);
+    if (denied) return denied;
 
     try {
         const startTime = Date.now();
@@ -218,7 +159,6 @@ export async function GET(req: NextRequest) {
                 status: 'ok',
                 timestamp: new Date().toISOString(),
                 responseTime: `${responseTime}ms`,
-                clientIP,
                 database: {
                     connected: dbConnected,
                     latency: `${dbLatency}ms`,
@@ -242,6 +182,5 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    // Redirect POST to GET for backwards compatibility
     return GET(req);
 }
