@@ -186,7 +186,7 @@ const AdminPage = () => {
                                     className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3 transition-colors hover:bg-accent/60 active:bg-accent sm:px-4 sm:py-3.5"
                                 >
                                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/80 sm:h-10 sm:w-10">
-                                        <item.Icon className="h-[18px] w-[18px] text-foreground/70 sm:h-5 sm:w-5" />
+                                        <item.Icon className="h-4.5 w-4.5 text-foreground/70 sm:h-5 sm:w-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="text-sm font-medium text-foreground">

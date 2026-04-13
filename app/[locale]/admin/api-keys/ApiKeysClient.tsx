@@ -8,6 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
     Dialog,
     DialogContent,
     DialogHeader,
@@ -34,10 +41,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
-import {
-    createApiKeyAction,
-    deleteApiKeyAction,
-} from '@/app/actions/apiKeys/apiKeyActions';
+import { createApiKeyAction, deleteApiKeyAction } from '@/app/actions/apiKeys/apiKeyActions';
 import {
     ALL_PERMISSIONS,
     type ApiKeyPermission,
@@ -51,6 +55,24 @@ function formatUtc(input: Date | string) {
     const d = new Date(input);
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} UTC`;
+}
+
+const RATE_LIMIT_WINDOWS = [
+    { label: '10s', ms: 10_000 },
+    { label: '30s', ms: 30_000 },
+    { label: '1min', ms: 60_000 },
+    { label: '5min', ms: 300_000 },
+    { label: '15min', ms: 900_000 },
+    { label: '1h', ms: 3_600_000 },
+    { label: '6h', ms: 21_600_000 },
+    { label: '12h', ms: 43_200_000 },
+    { label: '24h', ms: 86_400_000 },
+    { label: '7d', ms: 604_800_000 },
+] as const;
+
+function formatRateLimit(max: number, windowMs: number): string {
+    const w = RATE_LIMIT_WINDOWS.find((w) => w.ms === windowMs);
+    return `${max} / ${w?.label ?? `${windowMs}ms`}`;
 }
 
 function getLastChars(metadata: string | null | undefined): string | null {
@@ -89,6 +111,8 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
     const [isPending, startTransition] = useTransition();
     const [name, setName] = useState('');
     const [selected, setSelected] = useState<Set<ApiKeyPermission>>(new Set());
+    const [rateLimitMax, setRateLimitMax] = useState('10');
+    const [rateLimitWindow, setRateLimitWindow] = useState('86400000');
     const [newKey, setNewKey] = useState<string | null>(null);
 
     function togglePermission(p: ApiKeyPermission) {
@@ -102,6 +126,8 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
     function handleOpen() {
         setName('');
         setSelected(new Set());
+        setRateLimitMax('10');
+        setRateLimitWindow('86400000');
         setNewKey(null);
         setOpen(true);
     }
@@ -117,10 +143,12 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
         if (!name.trim() || selected.size === 0) return;
         startTransition(async () => {
             try {
-                const result = await createApiKeyAction(
-                    name.trim(),
-                    Array.from(selected) as ApiKeyPermission[],
-                );
+                const result = await createApiKeyAction({
+                    name: name.trim(),
+                    permissions: Array.from(selected) as ApiKeyPermission[],
+                    rateLimitMax: Math.max(1, parseInt(rateLimitMax, 10) || 10),
+                    rateLimitTimeWindow: parseInt(rateLimitWindow, 10),
+                });
                 setNewKey(result.key);
                 toast({ title: 'API key created', description: `"${name.trim()}" is ready.` });
             } catch (err) {
@@ -140,7 +168,13 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                 New API Key
             </Button>
 
-            <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); else setOpen(true); }}>
+            <Dialog
+                open={open}
+                onOpenChange={(v) => {
+                    if (!v) handleClose();
+                    else setOpen(true);
+                }}
+            >
                 <DialogContent className="max-w-lg">
                     {newKey ? (
                         <>
@@ -153,7 +187,9 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
 
                             <div className="space-y-3 py-2">
                                 <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
-                                    <code className="flex-1 break-all font-mono text-sm">{newKey}</code>
+                                    <code className="flex-1 break-all font-mono text-sm">
+                                        {newKey}
+                                    </code>
                                     <CopyButton value={newKey} />
                                 </div>
                             </div>
@@ -204,6 +240,37 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                                         ))}
                                     </div>
                                 </div>
+
+                                <div className="space-y-1.5">
+                                    <Label>Rate limit</Label>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            type="number"
+                                            min={1}
+                                            value={rateLimitMax}
+                                            onChange={(e) => setRateLimitMax(e.target.value)}
+                                            disabled={isPending}
+                                            className="w-24"
+                                        />
+                                        <span className="text-sm text-muted-foreground">per</span>
+                                        <Select
+                                            value={rateLimitWindow}
+                                            onValueChange={setRateLimitWindow}
+                                            disabled={isPending}
+                                        >
+                                            <SelectTrigger className="w-28">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {RATE_LIMIT_WINDOWS.map((w) => (
+                                                    <SelectItem key={w.ms} value={String(w.ms)}>
+                                                        {w.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
 
                             <DialogFooter>
@@ -218,9 +285,7 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                                     onClick={handleCreate}
                                     disabled={isPending || !name.trim() || selected.size === 0}
                                 >
-                                    {isPending && (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    )}
+                                    {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Create
                                 </Button>
                             </DialogFooter>
@@ -294,8 +359,7 @@ function DeleteButton({ keyId, keyName }: { keyId: string; keyName: string }) {
 // ─── Permissions cell ─────────────────────────────────────────────────────────
 
 function PermissionsCell({ perms }: { perms: ApiKeyPermission[] }) {
-    if (perms.length === 0)
-        return <span className="text-xs text-muted-foreground">—</span>;
+    if (perms.length === 0) return <span className="text-xs text-muted-foreground">—</span>;
 
     const reads = perms
         .filter((p) => p.startsWith('read:'))
@@ -361,6 +425,8 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                             <TableHead>Name</TableHead>
                             <TableHead>Key</TableHead>
                             <TableHead>Permissions</TableHead>
+                            <TableHead>Rate limit</TableHead>
+                            <TableHead>Usage</TableHead>
                             <TableHead>Created</TableHead>
                             <TableHead>Last used</TableHead>
                             <TableHead />
@@ -373,13 +439,31 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                             return (
                                 <TableRow key={k.id}>
                                     <TableCell className="font-medium">
-                                        {k.name ?? <span className="text-muted-foreground italic">unnamed</span>}
+                                        {k.name ?? (
+                                            <span className="text-muted-foreground italic">
+                                                unnamed
+                                            </span>
+                                        )}
                                     </TableCell>
                                     <TableCell className="font-mono text-xs text-muted-foreground">
                                         {last ? `…${last}` : '—'}
                                     </TableCell>
                                     <TableCell>
                                         <PermissionsCell perms={perms} />
+                                    </TableCell>
+                                    <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                                        {formatRateLimit(k.rateLimitMax, k.rateLimitTimeWindow)}
+                                    </TableCell>
+                                    <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                                        {k.requestCount}
+                                        <span className="text-muted-foreground/60">
+                                            {' '}({Math.round((k.requestCount / k.rateLimitMax) * 100)}%)
+                                        </span>
+                                        {k.remaining != null && (
+                                            <span className="text-muted-foreground/60">
+                                                {' '}/ {k.remaining} left
+                                            </span>
+                                        )}
                                     </TableCell>
                                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                                         {formatUtc(k.createdAt)}
