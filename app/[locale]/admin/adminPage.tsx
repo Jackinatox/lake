@@ -11,6 +11,7 @@ import {
     FileText,
     Gamepad2Icon,
     History,
+    KeyRound,
     MonitorX,
     RefreshCw,
     Shield,
@@ -76,6 +77,17 @@ const sections: AdminSection[] = [
                 description: 'Process & review refunds',
                 link: '/admin/refunds',
                 Icon: Undo2,
+            },
+        ],
+    },
+    {
+        title: 'Developer',
+        items: [
+            {
+                name: 'API Keys',
+                description: 'Create & revoke project API keys',
+                link: '/admin/api-keys',
+                Icon: KeyRound,
             },
         ],
     },

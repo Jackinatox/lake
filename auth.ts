@@ -1,4 +1,4 @@
-import { apiKey } from "@better-auth/api-key";
+import { apiKey } from '@better-auth/api-key';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
@@ -100,7 +100,6 @@ export const auth = betterAuth({
         google: {
             clientId: env('GOOGLE_CLIENT_ID')!,
             clientSecret: env('GOOGLE_CLIENT_SECRET')!,
-            
         },
     },
     emailAndPassword: {
@@ -156,10 +155,12 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
-        username({
-            
+        username({}),
+        apiKey({
+            enableSessionForAPIKeys: true,
+            enableMetadata: true,
+            defaultPrefix: 'scyd_',
         }),
-        apiKey(),
         twoFactor({
             allowPasswordless: true,
             issuer: 'Scyed',
