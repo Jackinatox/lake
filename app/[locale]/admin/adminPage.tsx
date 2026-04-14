@@ -5,117 +5,210 @@ import {
     Activity,
     BookOpen,
     CalendarClock,
+    ChevronRight,
     Cog,
     Database,
     FileText,
     Gamepad2Icon,
     History,
+    KeyRound,
     MonitorX,
     RefreshCw,
+    Shield,
     SquarePlay,
     Ticket,
     Undo2,
     UsersIcon,
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 
-type AdminTile = {
+type AdminItem = {
     name: string;
+    description: string;
     link: string;
     Icon: typeof UsersIcon;
-    color: string;
 };
 
-const tiles: AdminTile[] = [
-    { name: 'Users', link: '/admin/users', Icon: UsersIcon, color: 'from-blue-500 to-blue-600' },
+type AdminSection = {
+    title: string;
+    items: AdminItem[];
+};
+
+const sections: AdminSection[] = [
     {
-        name: 'Gameservers',
-        link: '/admin/gameservers',
-        Icon: Gamepad2Icon,
-        color: 'from-green-500 to-emerald-600',
+        title: 'Core',
+        items: [
+            {
+                name: 'Users',
+                description: 'Manage accounts & roles',
+                link: '/admin/users',
+                Icon: UsersIcon,
+            },
+            {
+                name: 'Gameservers',
+                description: 'View & edit servers',
+                link: '/admin/gameservers',
+                Icon: Gamepad2Icon,
+            },
+            {
+                name: 'Wings',
+                description: 'Node management',
+                link: '/admin/wings',
+                Icon: SquarePlay,
+            },
+            {
+                name: 'Tickets',
+                description: 'Support requests',
+                link: '/admin/tickets',
+                Icon: Ticket,
+            },
+        ],
     },
     {
-        name: 'Wings',
-        link: '/admin/wings',
-        Icon: SquarePlay,
-        color: 'from-purple-500 to-indigo-600',
-    },
-    { name: 'Tickets', link: '/admin/tickets', Icon: Ticket, color: 'from-cyan-500 to-teal-600' },
-    {
-        name: 'System Status',
-        link: '/admin/status',
-        Icon: Activity,
-        color: 'from-emerald-500 to-green-600',
-    },
-    {
-        name: 'Application Logs',
-        link: '/admin/logs',
-        Icon: FileText,
-        color: 'from-indigo-500 to-purple-600',
+        title: 'Billing',
+        items: [
+            {
+                name: 'Stripe Sessions',
+                description: 'Checkout & payment sessions',
+                link: '/admin/sessions',
+                Icon: CalendarClock,
+            },
+            {
+                name: 'Refunds',
+                description: 'Process & review refunds',
+                link: '/admin/refunds',
+                Icon: Undo2,
+            },
+        ],
     },
     {
-        name: 'Stripe Sessions',
-        link: '/admin/sessions',
-        Icon: CalendarClock,
-        color: 'from-yellow-500 to-amber-500',
+        title: 'Developer',
+        items: [
+            {
+                name: 'API Keys',
+                description: 'Create & revoke project API keys',
+                link: '/admin/api-keys',
+                Icon: KeyRound,
+            },
+        ],
     },
     {
-        name: 'Provision By Id',
-        link: '/admin/TestInternalFunctions/provisionById',
-        Icon: Cog,
-        color: 'from-orange-500 to-amber-600',
+        title: 'System',
+        items: [
+            {
+                name: 'System Status',
+                description: 'Health & uptime',
+                link: '/admin/status',
+                Icon: Activity,
+            },
+            {
+                name: 'Application Logs',
+                description: 'Server-side log viewer',
+                link: '/admin/logs',
+                Icon: FileText,
+            },
+            {
+                name: 'Job Status',
+                description: 'Background job monitoring',
+                link: '/admin/jobStatus',
+                Icon: MonitorX,
+            },
+            {
+                name: 'Cache Invalidation',
+                description: 'Clear cached data',
+                link: '/admin/cache-invalidation',
+                Icon: RefreshCw,
+            },
+            {
+                name: 'Key-Value Store',
+                description: 'Runtime configuration',
+                link: '/admin/keyvalue',
+                Icon: Database,
+            },
+            {
+                name: 'Provision By Id',
+                description: 'Manual server provisioning',
+                link: '/admin/TestInternalFunctions/provisionById',
+                Icon: Cog,
+            },
+        ],
     },
     {
-        name: 'Job Status',
-        link: '/admin/jobStatus',
-        Icon: MonitorX,
-        color: 'from-red-500 to-rose-600',
-    },
-    {
-        name: 'Cache Invalidation',
-        link: '/admin/cache-invalidation',
-        Icon: RefreshCw,
-        color: 'from-pink-500 to-rose-600',
-    },
-    {
-        name: 'Refunds',
-        link: '/admin/refunds',
-        Icon: Undo2,
-        color: 'from-rose-500 to-red-600',
-    },
-    {
-        name: 'Key-Value Store',
-        link: '/admin/keyvalue',
-        Icon: Database,
-        color: 'from-teal-500 to-cyan-600',
-    },
-    { name: 'Blog', link: '/admin/blog', Icon: BookOpen, color: 'from-sky-500 to-blue-600' },
-    {
-        name: 'Neuigkeiten',
-        link: '/admin/changelog',
-        Icon: History,
-        color: 'from-violet-500 to-purple-600',
+        title: 'Content',
+        items: [
+            {
+                name: 'Blog',
+                description: 'Create & manage posts',
+                link: '/admin/blog',
+                Icon: BookOpen,
+            },
+            {
+                name: 'Neuigkeiten',
+                description: 'Changelog & updates',
+                link: '/admin/changelog',
+                Icon: History,
+            },
+        ],
     },
 ];
 
+const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || 'unknown';
+const deploymentEnv = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV;
+const instanceId = process.env.NEXT_PUBLIC_INSTANCE_ID;
+
 const AdminPage = () => {
     return (
-        <div className="w-full py-8 sm:mx-auto sm:max-w-6xl sm:px-4">
-            <h1 className="text-2xl font-semibold text-foreground md:text-3xl">Lake Admin</h1>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {tiles.map(({ name, link, Icon, color }) => (
-                    <Link key={name} href={link} className="block">
-                        <Card
-                            className={`flex min-h-[120px] items-center justify-between gap-4 rounded-xl border-0 bg-gradient-to-br ${color} px-5 py-6 text-white shadow-lg transition-transform duration-200 hover:scale-[1.02] md:min-h-[150px] md:px-6`}
-                        >
-                            <div className="flex flex-col gap-1">
-                                <span className="text-lg font-semibold md:text-xl">{name}</span>
-                                <span className="text-sm text-white/80">Open {name}</span>
-                            </div>
-                            <Icon className="h-10 w-10 shrink-0 md:h-12 md:w-12" />
-                        </Card>
-                    </Link>
+        <div className="w-full py-4 sm:mx-auto sm:px-4 md:py-8 lg:max-w-5xl xl:max-w-6xl">
+            {/* Header */}
+            <div className="mb-6 flex items-center gap-3 md:mb-8">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 md:h-12 md:w-12">
+                    <Shield className="h-5 w-5 text-primary md:h-6 md:w-6" />
+                </div>
+                <div>
+                    <h1 className="text-xl font-semibold text-foreground md:text-2xl">Admin</h1>
+                    <p className="text-xs text-muted-foreground md:text-sm">
+                        Lake management console
+                    </p>
+                </div>
+            </div>
+
+            {/* Sections */}
+            <div className="space-y-6">
+                {sections.map((section) => (
+                    <div key={section.title}>
+                        <h2 className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            {section.title}
+                        </h2>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            {section.items.map((item) => (
+                                <Link
+                                    key={item.name}
+                                    href={item.link}
+                                    className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3 transition-colors hover:bg-accent/60 active:bg-accent sm:px-4 sm:py-3.5"
+                                >
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/80 sm:h-10 sm:w-10">
+                                        <item.Icon className="h-4.5 w-4.5 text-foreground/70 sm:h-5 sm:w-5" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="text-sm font-medium text-foreground">
+                                            {item.name}
+                                        </div>
+                                        <div className="truncate text-xs text-muted-foreground">
+                                            {item.description}
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
                 ))}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-8 py-4 text-center text-[11px] text-muted-foreground/60">
+                <span>Version: {appVersion}</span>
+                {deploymentEnv && <span> &middot; Env: {deploymentEnv}</span>}
+                {instanceId && <span> &middot; Instance: {instanceId}</span>}
             </div>
         </div>
     );

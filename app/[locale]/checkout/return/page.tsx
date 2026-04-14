@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
+import { checkoutReturnSearchParamsSchema } from '@/lib/validation/order';
 import { headers } from 'next/headers';
 import ServerReadyPoller from './ServerReadyPoller';
 
@@ -18,11 +19,16 @@ export default async function ReturnPage({
         return <NotLoggedIn />;
     }
 
-    const session_id = (await searchParams).session_id as string;
+    const search = await searchParams;
+    const parsedSearch = checkoutReturnSearchParamsSchema.safeParse({
+        session_id: search.session_id,
+    });
 
-    if (!session_id) {
+    if (!parsedSearch.success) {
         return <div>Invalid session ID.</div>;
     }
+    const { session_id } = parsedSearch.data;
+
     return (
         <div>
             <ServerReadyPoller sessionId={session_id} />

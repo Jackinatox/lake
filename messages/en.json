@@ -101,7 +101,7 @@
     "ctaButton": "Get Started",
     "getFreeServer": "Create a free server"
   },
-  "notAdmin": "You are not an admin",
+  "notAdmin": "You are not an admin.",
   "notAdminDescription": "You do not have admin rights to view this page.",
   "freeServer": {
     "buttonText": "Free Server",
@@ -140,8 +140,8 @@
     }
   },
   "info-buttons": {
-    "cpu": "Explaination of the CPU",
-    "ram": "Explaination of the RAM"
+    "cpu": "Explanation of the CPU",
+    "ram": "Explanation of the RAM"
   },
   "getHelp": {
     "title1": "We don't have a FAQ yet, but you can ",
@@ -312,11 +312,11 @@
       "continue": "Continue"
     },
     "auth": {
-      "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings"
+      "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings."
     },
     "payment": {
       "title": "Complete Your Payment",
-      "footerHint": "Complete payment above to create your server"
+      "footerHint": "Complete payment above to create your server."
     },
     "hardware": {
       "title": "Performance Configuration",
@@ -337,7 +337,7 @@
         "discount": "Discount (-{percent}%)",
         "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
-        "minOrderHint": "Minimum order value is 1.00 €"
+        "minOrderHint": "Minimum order value is 1.00 €."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -408,7 +408,7 @@
   },
   "RegisterLogin": {
     "title": "Welcome",
-    "subtitle": "Register with your Discord or Google account",
+    "subtitle": "Register with your Discord or Google account.",
     "oauth": {
       "discord": "Register with Discord",
       "google": "Register with Google"
@@ -419,11 +419,13 @@
     },
     "login": {
       "title": "Welcome back",
-      "subtitle": "Login with your Discord or Google account",
+      "subtitle": "Login with your Discord or Google account.",
       "oauthDiscord": "Login with Discord",
       "oauthGoogle": "Login with Google",
       "orContinueWith": "Or continue with",
       "fields": {
+        "emailOrUsername": "Email or Username",
+        "emailOrUsernamePlaceholder": "Email or username",
         "email": "Email",
         "emailPlaceholder": "mail@example.com",
         "password": "Password",
@@ -440,6 +442,19 @@
       "errors": {
         "loginFailed": "Login failed",
         "unexpected": "Unexpected error"
+      },
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "subtitle": "Enter the 6-digit code from your authenticator app.",
+        "codePlaceholder": "000000",
+        "codeLabel": "Verification Code",
+        "verify": "Verify",
+        "verifying": "Verifying...",
+        "backupLink": "Use a backup code instead",
+        "totpLink": "Use authenticator app instead",
+        "backupLabel": "Backup Code",
+        "backupPlaceholder": "xxxxxxxx",
+        "error": "Invalid code. Please try again."
       }
     },
     "forgotPassword": {
@@ -502,9 +517,15 @@
       "backToLogin": "Back to login"
     },
     "orContinueWith": "Or continue with",
+    "username": {
+      "available": "Username is available",
+      "taken": "Username is already taken"
+    },
     "fields": {
+      "name": "Full Name",
+      "namePlaceholder": "Your name",
       "username": "Username",
-      "usernamePlaceholder": "your username",
+      "usernamePlaceholder": "your_username",
       "email": "Email",
       "emailPlaceholder": "mail@example.com",
       "password": "Password",
@@ -520,6 +541,8 @@
       "passwordMin": "Password must be at least {min} characters",
       "passwordsDontMatch": "Passwords do not match",
       "emailRequired": "Email is required",
+      "nameRequired": "Name is required",
+      "usernameNoAt": "Username cannot contain @",
       "currentPasswordRequired": "Current password is required",
       "invalidCurrentPassword": "Current password is incorrect"
     },
@@ -550,7 +573,7 @@
       },
       "oauthNotAvailable": {
         "title": "Password Change Not Available",
-        "subtitle": "You are logged in with an OAuth provider",
+        "subtitle": "You are logged in with an OAuth provider.",
         "description": "Since you're using social login, your password is managed by your OAuth provider. Please manage your password through your Google or Discord account settings.",
         "backButton": "Back to Profile"
       }
@@ -642,6 +665,90 @@
       "upgradeOrderExists": "This server has been upgraded since the original purchase.",
       "upgradeOrderExistsDetail": "A self-service withdrawal is not possible because there are subsequent upgrade orders linked to this server. Please open a support ticket so we can handle this individually.",
       "openSupportTicket": "Open Support Ticket"
+    }
+  },
+  "profile": {
+    "tabs": {
+      "account": "Account",
+      "security": "Security",
+      "payments": "Payments"
+    },
+    "account": {
+      "dangerZoneSecurityHint": "Session management and two-factor authentication are available in the Security tab.",
+      "goToSecurity": "Go to Security",
+      "loginMethods": "Active login methods",
+      "signOutAllSessions": "Sign out of all sessions",
+      "signOutAllSessionsDescription": "This will sign you out on all other devices.",
+      "signOutAllConfirmTitle": "Sign out of all sessions?",
+      "signOutAllConfirmDescription": "You will remain signed in on this device.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "username": "Username",
+      "editUsername": "Edit username",
+      "saveUsername": "Save",
+      "cancelEdit": "Cancel",
+      "usernameAvailable": "Username is available",
+      "usernameTaken": "Username is already taken",
+      "usernameNoAt": "Username cannot contain @",
+      "usernameMinLength": "Must be at least 3 characters",
+      "usernameSaveError": "Failed to update username"
+    },
+    "twoFactor": {
+      "title": "Two-Factor Authentication",
+      "description": "Add an extra layer of security to your account using an authenticator app.",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enableButton": "Enable 2FA",
+      "disableButton": "Disable 2FA",
+      "setupTitle": "Set up Two-Factor Authentication",
+      "setupStep1Title": "Scan QR Code",
+      "setupStep1Description": "Scan this code with your authenticator app (Google Authenticator, Authy, etc.).",
+      "manualCode": "Or enter this code manually:",
+      "setupStep2Title": "Verify Setup",
+      "setupStep2Description": "Enter the 6-digit code shown in your authenticator app to confirm setup.",
+      "verificationCode": "Verification Code",
+      "verificationCodePlaceholder": "000000",
+      "verifyButton": "Verify & Enable",
+      "backupCodesTitle": "Save Your Backup Codes",
+      "backupCodesDescription": "Store these codes somewhere safe. Each can be used once to sign in if you lose access to your authenticator app.",
+      "copyBackupCodes": "Copy Codes",
+      "copied": "Copied!",
+      "savedConfirm": "I've saved my backup codes",
+      "disableTitle": "Disable Two-Factor Authentication",
+      "disableDescription": "Enter your password to confirm disabling 2FA.",
+      "disablePassword": "Password",
+      "disablePasswordPlaceholder": "Your current password",
+      "disableConfirm": "Disable 2FA",
+      "disableCancel": "Cancel",
+      "setupError": "Failed to set up 2FA. Please try again.",
+      "verifyError": "Invalid verification code. Please try again.",
+      "disableError": "Failed to disable 2FA. Please check your password.",
+      "enabledSuccess": "Two-factor authentication has been enabled.",
+      "disabledSuccess": "Two-factor authentication has been disabled.",
+      "close": "Close",
+      "methodTitle": "Authenticator App",
+      "methodDescription": "Time-based one-time password (TOTP)",
+      "reconfigureButton": "Reconfigure",
+      "notEnabledMessage": "No authentication method is configured.",
+      "oauthDisclaimer": "2FA currently only applies to email/password logins. OAuth logins (Google, Discord, etc.) will be supported in a future update."
+    },
+    "sessions": {
+      "title": "Active Sessions",
+      "description": "Manage all devices currently signed in to your account.",
+      "currentSession": "Current",
+      "revokeButton": "Revoke",
+      "revokeAllButton": "Revoke all other sessions",
+      "revokeConfirmTitle": "Revoke this session?",
+      "revokeConfirmDescription": "The device associated with this session will be signed out.",
+      "revokeAllConfirmTitle": "Revoke all other sessions?",
+      "revokeAllConfirmDescription": "All other devices will be signed out. You will remain signed in here.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "noOtherSessions": "No other active sessions.",
+      "loading": "Loading sessions...",
+      "unknownDevice": "Unknown Device",
+      "signedIn": "Signed in",
+      "expires": "Expires"
     }
   },
   "legalOverview": {
@@ -919,7 +1026,7 @@
       "description": "Manage IP allocations and ports assigned to your server.",
       "primary": "Primary",
       "noteLabel": "Note",
-      "emptyNoteHint": "No note set — click Edit Note to add one",
+      "emptyNoteHint": "No note set — click Edit Note to add one.",
       "editNote": "Edit Note",
       "setPrimary": "Set Primary",
       "remove": "Remove",
@@ -951,7 +1058,7 @@
       "fixPorts": "Fix assigned Ports",
       "fixPortsDialogTitle": "Fix Assigned Ports",
       "fixPortsDialogDescription": "This action will try to reassign some ports and reconfigure the server.",
-      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesnt work for all games (issues with Minecraft).",
+      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesn't work for all games (issues with Minecraft).",
       "fixPortsConfirm": "Fix Ports",
       "fixingPorts": "Fixing...",
       "fixPortsSuccess": "Ports reassigned successfully",
@@ -967,7 +1074,7 @@
         "updated": "Server name updated",
         "updatedDescription": "The server name has been successfully updated.",
         "updateFailed": "Server name update failed",
-        "updateFailedDescription": "The server name update has failed"
+        "updateFailedDescription": "The server name update has failed."
       },
       "expiry": {
         "label": "Server Expiry",
@@ -1003,7 +1110,7 @@
     "extend": {
       "badge": "FREE",
       "title": "Extend for Free",
-      "description": "Keep your free server running",
+      "description": "Keep your free server running.",
       "feature1": "100% free, no payment required",
       "feature2": "Extend up to {days} days into the future",
       "feature3": "Keep your current hardware and settings",
@@ -1022,7 +1129,7 @@
     "upgrade": {
       "badge": "POPULAR",
       "title": "Upgrade to Paid",
-      "description": "Unlock more power and extend beyond free tier limits",
+      "description": "Unlock more power and extend beyond free tier limits.",
       "feature1": "More CPU and RAM options",
       "feature2": "Longer durations available",
       "feature3": "Priority support",
@@ -1030,11 +1137,11 @@
       "button": "Configure Upgrade",
       "pricing": {
         "title": "Flexible Pricing",
-        "description": "Pay only for what you use, starting from €1.00"
+        "description": "Pay only for what you use, starting from €1.00."
       }
     },
     "helpText": {
-      "link": "Contact our support-team",
+      "link": "Contact our support",
       "post": "if you need help.",
       "pre": "Not sure?"
     }
@@ -1043,7 +1150,7 @@
     "title": "Setting Up Your Server",
     "description": "Your server is being provisioned",
     "loading": "Loading...",
-    "stateQueued": "Your server is queued and will be created shortly",
+    "stateQueued": "Your server is queued and will be created shortly.",
     "stateActive": "Creating your server...",
     "stateCompleted": "Server created successfully!",
     "stateFailed": "Server creation failed",

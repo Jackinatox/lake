@@ -3,10 +3,9 @@
 import prisma from '@/lib/prisma';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from '@/components/ui/breadcrumb';
-import { CalendarClock, SettingsIcon } from 'lucide-react';
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import SessionsTable from './sessionsTable';
 import { DbSession } from '@/models/prisma';
 import { headers } from 'next/headers';
@@ -32,28 +31,7 @@ export default async function AdminStripeSessionsPage() {
 
     return (
         <div className="space-y-4">
-            <div className="mb-2">
-                <Breadcrumb>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink
-                            href="#"
-                            className="flex items-center gap-2 text-muted-foreground"
-                        >
-                            <SettingsIcon className="h-4 w-4" />
-                            Admin Panel
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink
-                            href="#"
-                            className="flex items-center gap-2 text-muted-foreground"
-                        >
-                            <CalendarClock className="h-4 w-4" />
-                            Stripe Sessions
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                </Breadcrumb>
-            </div>
+            <AdminBreadcrumb items={[{ label: 'Stripe Sessions' }]} />
 
             <Card className="w-full">
                 <CardHeader>

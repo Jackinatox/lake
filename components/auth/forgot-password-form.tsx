@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import { AUTH_EMAIL_MAX_LENGTH, forgotPasswordSchema } from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 
 interface ForgotPasswordFormProps extends React.ComponentProps<'div'> {
     initialEmail?: string;
@@ -16,7 +18,6 @@ interface ForgotPasswordFormProps extends React.ComponentProps<'div'> {
 export function ForgotPasswordForm({ className, initialEmail, ...props }: ForgotPasswordFormProps) {
     const t = useTranslations('RegisterLogin.forgotPassword');
     const fieldsT = useTranslations('RegisterLogin.fields');
-    const validationT = useTranslations('RegisterLogin.validation');
 
     const [email, setEmail] = useState(initialEmail || '');
     const [error, setError] = useState<string | null>(null);
@@ -29,13 +30,9 @@ export function ForgotPasswordForm({ className, initialEmail, ...props }: Forgot
             setError(null);
             setSuccess(null);
 
-            if (!email.trim()) {
-                setError(validationT('emailRequired'));
-                return;
-            }
-
-            setLoading(true);
             try {
+                const parsed = forgotPasswordSchema.parse({ email });
+                setLoading(true);
                 const redirectTo =
                     typeof window !== 'undefined'
                         ? (() => {
@@ -51,7 +48,7 @@ export function ForgotPasswordForm({ className, initialEmail, ...props }: Forgot
                         : undefined;
 
                 const { error } = await authClient.requestPasswordReset({
-                    email,
+                    email: parsed.email,
                     redirectTo,
                 });
 
@@ -62,12 +59,12 @@ export function ForgotPasswordForm({ className, initialEmail, ...props }: Forgot
                     setEmail('');
                 }
             } catch (err: any) {
-                setError(err?.message || t('errors.requestFailed'));
+                setError(getValidationMessage(err) || t('errors.requestFailed'));
             } finally {
                 setLoading(false);
             }
         },
-        [email, t, validationT],
+        [email, t],
     );
 
     return (
@@ -88,6 +85,7 @@ export function ForgotPasswordForm({ className, initialEmail, ...props }: Forgot
                                         type="email"
                                         placeholder={fieldsT('emailPlaceholder')}
                                         required
+                                        maxLength={AUTH_EMAIL_MAX_LENGTH}
                                         value={email}
                                         onChange={(event) => setEmail(event.target.value)}
                                         autoComplete="email"

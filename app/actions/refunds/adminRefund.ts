@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { stripe } from '@/lib/stripe';
 import { calculateWithdrawalEligibility } from '@/lib/refund/refundLogic';
+import { adminRefundSchema, refundRequestSchema } from '@/lib/validation/order';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { RefundServerAction, RefundType } from '@/app/client/generated/browser';
@@ -32,11 +33,8 @@ export async function adminRefund(
     if (!session) throw new Error('Not authenticated');
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
-    const { orderId, amountCents, type, serverAction, reason, internalNote } = params;
-
-    if (amountCents <= 0) {
-        return { success: false, message: 'Amount must be greater than 0' };
-    }
+    const { orderId, amountCents, type, serverAction, reason, internalNote } =
+        adminRefundSchema.parse(params);
 
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
         where: { id: orderId },
@@ -182,9 +180,10 @@ export async function calculateAdminWithdrawalAmount(orderId: string): Promise<{
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
+    const { orderId: parsedOrderId } = refundRequestSchema.parse({ orderId });
 
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
-        where: { id: orderId },
+        where: { id: parsedOrderId },
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
@@ -207,7 +206,10 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
     if (!session) throw new Error('Not authenticated');
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
-    const skip = (page - 1) * pageSize;
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+    const safePageSize =
+        Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
+    const skip = (safePage - 1) * safePageSize;
 
     const [orders, total] = await Promise.all([
         prisma.gameServerOrder.findMany({
@@ -223,7 +225,7 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
             },
             orderBy: { createdAt: 'desc' },
             skip,
-            take: pageSize,
+            take: safePageSize,
         }),
         prisma.gameServerOrder.count({
             where: {
@@ -233,7 +235,7 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
         }),
     ]);
 
-    return { orders, total, page, pageSize };
+    return { orders, total, page: safePage, pageSize: safePageSize };
 }
 
 /**
@@ -244,7 +246,10 @@ export async function getRefundHistory(page: number = 1, pageSize: number = 20) 
     if (!session) throw new Error('Not authenticated');
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
-    const skip = (page - 1) * pageSize;
+    const safePage = Number.isInteger(page) && page > 0 ? page : 1;
+    const safePageSize =
+        Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
+    const skip = (safePage - 1) * safePageSize;
 
     const [refunds, total] = await Promise.all([
         prisma.refund.findMany({
@@ -258,10 +263,10 @@ export async function getRefundHistory(page: number = 1, pageSize: number = 20) 
             },
             orderBy: { createdAt: 'desc' },
             skip,
-            take: pageSize,
+            take: safePageSize,
         }),
         prisma.refund.count(),
     ]);
 
-    return { refunds, total, page, pageSize };
+    return { refunds, total, page: safePage, pageSize: safePageSize };
 }

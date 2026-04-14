@@ -20,6 +20,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { createBlogPost, updateBlogPost } from '@/app/actions/blog/blogActions';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
+import { blogPostCreateSchema, blogPostUpdateSchema } from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
     ssr: false,
@@ -96,27 +98,24 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
     }
 
     async function handleSave() {
-        setIsPending(true);
+        const basePayload = {
+            title,
+            slug: slug.trim() || undefined,
+            content,
+            category,
+            published,
+            listed,
+            publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
+        };
+
         try {
             if (post) {
-                await updateBlogPost(post.id, {
-                    title,
-                    slug,
-                    content,
-                    category,
-                    published,
-                    listed,
-                    publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
-                });
+                const parsed = blogPostUpdateSchema.parse(basePayload);
+                setIsPending(true);
+                await updateBlogPost(post.id, parsed);
             } else {
-                await createBlogPost({
-                    title,
-                    slug,
-                    content,
-                    category,
-                    published,
-                    listed,
-                    publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
+                const parsed = blogPostCreateSchema.parse({
+                    ...basePayload,
                     ...(createChangelog
                         ? {
                               changelog: {
@@ -130,14 +129,16 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                           }
                         : {}),
                 });
+                setIsPending(true);
+                await createBlogPost(parsed);
             }
             toast({ title: 'Saved', description: 'Post saved.' });
             router.push('/admin/blog');
-        } catch (err: unknown) {
+        } catch (error: unknown) {
             setIsPending(false);
             toast({
                 title: 'Error',
-                description: err instanceof Error ? err.message : 'Unknown error',
+                description: getValidationMessage(error) || 'Unknown error',
                 variant: 'destructive',
             });
         }
@@ -154,6 +155,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                         value={title}
                         onChange={(e) => handleTitleChange(e.target.value)}
                         placeholder="Post title"
+                        maxLength={160}
                     />
                 </div>
                 <div className="space-y-1.5">
@@ -164,6 +166,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                         onChange={(e) => handleSlugChange(e.target.value)}
                         placeholder="post-slug"
                         className="font-mono"
+                        maxLength={120}
                     />
                 </div>
             </div>
@@ -177,6 +180,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="e.g. Updates, Guides..."
                     list="blog-categories"
+                    maxLength={60}
                 />
                 <datalist id="blog-categories">
                     {existingCategories.map((c) => (
@@ -280,6 +284,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                                     onChange={(e) => setClText(e.target.value)}
                                     placeholder="Brief summary for the changelog..."
                                     rows={2}
+                                    maxLength={10000}
                                 />
                             </div>
                             <p className="text-xs text-muted-foreground">
@@ -296,7 +301,15 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                 <Button variant="outline" onClick={() => router.push('/admin/blog')}>
                     Cancel
                 </Button>
-                <Button onClick={handleSave} disabled={isPending || !title.trim()}>
+                <Button
+                    onClick={handleSave}
+                    disabled={
+                        isPending ||
+                        !title.trim() ||
+                        !category.trim() ||
+                        (createChangelog && !clText.trim())
+                    }
+                >
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {post ? 'Save Changes' : 'Create Post'}
                 </Button>

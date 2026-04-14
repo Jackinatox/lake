@@ -5,6 +5,8 @@ import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { LogLevel, LogType } from '@/app/client/generated/enums';
 import { ApplicationLogWithRelations } from '@/models/prisma';
+import { logFiltersSchema } from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 
 export type TimeRange = 'ALL' | '1m' | '10m' | '1h' | '1d' | '7d' | '30d';
 
@@ -24,6 +26,14 @@ export async function getApplicationLogs(filters: LogFilters = {}) {
         throw new Error('Unauthorized');
     }
 
+    const parsed = (() => {
+        try {
+            return logFiltersSchema.parse(filters);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
+
     const {
         search = '',
         level = 'ALL',
@@ -31,7 +41,7 @@ export async function getApplicationLogs(filters: LogFilters = {}) {
         timeRange = 'ALL',
         page = 1,
         limit = 50,
-    } = filters;
+    } = parsed;
 
     const where: any = {};
 

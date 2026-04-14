@@ -1,27 +1,35 @@
 'use server';
 
+import { auth } from '@/auth';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
+import { orderCheckoutSearchParamsSchema } from '@/lib/validation/order';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 
 export default async function OrderCheckoutPage({
     searchParams,
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
     const awaitedSearchParams = await searchParams;
-    const rawOrderId = awaitedSearchParams['orderId'];
-    const orderId = Array.isArray(rawOrderId) ? rawOrderId[0] : rawOrderId || null;
+    const parsedSearchParams = orderCheckoutSearchParamsSchema.safeParse({
+        orderId: awaitedSearchParams['orderId'],
+    });
 
-    if (!orderId) {
+    if (!session?.user || !parsedSearchParams.success) {
         return NotFoundComp();
     }
+    const { orderId } = parsedSearchParams.data;
 
-    const order = await prisma.gameServerOrder.findUnique({
-        where: { id: orderId },
+    const order = await prisma.gameServerOrder.findFirst({
+        where: { id: orderId, userId: session.user.id },
         select: {
             stripeClientSecret: true,
             type: true,

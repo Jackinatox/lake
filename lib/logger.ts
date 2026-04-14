@@ -49,6 +49,10 @@ class Logger {
         this.prisma = prismaClient;
     }
 
+    private shouldNotifyTelegram(type: LogType): boolean {
+        return type !== 'AUTHENTICATION';
+    }
+
     /**
      * Formats details for clean console output
      */
@@ -122,14 +126,18 @@ class Logger {
                 console.error('Failed to emit OTel log:', error);
             }
 
+            const sanitizedDetails = entry.details
+                ? JSON.parse(JSON.stringify(entry.details, (_, v) => (v === undefined ? null : v)))
+                : null;
+
             await this.prisma.applicationLog.create({
                 data: {
                     level: entry.level,
                     type: entry.type,
                     message: entry.message,
                     instanceId: this.instanceId,
-                    details: entry.details
-                        ? (entry.details as Prisma.InputJsonValue)
+                    details: sanitizedDetails
+                        ? (sanitizedDetails as Prisma.InputJsonValue)
                         : Prisma.JsonNull,
                     method: entry.method || null,
                     path: entry.path || null,
@@ -192,6 +200,10 @@ class Logger {
             ...context,
         });
 
+        if (!this.shouldNotifyTelegram(type)) {
+            return;
+        }
+
         // Send Telegram notification with all context
         sendErrorNotification({
             errorMessage: message,
@@ -252,6 +264,10 @@ class Logger {
             type,
             ...context,
         });
+
+        if (!this.shouldNotifyTelegram(type)) {
+            return;
+        }
 
         // Send Telegram notification with all context
         sendFatalErrorNotification({

@@ -75,7 +75,7 @@ export default async function GameServersPage() {
 
     return (
         <div className="min-h-screen">
-            <div className="container mx-auto px-0 py-8 max-w-4xl">
+            <div className="container mx-auto px-0 max-w-4xl">
                 <PageHeader count={clientServers.length} />
                 {clientServers.length > 0 ? (
                     <>

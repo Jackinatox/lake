@@ -95,7 +95,7 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
         }
 
         return arr;
-    }, [sessions, sortKey, sortDir]);
+    }, [sessions, sortKey, sortDir, STATUS_ORDER, TYPE_ORDER]);
 
     const toggleSort = (key: 'status' | 'type') => {
         if (sortKey === key) {

@@ -5,6 +5,8 @@ import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { getValidationMessage } from '@/lib/validation/common';
+import { checkoutUpgradeParamsSchema } from '@/lib/validation/order';
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import Link from 'next/link';
@@ -46,9 +48,14 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
         };
 
         try {
+            const parsedParams = checkoutUpgradeParamsSchema.safeParse(params);
+            if (!parsedParams.success) {
+                throw new Error(getValidationMessage(parsedParams.error));
+            }
+
             setLoading(true);
             setSelectedConfig(newHardwareConfig);
-            const secret = await checkoutAction(params);
+            const secret = await checkoutAction(parsedParams.data);
 
             setClientSecret((secret as { client_secret: string }).client_secret);
             setStep('pay');

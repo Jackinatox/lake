@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { LogLevel, LogType } from '@/app/client/generated/enums';
-import { Search, Clock } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { TimeRange } from '@/app/actions/logs/getApplicationLogs';
 import { useTranslations } from 'next-intl';
 
@@ -73,6 +73,7 @@ export default function LogFilters({
                             placeholder={t('searchPlaceholder')}
                             value={search}
                             onChange={(e) => onSearchChange(e.target.value)}
+                            maxLength={200}
                             className="pl-9"
                         />
                     </div>

@@ -25,6 +25,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
+import { supportTicketSchema } from '@/lib/validation/order';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -61,6 +62,17 @@ export default function ContactForm() {
             return;
         }
 
+        const payload = supportTicketSchema.safeParse({
+            subject: subject.trim() || undefined,
+            description: trimmedMessage,
+            category,
+        });
+
+        if (!payload.success) {
+            toast({ title: t('ticketCreationFailed'), variant: 'destructive' });
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -69,11 +81,7 @@ export default function ContactForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    description: trimmedMessage,
-                    subject: subject.trim(),
-                    category,
-                }),
+                body: JSON.stringify(payload.data),
             });
 
             if (response.status === 401) {

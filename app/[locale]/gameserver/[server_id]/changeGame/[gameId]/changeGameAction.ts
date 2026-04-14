@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import type { GameConfig } from '@/models/config';
+import { changeGameRequestSchema } from '@/lib/validation/gameserver';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 
@@ -20,6 +21,12 @@ export async function changeGame({
     gameConfig,
     deleteFiles = true,
 }: SubmitGameChangeInput) {
+    const parsed = changeGameRequestSchema.parse({
+        ptServerId,
+        gameId,
+        gameConfig,
+        deleteFiles,
+    });
     const workerUrl = env('WORKER_IP');
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -30,7 +37,7 @@ export async function changeGame({
     }
 
     const server = await prisma.gameServer.findFirst({
-        where: { ptServerId: ptServerId, userId: session.user.id },
+        where: { ptServerId: parsed.ptServerId, userId: session.user.id },
     });
 
     if (!server) {
@@ -38,7 +45,7 @@ export async function changeGame({
     }
 
     logger.info(
-        `Changing Game for ${ptServerId} for user ${session.user.id} to game ${gameId}`,
+        `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameId}`,
         'GAME_SERVER',
     );
     const response = await fetch(`${workerUrl}/v1/queue/changeGame`, {
@@ -47,11 +54,11 @@ export async function changeGame({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            gameId,
-            ptServerId,
+            gameId: parsed.gameId,
+            ptServerId: parsed.ptServerId,
             userId: session.user.id,
-            deleteFiles,
-            gameConfig,
+            deleteFiles: parsed.deleteFiles,
+            gameConfig: parsed.gameConfig,
         }),
     });
 

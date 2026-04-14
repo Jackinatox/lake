@@ -1,8 +1,12 @@
 'use server';
 
 import { auth } from '@/auth';
+import {
+    changelogEntryCreateSchema,
+    changelogEntryUpdateSchema,
+} from '@/lib/validation/adminContent';
+import { getValidationMessage, nonEmptyIdSchema, parseDateInput } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
-import { ChangelogEntryType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -21,14 +25,21 @@ export async function createChangelogEntry(data: {
     blogPostId?: string | null;
 }) {
     await requireAdmin();
+    const parsed = (() => {
+        try {
+            return changelogEntryCreateSchema.parse(data);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
     await prisma.changelogEntry.create({
         data: {
-            title: data.title,
-            text: data.text,
-            type: data.type as ChangelogEntryType,
-            published: data.published,
-            publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-            blogPostId: data.blogPostId ?? null,
+            title: parsed.title,
+            text: parsed.text,
+            type: parsed.type,
+            published: parsed.published,
+            publishedAt: parseDateInput(parsed.publishedAt) ?? new Date(),
+            blogPostId: parsed.blogPostId ?? null,
         },
     });
     return { success: true };
@@ -46,19 +57,24 @@ export async function updateChangelogEntry(
     },
 ) {
     await requireAdmin();
+    const parsed = (() => {
+        try {
+            return changelogEntryUpdateSchema.parse(data);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
     await prisma.changelogEntry.update({
-        where: { id },
+        where: { id: nonEmptyIdSchema.parse(id) },
         data: {
-            title: data.title,
-            text: data.text,
-            type: data.type as ChangelogEntryType,
-            published: data.published,
-            blogPostId: data.blogPostId,
+            title: parsed.title,
+            text: parsed.text,
+            type: parsed.type,
+            published: parsed.published,
+            blogPostId: parsed.blogPostId,
             publishedAt:
-                data.publishedAt !== undefined
-                    ? data.publishedAt
-                        ? new Date(data.publishedAt)
-                        : new Date()
+                parsed.publishedAt !== undefined
+                    ? (parseDateInput(parsed.publishedAt) ?? new Date())
                     : undefined,
         },
     });
@@ -67,7 +83,7 @@ export async function updateChangelogEntry(
 
 export async function deleteChangelogEntry(id: string) {
     await requireAdmin();
-    await prisma.changelogEntry.delete({ where: { id } });
+    await prisma.changelogEntry.delete({ where: { id: nonEmptyIdSchema.parse(id) } });
     return { success: true };
 }
 
@@ -84,7 +100,7 @@ export async function listChangelogAdmin() {
 export async function getChangelogEntryForEdit(id: string) {
     await requireAdmin();
     return prisma.changelogEntry.findUniqueOrThrow({
-        where: { id },
+        where: { id: nonEmptyIdSchema.parse(id) },
         include: { blogPost: { select: { id: true, title: true } } },
     });
 }

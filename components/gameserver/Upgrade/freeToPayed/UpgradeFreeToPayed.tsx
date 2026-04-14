@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
+import { getValidationMessage } from '@/lib/validation/common';
+import { checkoutToPayedParamsSchema } from '@/lib/validation/order';
 import { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import React from 'react';
@@ -45,9 +47,14 @@ function UpgradeGameServerFromFree({
         };
 
         try {
+            const parsedParams = checkoutToPayedParamsSchema.safeParse(params);
+            if (!parsedParams.success) {
+                throw new Error(getValidationMessage(parsedParams.error));
+            }
+
             setLoading(true);
             setSelectedConfig(hardwareConfig);
-            const secret = await checkoutAction(params);
+            const secret = await checkoutAction(parsedParams.data);
 
             setClientSecret((secret as { client_secret: string }).client_secret);
             setStep('pay');

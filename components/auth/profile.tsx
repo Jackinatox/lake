@@ -48,6 +48,8 @@ export default function Profile() {
     }
 
     const { user } = session;
+    const username = (user as { username?: string }).username;
+    const displayName = username || user.name;
     const initials = user.name
         ? user.name
               .split(' ')
@@ -66,7 +68,7 @@ export default function Profile() {
                             <AvatarFallback>{initials}</AvatarFallback>
                         </Avatar>
                         <div className="hidden md:flex md:flex-col md:items-start md:text-left">
-                            <span className="text-sm font-medium">{user.name}</span>
+                            <span className="text-sm font-medium">{displayName}</span>
                             <span className="text-xs text-muted-foreground">{user.email}</span>
                         </div>
                     </div>
@@ -75,14 +77,14 @@ export default function Profile() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                        <p className="text-sm font-medium leading-none">{displayName}</p>
                         <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem>
-                    <Link href="/profile" className="flex items-center w-full cursor-pointer">
+                <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </Link>
@@ -119,8 +121,8 @@ export default function Profile() {
                 {(mounted || session?.user.role === 'admin') && <DropdownMenuSeparator />}
                 {session?.user.role === 'admin' && (
                     <>
-                        <DropdownMenuItem>
-                            <Link href="/admin" className="flex items-center w-full cursor-pointer">
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin" className="flex items-center cursor-pointer">
                                 <UserRoundCog className="mr-2 h-4 w-4" />
                                 <span>Admin Panel</span>
                             </Link>
@@ -128,7 +130,14 @@ export default function Profile() {
                         <DropdownMenuSeparator />
                     </>
                 )}
-                <DropdownMenuItem className="cursor-pointer" onClick={() => authClient.signOut()}>
+                <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() =>
+                        authClient.signOut({
+                            fetchOptions: { onSuccess: () => window.location.reload() },
+                        })
+                    }
+                >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

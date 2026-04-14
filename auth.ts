@@ -1,18 +1,19 @@
+import { apiKey } from '@better-auth/api-key';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, lastLoginMethod, twoFactor, captcha } from 'better-auth/plugins';
+import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
 import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
-import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
-import createUserApiKey from './lib/Pterodactyl/userApiKey';
 import {
     sendConfirmEmail,
     sendPasswordResetSuccessEmail,
     sendResetPasswordEmail,
 } from './lib/email/sendEmailEmailsFromLake';
-import prisma from './lib/prisma';
 import { logger } from './lib/logger';
 import { captureServerEvent } from './lib/posthog';
+import prisma from './lib/prisma';
+import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
+import createUserApiKey from './lib/Pterodactyl/userApiKey';
 
 function extractIp(request?: Request | null): string | undefined {
     if (!request) return undefined;
@@ -103,6 +104,7 @@ export const auth = betterAuth({
     },
     emailAndPassword: {
         enabled: true,
+        maxPasswordLength: 128,
         requireEmailVerification: true,
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendResetPasswordEmail(user.email, url, token);
@@ -153,7 +155,20 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
-        twoFactor(),
+        username({}),
+        apiKey({
+            enableSessionForAPIKeys: true,
+            enableMetadata: true,
+            defaultPrefix: 'scyd_',
+            rateLimit: { enabled: true, maxRequests: 5, timeWindow: 1000 * 2 }, // 5 reqs per 2s
+        }),
+        twoFactor({
+            allowPasswordless: true,
+            issuer: 'Scyed',
+            totpOptions: {
+                allowPasswordless: true,
+            },
+        }),
         lastLoginMethod({
             storeInDatabase: true,
         }),
@@ -167,7 +182,7 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user, context) => {
-                    const req = (context as any)?.request as Request | undefined;
+                    const req = context?.request as Request | undefined;
                     const ip = extractIp(req);
                     const ua = extractUserAgent(req);
                     const path = req ? new URL(req.url).pathname : undefined;
@@ -266,7 +281,7 @@ export const auth = betterAuth({
         session: {
             create: {
                 after: async (session, context) => {
-                    const req = (context as any)?.request as Request | undefined;
+                    const req = context?.request as Request | undefined;
                     const ip = extractIp(req);
                     const ua = extractUserAgent(req);
                     const path = req ? new URL(req.url).pathname : undefined;

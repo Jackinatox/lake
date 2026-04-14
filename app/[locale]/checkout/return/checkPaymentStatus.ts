@@ -3,6 +3,7 @@
 import { OrderStatus, OrderType } from '@/app/client/generated/enums';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { checkoutReturnSearchParamsSchema } from '@/lib/validation/order';
 import { headers } from 'next/headers';
 
 export default async function checkPaymentStatus(stripeSession: string): Promise<{
@@ -20,8 +21,10 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
         throw new Error('User not authenticated');
     }
 
+    const parsedSession = checkoutReturnSearchParamsSchema.parse({ session_id: stripeSession });
+
     const serverOrder = await prisma.gameServerOrder.findFirst({
-        where: { stripeSessionId: stripeSession },
+        where: { stripeSessionId: parsedSession.session_id, userId: session.user.id },
         select: {
             status: true,
             workerJobId: true,

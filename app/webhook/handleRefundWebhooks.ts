@@ -378,7 +378,6 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
     }
 }
 
-
 export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
     try {
         if (!invoice.invoice_pdf) {
@@ -394,11 +393,9 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
         });
 
         if (!order) {
-            logger.warn(
-                'invoice.payment_succeeded: No order found for invoice',
-                'PAYMENT_LOG',
-                { details: { invoiceId: invoice.id } },
-            );
+            logger.warn('invoice.payment_succeeded: No order found for invoice', 'PAYMENT_LOG', {
+                details: { invoiceId: invoice.id },
+            });
             return;
         }
 

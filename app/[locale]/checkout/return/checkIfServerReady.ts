@@ -22,7 +22,7 @@ export default async function checkIfServerReady(
     // -------------------------
 
     const serverOrder = await prisma.gameServerOrder.findFirst({
-        where: { stripeSessionId: stripeSession },
+        where: { stripeSessionId: stripeSession, userId: session.user.id },
         include: { gameServer: true },
     });
 

@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { MailCheck } from 'lucide-react';
 
 import { authClient } from '@/lib/auth-client';
+import { authEmailSchema } from '@/lib/validation/auth';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -22,7 +23,8 @@ export default function VerifyEmailPage() {
     const t = useTranslations('RegisterLogin.verifyEmail');
     const searchParams = useSearchParams();
     const session = authClient.useSession();
-    const emailParam = searchParams.get('email')?.trim() ?? '';
+    const emailCandidate = searchParams.get('email')?.trim() ?? '';
+    const emailParam = authEmailSchema.safeParse(emailCandidate).success ? emailCandidate : '';
     const sessionEmail = session.data?.user?.email?.trim() ?? '';
     const displayEmail = emailParam || sessionEmail;
     const isSessionPending = session.isPending;

@@ -5,6 +5,7 @@ import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import ChangeGameConfigClient from './ChangeGameConfigClient';
 import prisma from '@/lib/prisma';
+import { z } from '@/lib/validation/common';
 
 import { headers } from 'next/headers';
 import type { Game } from '@/models/config';
@@ -24,8 +25,15 @@ async function Page({
 }) {
     const { server_id: serverId, gameId } = await params;
     const search = await searchParams;
-    // If deleteFiles param is explicitly 'false', then deleteFiles = false, otherwise default to true
-    const deleteFiles = search.deleteFiles !== 'false';
+    const parsedGameId = z
+        .string()
+        .trim()
+        .regex(/^[1-9]\d*$/, 'Game ID must be a positive integer')
+        .safeParse(gameId);
+    const deleteFilesParam = Array.isArray(search.deleteFiles)
+        ? search.deleteFiles[0]
+        : search.deleteFiles;
+    const deleteFiles = deleteFilesParam === 'false' ? false : true;
 
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -54,7 +62,7 @@ async function Page({
         }),
         prisma.gameData.findUnique({
             where: {
-                id: Number.parseInt(gameId, 10),
+                id: parsedGameId.success ? Number(parsedGameId.data) : -1,
             },
             select: {
                 id: true,
@@ -69,7 +77,7 @@ async function Page({
         return <NotAllowedMessage />;
     }
 
-    if (!game || !game.data) {
+    if (!parsedGameId.success || !game || !game.data) {
         return (
             <div className="flex min-h-[40vh] items-center justify-center">
                 <div className="text-center text-sm text-muted-foreground">

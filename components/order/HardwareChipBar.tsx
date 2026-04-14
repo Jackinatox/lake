@@ -3,6 +3,7 @@
 import { Archive, Clock, Cpu, HardDrive, MemoryStick, Network } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 interface HardwareChipBarProps {
     cpu: number;
@@ -35,17 +36,17 @@ export default function HardwareChipBar({
         >
             <Chip color="blue" label="CPU">
                 <Cpu className="h-3.5 w-3.5 text-blue-500" />
-                {cpu}
+                {cpu} vCores
             </Chip>
 
             <Chip color="purple" label="RAM">
                 <MemoryStick className="h-3.5 w-3.5 text-purple-500" />
-                {ram}
+                {formatBytes(ram * 1024 * 1024 * 1024)}
             </Chip>
 
             <Chip color="green" label="Disk">
                 <HardDrive className="h-3.5 w-3.5 text-emerald-500" />
-                {diskGB}
+                {formatBytes(diskGB * 1024 * 1024 * 1024)}
             </Chip>
 
             <div className="w-px h-5 bg-border shrink-0" />

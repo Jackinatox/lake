@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { calculateWithdrawalEligibility } from '@/lib/refund/refundLogic';
 import { stripe } from '@/lib/stripe';
+import { refundRequestSchema } from '@/lib/validation/order';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 
@@ -26,9 +27,10 @@ export async function checkWithdrawalEligibility(
 ): Promise<WithdrawalEligibilityResult> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
+    const { orderId: parsedOrderId } = refundRequestSchema.parse({ orderId });
 
-    const order = await prisma.gameServerOrder.findUniqueOrThrow({
-        where: { id: orderId, userId: session.user.id },
+    const order = await prisma.gameServerOrder.findFirstOrThrow({
+        where: { id: parsedOrderId, userId: session.user.id },
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
@@ -40,7 +42,7 @@ export async function checkWithdrawalEligibility(
         const subsequentOrders = await prisma.gameServerOrder.count({
             where: {
                 gameServerId: order.gameServerId,
-                id: { not: orderId },
+                id: { not: parsedOrderId },
                 status: { in: ['PAID', 'PARTIALLY_REFUNDED'] },
                 createdAt: { gt: order.createdAt },
             },
@@ -49,7 +51,7 @@ export async function checkWithdrawalEligibility(
     }
 
     const result = calculateWithdrawalEligibility(order, order.refunds);
-    return { ...result, orderId, hasUpgradeOrders };
+    return { ...result, orderId: parsedOrderId, hasUpgradeOrders };
 }
 
 /**
@@ -62,9 +64,10 @@ export async function requestUserWithdrawal(
 ): Promise<{ success: boolean; message: string }> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
+    const { orderId: parsedOrderId } = refundRequestSchema.parse({ orderId });
 
-    const order = await prisma.gameServerOrder.findUniqueOrThrow({
-        where: { id: orderId, userId: session.user.id },
+    const order = await prisma.gameServerOrder.findFirstOrThrow({
+        where: { id: parsedOrderId, userId: session.user.id },
         include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
     });
 
