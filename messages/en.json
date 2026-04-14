@@ -683,7 +683,16 @@
       "signOutAllConfirmTitle": "Sign out of all sessions?",
       "signOutAllConfirmDescription": "You will remain signed in on this device.",
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "username": "Username",
+      "editUsername": "Edit username",
+      "saveUsername": "Save",
+      "cancelEdit": "Cancel",
+      "usernameAvailable": "Username is available",
+      "usernameTaken": "Username is already taken",
+      "usernameNoAt": "Username cannot contain @",
+      "usernameMinLength": "Must be at least 3 characters",
+      "usernameSaveError": "Failed to update username"
     },
     "twoFactor": {
       "title": "Two-Factor Authentication",

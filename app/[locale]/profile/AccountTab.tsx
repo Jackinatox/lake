@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Mail, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from './LogoutButton';
+import UsernameEditor from './UsernameEditor';
 
 function getInitials(name: string): string {
     return (
@@ -87,12 +88,13 @@ export default function AccountTab() {
     if (!session?.user) return null;
 
     const user = session.user;
+    const currentUsername = (user as { username?: string }).username ?? '';
 
     return (
         <div className="space-y-4">
             <Card>
                 <CardContent className="p-6 space-y-6">
-                    {/* Avatar + name + email */}
+                    {/* Avatar + name + username + email */}
                     <div className="flex items-center gap-4">
                         <Avatar className="h-16 w-16 shrink-0">
                             <AvatarImage src={user.image || undefined} alt={user.name || ''} />
@@ -100,9 +102,10 @@ export default function AccountTab() {
                                 {getInitials(user.name || 'User')}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1 space-y-1">
                             <p className="font-semibold text-base truncate">{user.name}</p>
-                            <p className="text-sm text-muted-foreground truncate mt-0.5">{user.email}</p>
+                            <UsernameEditor currentUsername={currentUsername} />
+                            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                         </div>
                     </div>
 
@@ -157,15 +160,8 @@ export default function AccountTab() {
                                 </p>
                             </div>
                         </div>
-                        <Button
-                            asChild
-                            variant="destructive"
-                            size="sm"
-                            className="shrink-0"
-                        >
-                            <Link href="?tab=security">
-                                {t('account.goToSecurity')}
-                            </Link>
+                        <Button asChild variant="destructive" size="sm" className="shrink-0">
+                            <Link href="?tab=security">{t('account.goToSecurity')}</Link>
                         </Button>
                     </div>
                 </CardContent>

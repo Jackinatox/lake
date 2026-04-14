@@ -683,7 +683,16 @@
       "signOutAllConfirmTitle": "Alle anderen Sitzungen beenden?",
       "signOutAllConfirmDescription": "Auf diesem Gerät bleibst du angemeldet.",
       "confirm": "Bestätigen",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "username": "Benutzername",
+      "editUsername": "Benutzername bearbeiten",
+      "saveUsername": "Speichern",
+      "cancelEdit": "Abbrechen",
+      "usernameAvailable": "Benutzername ist verfügbar",
+      "usernameTaken": "Benutzername ist bereits vergeben",
+      "usernameNoAt": "Benutzername darf kein @ enthalten",
+      "usernameMinLength": "Mindestens 3 Zeichen erforderlich",
+      "usernameSaveError": "Benutzername konnte nicht aktualisiert werden"
     },
     "twoFactor": {
       "title": "Zwei-Faktor-Authentifizierung",
