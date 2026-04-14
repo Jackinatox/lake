@@ -81,9 +81,9 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
         setSaveError(null);
         try {
             const parsed = usernameUpdateSchema.parse({ username: input });
-            const { error } = await authClient.updateUser({ username: parsed.username } as Parameters<
-                typeof authClient.updateUser
-            >[0]);
+            const { error } = await authClient.updateUser({
+                username: parsed.username,
+            } as Parameters<typeof authClient.updateUser>[0]);
             if (error) {
                 setSaveError(error.message || t('account.usernameSaveError'));
             } else {

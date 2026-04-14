@@ -133,7 +133,9 @@ export function ResetPasswordForm({
                                 </div>
                                 {passwordTooShort && (
                                     <div className="text-red-500 text-xs text-center">
-                                        {validationT('passwordMin', { min: AUTH_PASSWORD_MIN_LENGTH })}
+                                        {validationT('passwordMin', {
+                                            min: AUTH_PASSWORD_MIN_LENGTH,
+                                        })}
                                     </div>
                                 )}
                                 {!passwordTooShort &&

@@ -74,7 +74,7 @@ export async function updateChangelogEntry(
             blogPostId: parsed.blogPostId,
             publishedAt:
                 parsed.publishedAt !== undefined
-                    ? parseDateInput(parsed.publishedAt) ?? new Date()
+                    ? (parseDateInput(parsed.publishedAt) ?? new Date())
                     : undefined,
         },
     });

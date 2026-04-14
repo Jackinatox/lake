@@ -154,52 +154,52 @@ function MobilePowerDropdown({
                 <PrimaryIcon className={primaryIconClass} />
             </Button>
             <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8 px-1 rounded-l-none">
-                    <ChevronDown className="h-3 w-3" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                    onClick={() => onPowerAction('start')}
-                    disabled={
-                        loading ||
-                        isRunning ||
-                        serverStatus === 'stopping' ||
-                        serverStatus === 'starting'
-                    }
-                    className="gap-2"
-                >
-                    <Play className="h-4 w-4 text-green-500" />
-                    {t('start')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => onPowerAction('restart')}
-                    disabled={loading || isOffline}
-                    className="gap-2"
-                >
-                    <RefreshCw className="h-4 w-4" />
-                    {t('restart')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => onPowerAction('stop')}
-                    disabled={loading || isOffline}
-                    className="gap-2"
-                >
-                    <Square className="h-4 w-4" />
-                    {t('stop')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                    onClick={() => onPowerAction('kill')}
-                    disabled={loading || isOffline}
-                    className="gap-2 text-destructive focus:text-destructive"
-                >
-                    <Power className="h-4 w-4" />
-                    {t('kill')}
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8 px-1 rounded-l-none">
+                        <ChevronDown className="h-3 w-3" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                        onClick={() => onPowerAction('start')}
+                        disabled={
+                            loading ||
+                            isRunning ||
+                            serverStatus === 'stopping' ||
+                            serverStatus === 'starting'
+                        }
+                        className="gap-2"
+                    >
+                        <Play className="h-4 w-4 text-green-500" />
+                        {t('start')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => onPowerAction('restart')}
+                        disabled={loading || isOffline}
+                        className="gap-2"
+                    >
+                        <RefreshCw className="h-4 w-4" />
+                        {t('restart')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => onPowerAction('stop')}
+                        disabled={loading || isOffline}
+                        className="gap-2"
+                    >
+                        <Square className="h-4 w-4" />
+                        {t('stop')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                        onClick={() => onPowerAction('kill')}
+                        disabled={loading || isOffline}
+                        className="gap-2 text-destructive focus:text-destructive"
+                    >
+                        <Power className="h-4 w-4" />
+                        {t('kill')}
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }

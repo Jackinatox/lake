@@ -151,7 +151,9 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onRefresh }) => {
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-sm font-medium">{user.name || '—'}</span>
+                                        <span className="text-sm font-medium">
+                                            {user.name || '—'}
+                                        </span>
                                         {user.role === 'admin' && (
                                             <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
                                         )}
@@ -264,16 +266,17 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onRefresh }) => {
             </div>
 
             {/* Pterodactyl Info Dialog */}
-            <Dialog open={ptDialog.open} onOpenChange={(open) => !open && setPtDialog((p) => ({ ...p, open: false }))}>
+            <Dialog
+                open={ptDialog.open}
+                onOpenChange={(open) => !open && setPtDialog((p) => ({ ...p, open: false }))}
+            >
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <Server className="h-5 w-5" />
                             Pterodactyl — {ptDialog.userName}
                         </DialogTitle>
-                        <DialogDescription>
-                            User details from the Pterodactyl API
-                        </DialogDescription>
+                        <DialogDescription>User details from the Pterodactyl API</DialogDescription>
                     </DialogHeader>
                     {ptDialog.loading ? (
                         <div className="flex items-center justify-center py-8">

@@ -207,7 +207,8 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
     const safePage = Number.isInteger(page) && page > 0 ? page : 1;
-    const safePageSize = Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
+    const safePageSize =
+        Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
     const skip = (safePage - 1) * safePageSize;
 
     const [orders, total] = await Promise.all([
@@ -246,7 +247,8 @@ export async function getRefundHistory(page: number = 1, pageSize: number = 20) 
     if (session.user.role !== 'admin') throw new Error('Unauthorized');
 
     const safePage = Number.isInteger(page) && page > 0 ? page : 1;
-    const safePageSize = Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
+    const safePageSize =
+        Number.isInteger(pageSize) && pageSize > 0 && pageSize <= 100 ? pageSize : 20;
     const skip = (safePage - 1) * safePageSize;
 
     const [refunds, total] = await Promise.all([

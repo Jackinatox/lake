@@ -121,7 +121,11 @@ export default function SetupPageClient({
         if (!parsedGameConfig.success || !configuredResult) {
             toast({
                 title: 'Invalid configuration',
-                description: getValidationMessage(parsedGameConfig.success ? new Error('Invalid hardware configuration') : parsedGameConfig.error),
+                description: getValidationMessage(
+                    parsedGameConfig.success
+                        ? new Error('Invalid hardware configuration')
+                        : parsedGameConfig.error,
+                ),
                 variant: 'destructive',
             });
             return;

@@ -34,10 +34,7 @@ export default async function EditChangelogEntryPage({
     return (
         <div className="max-w-7xl w-full mx-auto">
             <AdminBreadcrumb
-                items={[
-                    { label: 'Changelog', href: '/admin/changelog' },
-                    { label: 'Edit Entry' },
-                ]}
+                items={[{ label: 'Changelog', href: '/admin/changelog' }, { label: 'Edit Entry' }]}
             />
 
             <Card>

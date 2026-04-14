@@ -82,7 +82,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     });
                 }
 
-                const { data, error } = result as { data: SignInEmailData; error: { message?: string; code?: string } | null };
+                const { data, error } = result as {
+                    data: SignInEmailData;
+                    error: { message?: string; code?: string } | null;
+                };
 
                 if (error) {
                     const message = error.message || t('errors.loginFailed');
@@ -154,7 +157,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                             <div className="grid gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="two-factor-code">
-                                        {useBackupCode ? t('twoFactor.backupLabel') : t('twoFactor.codeLabel')}
+                                        {useBackupCode
+                                            ? t('twoFactor.backupLabel')
+                                            : t('twoFactor.codeLabel')}
                                     </Label>
                                     <Input
                                         id="two-factor-code"
@@ -174,7 +179,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                         inputMode={useBackupCode ? 'text' : 'numeric'}
                                         autoComplete="one-time-code"
                                         maxLength={useBackupCode ? 32 : 6}
-                                        className={cn(!useBackupCode && 'tracking-widest text-center text-lg')}
+                                        className={cn(
+                                            !useBackupCode && 'tracking-widest text-center text-lg',
+                                        )}
                                         autoFocus
                                     />
                                 </div>
@@ -201,7 +208,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                         setError(null);
                                     }}
                                 >
-                                    {useBackupCode ? t('twoFactor.totpLink') : t('twoFactor.backupLink')}
+                                    {useBackupCode
+                                        ? t('twoFactor.totpLink')
+                                        : t('twoFactor.backupLink')}
                                 </button>
                             </div>
                         </form>
@@ -279,7 +288,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                             {/* Form fields */}
                             <div className="flex flex-col gap-4">
                                 <div className="flex flex-col gap-2">
-                                    <Label htmlFor="identifier">{t('fields.emailOrUsername')}</Label>
+                                    <Label htmlFor="identifier">
+                                        {t('fields.emailOrUsername')}
+                                    </Label>
                                     <Input
                                         id="identifier"
                                         type="text"
@@ -323,7 +334,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                             onClick={() => setShowPassword((v) => !v)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                             tabIndex={-1}
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={
+                                                showPassword ? 'Hide password' : 'Show password'
+                                            }
                                         >
                                             {showPassword ? (
                                                 <EyeOff className="h-4 w-4" />
@@ -356,7 +369,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
                             <div className="text-center text-sm">
                                 {tr('login.noAccount.text')}{' '}
-                                <Link href="/register" className="underline underline-offset-4 font-medium">
+                                <Link
+                                    href="/register"
+                                    className="underline underline-offset-4 font-medium"
+                                >
                                     {tr('login.noAccount.signUp')}
                                 </Link>
                             </div>

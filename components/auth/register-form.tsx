@@ -78,10 +78,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
 
     const passwordsMatch =
         password === confirmPassword && password.length >= AUTH_PASSWORD_MIN_LENGTH;
-    const passwordTooShort =
-        password.length > 0 && password.length < AUTH_PASSWORD_MIN_LENGTH;
-    const usernameIsValid =
-        username.length >= 3 && authUsernameSchema.safeParse(username).success;
+    const passwordTooShort = password.length > 0 && password.length < AUTH_PASSWORD_MIN_LENGTH;
+    const usernameIsValid = username.length >= 3 && authUsernameSchema.safeParse(username).success;
     const emailValid = email.trim().length > 0;
     const nameValid = name.trim().length > 0;
 
@@ -235,7 +233,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             required
                                             maxLength={AUTH_USERNAME_MAX_LENGTH}
                                             value={username}
-                                            onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
+                                            onChange={(e) =>
+                                                setUsername(e.target.value.replace(/\s/g, ''))
+                                            }
                                             autoComplete="username"
                                             autoCapitalize="none"
                                             autoCorrect="off"
@@ -249,7 +249,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             {usernameStatus === 'available' && (
                                                 <CheckCircle2 className="h-4 w-4 text-green-500" />
                                             )}
-                                            {(usernameStatus === 'taken' || usernameStatus === 'invalid') && (
+                                            {(usernameStatus === 'taken' ||
+                                                usernameStatus === 'invalid') && (
                                                 <XCircle className="h-4 w-4 text-destructive" />
                                             )}
                                         </span>
@@ -307,7 +308,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             onClick={() => setShowPassword((v) => !v)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                             tabIndex={-1}
-                                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={
+                                                showPassword ? 'Hide password' : 'Show password'
+                                            }
                                         >
                                             {showPassword ? (
                                                 <EyeOff className="h-4 w-4" />
@@ -327,7 +330,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
 
                                 {/* Confirm password */}
                                 <div className="flex flex-col gap-2">
-                                    <Label htmlFor="confirmPassword">{t('fields.confirmPassword')}</Label>
+                                    <Label htmlFor="confirmPassword">
+                                        {t('fields.confirmPassword')}
+                                    </Label>
                                     <div className="relative">
                                         <Input
                                             id="confirmPassword"
@@ -345,7 +350,11 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             onClick={() => setShowConfirmPassword((v) => !v)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                             tabIndex={-1}
-                                            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                            aria-label={
+                                                showConfirmPassword
+                                                    ? 'Hide password'
+                                                    : 'Show password'
+                                            }
                                         >
                                             {showConfirmPassword ? (
                                                 <EyeOff className="h-4 w-4" />
@@ -354,11 +363,13 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             )}
                                         </button>
                                     </div>
-                                    {!passwordTooShort && !passwordsMatch && confirmPassword.length > 0 && (
-                                        <p className="text-xs text-destructive">
-                                            {t('validation.passwordsDontMatch')}
-                                        </p>
-                                    )}
+                                    {!passwordTooShort &&
+                                        !passwordsMatch &&
+                                        confirmPassword.length > 0 && (
+                                            <p className="text-xs text-destructive">
+                                                {t('validation.passwordsDontMatch')}
+                                            </p>
+                                        )}
                                 </div>
 
                                 {error && (
@@ -372,18 +383,17 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                     onExpire={() => setTurnstileToken('')}
                                 />
 
-                                <Button
-                                    type="submit"
-                                    className="w-full h-11"
-                                    disabled={!canSubmit}
-                                >
+                                <Button type="submit" className="w-full h-11" disabled={!canSubmit}>
                                     {loading ? t('button.registering') : t('button.register')}
                                 </Button>
                             </div>
 
                             <div className="text-center text-sm">
                                 {t('alreadyAccount.text')}{' '}
-                                <Link href="/login" className="underline underline-offset-4 font-medium">
+                                <Link
+                                    href="/login"
+                                    className="underline underline-offset-4 font-medium"
+                                >
                                     {t('alreadyAccount.login')}
                                 </Link>
                             </div>

@@ -225,14 +225,14 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                             <div className="space-y-5 py-2">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="key-name">Name</Label>
-                                        <Input
-                                            id="key-name"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                            placeholder="e.g. Grafana Exporter"
-                                            disabled={isPending}
-                                            maxLength={80}
-                                        />
+                                    <Input
+                                        id="key-name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="e.g. Grafana Exporter"
+                                        disabled={isPending}
+                                        maxLength={80}
+                                    />
                                 </div>
 
                                 <div className="space-y-2">

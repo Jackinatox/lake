@@ -76,9 +76,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                             {server.type === 'FREE' && (
                                 <ActionItem
                                     title={t('management.deleteFreeServerAction.title')}
-                                    description={t(
-                                        'management.deleteFreeServerAction.description',
-                                    )}
+                                    description={t('management.deleteFreeServerAction.description')}
                                 >
                                     <DeleteFreeServerModal ptServerId={server.identifier} />
                                 </ActionItem>

@@ -88,8 +88,8 @@ export async function verifyUserEmail(userId: string) {
         `Admin ${session.user.email} verified email for user ${parsed.userId}`,
         'SYSTEM',
         {
-        userId: session.user.id,
-        details: { targetUserId: parsed.userId },
+            userId: session.user.id,
+            details: { targetUserId: parsed.userId },
         },
     );
 

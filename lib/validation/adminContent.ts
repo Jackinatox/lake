@@ -1,5 +1,11 @@
 import { ApiKeyPermission, ALL_PERMISSIONS } from '@/lib/apiKeyPermissions';
-import { KeyValueType, LogLevel, LogType, TicketStatus, ChangelogEntryType } from '@/app/client/generated/enums';
+import {
+    KeyValueType,
+    LogLevel,
+    LogType,
+    TicketStatus,
+    ChangelogEntryType,
+} from '@/app/client/generated/enums';
 import {
     dateStringSchema,
     integerRangeSchema,
@@ -18,7 +24,10 @@ export const blogSlugSchema = z
     .trim()
     .min(1, 'Slug is required')
     .max(120, 'Slug must be at most 120 characters')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug may only contain lowercase letters, numbers, and hyphens');
+    .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'Slug may only contain lowercase letters, numbers, and hyphens',
+    );
 
 export const blogPostCreateSchema = z.object({
     title: requiredStringSchema('Title', 160),
@@ -135,15 +144,7 @@ export const createApiKeySchema = z.object({
         .refine(
             (value) =>
                 [
-                    1_000,
-                    2_000,
-                    5_000,
-                    10_000,
-                    30_000,
-                    60_000,
-                    300_000,
-                    900_000,
-                    3_600_000,
+                    1_000, 2_000, 5_000, 10_000, 30_000, 60_000, 300_000, 900_000, 3_600_000,
                     86_400_000,
                 ].includes(value),
             'Invalid rate limit window',

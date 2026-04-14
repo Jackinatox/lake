@@ -307,9 +307,7 @@ export default function TwoFactorSetup() {
                         <>
                             <DialogHeader>
                                 <DialogTitle>{t('twoFactor.setupTitle')}</DialogTitle>
-                                <DialogDescription>
-                                    {t('twoFactor.description')}
-                                </DialogDescription>
+                                <DialogDescription>{t('twoFactor.description')}</DialogDescription>
                             </DialogHeader>
                             {!totpUri && (
                                 <div className="space-y-2">
@@ -331,10 +329,7 @@ export default function TwoFactorSetup() {
                                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                     {t('twoFactor.close')}
                                 </Button>
-                                <Button
-                                    onClick={handleEnable}
-                                    disabled={isLoading}
-                                >
+                                <Button onClick={handleEnable} disabled={isLoading}>
                                     {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                                     Next
                                 </Button>

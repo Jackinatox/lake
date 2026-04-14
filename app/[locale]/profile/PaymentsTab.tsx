@@ -10,7 +10,13 @@ export default async function PaymentsTab() {
 
     return (
         <div className="space-y-4">
-            <Suspense fallback={<div className="py-8 text-center text-muted-foreground text-sm">{t('loadingPayments')}</div>}>
+            <Suspense
+                fallback={
+                    <div className="py-8 text-center text-muted-foreground text-sm">
+                        {t('loadingPayments')}
+                    </div>
+                }
+            >
                 <PaymentList />
             </Suspense>
 

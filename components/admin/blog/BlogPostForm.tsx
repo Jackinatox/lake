@@ -20,10 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { createBlogPost, updateBlogPost } from '@/app/actions/blog/blogActions';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
-import {
-    blogPostCreateSchema,
-    blogPostUpdateSchema,
-} from '@/lib/validation/adminContent';
+import { blogPostCreateSchema, blogPostUpdateSchema } from '@/lib/validation/adminContent';
 import { getValidationMessage } from '@/lib/validation/common';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {

@@ -238,8 +238,7 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
             id: entry?.id,
             key: form.key,
             type: form.type,
-            string:
-                form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : undefined,
+            string: form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : undefined,
             json: form.type === 'JSON' ? parsedJson : undefined,
             number:
                 form.type === 'NUMBER'
@@ -312,15 +311,15 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
                         {/* Key */}
                         <div className="space-y-1.5">
                             <Label htmlFor="kv-key">Key</Label>
-                                <Input
-                                    id="kv-key"
-                                    value={form.key}
-                                    onChange={(e) => setForm((f) => ({ ...f, key: e.target.value }))}
-                                    disabled={isEditing}
-                                    placeholder="e.g. legal.imprint"
-                                    className="font-mono"
-                                    maxLength={120}
-                                />
+                            <Input
+                                id="kv-key"
+                                value={form.key}
+                                onChange={(e) => setForm((f) => ({ ...f, key: e.target.value }))}
+                                disabled={isEditing}
+                                placeholder="e.g. legal.imprint"
+                                className="font-mono"
+                                maxLength={120}
+                            />
                         </div>
 
                         {/* Type */}

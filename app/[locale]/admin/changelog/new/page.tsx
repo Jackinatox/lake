@@ -19,10 +19,7 @@ export default async function NewChangelogEntryPage() {
     return (
         <div className="w-full mx-auto">
             <AdminBreadcrumb
-                items={[
-                    { label: 'Changelog', href: '/admin/changelog' },
-                    { label: 'New Entry' },
-                ]}
+                items={[{ label: 'Changelog', href: '/admin/changelog' }, { label: 'New Entry' }]}
             />
 
             <Card>

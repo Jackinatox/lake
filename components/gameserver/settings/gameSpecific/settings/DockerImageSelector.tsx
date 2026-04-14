@@ -98,10 +98,7 @@ function DockerImageSelector({
 
                     // Set first docker image as default if none selected
                     const imageValues = Object.values(sortedDockerImages);
-                    if (
-                        imageValues.length > 0 &&
-                        !imageValues.includes(selectedDockerImage)
-                    ) {
+                    if (imageValues.length > 0 && !imageValues.includes(selectedDockerImage)) {
                         setSelectedDockerImage(imageValues[0]);
                     }
                 }

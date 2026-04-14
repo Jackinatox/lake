@@ -1,10 +1,7 @@
 'use server';
 
 import { auth } from '@/auth';
-import {
-    blogPostCreateSchema,
-    blogPostUpdateSchema,
-} from '@/lib/validation/adminContent';
+import { blogPostCreateSchema, blogPostUpdateSchema } from '@/lib/validation/adminContent';
 import { getValidationMessage, nonEmptyIdSchema, parseDateInput } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
@@ -109,7 +106,7 @@ export async function updateBlogPost(
             listed: parsed.listed,
             publishedAt:
                 parsed.publishedAt !== undefined
-                    ? parseDateInput(parsed.publishedAt) ?? new Date()
+                    ? (parseDateInput(parsed.publishedAt) ?? new Date())
                     : undefined,
         },
     });

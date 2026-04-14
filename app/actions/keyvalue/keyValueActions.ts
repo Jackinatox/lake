@@ -2,10 +2,7 @@
 
 import { auth } from '@/auth';
 import { keyValueUpsertSchema } from '@/lib/validation/adminContent';
-import {
-    getValidationMessage,
-    positiveIntSchema,
-} from '@/lib/validation/common';
+import { getValidationMessage, positiveIntSchema } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@/app/client/generated/client';
 import { type KeyValueType } from '@/app/client/generated/enums';

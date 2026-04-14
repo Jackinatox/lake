@@ -12,8 +12,12 @@ import {
     z,
 } from './common';
 
-const configuredDurationSchema = z.enum(ORDER_DURATIONS.map(String) as [string, ...string[]]).transform(Number);
-const upgradeDurationSchema = z.enum(UPGRADE_DURATIONS.map(String) as [string, ...string[]]).transform(Number);
+const configuredDurationSchema = z
+    .enum(ORDER_DURATIONS.map(String) as [string, ...string[]])
+    .transform(Number);
+const upgradeDurationSchema = z
+    .enum(UPGRADE_DURATIONS.map(String) as [string, ...string[]])
+    .transform(Number);
 
 const baseHardwareConfigSchema = z.object({
     pfGroupId: integerRangeSchema('Performance group', 1, 10_000),
@@ -201,8 +205,14 @@ export const ftpPasswordUpdateSchema = z.object({
     password: z
         .string()
         .trim()
-        .min(FTP_PASSWORD_MIN_LENGTH, `Password must be at least ${FTP_PASSWORD_MIN_LENGTH} characters`)
-        .max(FTP_PASSWORD_MAX_LENGTH, `Password must be at most ${FTP_PASSWORD_MAX_LENGTH} characters`)
+        .min(
+            FTP_PASSWORD_MIN_LENGTH,
+            `Password must be at least ${FTP_PASSWORD_MIN_LENGTH} characters`,
+        )
+        .max(
+            FTP_PASSWORD_MAX_LENGTH,
+            `Password must be at most ${FTP_PASSWORD_MAX_LENGTH} characters`,
+        )
         .optional(),
 });
 
