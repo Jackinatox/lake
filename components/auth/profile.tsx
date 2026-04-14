@@ -130,7 +130,14 @@ export default function Profile() {
                         <DropdownMenuSeparator />
                     </>
                 )}
-                <DropdownMenuItem className="cursor-pointer" onClick={() => authClient.signOut()}>
+                <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() =>
+                        authClient.signOut({
+                            fetchOptions: { onSuccess: () => window.location.reload() },
+                        })
+                    }
+                >
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                 </DropdownMenuItem>

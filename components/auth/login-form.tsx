@@ -12,11 +12,11 @@ import {
     loginFormSchema,
 } from '@/lib/validation/auth';
 import { getValidationMessage } from '@/lib/validation/common';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Turnstile } from '@marsidev/react-turnstile';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { env } from 'next-runtime-env';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
@@ -46,6 +46,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState('');
+    const turnstileRef = useRef<TurnstileInstance | undefined>(undefined);
 
     // 2FA state
     const [showTwoFactor, setShowTwoFactor] = useState(false);
@@ -103,11 +104,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                         return;
                     }
 
+                    turnstileRef.current?.reset();
+                    setTurnstileToken('');
                     setError(message);
                 } else if (getTwoFactorRedirect(data)) {
                     setShowTwoFactor(true);
                 }
             } catch (error: unknown) {
+                turnstileRef.current?.reset();
+                setTurnstileToken('');
                 setError(getValidationMessage(error) || t('errors.unexpected'));
             } finally {
                 setLoading(false);
@@ -349,6 +354,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                 </div>
 
                                 <Turnstile
+                                    ref={turnstileRef}
                                     siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
                                     onSuccess={setTurnstileToken}
                                     onError={() => setTurnstileToken('')}
