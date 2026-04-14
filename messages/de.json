@@ -675,6 +675,9 @@
     },
     "account": {
       "dangerZone": "Gefahrenzone",
+      "dangerZoneSecurityHint": "Sitzungsverwaltung und Kontolöschung sind im Tab Sicherheit verfügbar.",
+      "goToSecurity": "Zur Sicherheit",
+      "loginMethods": "Anmeldemethoden",
       "signOutAllSessions": "Alle anderen Sitzungen beenden",
       "signOutAllSessionsDescription": "Damit wirst du auf allen anderen Geräten abgemeldet.",
       "signOutAllConfirmTitle": "Alle anderen Sitzungen beenden?",

@@ -675,6 +675,9 @@
     },
     "account": {
       "dangerZone": "Danger Zone",
+      "dangerZoneSecurityHint": "Session management and account deletion are available in the Security tab.",
+      "goToSecurity": "Go to Security",
+      "loginMethods": "Login methods",
       "signOutAllSessions": "Sign out of all sessions",
       "signOutAllSessionsDescription": "This will sign you out on all other devices.",
       "signOutAllConfirmTitle": "Sign out of all sessions?",

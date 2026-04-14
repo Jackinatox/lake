@@ -26,8 +26,10 @@ export default function ProfileTabs({
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
+    const currentTab = searchParams.get('tab') || defaultTab;
+
     return (
-        <Tabs defaultValue={defaultTab} onValueChange={handleTabChange} className="space-y-4">
+        <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-4">
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="account">{t('tabs.account')}</TabsTrigger>
                 <TabsTrigger value="security">{t('tabs.security')}</TabsTrigger>
