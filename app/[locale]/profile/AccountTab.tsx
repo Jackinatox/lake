@@ -111,18 +111,24 @@ export default function AccountTab() {
         <div className="space-y-4">
             <Card>
                 <CardContent className="p-6 space-y-6">
-                    {/* Avatar + name + username + email */}
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-16 w-16 shrink-0">
+                    {/* Avatar + identity */}
+                    <div className="flex items-start gap-4">
+                        <Avatar className="h-16 w-16 shrink-0 ring-2 ring-border">
                             <AvatarImage src={user.image || undefined} alt={user.name || ''} />
-                            <AvatarFallback className="text-lg font-semibold">
+                            <AvatarFallback className="text-xl font-semibold">
                                 {getInitials(user.name || 'User')}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1 space-y-1">
-                            <p className="font-semibold text-base truncate">{user.name}</p>
-                            <UsernameEditor currentUsername={currentUsername} />
-                            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                        <div className="min-w-0 flex-1 pt-0.5">
+                            <p className="font-semibold text-base leading-tight truncate">
+                                {user.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground/80 truncate mt-0.5">
+                                {user.email}
+                            </p>
+                            <div className="mt-1">
+                                <UsernameEditor currentUsername={currentUsername} />
+                            </div>
                         </div>
                     </div>
 

@@ -48,6 +48,8 @@ export default function Profile() {
     }
 
     const { user } = session;
+    const username = (user as { username?: string }).username;
+    const displayName = username || user.name;
     const initials = user.name
         ? user.name
               .split(' ')
@@ -66,7 +68,7 @@ export default function Profile() {
                             <AvatarFallback>{initials}</AvatarFallback>
                         </Avatar>
                         <div className="hidden md:flex md:flex-col md:items-start md:text-left">
-                            <span className="text-sm font-medium">{user.name}</span>
+                            <span className="text-sm font-medium">{displayName}</span>
                             <span className="text-xs text-muted-foreground">{user.email}</span>
                         </div>
                     </div>
@@ -75,7 +77,7 @@ export default function Profile() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.name}</p>
+                        <p className="text-sm font-medium leading-none">{displayName}</p>
                         <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                     </div>
                 </DropdownMenuLabel>

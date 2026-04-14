@@ -5,13 +5,14 @@ import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, Loader2, Pencil, X, XCircle } from 'lucide-react';
+import { Pencil, X } from 'lucide-react';
 import {
     AUTH_USERNAME_MAX_LENGTH,
     authUsernameSchema,
     usernameUpdateSchema,
 } from '@/lib/validation/auth';
 import { getValidationMessage } from '@/lib/validation/common';
+import { ButtonGroup } from '@/components/ui/button-group';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'unchanged';
 
@@ -97,90 +98,65 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
         }
     }, [status, input, t]);
 
-    if (!editing) {
-        return (
-            <div className="flex items-center gap-1.5">
-                <p className="text-sm text-muted-foreground truncate">@{currentUsername}</p>
-                <button
-                    type="button"
-                    onClick={startEditing}
-                    className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                    aria-label={t('account.editUsername')}
-                >
-                    <Pencil className="h-3.5 w-3.5" />
-                </button>
-            </div>
-        );
-    }
-
+    // Both view and edit modes are contained in h-8 — no layout shift in normal use.
+    // Error text only appends below when there's actually an error, growing the card downward.
     return (
-        <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                    <Input
-                        value={input}
-                        onChange={(e) => setInput(e.target.value.replace(/\s/g, ''))}
-                        maxLength={AUTH_USERNAME_MAX_LENGTH}
-                        autoComplete="username"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        spellCheck={false}
-                        className="h-8 text-sm pr-8"
-                        disabled={saving}
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-                        {status === 'checking' && (
-                            <Loader2 className="h-3.5 w-3.5 text-muted-foreground animate-spin" />
-                        )}
-                        {status === 'available' && (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                        )}
-                        {(status === 'taken' || status === 'invalid') && (
-                            <XCircle className="h-3.5 w-3.5 text-destructive" />
-                        )}
-                    </span>
-                </div>
-                <Button
-                    size="sm"
-                    className="h-8 px-3 text-xs shrink-0"
-                    onClick={save}
-                    disabled={status !== 'available' || saving}
-                >
-                    {saving ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                        t('account.saveUsername')
-                    )}
-                </Button>
-                <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 w-8 p-0 shrink-0"
-                    onClick={cancelEditing}
-                    disabled={saving}
-                    aria-label={t('account.cancelEdit')}
-                >
-                    <X className="h-3.5 w-3.5" />
-                </Button>
+        <div>
+            <div className="h-8 flex items-center w-full">
+                {!editing ? (
+                    <button
+                        type="button"
+                        onClick={startEditing}
+                        className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        aria-label={t('account.editUsername')}
+                    >
+                        <span>{currentUsername}</span>
+                        <Pencil className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+                    </button>
+                ) : (
+                    <ButtonGroup className="w-full">
+                        <Input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value.replace(/\s/g, ''))}
+                            maxLength={AUTH_USERNAME_MAX_LENGTH}
+                            autoComplete="username"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck={false}
+                            className="h-8 text-sm flex-1 min-w-0"
+                            disabled={saving}
+                            autoFocus
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-xs shrink-0"
+                            onClick={save}
+                            disabled={status !== 'available' || saving}
+                        >
+                            {t('account.saveUsername')}
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 w-8 p-0"
+                            onClick={cancelEditing}
+                            disabled={saving}
+                            aria-label={t('account.cancelEdit')}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </ButtonGroup>
+                )}
             </div>
-            <p
-                className={`text-xs h-4 ${
-                    saveError || status === 'taken' || status === 'invalid'
-                        ? 'text-destructive'
-                        : status === 'available'
-                          ? 'text-green-600'
-                          : 'invisible'
-                }`}
-            >
-                {saveError ||
-                    (status === 'available'
-                        ? t('account.usernameAvailable')
-                        : status === 'taken'
-                          ? t('account.usernameTaken')
-                          : status === 'invalid'
-                            ? t('account.usernameNoAt')
-                            : '\u00a0')}
-            </p>
+            {editing && (status === 'taken' || status === 'invalid' || saveError) && (
+                <p className="text-xs text-destructive mt-1">
+                    {saveError ||
+                        (status === 'taken'
+                            ? t('account.usernameTaken')
+                            : t('account.usernameNoAt'))}
+                </p>
+            )}
         </div>
     );
 }
