@@ -48,6 +48,8 @@ import {
     parseApiKeyPermissions,
 } from '@/lib/apiKeyPermissions';
 import type { ApikeyModel } from '@/app/client/generated/models/Apikey';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -404,6 +406,17 @@ export default function ApiKeysClient({ initialKeys }: Props) {
 
     return (
         <div className="space-y-4">
+            <Alert
+                className="border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-100"
+                variant={'destructive'}
+            >
+                <AlertTriangle className="h-4 w-4 text-yellow-600! dark:text-yellow-400!" />
+                <AlertTitle>Warning</AlertTitle>
+                <AlertDescription>
+                    Ratelimits verhalten sich komisch, 5reqs/min heißt man muss 1min inaktiv sein
+                    bevor man wieder requesten darf, oft ist ein limit wie 1req/sekunde besser
+                </AlertDescription>
+            </Alert>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <KeyRound className="h-5 w-5 text-muted-foreground" />
@@ -457,11 +470,13 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                                     <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
                                         {k.requestCount}
                                         <span className="text-muted-foreground/60">
-                                            {' '}({Math.round((k.requestCount / k.rateLimitMax) * 100)}%)
+                                            {' '}
+                                            ({Math.round((k.requestCount / k.rateLimitMax) * 100)}%)
                                         </span>
                                         {k.remaining != null && (
                                             <span className="text-muted-foreground/60">
-                                                {' '}/ {k.remaining} left
+                                                {' '}
+                                                / {k.remaining} left
                                             </span>
                                         )}
                                     </TableCell>
