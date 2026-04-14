@@ -129,14 +129,14 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                                 {networkError
                                     ? pollerT('networkHeadline')
                                     : isGeneral
-                                      ? (pollerT('generalHeadline' as any) as string)
+                                      ? (pollerT('generalHeadline') as string)
                                       : pollerT('paymentFailedTitle')}
                             </CardTitle>
                             <CardDescription>
                                 {networkError
                                     ? pollerT('networkSubheadline')
                                     : isGeneral
-                                      ? (pollerT('generalSubheadline' as any) as string)
+                                      ? (pollerT('generalSubheadline') as string)
                                       : pollerT('paymentFailedSubtitle')}
                             </CardDescription>
                         </CardHeader>

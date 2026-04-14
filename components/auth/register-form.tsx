@@ -54,8 +54,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
         setUsernameStatus('checking');
         checkTimerRef.current = setTimeout(async () => {
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const { data } = await (authClient as any).isUsernameAvailable({ username });
+                const { data } = await authClient.isUsernameAvailable({ username });
                 setUsernameStatus(data?.available ? 'available' : 'taken');
             } catch {
                 setUsernameStatus('idle');
@@ -109,7 +108,6 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
             setLoading(true);
             const trimmedEmail = email.trim();
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const { data, error } = await authClient.signUp.email(
                     {
                         email: trimmedEmail,

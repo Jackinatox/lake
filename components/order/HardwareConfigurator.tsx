@@ -267,8 +267,8 @@ export default function HardwareConfigurator({
 
                             {/* Disk */}
                             <SliderSection
-                                label={`${diskGb} ${tl('diskUnit' as any)}`}
-                                detail={tl('diskSpace' as any)}
+                                label={`${diskGb} ${tl('diskUnit')}`}
+                                detail={tl('diskSpace')}
                             >
                                 <LogarithmicSlider
                                     stops={DISK_STOPS}
@@ -280,8 +280,8 @@ export default function HardwareConfigurator({
 
                             {/* Backups */}
                             <SliderSection
-                                label={`${backups} ${tl('backupUnit' as any)}`}
-                                detail={tl('backupCount' as any)}
+                                label={`${backups} ${tl('backupUnit')}`}
+                                detail={tl('backupCount')}
                             >
                                 <LogarithmicSlider
                                     stops={BACKUP_STOPS}
@@ -292,8 +292,8 @@ export default function HardwareConfigurator({
 
                             {/* Allocations */}
                             <SliderSection
-                                label={`${allocations} ${tl('allocationsUnit' as any)}`}
-                                detail={tl('allocations' as any)}
+                                label={`${allocations} ${tl('allocationsUnit')}`}
+                                detail={tl('allocations')}
                             >
                                 <LogarithmicSlider
                                     stops={ALLOCATION_STOPS}

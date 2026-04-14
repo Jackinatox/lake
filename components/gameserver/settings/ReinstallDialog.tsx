@@ -52,14 +52,14 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
         <>
             <Button variant="destructive" onClick={() => setOpen(true)} className="w-full">
                 <RefreshCw className="h-4 w-4 mr-2" />
-                {t('management.reinstall.button' as any)}
+                {t('management.reinstall.button')}
             </Button>
             <Dialog open={open} onOpenChange={handleOpenChange}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{t('management.reinstall.confirmTitle' as any)}</DialogTitle>
+                        <DialogTitle>{t('management.reinstall.confirmTitle')}</DialogTitle>
                         <DialogDescription>
-                            {t('management.reinstall.confirmDescription' as any)}
+                            {t('management.reinstall.confirmDescription')}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center gap-2 pt-4">
@@ -70,13 +70,13 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                             disabled={isLoading}
                         />
                         <Label htmlFor="delete-all-files" className="text-sm font-normal">
-                            {t('management.reinstall.deleteFilesLabel' as any)}
+                            {t('management.reinstall.deleteFilesLabel')}
                         </Label>
                     </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline" disabled={isLoading}>
-                                {t('deleteFreeServer.cancel' as any)}
+                                {t('deleteFreeServer.cancel')}
                             </Button>
                         </DialogClose>
                         <Button
@@ -85,8 +85,8 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
                             disabled={isLoading}
                         >
                             {isLoading
-                                ? t('management.reinstall.reinstalling' as any)
-                                : t('management.reinstall.button' as any)}
+                                ? t('management.reinstall.reinstalling')
+                                : t('management.reinstall.button')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

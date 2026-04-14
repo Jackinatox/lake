@@ -46,7 +46,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             try {
                 setVersionsLoading(true);
                 const data = await fetchGames(server.gameDataId);
-                const raw = data?.data as unknown as any | null;
+                const raw = data?.data || null;
                 const flavors: GameFlavor[] = raw?.flavors ?? [];
 
                 // Find the current flavor to get its versions
