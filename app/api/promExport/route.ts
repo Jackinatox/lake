@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import { logger } from '@/lib/logger';
-
-// This endpoint should be protected by the reverse proxy to only be accessed locally
+import { ApiKeyPermission } from '@/lib/apiKeyPermissions';
+import { requireApiKeyOrAdmin } from '@/lib/apiRouteAuth';
 
 type MetricType = 'gauge' | 'counter' | 'histogram' | 'summary' | 'untyped';
 
@@ -648,7 +648,10 @@ const collectors: Metric[] = [
 
 // ---------------------------------------------------------------------------
 
-export async function GET() {
+export async function GET(req: Request) {
+    const denied = await requireApiKeyOrAdmin(req, ApiKeyPermission.READ_PROMETHEUS_METRICS);
+    if (denied) return denied;
+
     const start = performance.now();
     const results = await Promise.allSettled(
         collectors.map(async (m) => renderMetric(m, await m.collect())),

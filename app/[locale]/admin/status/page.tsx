@@ -1,9 +1,10 @@
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import StatusPage from './StatusComponent';
 
-export default async function () {
+export default async function StatusPageRoute() {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -12,5 +13,10 @@ export default async function () {
         return <NoAdmin />;
     }
 
-    return <StatusPage />;
+    return (
+        <>
+            <AdminBreadcrumb items={[{ label: 'System Status' }]} />
+            <StatusPage />
+        </>
+    );
 }

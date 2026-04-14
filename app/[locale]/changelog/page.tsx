@@ -1,7 +1,8 @@
 import { getPublishedChangelog } from '@/app/actions/changelog/changelogActions';
 import { Badge } from '@/components/ui/badge';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import formatDate from '@/lib/formatDate';
 
 type ChangelogEntry = Awaited<ReturnType<typeof getPublishedChangelog>>[number];
 
@@ -33,13 +34,13 @@ const TYPE_CONFIG: Record<string, { label: string; className: string; dot: strin
     },
 };
 
-function groupByMonth(entries: ChangelogEntry[]) {
+function groupByMonth(entries: ChangelogEntry[], locale: string) {
     const groups: { label: string; entries: ChangelogEntry[] }[] = [];
     const map = new Map<string, ChangelogEntry[]>();
+    const fmt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
 
     for (const entry of entries) {
-        const date = entry.publishedAt;
-        const key = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const key = fmt.format(new Date(entry.publishedAt));
         if (!map.has(key)) map.set(key, []);
         map.get(key)!.push(entry);
     }
@@ -53,8 +54,9 @@ function groupByMonth(entries: ChangelogEntry[]) {
 
 export default async function ChangelogPage() {
     const t = await getTranslations('changelog');
+    const locale = await getLocale();
     const entries = await getPublishedChangelog(50);
-    const groups = groupByMonth(entries);
+    const groups = groupByMonth(entries, locale);
 
     return (
         <div className="mx-auto max-w-4xl w-full p-2 md:p-6">
@@ -91,10 +93,7 @@ export default async function ChangelogPage() {
                                                     {cfg.label}
                                                 </Badge>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {date.toLocaleDateString(undefined, {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                    })}
+                                                    {formatDate(date)}
                                                 </span>
                                             </div>
                                             <h2
@@ -117,7 +116,7 @@ export default async function ChangelogPage() {
                                             </div>
                                             {slug ? (
                                                 <Link
-                                                    href={`/blog/${slug}`}
+                                                    href={`/blog/${slug}?from=changelog`}
                                                     className="group min-w-0 flex-1"
                                                 >
                                                     {content}

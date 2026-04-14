@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import LogViewer from '@/components/admin/logs/LogViewer';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -12,6 +13,7 @@ export default async function AdminLogsPage() {
 
     return (
         <div className="container mx-auto p-0 md:p-6">
+            <AdminBreadcrumb items={[{ label: 'Application Logs' }]} />
             <div className="mb-6">
                 <h1 className="text-2xl font-bold md:text-3xl">Application Logs</h1>
                 <p className="mt-2 text-sm text-muted-foreground">View and filter system logs</p>

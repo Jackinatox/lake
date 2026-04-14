@@ -39,7 +39,7 @@ export async function ChangelogStrip() {
     if (entries.length === 0) return null;
 
     return (
-        <section className="mt-4 mx-auto w-full max-w-screen-2xl px-2 md:px-0">
+        <section className="mt-4 mx-auto w-full max-w-screen-2xl px-2">
             <div className="rounded-xl border bg-card">
                 <div className="flex items-center justify-between px-4 py-2.5 border-b">
                     <span className="text-sm font-semibold">{t('title')}</span>
@@ -84,7 +84,7 @@ export async function ChangelogStrip() {
                         return entry.blogPost?.slug ? (
                             <Link
                                 key={entry.id}
-                                href={`/blog/${entry.blogPost.slug}`}
+                                href={`/blog/${entry.blogPost.slug}?from=changelog`}
                                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 transition-colors"
                             >
                                 {inner}

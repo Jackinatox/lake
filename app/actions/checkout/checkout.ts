@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
@@ -36,6 +37,8 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
     const formatDate = (d: Date) =>
         d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
+    const item = lineItems[0];
+
     return stripe.checkout.sessions.create({
         locale: 'auto',
         mode: 'payment',
@@ -50,23 +53,24 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
                     },
                 ],
                 rendering_options: {
-                    amount_tax_display: 'exclude_tax',
+                    amount_tax_display: 'include_inclusive_tax',
                 },
             },
         },
-        line_items: lineItems
-            .filter((item) => item.amountCents > 0)
-            .map((item) => ({
+        line_items: [
+            {
                 price_data: {
                     currency: 'eur',
+                    tax_behavior: 'unspecified',
+                    unit_amount: item.amountCents,
                     product_data: {
                         name: item.name,
                         ...(item.description && { description: item.description }),
                     },
-                    unit_amount: Math.round(item.amountCents),
                 },
                 quantity: 1,
-            })),
+            },
+        ],
         ...(locale && {
             custom_text: {
                 terms_of_service_acceptance: {
@@ -78,6 +82,8 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
             },
         }),
         metadata: { orderId },
+        tax_id_collection: { enabled: false },
+        automatic_tax: { enabled: false },
         customer: stripeUserId,
         return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
     });
@@ -88,16 +94,28 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
  * with configs that were persisted before the slug migration.
  */
 async function resolveGameDataId(gameConfig: GameConfig): Promise<number> {
+    const data = await resolveGameData(gameConfig);
+    return data.id;
+}
+
+async function resolveGameData(gameConfig: GameConfig): Promise<{ id: number; name: string }> {
     if (gameConfig.gameSlug) {
         const gameData = await prisma.gameData.findUnique({
             where: { slug: gameConfig.gameSlug },
-            select: { id: true },
+            select: { id: true, name: true },
         });
         if (!gameData) throw new Error(`Game not found for slug: ${gameConfig.gameSlug}`);
-        return gameData.id;
+        return gameData;
     }
     // Fallback for legacy configs that only have gameId
-    if (gameConfig.gameId) return gameConfig.gameId;
+    if (gameConfig.gameId) {
+        const gameData = await prisma.gameData.findUnique({
+            where: { id: gameConfig.gameId },
+            select: { id: true, name: true },
+        });
+        if (!gameData) throw new Error(`Game not found for id: ${gameConfig.gameId}`);
+        return gameData;
+    }
     throw new Error('GameConfig must have gameSlug or gameId');
 }
 
@@ -179,7 +197,8 @@ export async function checkoutAction(
 
             const price = calculateNew(location, cpuPercent, ramMB, duration, tier.priceCents);
 
-            const creationGameDataId = await resolveGameDataId(creationServerConfig.gameConfig);
+            const gameData = await resolveGameData(creationServerConfig.gameConfig);
+            const creationGameDataId = gameData.id;
 
             const order = await prisma.gameServerOrder.create({
                 data: {
@@ -205,14 +224,8 @@ export async function checkoutAction(
             const stripeSession = await createCheckoutSession({
                 lineItems: [
                     {
-                        name: 'Gameserver',
-                        description: `${cpuPercent}% CPU, ${formatMBToGiB(ramMB)} RAM, ${duration} Tage`,
-                        amountCents: price.totalCents - price.tierPriceCents,
-                    },
-                    {
-                        name: `${tier.name ?? 'Ressourcen'} Paket`,
-                        description: `${formatMBToGiB(diskMB)} Speicher, ${backupCount} Backups, ${allocations} Ports`,
-                        amountCents: price.tierPriceCents,
+                        name: `${gameData.name} Gameserver – ${location.name} – ${formatVCoresFromPercent(cpuPercent)}, ${formatMBToGiB(ramMB)} RAM, ${formatMBToGiB(diskMB)} Speicher, ${backupCount} Backups, ${allocations} Ports – ${duration} Tage`,
+                        amountCents: price.totalCents,
                     },
                 ],
                 orderId: String(order.id),
@@ -303,20 +316,23 @@ export async function checkoutAction(
             });
 
             // 2. Create Stripe Checkout Session
-            const upgradeCentsTotal = price.upgradeCents.cpu + price.upgradeCents.ram;
-            const extendCentsTotal = price.extendCents.cpu + price.extendCents.ram;
+            const cpuDiff = cpuPercent - oldConfig.cpuPercent;
+            const ramDiffMb = ramMb - oldConfig.ramMb;
+
+            const changeParts: string[] = [];
+            if (cpuDiff !== 0) changeParts.push(`+${cpuDiff}% CPU`);
+            if (ramDiffMb !== 0) changeParts.push(`+${formatMBToGiB(ramDiffMb)} RAM`);
+            const changeStr = changeParts.length > 0 ? `${changeParts.join(', ')} → ` : '';
+            const finalStr: string[] = [];
+            if (cpuDiff !== 0) finalStr.push(`${cpuPercent}% CPU`);
+            if (ramDiffMb !== 0) finalStr.push(`${formatMBToGiB(ramMb)} RAM`);
+            const upgradeDescription = `${changeStr}${finalStr.join(', ')}${finalStr.length > 0 ? ', ' : ''}+${durationsDays} Tage`;
 
             const stripeSession = await createCheckoutSession({
                 lineItems: [
                     {
-                        name: 'Upgrade',
-                        description: `Auf ${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM für verbleibende ${oldConfig.durationsDays} Tage`,
-                        amountCents: upgradeCentsTotal,
-                    },
-                    {
-                        name: 'Verlängerung',
-                        description: `${cpuPercent}% CPU, ${formatMBToGiB(ramMb)} RAM für ${durationsDays} Tage`,
-                        amountCents: extendCentsTotal,
+                        name: `Server Upgrade: ${upgradeDescription}`,
+                        amountCents: price.totalCents,
                     },
                 ],
                 orderId: String(order.id),

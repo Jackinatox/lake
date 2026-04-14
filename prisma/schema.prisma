@@ -146,15 +146,19 @@ model GameServerOrder {
   price       Float
 
   receipt_url         String?
+  invoicePdfUrl       String?
+  receiptPdfUrl       String?
   stripeSessionId     String?      @unique
   stripePaymentIntent String?      @unique
   stripeChargeId      String?      @unique
+  stripeInvoiceId     String?      @unique
   stripeClientSecret  String?
   status              OrderStatus  @default(PENDING)
   refundStatus        RefundStatus @default(NONE)
   errorText           String? // This is just to save any orbitarry error to show the user something
 
   expiresAt DateTime // New expiry date *if* order succeeds
+  paidAt    DateTime? // Set from Stripe charge.created timestamp when webhook is received
 
   gameConfig         Json? // This is the same as the GameConfig in models
   creationGameDataId Int
@@ -280,6 +284,7 @@ model SupportTicket {
 
 model Verification {
   id         String   @id
+  // Better Auth stores short-lived 2FA challenge and trusted-device records here.
   identifier String
   value      String
   expiresAt  DateTime
@@ -324,8 +329,12 @@ model User {
   twoFactorEnabled Boolean?    @default(false)
   twofactors       TwoFactor[]
 
+  username        String?
+  displayUsername String?
+
   @@unique([email])
   @@unique([ptUsername])
+  @@unique([username])
   @@index([email])
   @@map("user")
 }
@@ -609,8 +618,10 @@ model TwoFactor {
   id          String @id
   secret      String
   backupCodes String
-  userId      String
+  userId      String @unique
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  verified Boolean? @default(true)
 
   @@index([secret])
   @@index([userId])
@@ -658,6 +669,7 @@ model BlogPost {
   content     String
   category    String   @default("")
   published   Boolean  @default(false)
+  listed      Boolean  @default(true)
   publishedAt DateTime
 
   createdAt DateTime @default(now())
@@ -679,4 +691,34 @@ model ChangelogEntry {
 
   blogPostId String?
   blogPost   BlogPost? @relation(fields: [blogPostId], references: [id], onDelete: SetNull)
+}
+
+model Apikey {
+  id                  String    @id
+  configId            String    @default("default")
+  name                String?
+  start               String?
+  referenceId         String
+  prefix              String?
+  key                 String
+  refillInterval      Int?
+  refillAmount        Int?
+  lastRefillAt        DateTime?
+  enabled             Boolean   @default(true)
+  rateLimitEnabled    Boolean   @default(true)
+  rateLimitTimeWindow Int       @default(86400000)
+  rateLimitMax        Int       @default(10)
+  requestCount        Int       @default(0)
+  remaining           Int?
+  lastRequest         DateTime?
+  expiresAt           DateTime?
+  createdAt           DateTime
+  updatedAt           DateTime
+  permissions         String?
+  metadata            String?
+
+  @@index([configId])
+  @@index([referenceId])
+  @@index([key])
+  @@map("apikey")
 }

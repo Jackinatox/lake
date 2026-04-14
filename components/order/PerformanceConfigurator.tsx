@@ -350,13 +350,15 @@ export default function PerformanceConfigurator({
 
                             {/* Recommendation note */}
                             {activeRecommendation && cpuMarkers.length > 0 && (
-                                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
-                                    <InfoButton className="w-3.5 h-3.5 shrink-0" text="" />
-                                    <span>{t('recommendation.note' as any)}</span>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
+                                    <span className="inline-flex items-center gap-1.5 min-w-0">
+                                        <InfoButton className="w-3.5 h-3.5 shrink-0" text="" />
+                                        <span className="break-words">{t('recommendation.note' as any)}</span>
+                                    </span>
                                     <span className="inline-flex items-center gap-1.5">
-                                        <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70" />
+                                        <span className="inline-block w-2 h-2 rounded-full bg-yellow-500/70 shrink-0" />
                                         <span>{t('recommendation.min' as any)}</span>
-                                        <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1" />
+                                        <span className="inline-block w-2 h-2 rounded-full bg-green-500/70 ml-1 shrink-0" />
                                         <span>{t('recommendation.recommended' as any)}</span>
                                     </span>
                                     {activeRecommendation.note && (

@@ -2,15 +2,10 @@
 
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-} from '@/components/ui/breadcrumb';
 import CacheInvalidationClient from './CacheInvalidationClient';
 
 export default async function CacheInvalidationPage() {
@@ -24,29 +19,7 @@ export default async function CacheInvalidationPage() {
 
     return (
         <div className="w-full max-w-4xl mx-auto">
-            <div className="mb-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin"
-                                className="flex items-center gap-2 text-muted-foreground"
-                            >
-                                <RefreshCw className="h-4 w-4" />
-                                Admin Panel
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin/cache-invalidation"
-                                className="text-foreground"
-                            >
-                                Cache Invalidation
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
+            <AdminBreadcrumb items={[{ label: 'Cache Invalidation' }]} />
 
             <Card>
                 <CardHeader>

@@ -112,8 +112,8 @@ export function UpgradeHardwareConfig({
     };
 
     return (
-        <>
-            <div className="w-full max-w-7xl mx-auto pb-24 lg:pb-0">
+        <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
+            <div className="w-full max-w-7xl mx-auto pb-4 lg:pb-0 flex-1">
                 {/* debug days: {initialConfig.durationsDays} ramGb to upgrade: {ramGb - initialConfig.ramMb / 1024} cpucores to upgrade: {cpuCores - initialConfig.cpuPercent / 100} */}
                 <Card className="mb-6 shadow border border-primary/30">
                     <CardHeader>
@@ -438,7 +438,7 @@ export function UpgradeHardwareConfig({
             </div>
 
             {/* Mobile-only fixed continue bar */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 p-4 bg-background/95 backdrop-blur-sm border-t shadow-lg">
+            <div className="lg:hidden sticky bottom-0 z-20 p-4 bg-background/95 backdrop-blur-sm border-t shadow-lg">
                 <div className="flex items-center gap-4 max-w-7xl mx-auto">
                     <div className="shrink-0 min-w-25">
                         <div className="text-xs text-muted-foreground">{t('footer.total')}</div>
@@ -461,6 +461,6 @@ export function UpgradeHardwareConfig({
                     </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

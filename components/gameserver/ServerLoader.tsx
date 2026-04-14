@@ -1,8 +1,10 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
+import { useConnectionState } from '@/hooks/useServerWebSocket';
 import { GameServer } from '@/models/gameServerModel';
-import { Loader2 } from 'lucide-react';
+import { Check, Loader2, Monitor, Wifi } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
@@ -150,21 +152,6 @@ export default function ServerLoader({
         }
     }, [fetchServerData, isInstalling, isRestoring]);
 
-    if (loading) {
-        return (
-            <div className="min-h-[60vh] pt-[20vh]">
-                <Card className="w-full max-w-md mx-auto">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                            {t('gameserver.loading')}
-                        </CardTitle>
-                    </CardHeader>
-                </Card>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <div className="min-h-[60vh] pt-[20vh]">
@@ -235,6 +222,9 @@ export default function ServerLoader({
     }
 
     if (!server) {
+        if (loading) {
+            return <LoadingCard serverName={null} />;
+        }
         return (
             <div className="min-h-[60vh] pt-[20vh]">
                 <Card className="w-full max-w-md mx-auto">
@@ -249,9 +239,108 @@ export default function ServerLoader({
         );
     }
 
+    // Wrap in WebSocketProvider so both the gate and the dashboard share the connection
+    return (
+        <WebSocketProvider serverId={server.identifier} apiKey={ptApiKey} debug>
+            <WebSocketGate
+                server={server}
+                ptApiKey={ptApiKey}
+                features={features}
+                loading={loading}
+            />
+        </WebSocketProvider>
+    );
+}
+
+/**
+ * Shows the loading screen until the WebSocket connection is established,
+ * then renders the dashboard.
+ */
+function WebSocketGate({
+    server,
+    ptApiKey,
+    features,
+    loading: dataLoading,
+}: {
+    server: GameServer;
+    ptApiKey: string;
+    features: EggFeature[];
+    loading: boolean;
+}) {
+    const { isConnected, isLoading: wsLoading } = useConnectionState();
+    const [hasConnected, setHasConnected] = useState(false);
+
+    useEffect(() => {
+        if (isConnected) setHasConnected(true);
+    }, [isConnected]);
+
+    // Only show the loading card for the initial connection, not reconnects
+    if (!hasConnected && (dataLoading || (!isConnected && wsLoading))) {
+        return <LoadingCard serverName={server.name} />;
+    }
+
     return (
         <div className="max-w-screen-2xl mx-auto">
             <GameDashboard server={server} ptApiKey={ptApiKey} features={features} />
+        </div>
+    );
+}
+
+/**
+ * Enhanced loading card that shows server info and step progress.
+ */
+function LoadingCard({ serverName }: { serverName: string | null }) {
+    const t = useTranslations();
+
+    const dataReady = serverName !== null;
+
+    return (
+        <div className="min-h-[60vh] pt-[20vh]">
+            <Card className="w-full max-w-md mx-auto">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        {serverName ? `Connecting to ${serverName}` : t('gameserver.loading')}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-3 text-sm">
+                        <LoadingStep
+                            icon={<Monitor className="h-4 w-4" />}
+                            label={t('gameserver.loadingSteps.fetchingData')}
+                            done={dataReady}
+                        />
+                        <LoadingStep
+                            icon={<Wifi className="h-4 w-4" />}
+                            label={t('gameserver.loadingSteps.connecting')}
+                            done={false}
+                            active={dataReady}
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+function LoadingStep({
+    icon,
+    label,
+    done,
+    active,
+}: {
+    icon: React.ReactNode;
+    label: string;
+    done: boolean;
+    active?: boolean;
+}) {
+    return (
+        <div
+            className={`flex items-center gap-3 ${done ? 'text-foreground' : active ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}
+        >
+            {done ? <Check className="h-4 w-4 text-emerald-500" /> : icon}
+            <span>{label}</span>
+            {!done && active && <Loader2 className="h-3 w-3 animate-spin ml-auto" />}
         </div>
     );
 }

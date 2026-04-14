@@ -54,12 +54,16 @@ export default async function handleCheckoutSessionCompleted(
         }
 
         const session = await stripe.checkout.sessions.retrieve(checkoutSession.id, {
-            expand: ['payment_intent.latest_charge'],
+            expand: ['payment_intent.latest_charge', 'invoice'],
         });
 
         let receiptUrl: string | null = null;
+        let receiptPdfUrl: string | null = null;
+        let invoicePdfUrl: string | null = null;
         let paymentIntentId: string | null = null;
         let chargeId: string | null = null;
+        let stripeInvoiceId: string | null = null;
+        let paidAt: Date | null = null;
 
         if (typeof session.payment_intent !== 'string' && session.payment_intent) {
             paymentIntentId = session.payment_intent.id;
@@ -69,10 +73,21 @@ export default async function handleCheckoutSessionCompleted(
                 typeof session.payment_intent.latest_charge !== 'string'
             ) {
                 receiptUrl = session.payment_intent.latest_charge.receipt_url;
+                receiptPdfUrl = session.payment_intent.latest_charge.receipt_url;
                 chargeId = session.payment_intent.latest_charge.id;
+                // Use Stripe's authoritative charge timestamp as the legal payment date
+                paidAt = new Date(session.payment_intent.latest_charge.created * 1000);
             }
         } else if (typeof session.payment_intent === 'string') {
             paymentIntentId = session.payment_intent;
+        }
+
+        // Save invoice ID so invoice.payment_succeeded can map the PDF later
+        if (typeof session.invoice === 'string') {
+            stripeInvoiceId = session.invoice;
+        } else if (session.invoice) {
+            stripeInvoiceId = session.invoice.id ?? null;
+            invoicePdfUrl = session.invoice.invoice_pdf ?? null;
         }
 
         await prisma.gameServerOrder.update({
@@ -83,8 +98,12 @@ export default async function handleCheckoutSessionCompleted(
                 stripeSessionId: checkoutSession.id,
                 stripePaymentIntent: paymentIntentId,
                 stripeChargeId: chargeId,
+                stripeInvoiceId,
                 status: 'PAID',
+                paidAt: paidAt ?? new Date(), // Stripe charge timestamp; fallback to webhook receipt time
                 receipt_url: receiptUrl,
+                invoicePdfUrl,
+                receiptPdfUrl,
             },
         });
 
@@ -169,8 +188,8 @@ export default async function handleCheckoutSessionCompleted(
                 await sendInvoiceEmail({
                     userName: updatedOrder.user.name || 'Spieler',
                     userEmail: updatedOrder.user.email,
-                    invoiceNumber: `INV-${updatedOrder.id.toString().padStart(8, '0')}`,
-                    invoiceDate: new Date(),
+                    invoiceNumber: `${updatedOrder.stripeInvoiceId || updatedOrder.id}`,
+                    invoiceDate: updatedOrder.paidAt ?? new Date(),
                     gameName: gameName,
                     gameImageUrl: gameImageUrl,
                     serverName: 'Gameserver',

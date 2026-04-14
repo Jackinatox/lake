@@ -6,17 +6,16 @@ import MainMenu from '@/components/Menu/MainMenu';
 import Profile from '@/components/auth/profile';
 import { LanguageSwitcher } from '@/components/Menu/language-switcher';
 import { usePathname } from 'next/navigation';
-import { env } from 'next-runtime-env';
+
+const isDev = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV === 'development';
 
 export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
     const bookingPages = ['/booking', '/upgrade/freeServer/pay', '/order'];
     const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
-    const isDevMode = env('NEXT_PUBLIC_DEPLOYMENT_ENV') === 'development';
-
     return (
         <nav
-            className={`${!unStickNavBar ? 'sticky top-0 z-50' : ''} w-full flex justify-center border-b border-b-foreground/10 h-16 ${isDevMode ? 'bg-amber-400' : 'bg-background'}`}
+            className={`${!unStickNavBar ? 'sticky top-0 z-50' : ''} w-full flex justify-center border-b h-16 ${isDev ? 'bg-yellow-400 border-yellow-500 dark:bg-yellow-500 dark:border-yellow-600' : 'bg-background border-b-foreground/10'}`}
         >
             <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
                 <div className="flex items-center font-semibold">

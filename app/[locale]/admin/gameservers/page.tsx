@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import prisma from '@/lib/prisma';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/browser';
 import { headers } from 'next/headers';
@@ -77,6 +78,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
 
         return (
             <>
+                <AdminBreadcrumb items={[{ label: 'Gameservers' }]} />
                 <GameserversTable
                     servers={gameservers}
                     currentPage={page}

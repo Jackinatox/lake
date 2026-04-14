@@ -1,38 +1,20 @@
-import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
-import { getClientIP, isLocalIP } from '../status/route';
+import { ApiKeyPermission } from '@/lib/apiKeyPermissions';
+import { requireApiKeyOrAdmin } from '@/lib/apiRouteAuth';
 
 export async function GET(req: NextRequest) {
-    const clientIP = getClientIP(req);
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    const gameServerCount = await prisma.gameServer.count();
-    const uptime = process.uptime();
-
-    if (!(isLocalIP(clientIP) || session?.user.role?.includes('admin'))) {
-        console.log(clientIP);
-        logger
-            .logError({}, 'SYSTEM', {
-                method: 'GET',
-                path: '/api/status',
-                ipAddress: clientIP ?? undefined,
-            })
-            .catch(() => {
-                /* swallow logging errors */
-            });
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const denied = await requireApiKeyOrAdmin(req, ApiKeyPermission.READ_STATUS_UPTIME);
+    if (denied) return denied;
 
     try {
+        const gameServerCount = await prisma.gameServer.count();
+        const uptime = process.uptime();
+
         return NextResponse.json(
             {
                 timestamp: new Date().toISOString(),
-                clientIP,
                 uptime: { seconds: Math.round(uptime), formatted: formatUptime(uptime) },
                 gameServerCount,
             },

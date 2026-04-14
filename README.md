@@ -58,4 +58,6 @@ No setup documentation is planned. Use as reference only.
 
 License TBD.
 
+Repo-level AI agent guidance lives in `AGENTS.md`. Reusable skills live under `.agents/skills/`.
+
 No AI was harmend in the making of this project

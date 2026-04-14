@@ -20,10 +20,6 @@ export async function generateMetadata(): Promise<Metadata> {
         metadataBase: appUrl ? new URL(appUrl) : undefined,
         title: 'Scyed Hosting',
         description: 'A little above average Gameserver hosting platform',
-        robots: {
-            index: false,
-            follow: false,
-        },
     };
 }
 

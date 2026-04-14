@@ -7,8 +7,16 @@ import { useTheme } from 'next-themes';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { createBlogPost, updateBlogPost } from '@/app/actions/blog/blogActions';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
@@ -22,6 +30,8 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.
         </div>
     ),
 });
+
+const CHANGELOG_TYPES = ['NEW', 'IMPROVED', 'FIXED', 'SECURITY', 'REMOVED'] as const;
 
 function slugify(title: string): string {
     return title
@@ -39,6 +49,7 @@ interface BlogPostFormProps {
         content: string;
         category: string;
         published: boolean;
+        listed: boolean;
         publishedAt: Date;
     };
     existingCategories: string[];
@@ -56,9 +67,15 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
     const [content, setContent] = useState(post?.content ?? '');
     const [category, setCategory] = useState(post?.category ?? '');
     const [published, setPublished] = useState(post?.published ?? false);
+    const [listed, setListed] = useState(post?.listed ?? true);
     const [publishedAt, setPublishedAt] = useState(
         post?.publishedAt ? toDatetimeLocal(post.publishedAt) : '',
     );
+
+    // Changelog creation (only for new posts)
+    const [createChangelog, setCreateChangelog] = useState(false);
+    const [clText, setClText] = useState('');
+    const [clType, setClType] = useState<string>('NEW');
 
     function toDatetimeLocal(d: Date): string {
         const dt = new Date(d);
@@ -88,6 +105,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                     content,
                     category,
                     published,
+                    listed,
                     publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
                 });
             } else {
@@ -97,7 +115,20 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                     content,
                     category,
                     published,
+                    listed,
                     publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
+                    ...(createChangelog
+                        ? {
+                              changelog: {
+                                  text: clText,
+                                  type: clType,
+                                  published,
+                                  publishedAt: publishedAt
+                                      ? new Date(publishedAt).toISOString()
+                                      : null,
+                              },
+                          }
+                        : {}),
                 });
             }
             toast({ title: 'Saved', description: 'Post saved.' });
@@ -154,7 +185,7 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                 </datalist>
             </div>
 
-            {/* Published + PublishedAt row */}
+            {/* Published + Listed + PublishedAt row */}
             <div className="flex flex-wrap items-end gap-6">
                 <div className="flex items-center gap-3">
                     <Switch
@@ -163,11 +194,17 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                         onCheckedChange={setPublished}
                     />
                     <Label htmlFor="blog-published" className="cursor-pointer">
-                        Published
+                        Enabled
+                    </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Switch id="blog-listed" checked={listed} onCheckedChange={setListed} />
+                    <Label htmlFor="blog-listed" className="cursor-pointer">
+                        Listed
                     </Label>
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="blog-publishedAt">Publish Date (optional)</Label>
+                    <Label htmlFor="blog-publishedAt">Publish Date</Label>
                     <Input
                         id="blog-publishedAt"
                         type="datetime-local"
@@ -179,10 +216,10 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
             </div>
 
             {/* Monaco + Preview split */}
-            <div className="grid min-h-[400px] grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid min-h-100 grid-cols-1 gap-4 lg:grid-cols-2">
                 <div className="space-y-1.5">
                     <Label>Content (Markdown)</Label>
-                    <div className="h-[400px] overflow-hidden rounded border">
+                    <div className="h-100 overflow-hidden rounded border">
                         <MonacoEditor
                             height="100%"
                             language="markdown"
@@ -200,11 +237,59 @@ export default function BlogPostForm({ post, existingCategories }: BlogPostFormP
                 </div>
                 <div className="space-y-1.5">
                     <Label>Preview</Label>
-                    <div className="h-[400px] overflow-y-auto rounded border p-4">
+                    <div className="h-100 overflow-y-auto rounded border p-4">
                         <MarkdownRenderer content={content} />
                     </div>
                 </div>
             </div>
+
+            {/* Create Changelog Entry (new posts only) */}
+            {!post && (
+                <div className="rounded-lg border p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                        <Switch
+                            id="blog-create-changelog"
+                            checked={createChangelog}
+                            onCheckedChange={setCreateChangelog}
+                        />
+                        <Label htmlFor="blog-create-changelog" className="cursor-pointer">
+                            Also create a changelog entry
+                        </Label>
+                    </div>
+                    {createChangelog && (
+                        <div className="flex flex-col gap-3 pt-1">
+                            <div className="space-y-1.5">
+                                <Label>Changelog Type</Label>
+                                <Select value={clType} onValueChange={setClType}>
+                                    <SelectTrigger className="w-40">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {CHANGELOG_TYPES.map((t) => (
+                                            <SelectItem key={t} value={t}>
+                                                {t.charAt(0) + t.slice(1).toLowerCase()}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label>Short description</Label>
+                                <Textarea
+                                    value={clText}
+                                    onChange={(e) => setClText(e.target.value)}
+                                    placeholder="Brief summary for the changelog..."
+                                    rows={2}
+                                />
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                The changelog entry will use the same title, publish state, and date
+                                as this blog post.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Actions */}
             <div className="flex justify-between">

@@ -1,5 +1,6 @@
 import { getPublishedBlogPosts, getBlogCategories } from '@/app/actions/blog/blogActions';
 import { Card } from '@/components/ui/card';
+import formatDate from '@/lib/formatDate';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -32,7 +33,7 @@ export default async function BlogPage({
     ]);
 
     return (
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto w-full min-w-0 max-w-5xl p-2 md:p-6">
             <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
 
             {/* Category filter */}
@@ -68,7 +69,7 @@ export default async function BlogPage({
             ) : (
                 <div className="space-y-4">
                     {posts.map((post) => {
-                        const date = post.publishedAt ?? post.createdAt;
+                        const date = post.publishedAt;
                         const excerpt = stripMarkdown(post.content).slice(0, 150);
                         return (
                             <Card
@@ -81,7 +82,7 @@ export default async function BlogPage({
                                             {post.category}
                                         </span>
                                     )}
-                                    <span>{date.toLocaleDateString()}</span>
+                                    <span>{formatDate(date)}</span>
                                 </div>
                                 <Link href={`/blog/${post.slug}`} className="block group">
                                     <h2 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">

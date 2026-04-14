@@ -103,9 +103,6 @@ export default function Footer() {
                             <Link href="/blog" className="hover:text-foreground transition-colors">
                                 {t('blog')}
                             </Link>
-                            <Link href="/changelog" className="hover:text-foreground transition-colors">
-                                {t('changelog')}
-                            </Link>
                             <a
                                 href="https://scyed.com"
                                 target="_blank"

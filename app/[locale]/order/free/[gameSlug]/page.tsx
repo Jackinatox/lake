@@ -47,10 +47,8 @@ export default async function FreeGameServerBySlugPage({
     };
 
     return (
-        <div className="w-full min-h-screen">
-            <div className="w-full max-w-5xl mx-auto px-0 md:px-6">
-                <FreeGameServerBooking game={game} stats={stats} gameSlug={gameSlug} />
-            </div>
+        <div className="w-full max-w-5xl mx-auto">
+            <FreeGameServerBooking game={game} stats={stats} gameSlug={gameSlug} />
         </div>
     );
 }

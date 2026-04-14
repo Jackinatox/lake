@@ -1,11 +1,6 @@
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-} from '@/components/ui/breadcrumb';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
 import TicketsDashboard, { AdminTicket } from './TicketsDashboard';
 import prisma from '@/lib/prisma';
@@ -48,25 +43,14 @@ export default async function TicketsPage() {
 
     return (
         <div className="flex w-full flex-col gap-6">
+            <AdminBreadcrumb items={[{ label: 'Tickets' }]} />
             <Card className="border-dashed">
-                <CardContent className="flex flex-col gap-3 px-4 py-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                        <InboxIcon className="h-5 w-5" />
-                        <span className="text-sm font-medium">
-                            Ticket operations are email-only. Update the status here and follow up
-                            via email.
-                        </span>
-                    </div>
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="../">Admin</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="#">Tickets</BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                <CardContent className="flex items-center gap-3 px-4 py-5 text-muted-foreground">
+                    <InboxIcon className="h-5 w-5 shrink-0" />
+                    <span className="text-sm font-medium">
+                        Ticket operations are email-only. Update the status here and follow up via
+                        email.
+                    </span>
                 </CardContent>
             </Card>
             <TicketsDashboard tickets={serialised} />

@@ -94,8 +94,8 @@ async function PaymentList() {
                                 key={pay.id}
                                 amount={pay.price}
                                 paymentType={pay.type}
-                                date={pay.createdAt}
-                                receiptUrl={pay.receipt_url ?? undefined}
+                                date={pay.paidAt ?? pay.createdAt}
+                                receiptUrl={pay.invoicePdfUrl ?? undefined}
                                 gameServerUrl={
                                     pay.gameServer?.ptServerId
                                         ? `/gameserver/${pay.gameServer.ptServerId}`

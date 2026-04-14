@@ -1,24 +1,20 @@
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
+import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { BookOpen, Pencil, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { listBlogPostsAdmin } from '@/app/actions/blog/blogActions';
 import { DeleteBlogPostButton } from './BlogAdminClient';
+import formatDate from '@/lib/formatDate';
 
-function getStatus(post: { published: boolean; publishedAt: Date | null }) {
+function getStatus(post: { published: boolean; listed: boolean; publishedAt: Date }) {
     if (!post.published) return { label: 'Draft', color: 'text-muted-foreground' };
-    if (post.publishedAt && post.publishedAt > new Date())
+    if (post.publishedAt > new Date())
         return { label: 'Scheduled', color: 'text-amber-600 dark:text-amber-400' };
+    if (!post.listed) return { label: 'Unlisted', color: 'text-blue-600 dark:text-blue-400' };
     return { label: 'Published', color: 'text-green-600 dark:text-green-400' };
 }
 
@@ -30,27 +26,7 @@ export default async function AdminBlogPage() {
 
     return (
         <div className="w-full mx-auto">
-            <div className="mb-4">
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink
-                                href="/admin"
-                                className="flex items-center gap-2 text-muted-foreground"
-                            >
-                                <BookOpen className="h-4 w-4" />
-                                Admin Panel
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin/blog" className="text-foreground">
-                                Blog Posts
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
+            <AdminBreadcrumb items={[{ label: 'Blog' }]} />
 
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -81,7 +57,7 @@ export default async function AdminBlogPage() {
                             </div>
                             {posts.map((post) => {
                                 const status = getStatus(post);
-                                const date = post.publishedAt ?? post.createdAt;
+                                const date = post.publishedAt;
                                 return (
                                     <div
                                         key={post.id}
@@ -104,7 +80,7 @@ export default async function AdminBlogPage() {
                                             </span>
                                         </div>
                                         <div className="hidden w-32 text-xs text-muted-foreground md:block">
-                                            {date.toLocaleDateString()}
+                                            {formatDate(date)}
                                         </div>
                                         <div className="flex shrink-0 gap-2 justify-end">
                                             <Button size="sm" variant="outline" asChild>
