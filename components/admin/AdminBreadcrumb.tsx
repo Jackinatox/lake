@@ -16,7 +16,7 @@ export type Crumb = {
 
 export default function AdminBreadcrumb({ items }: { items: Crumb[] }) {
     return (
-        <div className="mb-4">
+        <div className="md:mb-4">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>

@@ -60,16 +60,15 @@ function formatUtc(input: Date | string) {
 }
 
 const RATE_LIMIT_WINDOWS = [
+    { label: '1s', ms: 1_000 },
+    { label: '2s', ms: 2_000 },
+    { label: '5s', ms: 5_000 },
     { label: '10s', ms: 10_000 },
     { label: '30s', ms: 30_000 },
     { label: '1min', ms: 60_000 },
     { label: '5min', ms: 300_000 },
     { label: '15min', ms: 900_000 },
     { label: '1h', ms: 3_600_000 },
-    { label: '6h', ms: 21_600_000 },
-    { label: '12h', ms: 43_200_000 },
-    { label: '24h', ms: 86_400_000 },
-    { label: '7d', ms: 604_800_000 },
 ] as const;
 
 function formatRateLimit(max: number, windowMs: number): string {
