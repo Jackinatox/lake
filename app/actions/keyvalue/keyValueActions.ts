@@ -1,12 +1,15 @@
 'use server';
 
 import { auth } from '@/auth';
+import { keyValueUpsertSchema } from '@/lib/validation/adminContent';
+import {
+    getValidationMessage,
+    positiveIntSchema,
+} from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@/app/client/generated/client';
-import { KeyValueType } from '@/app/client/generated/enums';
+import { type KeyValueType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
-
-const MAX_CATEGORY_LENGTH = 30;
 
 async function requireAdmin() {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -46,23 +49,30 @@ export type UpsertKeyValueInput = {
 
 export async function upsertKeyValueAction(input: UpsertKeyValueInput): Promise<KeyValueRow> {
     await requireAdmin();
+    const parsed = (() => {
+        try {
+            return keyValueUpsertSchema.parse(input);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
 
     const data = {
-        key: input.key,
-        type: input.type,
-        string: input.type === 'STRING' || input.type === 'TEXT' ? (input.string ?? null) : null,
+        key: parsed.key,
+        type: parsed.type,
+        string: parsed.type === 'STRING' || parsed.type === 'TEXT' ? (parsed.string ?? null) : null,
         json:
-            input.type === 'JSON'
-                ? ((input.json ?? Prisma.JsonNull) as Prisma.InputJsonValue)
+            parsed.type === 'JSON'
+                ? ((parsed.json ?? Prisma.JsonNull) as Prisma.InputJsonValue)
                 : Prisma.JsonNull,
-        number: input.type === 'NUMBER' ? (input.number ?? null) : null,
-        boolean: input.type === 'BOOLEAN' ? (input.boolean ?? null) : null,
-        note: input.note ?? null,
-        category: input.category ? input.category.slice(0, MAX_CATEGORY_LENGTH) : null,
+        number: parsed.type === 'NUMBER' ? (parsed.number ?? null) : null,
+        boolean: parsed.type === 'BOOLEAN' ? (parsed.boolean ?? null) : null,
+        note: parsed.note ?? null,
+        category: parsed.category ?? null,
     };
 
-    if (input.id) {
-        return prisma.keyValue.update({ where: { id: input.id }, data });
+    if (parsed.id) {
+        return prisma.keyValue.update({ where: { id: parsed.id }, data });
     }
 
     return prisma.keyValue.create({ data });
@@ -70,5 +80,5 @@ export async function upsertKeyValueAction(input: UpsertKeyValueInput): Promise<
 
 export async function deleteKeyValueAction(id: number): Promise<void> {
     await requireAdmin();
-    await prisma.keyValue.delete({ where: { id } });
+    await prisma.keyValue.delete({ where: { id: positiveIntSchema.parse(id) } });
 }

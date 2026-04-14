@@ -6,6 +6,12 @@ import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CheckCircle2, Loader2, Pencil, X, XCircle } from 'lucide-react';
+import {
+    AUTH_USERNAME_MAX_LENGTH,
+    authUsernameSchema,
+    usernameUpdateSchema,
+} from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'unchanged';
 
@@ -41,12 +47,12 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
             setStatus('idle');
             return;
         }
-        if (input.includes('@')) {
-            setStatus('invalid');
-            return;
-        }
         if (input.length < 3) {
             setStatus('idle');
+            return;
+        }
+        if (!authUsernameSchema.safeParse(input).success) {
+            setStatus('invalid');
             return;
         }
         if (input === currentUsername) {
@@ -74,7 +80,8 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
         setSaving(true);
         setSaveError(null);
         try {
-            const { error } = await authClient.updateUser({ username: input } as Parameters<
+            const parsed = usernameUpdateSchema.parse({ username: input });
+            const { error } = await authClient.updateUser({ username: parsed.username } as Parameters<
                 typeof authClient.updateUser
             >[0]);
             if (error) {
@@ -83,8 +90,8 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
                 setEditing(false);
                 setStatus('idle');
             }
-        } catch {
-            setSaveError(t('account.usernameSaveError'));
+        } catch (error) {
+            setSaveError(getValidationMessage(error) || t('account.usernameSaveError'));
         } finally {
             setSaving(false);
         }
@@ -113,6 +120,7 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
                     <Input
                         value={input}
                         onChange={(e) => setInput(e.target.value.replace(/\s/g, ''))}
+                        maxLength={AUTH_USERNAME_MAX_LENGTH}
                         autoComplete="username"
                         autoCapitalize="none"
                         autoCorrect="off"

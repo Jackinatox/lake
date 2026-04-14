@@ -11,6 +11,12 @@ import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
+import {
+    AUTH_PASSWORD_MAX_LENGTH,
+    AUTH_PASSWORD_MIN_LENGTH,
+    changePasswordSchema,
+} from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 
 export function ChangePasswordForm() {
     const t = useTranslations('RegisterLogin.changePassword');
@@ -25,8 +31,6 @@ export function ChangePasswordForm() {
     const [success, setSuccess] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [isOAuthUser, setIsOAuthUser] = useState(false);
-
-    const passwordMinLength = 8;
 
     // Check if user is using OAuth login (client-side check as additional protection)
     useEffect(() => {
@@ -46,7 +50,7 @@ export function ChangePasswordForm() {
         [newPassword, confirmPassword],
     );
     const passwordTooShort = useMemo(
-        () => newPassword.length > 0 && newPassword.length < passwordMinLength,
+        () => newPassword.length > 0 && newPassword.length < AUTH_PASSWORD_MIN_LENGTH,
         [newPassword],
     );
 
@@ -56,24 +60,16 @@ export function ChangePasswordForm() {
             setError(null);
             setSuccess(null);
 
-            if (!currentPassword.trim()) {
-                setError(validationT('currentPasswordRequired'));
-                return;
-            }
-            if (newPassword.length < passwordMinLength) {
-                setError(validationT('passwordMin', { min: passwordMinLength }));
-                return;
-            }
-            if (!passwordsMatch) {
-                setError(validationT('passwordsDontMatch'));
-                return;
-            }
-
-            setLoading(true);
             try {
-                const { error } = await authClient.changePassword({
+                const parsed = changePasswordSchema.parse({
                     currentPassword,
                     newPassword,
+                    confirmPassword,
+                });
+                setLoading(true);
+                const { error } = await authClient.changePassword({
+                    currentPassword: parsed.currentPassword,
+                    newPassword: parsed.newPassword,
                     revokeOtherSessions: false,
                 });
 
@@ -95,12 +91,12 @@ export function ChangePasswordForm() {
                     }, 2000);
                 }
             } catch (err: any) {
-                setError(err?.message || t('errors.changeFailed'));
+                setError(getValidationMessage(err) || t('errors.changeFailed'));
             } finally {
                 setLoading(false);
             }
         },
-        [currentPassword, newPassword, passwordMinLength, passwordsMatch, t, validationT, router],
+        [currentPassword, newPassword, confirmPassword, t, validationT, router],
     );
 
     // Show message for OAuth users (client-side fallback)
@@ -152,6 +148,7 @@ export function ChangePasswordForm() {
                                         type="password"
                                         placeholder={fieldsT('currentPasswordPlaceholder')}
                                         required
+                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                         value={currentPassword}
                                         onChange={(event) => setCurrentPassword(event.target.value)}
                                         autoComplete="current-password"
@@ -164,6 +161,7 @@ export function ChangePasswordForm() {
                                         type="password"
                                         placeholder={fieldsT('newPasswordPlaceholder')}
                                         required
+                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                         value={newPassword}
                                         onChange={(event) => setNewPassword(event.target.value)}
                                         autoComplete="new-password"
@@ -178,6 +176,7 @@ export function ChangePasswordForm() {
                                         type="password"
                                         placeholder={fieldsT('confirmPasswordPlaceholder')}
                                         required
+                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                         value={confirmPassword}
                                         onChange={(event) => setConfirmPassword(event.target.value)}
                                         autoComplete="new-password"
@@ -185,7 +184,9 @@ export function ChangePasswordForm() {
                                 </div>
                                 {passwordTooShort && (
                                     <div className="text-red-500 text-xs text-center">
-                                        {validationT('passwordMin', { min: passwordMinLength })}
+                                        {validationT('passwordMin', {
+                                            min: AUTH_PASSWORD_MIN_LENGTH,
+                                        })}
                                     </div>
                                 )}
                                 {!passwordTooShort &&

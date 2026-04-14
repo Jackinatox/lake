@@ -20,6 +20,11 @@ import {
     createChangelogEntry,
     updateChangelogEntry,
 } from '@/app/actions/changelog/changelogActions';
+import {
+    changelogEntryCreateSchema,
+    changelogEntryUpdateSchema,
+} from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 
 const CHANGELOG_TYPES = ['NEW', 'IMPROVED', 'FIXED', 'SECURITY', 'REMOVED'] as const;
 
@@ -57,28 +62,32 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
     }
 
     async function handleSave() {
-        setIsPending(true);
+        const payload = {
+            title,
+            text,
+            type,
+            published,
+            publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
+            blogPostId: blogPostId || null,
+        };
+
         try {
-            const data = {
-                title,
-                text,
-                type,
-                published,
-                publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null,
-                blogPostId: blogPostId || null,
-            };
             if (entry) {
-                await updateChangelogEntry(entry.id, data);
+                const parsed = changelogEntryUpdateSchema.parse(payload);
+                setIsPending(true);
+                await updateChangelogEntry(entry.id, parsed);
             } else {
-                await createChangelogEntry(data);
+                const parsed = changelogEntryCreateSchema.parse(payload);
+                setIsPending(true);
+                await createChangelogEntry(parsed);
             }
             toast({ title: 'Saved', description: 'Entry saved.' });
             router.push('/admin/changelog');
-        } catch (err: unknown) {
+        } catch (error: unknown) {
             setIsPending(false);
             toast({
                 title: 'Error',
-                description: err instanceof Error ? err.message : 'Unknown error',
+                description: getValidationMessage(error) || 'Unknown error',
                 variant: 'destructive',
             });
         }
@@ -93,6 +102,7 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="What changed?"
+                    maxLength={160}
                 />
             </div>
 
@@ -104,6 +114,7 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Brief description of the change..."
                     rows={3}
+                    maxLength={10000}
                 />
             </div>
 
@@ -166,7 +177,7 @@ export default function ChangelogEntryForm({ entry, publishedBlogPosts }: Change
                 <Button variant="outline" onClick={() => router.push('/admin/changelog')}>
                     Cancel
                 </Button>
-                <Button onClick={handleSave} disabled={isPending || !title.trim()}>
+                <Button onClick={handleSave} disabled={isPending || !title.trim() || !text.trim()}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {entry ? 'Save Changes' : 'Create Entry'}
                 </Button>

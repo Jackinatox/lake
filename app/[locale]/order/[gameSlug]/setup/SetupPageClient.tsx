@@ -11,6 +11,8 @@ import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { fetchOrderForRestore } from '@/lib/orderUtils';
+import { getValidationMessage } from '@/lib/validation/common';
+import { checkoutConfiguredParamsSchema, gameConfigSchema } from '@/lib/validation/order';
 import type { Game, GameConfig } from '@/models/config';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info, Pencil } from 'lucide-react';
@@ -115,19 +117,34 @@ export default function SetupPageClient({
             return;
         }
 
+        const parsedGameConfig = gameConfigSchema.safeParse(gameConfig);
+        if (!parsedGameConfig.success || !configuredResult) {
+            toast({
+                title: 'Invalid configuration',
+                description: getValidationMessage(parsedGameConfig.success ? new Error('Invalid hardware configuration') : parsedGameConfig.error),
+                variant: 'destructive',
+            });
+            return;
+        }
+
         setLoading(true);
         try {
             const checkoutParams: CheckoutParams = {
                 type: 'CONFIGURED',
                 locale,
                 creationServerConfig: {
-                    gameConfig,
+                    gameConfig: parsedGameConfig.data,
                     hardwareConfig,
                 },
                 resourceTierId: configuredResult!.tierId,
             };
 
-            const result = await checkoutAction(checkoutParams);
+            const parsedCheckoutParams = checkoutConfiguredParamsSchema.safeParse(checkoutParams);
+            if (!parsedCheckoutParams.success) {
+                throw new Error(getValidationMessage(parsedCheckoutParams.error));
+            }
+
+            const result = await checkoutAction(parsedCheckoutParams.data);
             if (!result?.client_secret) {
                 throw new Error('No client secret returned');
             }

@@ -8,9 +8,8 @@ import { logger } from '@/lib/logger';
 import { TicketCategory } from '@/app/client/generated/enums';
 import { sendSupportTicketNotification } from '@/lib/Notifications/telegram';
 import { env } from 'next-runtime-env';
-
-const MAX_MESSAGE_LENGTH = 2000;
-const MAX_SUBJECT_LENGTH = 120;
+import { supportTicketSchema } from '@/lib/validation/order';
+import { getValidationMessage } from '@/lib/validation/common';
 
 export async function POST(req: NextRequest) {
     try {
@@ -23,34 +22,27 @@ export async function POST(req: NextRequest) {
         }
 
         const data = await req.json();
-        const rawDescription = typeof data.description === 'string' ? data.description.trim() : '';
-        const rawSubject = typeof data.subject === 'string' ? data.subject.trim() : '';
-        const rawCategory =
-            typeof data.category === 'string' ? data.category.toUpperCase() : undefined;
+        const parsed = supportTicketSchema.safeParse({
+            description: data?.description,
+            subject: data?.subject,
+            category:
+                typeof data?.category === 'string' ? data.category.toUpperCase() : data?.category,
+        });
 
-        if (!rawDescription) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: getValidationMessage(parsed.error) },
+                { status: 400 },
+            );
         }
 
-        if (rawDescription.length > MAX_MESSAGE_LENGTH) {
-            return NextResponse.json({ error: 'Message too long' }, { status: 400 });
-        }
-
-        if (rawSubject.length > MAX_SUBJECT_LENGTH) {
-            return NextResponse.json({ error: 'Subject too long' }, { status: 400 });
-        }
-
-        const availableCategories = new Set(Object.values(TicketCategory));
-        const category =
-            rawCategory && availableCategories.has(rawCategory as TicketCategory)
-                ? (rawCategory as TicketCategory)
-                : TicketCategory.GENERAL;
+        const { description, subject, category = TicketCategory.GENERAL } = parsed.data;
 
         const ticket = await prisma.supportTicket.create({
             data: {
                 userId: session.user.id,
-                title: rawSubject || null,
-                message: rawDescription,
+                title: subject ?? null,
+                message: description,
                 category,
                 status: 'OPEN',
             },

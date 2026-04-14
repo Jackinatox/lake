@@ -10,6 +10,7 @@ import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeS
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import { checkoutParamsSchema, gameConfigSchema } from '@/lib/validation/order';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { env } from 'next-runtime-env';
@@ -151,6 +152,7 @@ export async function checkoutAction(
 
     if (!session) throw new Error('Not authenticated');
     const user = session.user;
+    const validatedParams = checkoutParamsSchema.parse(params);
 
     // const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     let stripeUserId = session.user.stripeUserId;
@@ -172,9 +174,9 @@ export async function checkoutAction(
         stripeUserId = newCustomer.id;
     }
 
-    switch (params.type) {
+    switch (validatedParams.type) {
         case 'CONFIGURED': {
-            const { creationServerConfig, resourceTierId } = params;
+            const { creationServerConfig, resourceTierId } = validatedParams;
             if (!creationServerConfig) throw new Error('No Serverconfigration given');
 
             // Look up the resource tier to get its flat-fee price
@@ -244,7 +246,7 @@ export async function checkoutAction(
             return { client_secret, orderId: order.id };
         }
         case 'UPGRADE': {
-            const { ptServerId, upgradeConfig } = params;
+            const { ptServerId, upgradeConfig } = validatedParams;
             const { cpuPercent, ramMb, diskMb, durationsDays, allocations } = upgradeConfig;
 
             const server = await prisma.gameServer.findFirst({
@@ -368,6 +370,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
 
     if (!session) throw new Error('Not authenticated');
     const user = session.user;
+    const validatedGameConfig = gameConfigSchema.parse(gameConfig) as GameConfig;
 
     const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     const freeServerStats = await getFreeTierConfigCached();
@@ -378,7 +381,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
         throw new Error('Maximale Anzahl kostenloser Server erreicht');
     }
 
-    const freeGameDataId = await resolveGameDataId(gameConfig);
+    const freeGameDataId = await resolveGameDataId(validatedGameConfig);
 
     const order = await prisma.gameServerOrder.create({
         data: {
@@ -395,7 +398,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
             ),
             status: 'PAID',
             creationGameDataId: freeGameDataId,
-            gameConfig: gameConfig as any,
+            gameConfig: validatedGameConfig as any,
             creationLocationId: locationId,
         },
     });

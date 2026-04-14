@@ -3,6 +3,8 @@
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { type ApiKeyPermission, permissionsToRecord } from '@/lib/apiKeyPermissions';
+import { createApiKeySchema } from '@/lib/validation/adminContent';
+import { getValidationMessage, nonEmptyIdSchema } from '@/lib/validation/common';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -27,17 +29,24 @@ export interface CreateApiKeyOptions {
 
 export async function createApiKeyAction(opts: CreateApiKeyOptions) {
     const session = await requireAdmin();
+    const parsed = (() => {
+        try {
+            return createApiKeySchema.parse(opts);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
 
     // permissions and userId are server-only fields — call without headers
     // so better-auth uses the internal (server) code path.
     const result = (await auth.api.createApiKey({
         body: {
-            name: opts.name,
-            permissions: permissionsToRecord(opts.permissions),
+            name: parsed.name,
+            permissions: permissionsToRecord(parsed.permissions),
             userId: session.user.id,
             rateLimitEnabled: true,
-            rateLimitMax: opts.rateLimitMax,
-            rateLimitTimeWindow: opts.rateLimitTimeWindow,
+            rateLimitMax: parsed.rateLimitMax,
+            rateLimitTimeWindow: parsed.rateLimitTimeWindow,
         },
     })) as { id: string; key: string; name: string | null };
 
@@ -55,5 +64,5 @@ export async function createApiKeyAction(opts: CreateApiKeyOptions) {
 
 export async function deleteApiKeyAction(keyId: string) {
     await requireAdmin();
-    await prisma.apikey.delete({ where: { id: keyId } });
+    await prisma.apikey.delete({ where: { id: nonEmptyIdSchema.parse(keyId) } });
 }

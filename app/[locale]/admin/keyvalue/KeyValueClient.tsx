@@ -51,6 +51,8 @@ import {
     deleteKeyValueAction,
 } from '@/app/actions/keyvalue/keyValueActions';
 import { KeyValueType } from '@/app/client/generated/enums';
+import { keyValueUpsertSchema } from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 
 const MAX_CATEGORY_LENGTH = 30;
 
@@ -156,6 +158,7 @@ function CategoryCombobox({
                         placeholder="Search or create category…"
                         value={input}
                         onValueChange={(v) => setInput(v.slice(0, MAX_CATEGORY_LENGTH))}
+                        maxLength={MAX_CATEGORY_LENGTH}
                     />
                     <CommandList>
                         <CommandEmpty>{input ? null : 'No categories yet.'}</CommandEmpty>
@@ -212,48 +215,66 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
     }
 
     function handleSave() {
+        let parsedJson: unknown = undefined;
+        let invalidJson = false;
+        if (form.type === 'JSON') {
+            try {
+                parsedJson = JSON.parse(form.jsonValue);
+            } catch {
+                invalidJson = true;
+            }
+        }
+
+        if (invalidJson) {
+            toast({
+                title: 'Invalid JSON',
+                description: 'Fix the JSON before saving.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        const payload = {
+            id: entry?.id,
+            key: form.key,
+            type: form.type,
+            string:
+                form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : undefined,
+            json: form.type === 'JSON' ? parsedJson : undefined,
+            number:
+                form.type === 'NUMBER'
+                    ? form.numberValue !== ''
+                        ? Number(form.numberValue)
+                        : undefined
+                    : undefined,
+            boolean: form.type === 'BOOLEAN' ? form.booleanValue : undefined,
+            note: form.note || undefined,
+            category: form.category || undefined,
+        };
+
+        const validated = keyValueUpsertSchema.safeParse(payload);
+        if (!validated.success) {
+            toast({
+                title: 'Error',
+                description: getValidationMessage(validated.error),
+                variant: 'destructive',
+            });
+            return;
+        }
+
         startTransition(async () => {
             try {
-                let parsedJson: unknown = null;
-                if (form.type === 'JSON') {
-                    try {
-                        parsedJson = JSON.parse(form.jsonValue);
-                    } catch {
-                        toast({
-                            title: 'Invalid JSON',
-                            description: 'Fix the JSON before saving.',
-                            variant: 'destructive',
-                        });
-                        return;
-                    }
-                }
-                await upsertKeyValueAction({
-                    id: entry?.id,
-                    key: form.key.trim(),
-                    type: form.type,
-                    string:
-                        form.type === 'STRING' || form.type === 'TEXT' ? form.stringValue : null,
-                    json: form.type === 'JSON' ? parsedJson : null,
-                    number:
-                        form.type === 'NUMBER'
-                            ? form.numberValue !== ''
-                                ? parseFloat(form.numberValue)
-                                : null
-                            : null,
-                    boolean: form.type === 'BOOLEAN' ? form.booleanValue : null,
-                    note: form.note || null,
-                    category: form.category || null,
-                });
+                await upsertKeyValueAction(validated.data);
                 setOpen(false);
                 router.refresh();
                 toast({
                     title: isEditing ? 'Updated' : 'Created',
-                    description: `Key "${form.key.trim()}" saved.`,
+                    description: `Key "${validated.data.key}" saved.`,
                 });
-            } catch (err: unknown) {
+            } catch (error: unknown) {
                 toast({
                     title: 'Error',
-                    description: err instanceof Error ? err.message : 'Unknown error',
+                    description: getValidationMessage(error) || 'Unknown error',
                     variant: 'destructive',
                 });
             }
@@ -291,14 +312,15 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
                         {/* Key */}
                         <div className="space-y-1.5">
                             <Label htmlFor="kv-key">Key</Label>
-                            <Input
-                                id="kv-key"
-                                value={form.key}
-                                onChange={(e) => setForm((f) => ({ ...f, key: e.target.value }))}
-                                disabled={isEditing}
-                                placeholder="e.g. legal.imprint"
-                                className="font-mono"
-                            />
+                                <Input
+                                    id="kv-key"
+                                    value={form.key}
+                                    onChange={(e) => setForm((f) => ({ ...f, key: e.target.value }))}
+                                    disabled={isEditing}
+                                    placeholder="e.g. legal.imprint"
+                                    className="font-mono"
+                                    maxLength={120}
+                                />
                         </div>
 
                         {/* Type */}
@@ -334,6 +356,7 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
                                         setForm((f) => ({ ...f, stringValue: e.target.value }))
                                     }
                                     placeholder="String value"
+                                    maxLength={100000}
                                 />
                             )}
                             {(form.type === 'TEXT' || form.type === 'JSON') && (
@@ -394,6 +417,7 @@ export function EntryDialog({ entry, categories }: EntryDialogProps) {
                                 onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
                                 placeholder="Internal description…"
                                 rows={2}
+                                maxLength={1000}
                             />
                         </div>
 

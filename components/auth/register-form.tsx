@@ -5,6 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import {
+    AUTH_EMAIL_MAX_LENGTH,
+    AUTH_NAME_MAX_LENGTH,
+    AUTH_PASSWORD_MAX_LENGTH,
+    AUTH_PASSWORD_MIN_LENGTH,
+    AUTH_USERNAME_MAX_LENGTH,
+    authUsernameSchema,
+    registerFormSchema,
+} from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 
 import { authClient } from '@/lib/auth-client';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -42,12 +52,12 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
             setUsernameStatus('idle');
             return;
         }
-        if (username.includes('@')) {
-            setUsernameStatus('invalid');
-            return;
-        }
         if (username.length < 3) {
             setUsernameStatus('idle');
+            return;
+        }
+        if (!authUsernameSchema.safeParse(username).success) {
+            setUsernameStatus('invalid');
             return;
         }
 
@@ -66,9 +76,12 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
         };
     }, [username]);
 
-    const passwordMinLength = 8;
-    const passwordsMatch = password === confirmPassword && password.length >= passwordMinLength;
-    const passwordTooShort = password.length > 0 && password.length < passwordMinLength;
+    const passwordsMatch =
+        password === confirmPassword && password.length >= AUTH_PASSWORD_MIN_LENGTH;
+    const passwordTooShort =
+        password.length > 0 && password.length < AUTH_PASSWORD_MIN_LENGTH;
+    const usernameIsValid =
+        username.length >= 3 && authUsernameSchema.safeParse(username).success;
     const emailValid = email.trim().length > 0;
     const nameValid = name.trim().length > 0;
 
@@ -76,11 +89,10 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
         !loading &&
         !!turnstileToken &&
         nameValid &&
-        username.length >= 3 &&
-        !username.includes('@') &&
+        usernameIsValid &&
         usernameStatus === 'available' &&
         emailValid &&
-        password.length >= passwordMinLength &&
+        password.length >= AUTH_PASSWORD_MIN_LENGTH &&
         passwordsMatch;
 
     const handleSubmit = useCallback(
@@ -88,39 +100,29 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
             e.preventDefault();
             setError(null);
 
-            if (!nameValid) {
-                setError(t('validation.nameRequired'));
-                return;
-            }
-            if (username.includes('@')) {
-                setError(t('validation.usernameNoAt'));
-                return;
-            }
-            if (password.length < passwordMinLength) {
-                setError(t('validation.passwordMin', { min: passwordMinLength }));
-                return;
-            }
-            if (!passwordsMatch) {
-                setError(t('validation.passwordsDontMatch'));
-                return;
-            }
-
-            setLoading(true);
-            const trimmedEmail = email.trim();
             try {
+                const parsed = registerFormSchema.parse({
+                    name,
+                    username,
+                    email,
+                    password,
+                    confirmPassword,
+                    turnstileToken,
+                });
+                setLoading(true);
                 const { data, error } = await authClient.signUp.email(
                     {
-                        email: trimmedEmail,
-                        password,
-                        name: name.trim(),
-                        username,
-                        displayUsername: username,
-                        image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(username)}`,
+                        email: parsed.email,
+                        password: parsed.password,
+                        name: parsed.name,
+                        username: parsed.username,
+                        displayUsername: parsed.username,
+                        image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(parsed.username)}`,
                         callbackURL: '/verify-email',
                     } as Parameters<typeof authClient.signUp.email>[0],
                     {
                         headers: {
-                            'X-captcha-response': turnstileToken,
+                            'X-captcha-response': parsed.turnstileToken,
                         },
                     },
                 );
@@ -128,16 +130,15 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                 if (error) {
                     setError(error.message || t('errors.registrationFailed'));
                 } else if (data) {
-                    router.push(`/verify-email?email=${encodeURIComponent(trimmedEmail)}`);
+                    router.push(`/verify-email?email=${encodeURIComponent(parsed.email)}`);
                 }
             } catch (err: unknown) {
-                const message = err instanceof Error ? err.message : null;
-                setError(message || t('errors.registrationFailed'));
+                setError(getValidationMessage(err) || t('errors.registrationFailed'));
             } finally {
                 setLoading(false);
             }
         },
-        [nameValid, username, password, passwordsMatch, passwordMinLength, email, name, t, turnstileToken, router],
+        [username, password, confirmPassword, email, name, t, turnstileToken, router],
     );
 
     return (
@@ -215,6 +216,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                         type="text"
                                         placeholder={t('fields.namePlaceholder')}
                                         required
+                                        maxLength={AUTH_NAME_MAX_LENGTH}
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         autoComplete="name"
@@ -231,6 +233,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             type="text"
                                             placeholder={t('fields.usernamePlaceholder')}
                                             required
+                                            maxLength={AUTH_USERNAME_MAX_LENGTH}
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
                                             autoComplete="username"
@@ -276,6 +279,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                         type="email"
                                         placeholder={t('fields.emailPlaceholder')}
                                         required
+                                        maxLength={AUTH_EMAIL_MAX_LENGTH}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         autoComplete="email"
@@ -291,6 +295,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             id="password"
                                             type={showPassword ? 'text' : 'password'}
                                             required
+                                            maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                             placeholder={t('fields.passwordPlaceholder')}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
@@ -313,7 +318,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                     </div>
                                     {passwordTooShort && (
                                         <p className="text-xs text-destructive">
-                                            {t('validation.passwordMin', { min: passwordMinLength })}
+                                            {t('validation.passwordMin', {
+                                                min: AUTH_PASSWORD_MIN_LENGTH,
+                                            })}
                                         </p>
                                     )}
                                 </div>
@@ -327,6 +334,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                             type={showConfirmPassword ? 'text' : 'password'}
                                             placeholder={t('fields.confirmPasswordPlaceholder')}
                                             required
+                                            maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             autoComplete="new-password"

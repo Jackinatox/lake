@@ -5,13 +5,20 @@ import { useTranslations } from 'next-intl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Suspense } from 'react';
 
+const VALID_TABS = ['account', 'security', 'payments'] as const;
+type TabValue = (typeof VALID_TABS)[number];
+
+function normalizeTab(tab: string | null, defaultTab: TabValue): TabValue {
+    return VALID_TABS.includes(tab as TabValue) ? (tab as TabValue) : defaultTab;
+}
+
 export default function ProfileTabs({
     defaultTab,
     accountTab,
     securityTab,
     paymentsTab,
 }: {
-    defaultTab: string;
+    defaultTab: TabValue;
     accountTab: React.ReactNode;
     securityTab: React.ReactNode;
     paymentsTab: React.ReactNode;
@@ -26,7 +33,7 @@ export default function ProfileTabs({
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
-    const currentTab = searchParams.get('tab') || defaultTab;
+    const currentTab = normalizeTab(searchParams.get('tab'), defaultTab);
 
     return (
         <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-4">

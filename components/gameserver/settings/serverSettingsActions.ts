@@ -5,108 +5,242 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
-import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
+import {
+    reinstallServerSchema,
+    renameServerSchema,
+    serverStartupSchema,
+} from '@/lib/validation/gameserver';
+import { serverIdentifierSchema } from '@/lib/validation/common';
 
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 
 export async function renameClientServer(ptServerId: string, newName: string): Promise<boolean> {
+    const parsedResult = renameServerSchema.safeParse({ ptServerId, newName });
+    if (!parsedResult.success) {
+        return false;
+    }
+    const parsed = parsedResult.data;
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
-    if (!session) {
+    if (!session?.user?.ptKey) {
         return false;
     }
 
-    if (newName.length > 200) return false;
-
-    try {
-        await fetch(`${ptUrl}/api/client/servers/${ptServerId}/settings/rename`, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${session?.user.ptKey}`,
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: newName,
-            }),
-        });
-
-        await prisma.gameServer.updateMany({
-            where: {
-                ptServerId: ptServerId,
-            },
-            data: {
-                name: newName,
-            },
-        });
-    } catch (error) {
-        return false;
-    }
-    return true;
-}
-
-export async function reinstallServer(server: string): Promise<boolean> {
-    const session = await auth.api.getSession({
-        headers: await headers(),
+    const server = await prisma.gameServer.findFirst({
+        where: {
+            ptServerId: parsed.ptServerId,
+            userId: session.user.id,
+        },
+        select: {
+            id: true,
+        },
     });
 
-    if (!session || !session.user.ptKey) {
+    if (!server) {
         logger.warn(
-            `Reinstall attempt without authentication for server ${server}`,
+            `Rename attempt for unknown or unowned server ${parsed.ptServerId} by user ${session.user.id}`,
             'GAME_SERVER',
-            { details: { ptServerId: server } },
+            {
+                userId: session.user.id,
+                details: { ptServerId: parsed.ptServerId },
+            },
         );
         return false;
     }
 
     try {
-        logger.info(`initiating reinstall for server ${server}`, 'GAME_SERVER', {
-            userId: session.user.id,
-            details: { ptServerId: server },
-        });
-        const response = await ReinstallPTServerClient(server, session.user.ptKey, false);
+        const response = await fetch(
+            `${ptUrl}/api/client/servers/${parsed.ptServerId}/settings/rename`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${session.user.ptKey}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: parsed.newName,
+                }),
+            },
+        );
 
         if (!response.ok) {
-            logger.error(`Reinstall failed for server ${server}`, 'GAME_SERVER', {
+            logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
                 userId: session.user.id,
-                gameServerId: server,
-                details: { ptServerId: server, response: JSON.stringify(response) },
+                details: {
+                    ptServerId: parsed.ptServerId,
+                    status: response.status,
+                    statusText: response.statusText,
+                },
+            });
+            return false;
+        }
+
+        await prisma.gameServer.update({
+            where: {
+                id: server.id,
+            },
+            data: {
+                name: parsed.newName,
+            },
+        });
+    } catch (error) {
+        logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
+            userId: session.user.id,
+            details: { ptServerId: parsed.ptServerId, error },
+        });
+        return false;
+    }
+    return true;
+}
+
+export async function reinstallServer(server: string, deleteAllFiles = false): Promise<boolean> {
+    const parsedResult = reinstallServerSchema.safeParse({
+        ptServerId: server,
+        deleteAllFiles,
+    });
+    if (!parsedResult.success) {
+        return false;
+    }
+    const parsed = parsedResult.data;
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user?.ptKey) {
+        logger.warn(
+            `Reinstall attempt without authentication for server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            { details: { ptServerId: parsed.ptServerId } },
+        );
+        return false;
+    }
+
+    const serverRecord = await prisma.gameServer.findFirst({
+        where: { ptServerId: parsed.ptServerId, userId: session.user.id },
+        select: {
+            id: true,
+        },
+    });
+
+    if (!serverRecord) {
+        logger.warn(
+            `Reinstall attempt for unknown or unowned server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            {
+                userId: session.user.id,
+                details: { ptServerId: parsed.ptServerId },
+            },
+        );
+        return false;
+    }
+
+    try {
+        logger.info(`initiating reinstall for server ${parsed.ptServerId}`, 'GAME_SERVER', {
+            userId: session.user.id,
+            details: {
+                ptServerId: parsed.ptServerId,
+                deleteAllFiles: parsed.deleteAllFiles,
+            },
+        });
+        const response = await ReinstallPTServerClient(
+            parsed.ptServerId,
+            session.user.ptKey,
+            parsed.deleteAllFiles,
+        );
+
+        if (!response.ok) {
+            logger.error(`Reinstall failed for server ${parsed.ptServerId}`, 'GAME_SERVER', {
+                userId: session.user.id,
+                gameServerId: parsed.ptServerId,
+                details: { ptServerId: parsed.ptServerId, response: JSON.stringify(response) },
             });
             return false;
         }
 
         return true;
     } catch (error) {
-        logger.error(`Exception during server reinstall for ${server}`, 'GAME_SERVER', {
+        logger.error(`Exception during server reinstall for ${parsed.ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
-            details: { ptServerId: server, error },
+            details: { ptServerId: parsed.ptServerId, error },
         });
         return false;
     }
 }
 
 export async function changeServerStartup(server: string, docker_image: string): Promise<boolean> {
+    const parsed = serverStartupSchema.parse({ ptServerId: server, dockerImage: docker_image });
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
-    if (!session) {
+    if (!session?.user?.ptKey) {
         throw new Error('Not authenticated');
     }
 
     const ptServer = await prisma.gameServer.findFirst({
-        where: { ptServerId: server, userId: session.user.id },
+        where: { ptServerId: parsed.ptServerId, userId: session.user.id },
     });
 
     if (!ptServer || !ptServer.ptAdminId) {
         throw new Error('Server not found');
     }
 
-    return await changeServerDockerImageInternal(ptServer.ptAdminId.toString(), docker_image);
+    const allowedDockerImages = await fetchAllowedDockerImages(
+        parsed.ptServerId,
+        session.user.ptKey,
+    );
+
+    if (!allowedDockerImages.has(parsed.dockerImage)) {
+        logger.warn(
+            `Rejected unsupported docker image for server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            {
+                userId: session.user.id,
+                details: {
+                    ptServerId: parsed.ptServerId,
+                    dockerImage: parsed.dockerImage,
+                },
+            },
+        );
+        return false;
+    }
+
+    return await changeServerDockerImageInternal(ptServer.ptAdminId.toString(), parsed.dockerImage);
+}
+
+async function fetchAllowedDockerImages(ptServerId: string, ptKey: string): Promise<Set<string>> {
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+
+    try {
+        const response = await fetch(`${ptUrl}/api/client/servers/${ptServerId}/startup`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${ptKey}`,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            logger.error('Failed to load allowed docker images', 'GAME_SERVER', {
+                details: { ptServerId, status: response.status },
+            });
+            return new Set();
+        }
+
+        const data: PterodactylStartupResponse = await response.json();
+        return new Set(Object.values(data.meta?.docker_images ?? {}));
+    } catch (error) {
+        logger.error('Failed to load allowed docker images', 'GAME_SERVER', {
+            details: { ptServerId, error },
+        });
+        return new Set();
+    }
 }
 
 /**
@@ -201,40 +335,46 @@ export async function enableServerInstallScripts(ptAdminId: number): Promise<boo
  * This currently verifies ownership and that the server is FREE and then returns true.
  */
 export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
+    const parsedId = serverIdentifierSchema.safeParse(ptServerId);
+    if (!parsedId.success) {
+        return false;
+    }
+    const validatedServerId = parsedId.data;
+
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
     if (!session) {
         logger.warn(
-            `Delete attempt without authentication for server ${ptServerId}`,
+            `Delete attempt without authentication for server ${validatedServerId}`,
             'AUTHENTICATION',
-            { details: { ptServerId } },
+            { details: { ptServerId: validatedServerId } },
         );
         return false;
     }
 
     const server = await prisma.gameServer.findFirst({
-        where: { ptServerId, userId: session.user.id },
+        where: { ptServerId: validatedServerId, userId: session.user.id },
     });
 
     if (!server || !server.ptAdminId) {
         logger.warn(
-            `Delete attempt for unknown server ${ptServerId} by user ${session.user.id}`,
+            `Delete attempt for unknown server ${validatedServerId} by user ${session.user.id}`,
             'GAME_SERVER',
-            { userId: session.user.id, details: { ptServerId } },
+            { userId: session.user.id, details: { ptServerId: validatedServerId } },
         );
         return false;
     }
 
     if (server.type !== 'FREE') {
         logger.warn(
-            `Delete attempt for non-free server ${ptServerId} by user ${session.user.id}`,
+            `Delete attempt for non-free server ${validatedServerId} by user ${session.user.id}`,
             'GAME_SERVER',
             {
                 userId: session.user.id,
                 gameServerId: server.id,
-                details: { ptServerId, ptAdminId: server.ptAdminId },
+                details: { ptServerId: validatedServerId, ptAdminId: server.ptAdminId },
             },
         );
         return false;
@@ -247,22 +387,28 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
             data: { status: 'DELETED' },
         });
     } catch (error) {
-        logger.error(`Failed to delete free server ${ptServerId}`, 'GAME_SERVER', {
+        logger.error(`Failed to delete free server ${validatedServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
             gameServerId: server.id,
-            details: { ptServerId, ptAdminId: server.ptAdminId, error },
+            details: { ptServerId: validatedServerId, ptAdminId: server.ptAdminId, error },
         });
         return false;
     }
 
     logger.info(
-        `deleteFreeServer requested for server ${ptServerId} by user ${session.user.id}`,
+        `deleteFreeServer requested for server ${validatedServerId} by user ${session.user.id}`,
         'GAME_SERVER',
         {
             userId: session.user.id,
             gameServerId: server.id,
-            details: { ptServerId, ptAdminId: server.ptAdminId },
+            details: { ptServerId: validatedServerId, ptAdminId: server.ptAdminId },
         },
     );
     return true;
+}
+
+interface PterodactylStartupResponse {
+    meta?: {
+        docker_images?: Record<string, string>;
+    };
 }

@@ -14,6 +14,19 @@ type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & {
     images: { dark: string; light: string };
 };
 
+function parseFiniteNumber(value: string | null, fallback: number) {
+    if (value == null || value.trim().length === 0) return fallback;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function parsePositiveInt(value: string | null) {
+    if (!value) return null;
+    const parsed = Number(value);
+    if (!Number.isInteger(parsed) || parsed <= 0) return null;
+    return parsed;
+}
+
 interface Props {
     games: GameCard[];
     resourceTiers: ResourceTier[];
@@ -26,27 +39,25 @@ export default function GamesAfterHardwareClient({
     performanceGroups,
 }: Props) {
     const searchParams = useSearchParams();
-    const cpu = searchParams.get('cpu') ?? '4';
-    const ram = searchParams.get('ram') ?? '4';
-    const days = searchParams.get('days') ?? '30';
-    const pf = searchParams.get('pf') ?? '';
-    const tierId = searchParams.get('tier') ?? '';
+    const cpu = parseFiniteNumber(searchParams.get('cpu'), 4);
+    const ram = parseFiniteNumber(searchParams.get('ram'), 4);
+    const days = Math.max(1, Math.round(parseFiniteNumber(searchParams.get('days'), 30)));
+    const pf = parsePositiveInt(searchParams.get('pf'));
+    const tierId = parsePositiveInt(searchParams.get('tier'));
 
-    const selectedTier = tierId
-        ? (resourceTiers.find((t) => t.id === Number(tierId)) ?? null)
-        : null;
+    const selectedTier = tierId ? (resourceTiers.find((t) => t.id === tierId) ?? null) : null;
 
     const selectedPfGroup = pf
-        ? (performanceGroups.find((g) => g.id === Number(pf)) ?? null)
+        ? (performanceGroups.find((g) => g.id === pf) ?? null)
         : (performanceGroups[0] ?? null);
 
     const totalCents = (() => {
         if (!selectedPfGroup) return null;
         const price = calculateNew(
             selectedPfGroup,
-            parseFloat(cpu) * 100,
-            parseFloat(ram) * 1024,
-            Number(days),
+            cpu * 100,
+            ram * 1024,
+            days,
             selectedTier?.priceCents ?? 0,
         );
         return price.totalCents;
@@ -54,11 +65,11 @@ export default function GamesAfterHardwareClient({
 
     // Carry hardware params forward to the setup page
     const hwParams = new URLSearchParams();
-    if (pf) hwParams.set('pf', pf);
-    hwParams.set('cpu', cpu);
-    hwParams.set('ram', ram);
-    hwParams.set('days', days);
-    if (tierId) hwParams.set('tier', tierId);
+    if (selectedPfGroup) hwParams.set('pf', String(selectedPfGroup.id));
+    hwParams.set('cpu', String(cpu));
+    hwParams.set('ram', String(ram));
+    hwParams.set('days', String(days));
+    if (selectedTier) hwParams.set('tier', String(selectedTier.id));
     const hwParamsStr = hwParams.toString();
 
     return (
@@ -95,9 +106,9 @@ export default function GamesAfterHardwareClient({
             <div className="w-full max-w-6xl mx-auto pt-4 px-2 md:px-6">
                 <Card className="mb-6">
                     <HardwareChipBar
-                        cpu={parseFloat(cpu)}
-                        ram={parseFloat(ram)}
-                        days={Number(days)}
+                        cpu={cpu}
+                        ram={ram}
+                        days={days}
                         diskGB={selectedTier ? selectedTier.diskMB / 1024 : 0}
                         backups={selectedTier?.backups ?? 0}
                         ports={selectedTier?.ports ?? 0}

@@ -57,7 +57,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                                 title={t('management.reinstall.title')}
                                 description={t('management.reinstall.description')}
                             >
-                                <ReinstallDialog apiKey={apiKey} server_id={server.identifier} />
+                                <ReinstallDialog server_id={server.identifier} />
                             </ActionItem>
 
                             <ActionItem

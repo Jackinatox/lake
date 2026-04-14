@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 // Replaced Card with a plain div so we can control responsive borders directly
 import type { Game, GameConfig } from '@/models/config';
@@ -8,6 +8,9 @@ import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
 import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
 import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
 import { HytaleConfigComponent } from './GameInstallConfig/HytaleConfig';
+import { useToast } from '@/hooks/use-toast';
+import { gameConfigSchema } from '@/lib/validation/order';
+import { getValidationMessage } from '@/lib/validation/common';
 
 interface GameConfigProps {
     game: Game;
@@ -21,7 +24,22 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
+    const { toast } = useToast();
     const configRef = useRef<any>(null);
+
+    function handleValidatedSubmit(config: GameConfig) {
+        const parsed = gameConfigSchema.safeParse(config);
+        if (!parsed.success) {
+            toast({
+                title: 'Invalid configuration',
+                description: getValidationMessage(parsed.error),
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        onSubmit(parsed.data);
+    }
 
     useImperativeHandle(ref, () => ({
         submit: () => {
@@ -39,7 +57,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                         return (
                             <MinecraftConfigComponent
                                 ref={configRef}
-                                onSubmit={onSubmit}
+                                onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
                             />
@@ -48,7 +66,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                         return (
                             <SatisfactoryConfigComponent
                                 ref={configRef}
-                                onSubmit={onSubmit}
+                                onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
                             />
@@ -57,7 +75,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                         return (
                             <FactorioConfigComponent
                                 ref={configRef}
-                                onSubmit={onSubmit}
+                                onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
                             />
@@ -66,7 +84,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                         return (
                             <HytaleConfigComponent
                                 ref={configRef}
-                                onSubmit={onSubmit}
+                                onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
                             />

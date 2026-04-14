@@ -6,6 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
+import {
+    AUTH_EMAIL_MAX_LENGTH,
+    AUTH_PASSWORD_MAX_LENGTH,
+    loginFormSchema,
+} from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -52,15 +58,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
             setError(null);
             setLoading(true);
             try {
-                const trimmed = identifier.trim();
-                const isEmail = trimmed.includes('@');
+                const parsed = loginFormSchema.parse({ identity: identifier, password });
+                const isEmail = parsed.identity.includes('@');
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let result: any;
+                let result: SignInEmailResult;
                 if (isEmail) {
                     result = await authClient.signIn.email({
-                        email: trimmed,
-                        password,
+                        email: parsed.identity,
+                        password: parsed.password,
                         callbackURL: '/gameserver',
                         fetchOptions: {
                             headers: { 'X-captcha-response': turnstileToken },
@@ -68,8 +73,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     });
                 } else {
                     result = await authClient.signIn.username({
-                        username: trimmed,
-                        password,
+                        username: parsed.identity,
+                        password: parsed.password,
                         callbackURL: '/gameserver',
                         fetchOptions: {
                             headers: { 'X-captcha-response': turnstileToken },
@@ -89,7 +94,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
                     if (shouldRedirectToVerification) {
                         const redirectUrl = isEmail
-                            ? `/verify-email?email=${encodeURIComponent(trimmed)}`
+                            ? `/verify-email?email=${encodeURIComponent(parsed.identity)}`
                             : '/verify-email';
                         router.push(redirectUrl);
                         return;
@@ -100,7 +105,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     setShowTwoFactor(true);
                 }
             } catch (error: unknown) {
-                setError(getErrorMessage(error) || t('errors.unexpected'));
+                setError(getValidationMessage(error) || t('errors.unexpected'));
             } finally {
                 setLoading(false);
             }
@@ -280,6 +285,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                         type="text"
                                         placeholder={t('fields.emailOrUsernamePlaceholder')}
                                         required
+                                        maxLength={AUTH_EMAIL_MAX_LENGTH}
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
                                         autoComplete="username email"
@@ -305,6 +311,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                             id="password"
                                             type={showPassword ? 'text' : 'password'}
                                             required
+                                            maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                             placeholder={tr('fields.passwordPlaceholder')}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}

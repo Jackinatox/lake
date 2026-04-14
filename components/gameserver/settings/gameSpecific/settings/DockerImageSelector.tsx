@@ -97,9 +97,12 @@ function DockerImageSelector({
                     setDockerImages(sortedDockerImages);
 
                     // Set first docker image as default if none selected
-                    const imageKeys = Object.keys(sortedDockerImages);
-                    if (imageKeys.length > 0 && !selectedDockerImage) {
-                        setSelectedDockerImage(sortedDockerImages[imageKeys[0]]);
+                    const imageValues = Object.values(sortedDockerImages);
+                    if (
+                        imageValues.length > 0 &&
+                        !imageValues.includes(selectedDockerImage)
+                    ) {
+                        setSelectedDockerImage(imageValues[0]);
                     }
                 }
             } catch (err) {
@@ -110,7 +113,7 @@ function DockerImageSelector({
         };
 
         fetchDockerImages();
-    }, [serverIdentifier, apiKey, ptUrl]);
+    }, [serverIdentifier, apiKey, ptUrl, selectedDockerImage]);
 
     function extractTrailingNumber(str: string): number | null {
         const match = str.match(/(\d+)$/); // digits at the end of string
@@ -118,9 +121,18 @@ function DockerImageSelector({
     }
 
     const handleDockerImageChange = async (dockerImage: string) => {
+        if (!Object.values(dockerImages).includes(dockerImage)) {
+            setError('Selected docker image is not available');
+            return;
+        }
+
         setSaving(true);
+        setError('');
         try {
-            await changeServerStartup(serverIdentifier, dockerImage);
+            const success = await changeServerStartup(serverIdentifier, dockerImage);
+            if (!success) {
+                throw new Error('Failed to save docker image');
+            }
             setSavedDockerImage(dockerImage);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to save docker image');
@@ -139,7 +151,10 @@ function DockerImageSelector({
             <ButtonGroup className="w-full">
                 <Select
                     value={selectedDockerImage}
-                    onValueChange={setSelectedDockerImage}
+                    onValueChange={(value) => {
+                        setSelectedDockerImage(value);
+                        setError('');
+                    }}
                     disabled={loading || disabled || Object.keys(dockerImages).length === 0}
                 >
                     <SelectTrigger className="flex-1 min-w-0 h-9">
@@ -159,7 +174,10 @@ function DockerImageSelector({
                     className="shrink-0 gap-2"
                     variant="outline"
                     disabled={
-                        selectedDockerImage === savedDockerImage || !selectedDockerImage || saving
+                        selectedDockerImage === savedDockerImage ||
+                        !selectedDockerImage ||
+                        saving ||
+                        !Object.values(dockerImages).includes(selectedDockerImage)
                     }
                     onClick={() => handleDockerImageChange(selectedDockerImage)}
                 >

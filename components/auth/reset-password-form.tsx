@@ -9,6 +9,12 @@ import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import {
+    AUTH_PASSWORD_MAX_LENGTH,
+    AUTH_PASSWORD_MIN_LENGTH,
+    resetPasswordSchema,
+} from '@/lib/validation/auth';
+import { getValidationMessage } from '@/lib/validation/common';
 
 interface ResetPasswordFormProps extends React.ComponentProps<'div'> {
     token?: string | null;
@@ -31,8 +37,6 @@ export function ResetPasswordForm({
     const [success, setSuccess] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const passwordMinLength = 8;
-
     useEffect(() => {
         if (!initialError) {
             return;
@@ -50,7 +54,7 @@ export function ResetPasswordForm({
         [newPassword, confirmPassword],
     );
     const passwordTooShort = useMemo(
-        () => newPassword.length > 0 && newPassword.length < passwordMinLength,
+        () => newPassword.length > 0 && newPassword.length < AUTH_PASSWORD_MIN_LENGTH,
         [newPassword],
     );
 
@@ -60,24 +64,16 @@ export function ResetPasswordForm({
             setError(null);
             setSuccess(null);
 
-            if (!token) {
-                setError(t('errors.tokenMissing'));
-                return;
-            }
-            if (newPassword.length < passwordMinLength) {
-                setError(validationT('passwordMin', { min: passwordMinLength }));
-                return;
-            }
-            if (!passwordsMatch) {
-                setError(validationT('passwordsDontMatch'));
-                return;
-            }
-
-            setLoading(true);
             try {
-                const { error } = await authClient.resetPassword({
-                    newPassword,
+                const parsed = resetPasswordSchema.parse({
                     token,
+                    newPassword,
+                    confirmPassword,
+                });
+                setLoading(true);
+                const { error } = await authClient.resetPassword({
+                    newPassword: parsed.newPassword,
+                    token: parsed.token,
                 });
 
                 if (error) {
@@ -88,12 +84,12 @@ export function ResetPasswordForm({
                     setConfirmPassword('');
                 }
             } catch (err: any) {
-                setError(err?.message || t('errors.resetFailed'));
+                setError(getValidationMessage(err) || t('errors.resetFailed'));
             } finally {
                 setLoading(false);
             }
         },
-        [token, newPassword, passwordMinLength, passwordsMatch, t, validationT],
+        [token, newPassword, confirmPassword, t],
     );
 
     return (
@@ -114,6 +110,7 @@ export function ResetPasswordForm({
                                         type="password"
                                         placeholder={fieldsT('newPasswordPlaceholder')}
                                         required
+                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                         value={newPassword}
                                         onChange={(event) => setNewPassword(event.target.value)}
                                         autoComplete="new-password"
@@ -128,6 +125,7 @@ export function ResetPasswordForm({
                                         type="password"
                                         placeholder={fieldsT('confirmPasswordPlaceholder')}
                                         required
+                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
                                         value={confirmPassword}
                                         onChange={(event) => setConfirmPassword(event.target.value)}
                                         autoComplete="new-password"
@@ -135,7 +133,7 @@ export function ResetPasswordForm({
                                 </div>
                                 {passwordTooShort && (
                                     <div className="text-red-500 text-xs text-center">
-                                        {validationT('passwordMin', { min: passwordMinLength })}
+                                        {validationT('passwordMin', { min: AUTH_PASSWORD_MIN_LENGTH })}
                                     </div>
                                 )}
                                 {!passwordTooShort &&

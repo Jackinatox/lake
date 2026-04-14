@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth-client';
+import { getValidationMessage } from '@/lib/validation/common';
+import { gameConfigSchema } from '@/lib/validation/order';
 import { Game, GameConfig } from '@/models/config';
 import { ArrowLeft, Gift, Server } from 'lucide-react';
 import Image from 'next/image';
@@ -57,8 +59,13 @@ export default function FreeGameServerBooking({
 
     const onSubmit = async (config: GameConfig) => {
         try {
+            const parsedConfig = gameConfigSchema.safeParse(config);
+            if (!parsedConfig.success) {
+                throw new Error(getValidationMessage(parsedConfig.error));
+            }
+
             setLoading(true);
-            const jobId = await checkoutFreeGameServer(config);
+            const jobId = await checkoutFreeGameServer(parsedConfig.data);
             router.push(`/products/wait/${jobId}`);
         } catch (error) {
             toast({

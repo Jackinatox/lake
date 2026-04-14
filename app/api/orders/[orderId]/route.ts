@@ -1,9 +1,10 @@
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { orderIdSchema } from '@/lib/validation/common';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ orderId: string }> }) {
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (!session?.user) {
@@ -11,11 +12,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ orde
     }
 
     const { orderId } = await params;
+    const parsedOrderId = orderIdSchema.safeParse(orderId);
+    if (!parsedOrderId.success) {
+        return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 });
+    }
 
     try {
-        const order = await prisma.gameServerOrder.findUnique({
+        const order = await prisma.gameServerOrder.findFirst({
             where: {
-                id: orderId,
+                id: parsedOrderId.data,
                 userId: session.user.id, // Security: only fetch user's own orders
             },
             select: {

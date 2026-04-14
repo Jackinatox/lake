@@ -15,6 +15,7 @@ import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
 import type { HardwareRecommendationSlim, ResourceTierDisplay } from '@/models/prisma';
+import { performanceConfiguratorQuerySchema } from '@/lib/validation/order';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -36,6 +37,16 @@ const DURATIONS: readonly {
 // ── Helpers ──────────────────────────────────────────────────────────────
 function clampToNearest(value: number, stops: number[]): number {
     return stops.reduce((best, v) => (Math.abs(v - value) < Math.abs(best - value) ? v : best));
+}
+
+function parsePerformanceQuery(searchParams: URLSearchParams) {
+    return performanceConfiguratorQuerySchema.safeParse({
+        pf: searchParams.get('pf') ? Number(searchParams.get('pf')) : undefined,
+        cpu: searchParams.get('cpu') ? Number(searchParams.get('cpu')) : undefined,
+        ram: searchParams.get('ram') ? Number(searchParams.get('ram')) : undefined,
+        days: searchParams.get('days') ? Number(searchParams.get('days')) : undefined,
+        tier: searchParams.get('tier') ? Number(searchParams.get('tier')) : undefined,
+    });
 }
 
 interface PerformanceConfiguratorProps {
@@ -69,16 +80,16 @@ export default function PerformanceConfigurator({
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const parsedQuery = parsePerformanceQuery(searchParams);
 
     // ── Initial state from URL params ────────────────────────────────────
-    const initialPfId = searchParams.get('pf')
-        ? Number(searchParams.get('pf'))
+    const initialPfId = parsedQuery.success
+        ? parsedQuery.data.pf
         : (performanceOptions[0]?.id ?? null);
-
-    const initialCpu = searchParams.get('cpu') ? Number(searchParams.get('cpu')) : 4;
-    const initialRam = searchParams.get('ram') ? Number(searchParams.get('ram')) : 4;
-    const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
-    const initialTier = searchParams.get('tier') ? Number(searchParams.get('tier')) : null;
+    const initialCpu = parsedQuery.success ? parsedQuery.data.cpu : 4;
+    const initialRam = parsedQuery.success ? parsedQuery.data.ram : 4;
+    const initialDays = parsedQuery.success ? parsedQuery.data.days : 30;
+    const initialTier = parsedQuery.success ? parsedQuery.data.tier : null;
 
     // ── State ────────────────────────────────────────────────────────────
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(
@@ -443,30 +454,26 @@ export function configuredHardwareFromParams(
     searchParams: URLSearchParams,
     resourceTiers: ResourceTierDisplay[],
 ): { hardwareConfig: HardwareConfig; tierId: number; tierPriceCents: number } | null {
-    const pf = searchParams.get('pf');
-    const cpu = searchParams.get('cpu');
-    const ram = searchParams.get('ram');
-    const days = searchParams.get('days');
-    const tier = searchParams.get('tier');
+    const parsed = parsePerformanceQuery(searchParams);
+    if (!parsed.success) return null;
 
-    if (!pf || !cpu || !ram || !days || !tier) return null;
-
-    const tierId = Number(tier);
+    const { pf, cpu, ram, days, tier } = parsed.data;
+    const tierId = tier;
     const selectedTier = resourceTiers.find((t) => t.id === tierId);
     if (!selectedTier) return null;
 
-    const cpuPercent = Number(cpu) * 100;
-    const ramMb = Number(ram) * 1024;
+    const cpuPercent = cpu * 100;
+    const ramMb = ram * 1024;
 
     return {
         hardwareConfig: {
-            pfGroupId: Number(pf),
+            pfGroupId: pf,
             cpuPercent,
             ramMb,
             diskMb: selectedTier.diskMB,
             backupCount: selectedTier.backups,
             allocations: selectedTier.ports,
-            durationsDays: Number(days),
+            durationsDays: days,
         },
         tierId,
         tierPriceCents: selectedTier.priceCents,

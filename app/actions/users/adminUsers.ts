@@ -1,6 +1,13 @@
 'use server';
 
 import { auth } from '@/auth';
+import {
+    adminUserSearchSchema,
+    pterodactylUserInfoSchema,
+    toggleBanUserSchema,
+    verifyUserEmailSchema,
+} from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { logger } from '@/lib/logger';
@@ -16,8 +23,14 @@ async function requireAdmin() {
 
 export async function searchUsers(query: string) {
     await requireAdmin();
-
-    const trimmed = query.trim();
+    const parsed = (() => {
+        try {
+            return adminUserSearchSchema.parse({ query });
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
+    const trimmed = parsed.query.trim();
 
     // If empty query, return first 25 users
     if (!trimmed) {
@@ -33,8 +46,7 @@ export async function searchUsers(query: string) {
     }
 
     // Try numeric match for ptUserId
-    const numericQuery = parseInt(trimmed, 10);
-    const isNumeric = !isNaN(numericQuery);
+    const numericQuery = /^\d+$/.test(trimmed) ? Number(trimmed) : null;
 
     const [users, total] = await Promise.all([
         prisma.user.findMany({
@@ -44,7 +56,7 @@ export async function searchUsers(query: string) {
                     { id: { contains: trimmed, mode: 'insensitive' } },
                     { name: { contains: trimmed, mode: 'insensitive' } },
                     { ptUsername: { contains: trimmed, mode: 'insensitive' } },
-                    ...(isNumeric ? [{ ptUserId: numericQuery }] : []),
+                    ...(numericQuery != null ? [{ ptUserId: numericQuery }] : []),
                 ],
             },
             take: 25,
@@ -59,37 +71,55 @@ export async function searchUsers(query: string) {
 
 export async function verifyUserEmail(userId: string) {
     const session = await requireAdmin();
+    const parsed = (() => {
+        try {
+            return verifyUserEmailSchema.parse({ userId });
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
 
     await prisma.user.update({
-        where: { id: userId },
+        where: { id: parsed.userId },
         data: { emailVerified: true },
     });
 
-    await logger.info(`Admin ${session.user.email} verified email for user ${userId}`, 'SYSTEM', {
+    await logger.info(
+        `Admin ${session.user.email} verified email for user ${parsed.userId}`,
+        'SYSTEM',
+        {
         userId: session.user.id,
-        details: { targetUserId: userId },
-    });
+        details: { targetUserId: parsed.userId },
+        },
+    );
 
     return { success: true };
 }
 
 export async function toggleBanUser(userId: string, ban: boolean, reason?: string) {
     const session = await requireAdmin();
+    const parsed = (() => {
+        try {
+            return toggleBanUserSchema.parse({ userId, ban, reason });
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
 
     await prisma.user.update({
-        where: { id: userId },
+        where: { id: parsed.userId },
         data: {
-            banned: ban,
-            banReason: ban ? reason || 'Banned by admin' : null,
+            banned: parsed.ban,
+            banReason: parsed.ban ? parsed.reason || 'Banned by admin' : null,
         },
     });
 
     await logger.info(
-        `Admin ${session.user.email} ${ban ? 'banned' : 'unbanned'} user ${userId}`,
+        `Admin ${session.user.email} ${parsed.ban ? 'banned' : 'unbanned'} user ${parsed.userId}`,
         'SYSTEM',
         {
             userId: session.user.id,
-            details: { targetUserId: userId, ban, reason },
+            details: { targetUserId: parsed.userId, ban: parsed.ban, reason: parsed.reason },
         },
     );
 
@@ -98,10 +128,17 @@ export async function toggleBanUser(userId: string, ban: boolean, reason?: strin
 
 export async function getPterodactylUserInfo(ptUserId: number) {
     await requireAdmin();
+    const parsed = (() => {
+        try {
+            return pterodactylUserInfoSchema.parse({ ptUserId });
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
 
     try {
         const client = createPtClient();
-        const ptUser = await client.getUser(ptUserId.toString());
+        const ptUser = await client.getUser(parsed.ptUserId.toString());
 
         return {
             success: true,

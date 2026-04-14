@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
+import { hardwareConfiguratorQuerySchema } from '@/lib/validation/order';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import InfoButton from '@/components/InfoButton';
@@ -37,6 +38,20 @@ function clampToNearest(value: number, stops: number[]): number {
     return stops.reduce((best, v) => (Math.abs(v - value) < Math.abs(best - value) ? v : best));
 }
 
+function parseHardwareQuery(searchParams: URLSearchParams) {
+    return hardwareConfiguratorQuerySchema.safeParse({
+        pf: searchParams.get('pf') ? Number(searchParams.get('pf')) : undefined,
+        cpu: searchParams.get('cpu') ? Number(searchParams.get('cpu')) : undefined,
+        ram: searchParams.get('ram') ? Number(searchParams.get('ram')) : undefined,
+        days: searchParams.get('days') ? Number(searchParams.get('days')) : undefined,
+        disk: searchParams.get('disk') ? Number(searchParams.get('disk')) : undefined,
+        backups: searchParams.get('backups') ? Number(searchParams.get('backups')) : undefined,
+        allocations: searchParams.get('allocations')
+            ? Number(searchParams.get('allocations'))
+            : undefined,
+    });
+}
+
 // ── Types ────────────────────────────────────────────────────────────────
 interface HardwareConfiguratorProps {
     performanceOptions: PerformanceGroup[];
@@ -60,20 +75,18 @@ export default function HardwareConfigurator({
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const parsedQuery = parseHardwareQuery(searchParams);
 
     // ── Initial state from URL params ────────────────────────────────────
-    const initialPfId = searchParams.get('pf')
-        ? Number(searchParams.get('pf'))
+    const initialPfId = parsedQuery.success
+        ? parsedQuery.data.pf
         : (performanceOptions[0]?.id ?? null);
-
-    const initialCpu = searchParams.get('cpu') ? Number(searchParams.get('cpu')) : 4;
-    const initialRam = searchParams.get('ram') ? Number(searchParams.get('ram')) : 4;
-    const initialDays = searchParams.get('days') ? Number(searchParams.get('days')) : 30;
-    const initialDisk = searchParams.get('disk') ? Number(searchParams.get('disk')) : 20;
-    const initialBackups = searchParams.get('backups') ? Number(searchParams.get('backups')) : 4;
-    const initialAllocations = searchParams.get('allocations')
-        ? Number(searchParams.get('allocations'))
-        : 2;
+    const initialCpu = parsedQuery.success ? parsedQuery.data.cpu : 4;
+    const initialRam = parsedQuery.success ? parsedQuery.data.ram : 4;
+    const initialDays = parsedQuery.success ? parsedQuery.data.days : 30;
+    const initialDisk = parsedQuery.success ? (parsedQuery.data.disk ?? 20) : 20;
+    const initialBackups = parsedQuery.success ? (parsedQuery.data.backups ?? 4) : 4;
+    const initialAllocations = parsedQuery.success ? (parsedQuery.data.allocations ?? 2) : 2;
 
     // ── State ────────────────────────────────────────────────────────────
     const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(
@@ -363,26 +376,20 @@ function SliderSection({
 
 // ── Utility: parse hardware config from URL search params ────────────────
 export function hardwareConfigFromParams(searchParams: URLSearchParams): HardwareConfig | null {
-    const pf = searchParams.get('pf');
-    const cpu = searchParams.get('cpu');
-    const ram = searchParams.get('ram');
-    const days = searchParams.get('days');
-    const disk = searchParams.get('disk');
-    const backupsParam = searchParams.get('backups');
-    const allocationsParam = searchParams.get('allocations');
+    const parsed = parseHardwareQuery(searchParams);
+    if (!parsed.success) return null;
 
-    if (!pf || !cpu || !ram || !days) return null;
-
-    const cpuPercent = Number(cpu) * 100;
-    const ramMb = Number(ram) * 1024;
+    const { pf, cpu, ram, days, disk, backups, allocations } = parsed.data;
+    const cpuPercent = cpu * 100;
+    const ramMb = ram * 1024;
 
     return {
-        pfGroupId: Number(pf),
+        pfGroupId: pf,
         cpuPercent,
         ramMb,
-        diskMb: disk ? Number(disk) * 1024 : calcDiskSize(cpuPercent, ramMb),
-        backupCount: backupsParam ? Number(backupsParam) : calcBackups(cpuPercent, ramMb),
-        allocations: allocationsParam ? Number(allocationsParam) : 2,
-        durationsDays: Number(days),
+        diskMb: disk ? disk * 1024 : calcDiskSize(cpuPercent, ramMb),
+        backupCount: backups ?? calcBackups(cpuPercent, ramMb),
+        allocations: allocations ?? 2,
+        durationsDays: days,
     };
 }

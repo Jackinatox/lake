@@ -13,15 +13,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import { notifyReinstallStarted } from '../serverEvents';
+import { reinstallServer } from './serverSettingsActions';
 
 interface ReinstallDialogProps {
-    apiKey: string;
     server_id: string;
 }
 
-const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
+const ReinstallDialog = ({ server_id }: ReinstallDialogProps) => {
     const t = useTranslations('gameserverSettings');
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -36,16 +35,19 @@ const ReinstallDialog = ({ apiKey, server_id }: ReinstallDialogProps) => {
 
     const handleReinstall = async () => {
         setIsLoading(true);
-        notifyReinstallStarted(server_id);
-        const response = await ReinstallPTServerClient(server_id, apiKey, deleteAllFiles);
-
-        if (!response.ok) {
-            console.error('Failed to reinstall server:', response.statusText);
+        try {
+            const success = await reinstallServer(server_id, deleteAllFiles);
+            if (success) {
+                notifyReinstallStarted(server_id);
+            } else {
+                console.error('Failed to reinstall server:', server_id);
+            }
+        } catch (error) {
+            console.error('Failed to reinstall server:', error);
         }
-
-        setIsLoading(false);
         setOpen(false);
         setDeleteAllFiles(false);
+        setIsLoading(false);
     };
 
     return (

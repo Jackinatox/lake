@@ -50,6 +50,8 @@ import {
 import type { ApikeyModel } from '@/app/client/generated/models/Apikey';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { createApiKeySchema } from '@/lib/validation/adminContent';
+import { getValidationMessage } from '@/lib/validation/common';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -69,6 +71,7 @@ const RATE_LIMIT_WINDOWS = [
     { label: '5min', ms: 300_000 },
     { label: '15min', ms: 900_000 },
     { label: '1h', ms: 3_600_000 },
+    { label: '1d', ms: 86_400_000 },
 ] as const;
 
 function formatRateLimit(max: number, windowMs: number): string {
@@ -142,20 +145,31 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
 
     function handleCreate() {
         if (!name.trim() || selected.size === 0) return;
+        const parsed = createApiKeySchema.safeParse({
+            name,
+            permissions: Array.from(selected) as ApiKeyPermission[],
+            rateLimitMax: Number(rateLimitMax),
+            rateLimitTimeWindow: Number(rateLimitWindow),
+        });
+
+        if (!parsed.success) {
+            toast({
+                title: 'Error',
+                description: getValidationMessage(parsed.error),
+                variant: 'destructive',
+            });
+            return;
+        }
+
         startTransition(async () => {
             try {
-                const result = await createApiKeyAction({
-                    name: name.trim(),
-                    permissions: Array.from(selected) as ApiKeyPermission[],
-                    rateLimitMax: Math.max(1, parseInt(rateLimitMax, 10) || 10),
-                    rateLimitTimeWindow: parseInt(rateLimitWindow, 10),
-                });
+                const result = await createApiKeyAction(parsed.data);
                 setNewKey(result.key);
-                toast({ title: 'API key created', description: `"${name.trim()}" is ready.` });
-            } catch (err) {
+                toast({ title: 'API key created', description: `"${parsed.data.name}" is ready.` });
+            } catch (error) {
                 toast({
                     title: 'Error',
-                    description: err instanceof Error ? err.message : 'Unknown error',
+                    description: getValidationMessage(error) || 'Unknown error',
                     variant: 'destructive',
                 });
             }
@@ -211,13 +225,14 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                             <div className="space-y-5 py-2">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="key-name">Name</Label>
-                                    <Input
-                                        id="key-name"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        placeholder="e.g. Grafana Exporter"
-                                        disabled={isPending}
-                                    />
+                                        <Input
+                                            id="key-name"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            placeholder="e.g. Grafana Exporter"
+                                            disabled={isPending}
+                                            maxLength={80}
+                                        />
                                 </div>
 
                                 <div className="space-y-2">
@@ -248,6 +263,7 @@ function CreateDialog({ onCreated }: { onCreated: () => void }) {
                                         <Input
                                             type="number"
                                             min={1}
+                                            max={100000}
                                             value={rateLimitMax}
                                             onChange={(e) => setRateLimitMax(e.target.value)}
                                             disabled={isPending}

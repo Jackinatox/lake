@@ -1,8 +1,12 @@
 'use server';
 
 import { auth } from '@/auth';
+import {
+    blogPostCreateSchema,
+    blogPostUpdateSchema,
+} from '@/lib/validation/adminContent';
+import { getValidationMessage, nonEmptyIdSchema, parseDateInput } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
-import { ChangelogEntryType } from '@/app/client/generated/enums';
 import { headers } from 'next/headers';
 
 async function requireAdmin() {
@@ -36,31 +40,36 @@ export async function createBlogPost(data: {
     };
 }) {
     await requireAdmin();
-    const slug = data.slug?.trim() || slugify(data.title);
-    const publishedAt = data.publishedAt ? new Date(data.publishedAt) : new Date();
+    const parsed = (() => {
+        try {
+            return blogPostCreateSchema.parse(data);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
+    const slug = parsed.slug?.trim() || slugify(parsed.title);
+    const publishedAt = parseDateInput(parsed.publishedAt) ?? new Date();
 
     const post = await prisma.blogPost.create({
         data: {
-            title: data.title,
+            title: parsed.title,
             slug,
-            content: data.content,
-            category: data.category,
-            published: data.published,
-            listed: data.listed,
+            content: parsed.content,
+            category: parsed.category,
+            published: parsed.published,
+            listed: parsed.listed,
             publishedAt,
         },
     });
 
-    if (data.changelog) {
+    if (parsed.changelog) {
         await prisma.changelogEntry.create({
             data: {
-                title: data.title,
-                text: data.changelog.text,
-                type: data.changelog.type as ChangelogEntryType,
-                published: data.changelog.published,
-                publishedAt: data.changelog.publishedAt
-                    ? new Date(data.changelog.publishedAt)
-                    : publishedAt,
+                title: parsed.title,
+                text: parsed.changelog.text,
+                type: parsed.changelog.type,
+                published: parsed.changelog.published,
+                publishedAt: parseDateInput(parsed.changelog.publishedAt) ?? publishedAt,
                 blogPostId: post.id,
             },
         });
@@ -82,20 +91,25 @@ export async function updateBlogPost(
     },
 ) {
     await requireAdmin();
+    const parsed = (() => {
+        try {
+            return blogPostUpdateSchema.parse(data);
+        } catch (error) {
+            throw new Error(getValidationMessage(error));
+        }
+    })();
     await prisma.blogPost.update({
-        where: { id },
+        where: { id: nonEmptyIdSchema.parse(id) },
         data: {
-            title: data.title,
-            slug: data.slug,
-            content: data.content,
-            category: data.category,
-            published: data.published,
-            listed: data.listed,
+            title: parsed.title,
+            slug: parsed.slug,
+            content: parsed.content,
+            category: parsed.category,
+            published: parsed.published,
+            listed: parsed.listed,
             publishedAt:
-                data.publishedAt !== undefined
-                    ? data.publishedAt
-                        ? new Date(data.publishedAt)
-                        : new Date()
+                parsed.publishedAt !== undefined
+                    ? parseDateInput(parsed.publishedAt) ?? new Date()
                     : undefined,
         },
     });
@@ -104,7 +118,7 @@ export async function updateBlogPost(
 
 export async function deleteBlogPost(id: string) {
     await requireAdmin();
-    await prisma.blogPost.delete({ where: { id } });
+    await prisma.blogPost.delete({ where: { id: nonEmptyIdSchema.parse(id) } });
     return { success: true };
 }
 
@@ -129,7 +143,7 @@ export async function listBlogPostsAdmin() {
 
 export async function getBlogPostForEdit(id: string) {
     await requireAdmin();
-    return prisma.blogPost.findUniqueOrThrow({ where: { id } });
+    return prisma.blogPost.findUniqueOrThrow({ where: { id: nonEmptyIdSchema.parse(id) } });
 }
 
 // ── Public queries ───────────────────────────────────────────
