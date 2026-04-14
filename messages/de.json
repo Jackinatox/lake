@@ -674,8 +674,7 @@
       "payments": "Zahlungen"
     },
     "account": {
-      "dangerZone": "Gefahrenzone",
-      "dangerZoneSecurityHint": "Sitzungsverwaltung und Kontolöschung sind im Tab Sicherheit verfügbar.",
+      "dangerZoneSecurityHint": "Sitzungsverwaltung und Zwei-Faktor-Authentifizierung sind im Tab Sicherheit verfügbar.",
       "goToSecurity": "Zur Sicherheit",
       "loginMethods": "Aktive Anmeldemethoden",
       "signOutAllSessions": "Alle anderen Sitzungen beenden",

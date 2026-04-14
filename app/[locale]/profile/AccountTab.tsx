@@ -175,18 +175,17 @@ export default function AccountTab() {
 
             {/* Danger Zone */}
             <Card className="border-destructive/30">
-                <CardContent className="p-6">
-                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                <CardContent className="p-2 md:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-start gap-3">
                             <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium">{t('account.dangerZone')}</p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
+                                <p className="text-sm font-medium">
                                     {t('account.dangerZoneSecurityHint')}
                                 </p>
                             </div>
                         </div>
-                        <Button asChild variant="destructive" size="sm" className="shrink-0">
+                        <Button asChild variant="destructive" size="sm" className="w-full sm:w-auto shrink-0">
                             <Link href="?tab=security">{t('account.goToSecurity')}</Link>
                         </Button>
                     </div>

@@ -674,8 +674,7 @@
       "payments": "Payments"
     },
     "account": {
-      "dangerZone": "Danger Zone",
-      "dangerZoneSecurityHint": "Session management and account deletion are available in the Security tab.",
+      "dangerZoneSecurityHint": "Session management and two-factor authentication are available in the Security tab.",
       "goToSecurity": "Go to Security",
       "loginMethods": "Active login methods",
       "signOutAllSessions": "Sign out of all sessions",
