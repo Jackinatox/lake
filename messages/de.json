@@ -1,7 +1,7 @@
 {
   "NotLoggedIn": {
     "title": "Du bist nicht eingeloggt",
-    "description": "Bitte melde dich an, um auf dein Konto zuzugreifen und personalisierte Inhalte zu sehen.",
+    "description": "Bitte melde Dich an, um auf Dein Konto zuzugreifen und personalisierte Inhalte zu sehen.",
     "login": "Anmelden"
   },
   "NotAllowed": {
@@ -11,7 +11,7 @@
   },
   "ServerDeleted": {
     "title": "Server gelöscht",
-    "description": "Dieser Server wurde dauerhaft gelöscht. Falls du glaubst, dass dies ein Fehler war oder Zugriff auf ein Backup benötigst, wende dich bitte an unser Support-Team. Möglicherweise haben wir noch ein Backup, das wir für dich wiederherstellen können.",
+    "description": "Dieser Server wurde dauerhaft gelöscht. Falls Du glaubst, dass dies ein Fehler war oder Zugriff auf ein Backup benötigst, wende Dich bitte an den Support. Möglicherweise haben wir noch ein Backup, das wir für Dich wiederherstellen können.",
     "contactSupport": "Support kontaktieren",
     "home": "Zur Startseite"
   },
@@ -19,30 +19,30 @@
     "deleteFreeServer": {
       "button": "Server löschen",
       "title": "Server löschen?",
-      "description": "Dies löscht Ihren kostenlosen Server dauerhaft. Diese Aktion ist unwiderruflich.",
+      "description": "Dies löscht Deinen kostenlosen Server dauerhaft. Diese Aktion ist unwiderruflich.",
       "checkbox": "Ich verstehe, dass diese Aktion unwiderruflich ist",
       "cancel": "Abbrechen",
       "delete": "Server löschen",
       "deleting": "Lösche...",
       "success": {
         "title": "Server gelöscht",
-        "description": "Ihr Server wurde gelöscht. Bei Bedarf kontaktieren Sie bitte den Support."
+        "description": "Dein Server wurde gelöscht. Bei Bedarf kontaktiere bitte den Support."
       },
       "error": {
         "title": "Löschen fehlgeschlagen",
-        "description": "Der Server konnte nicht gelöscht werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+        "description": "Der Server konnte nicht gelöscht werden. Bitte versuche es erneut oder kontaktiere den Support."
       }
     },
     "management": {
       "title": "Server-Verwaltung",
-      "description": "Diese Aktionen können die Funktionalität deines Servers beeinflussen. Bitte vorsichtig verwenden.",
+      "description": "Diese Aktionen können die Funktionalität Deines Servers beeinflussen. Bitte vorsichtig verwenden.",
       "reinstall": {
         "title": "Server neu installieren",
-        "description": "Installiere die Server-Software neu. Alle Daten bleiben erhalten, es sei denn, du wählst, alle Dateien zu löschen.",
+        "description": "Installiere die Server-Software neu. Alle Daten bleiben erhalten, es sei denn, Du wählst, alle Dateien zu löschen.",
         "button": "Neu installieren",
         "reinstalling": "Installiere neu...",
         "confirmTitle": "Server neu installieren?",
-        "confirmDescription": "Bist du sicher, dass du den Server neu installieren möchtest? Dadurch wird die Server-Software neu installiert. Alle Daten bleiben erhalten, es sei denn, du wählst, alle Dateien zu löschen.",
+        "confirmDescription": "Bist Du sicher, dass Du den Server neu installieren möchtest? Dadurch wird die Server-Software neu installiert. Alle Daten bleiben erhalten, es sei denn, Du wählst, alle Dateien zu löschen.",
         "deleteFilesLabel": "Alle Dateien vor der Neuinstallation löschen"
       },
       "changeGame": {
@@ -59,13 +59,13 @@
   },
   "ServerExpired": {
     "title": "Server abgelaufen",
-    "description": "Dein Server-Abonnement ist abgelaufen. Um deinen Server weiter zu nutzen, verlängere bitte dein Abonnement. Alle deine Daten sind noch sicher und werden verfügbar sein, sobald du verlängerst.",
+    "description": "Dein Server-Abonnement ist abgelaufen. Um Deinen Server weiter zu nutzen, verlängere bitte Dein Abonnement. Alle Deine Daten sind noch sicher und werden verfügbar sein, sobald Du verlängerst.",
     "extendServer": "Server verlängern",
     "home": "Zur Startseite"
   },
   "ServerCreationFailed": {
     "title": "Servererstellung fehlgeschlagen",
-    "description": "Es tut uns leid — die Erstellung deines Servers ist fehlgeschlagen. Unser Team wurde benachrichtigt und kümmert sich so schnell wie möglich darum. Wenn du sofort Hilfe möchtest, wende dich bitte an den Support.",
+    "description": "Es tut uns leid — die Erstellung Deines Servers ist fehlgeschlagen. Unser Team wurde benachrichtigt und kümmert sich so schnell wie möglich darum. Wenn Du sofort Hilfe möchtest, wende Dich bitte an den Support.",
     "contactSupport": "Support kontaktieren",
     "home": "Startseite"
   },
@@ -74,20 +74,30 @@
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",
     "heroSubtitle": "Starte deinen Gameserver in Sekunden — zuverlässige Hardware und ein übersichtliches Control Panel.",
-    "highlightUptime": "99% Verfügbarkeit",
-    "highlightSetup": "Server bereit in unter 60 Sekunden",
+    "statUptime": "99,0%",
+    "statUptimeLabel": "Verfügbarkeit",
+    "statSupport": "Hilfsbereit",
+    "statSupportLabel": "Support",
+    "statSetup": "<60s",
+    "statSetupLabel": "Einrichtung",
+    "boxLabel1": "Einfach",
+    "boxDesc1": "Schnell online",
+    "boxLabel2": "Sicher",
+    "boxDesc2": "Geschützte Infrastruktur",
+    "boxLabel3": "Zuverlässig",
+    "boxDesc3": "Hohe Verfügbarkeit",
     "buttonStartNow": "Jetzt starten",
     "buttonComparePlans": "Hardware vergleichen",
     "supportedGames": "Unterstützte Spiele",
     "showAllGames": "Alle Spiele anzeigen",
     "toolsHeader": "Unsere Tools",
     "panelTitle": "Control Panel",
-    "panelDesc": "Verwalte deinen Server mit klaren Bedienelementen — starten, stoppen, neu starten und Performance prüfen, ganz ohne Aufwand.",
+    "panelDesc": "Verwalte Deinen Server mit klaren Bedienelementen — starten, stoppen, neu starten und Performance prüfen, ganz ohne Aufwand.",
     "panelFeature1": "Ein-Klick-Bereitstellung",
     "panelFeature2": "Echtzeit-Performance",
     "panelFeature3": "Server Konsole",
     "fileManagerTitle": "Dateien direkt im Browser",
-    "fileManagerDesc": "Öffne, bearbeite und lade Dateien direkt im Browser hoch oder runter. Alternativ per FTP verbinden.",
+    "fileManagerDesc": "Öffne, bearbeite und lade Dateien direkt im Browser hoch oder herunter. Alternativ per FTP verbinden.",
     "fileManagerFeature1": "Dateien im Browser bearbeiten",
     "fileManagerFeature2": "Hochladen & herunterladen",
     "fileManagerFeature3": "Erweiterte Aktionen per FTP",
@@ -97,7 +107,7 @@
     "backupFeature2": "Ein-Klick-Wiederherstellung",
     "backupFeature3": "Backups herunterladen",
     "ctaHeader": "Bereit zum Hosten?",
-    "ctaDesc": "Wähle ein Spiel und bring deinen Server in wenigen Minuten online.",
+    "ctaDesc": "Wähle ein Spiel und bringe Deinen Server in wenigen Minuten online.",
     "ctaButton": "Loslegen",
     "getFreeServer": "Kostenlosen Server erstellen"
   },
@@ -107,7 +117,7 @@
     "pageTitle": "Kostenloser Server",
     "featuresTitle": "Free-Tier Funktionen",
     "featuresDescription": "Begrenzte Hardware, unbegrenzter Spaß!",
-    "chooseGame": "Wähle dein Spiel",
+    "chooseGame": "Wähle Dein Spiel",
     "cpuLabel": "{cores} {cores, plural, =1 {Kern} other {Kerne}}",
     "cpuDescription": "Genug für kleine Server",
     "ramLabel": "{amount} GiB RAM",
@@ -142,17 +152,17 @@
     "ram": "Erklärung des RAM"
   },
   "getHelp": {
-    "title1": "Wir haben noch kein FAQ, aber du kannst ",
+    "title1": "Wir haben noch kein FAQ, aber Du kannst",
     "title2": "uns kontaktieren",
     "title3": "für Hilfe",
     "contactUsTitle": "Schreibe Uns",
-    "contactIntro": "Wähle die passende Kategorie, damit wir dein Anliegen direkt richtig zuordnen können.",
+    "contactIntro": "Wähle die passende Kategorie, damit wir Dein Anliegen direkt richtig zuordnen können.",
     "writeDirectly": "Schreib uns direkt",
-    "answerToEmail": "Wir werden dir trotzdem per Email antworten, ist einfach :)",
+    "answerToEmail": "Wir werden Dir trotzdem per E-Mail antworten, ist einfach :)",
     "yourProblem": "Dein Problem",
     "submit": "Senden",
     "submitting": "Senden...",
-    "describeProblemPlaceholder": "Beschreibe dein Problem...",
+    "describeProblemPlaceholder": "Beschreibe Dein Problem...",
     "yourProblemTitle": "Dein Problem",
     "writeEmail": "Schreib uns eine Email",
     "writeEmailTo": "Schreibe eine Email an",
@@ -161,8 +171,8 @@
     "ticketCreatedDescription": "Danke! Wir melden uns per E-Mail so schnell wie möglich.",
     "ticketCreationFailed": "Support-Ticket konnte nicht erstellt werden",
     "ticketCreationFailedDescription": "Bitte versuche es erneut oder schreibe uns direkt eine E-Mail.",
-    "loginRequiredTitle": "<strong>Melde dich an</strong>, um den Support zu kontaktieren",
-    "loginRequiredDescription": "Bitte logge dich ein, damit wir dein Ticket deinem Konto zuordnen und per E-Mail antworten können.",
+    "loginRequiredTitle": "<strong>Melde Dich an</strong>, um den Support zu kontaktieren.",
+    "loginRequiredDescription": "Bitte logge Dich ein, damit wir Dein Ticket Deinem Konto zuordnen und per E-Mail antworten können.",
     "messageRequired": "Schreibe kurz, wobei wir helfen sollen.",
     "messageTooLong": "Deine Nachricht ist etwas lang. Kürze sie bitte und versuche es erneut.",
     "messageLabel": "Erzähl uns die Details",
@@ -170,7 +180,7 @@
     "messageLength": "{current}/{max} Zeichen",
     "categoryLabel": "Kategorie",
     "categoryPlaceholder": "Kategorie auswählen",
-    "categoryHelper": "So landet dein Ticket direkt beim richtigen Team.",
+    "categoryHelper": "So landet Dein Ticket direkt beim richtigen Team.",
     "subjectLabel": "Betreff",
     "subjectPlaceholder": "Kurze Zusammenfassung (optional)",
     "categories": {
@@ -184,7 +194,7 @@
     "copyEmailError": "E-Mail konnte nicht kopiert werden",
     "openMail": "E-Mail-App öffnen"
   },
-  "notAdmin": "Du bist kein Admin",
+  "notAdmin": "Du bist kein Admin.",
   "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen.",
   "status": {
     "PROVISIONING": {
@@ -193,11 +203,11 @@
     },
     "CREATION_FAILED": {
       "title": "Servererstellung fehlgeschlagen",
-      "message": "Wir konnten deinen Server nicht erstellen. Bitte kontaktiere den Support oder versuche es erneut."
+      "message": "Wir konnten Deinen Server nicht erstellen. Bitte kontaktiere den Support oder versuche es erneut."
     },
     "ACTIVE": {
       "title": "Server ist bereit",
-      "message": "Dein Server läuft. Du kannst jetzt verbinden."
+      "message": "Dein Server läuft. Du kannst Dich jetzt verbinden."
     },
     "DOES_NOT_EXIST": {
       "title": "Server nicht gefunden",
@@ -209,7 +219,7 @@
     },
     "PAYMENT_PROCESSING": {
       "title": "Zahlung wird verarbeitet",
-      "message": "Wir verarbeiten gerade deine Zahlung. Das dauert nur einen Augenblick."
+      "message": "Wir verarbeiten gerade Deine Zahlung. Das dauert nur einen Augenblick."
     },
     "EXPIRED": {
       "title": "Server abgelaufen",
@@ -225,11 +235,11 @@
       "poller": {
         "unknownError": "Unbekannter Fehler",
         "waitingForPayment": "Warten auf Zahlung",
-        "paymentProcessing": "Bitte warten, während wir deine Zahlung bestätigen...",
+        "paymentProcessing": "Bitte warten, während wir Deine Zahlung bestätigen...",
         "networkHeadline": "Verbindungsproblem",
-        "networkSubheadline": "Wir konnten unseren Zahlungsdienst nicht erreichen. Versuch es gleich noch einmal.",
+        "networkSubheadline": "Wir konnten unseren Zahlungsdienst nicht erreichen. Versuche es gleich noch einmal.",
         "paymentFailedTitle": "Zahlung fehlgeschlagen",
-        "paymentFailedSubtitle": "Es gab ein Problem mit deiner Zahlung",
+        "paymentFailedSubtitle": "Es gab ein Problem mit Deiner Zahlung",
         "retry": "Erneut versuchen",
         "contactSupport": "Support kontaktieren",
         "returnHome": "Zur Startseite",
@@ -243,11 +253,11 @@
   "upgrade": {
     "info": {
       "title": "Upgrade Informationen",
-      "description": "Hier kannst du deinen Server nur verlängern oder upgraden. Downgrades sind noch nicht möglich."
+      "description": "Hier kannst Du Deinen Server nur verlängern oder upgraden. Downgrades sind noch nicht möglich."
     },
     "config": {
       "title": "Performance-Konfiguration",
-      "description": "Passe die Hardware deines Servers an.",
+      "description": "Passe die Hardware Deines Servers an.",
       "performance-tier": "Performance-Stufe",
       "extend-title": "Server verlängern",
       "duration": {
@@ -268,7 +278,7 @@
     },
     "pricing": {
       "title": "Preisübersicht",
-      "description": "Zusammenfassung deiner Konfiguration.",
+      "description": "Zusammenfassung Deiner Konfiguration.",
       "headers": {
         "vcpu": "vCPU",
         "ram": "RAM"
@@ -301,7 +311,7 @@
       }
     },
     "header": {
-      "title": "Konfiguriere deinen Server",
+      "title": "Konfiguriere Deinen Server",
       "step": "Schritt {current} von {total}"
     },
     "loading": {
@@ -312,15 +322,15 @@
       "continue": "Weiter"
     },
     "auth": {
-      "loginRequiredGameConfig": "Du musst eingeloggt sein, um spiel-spezifische Einstellungen zu konfigurieren"
+      "loginRequiredGameConfig": "Du musst eingeloggt sein, um spielspezifische Einstellungen zu konfigurieren."
     },
     "payment": {
-      "title": "Schließe deine Zahlung ab",
-      "footerHint": "Schließe die Zahlung oben ab, um deinen Server zu erstellen"
+      "title": "Schließe Deine Zahlung ab",
+      "footerHint": "Schließe die Zahlung oben ab, um Deinen Server zu erstellen."
     },
     "hardware": {
       "title": "Performance-Konfiguration",
-      "description": "Wähle deine Hardware und wie lange du sie brauchst — Einmalkauf, kein Abo.",
+      "description": "Wähle Deine Hardware und wie lange Du sie brauchst — Einmalkauf, kein Abo.",
       "performanceTier": "Performance-Stufe",
       "billingPeriod": "Laufzeit",
       "durations": {
@@ -337,7 +347,7 @@
         "discount": "Rabatt (-{percent}%)",
         "surcharge": "Kurzzeitaufschlag (+{percent}%)",
         "total": "Gesamt",
-        "minOrderHint": "Mindestbestellwert ist 1,00 €"
+        "minOrderHint": "Der Mindestbestellwert beträgt 1,00 €."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -354,21 +364,21 @@
         "continue": "Weiter"
       },
       "recommendation": {
-        "note": "Die farbigen Markierungen auf den Schiebereglern zeigen Hardware-Empfehlungen für dieses Spiel. Du kannst buchen was du willst, das ist nur ein Hinweis",
+        "note": "Die farbigen Markierungen auf den Schiebereglern zeigen Hardware-Empfehlungen für dieses Spiel an.",
         "min": "Minimum",
         "recommended": "Empfohlen"
       }
     },
     "gameConfig": {
       "title": "{game}-Konfiguration",
-      "description": "Wähle deine bevorzugten Spieleinstellungen",
+      "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
     }
   },
   "extendServer": {
     "config": {
       "title": "Performance-Konfiguration",
-      "description": "Passe die Hardware deines Servers an.",
+      "description": "Passe die Hardware Deines Servers an.",
       "performance-tier": "Performance-Stufe",
       "extend-title": "Upgraden für",
       "duration": {
@@ -389,7 +399,7 @@
     },
     "pricing": {
       "title": "Preisübersicht",
-      "description": "Zusammenfassung deiner Konfiguration.",
+      "description": "Zusammenfassung Deiner Konfiguration.",
       "headers": {
         "vcpu": "vCPU",
         "ram": "RAM"
@@ -408,7 +418,7 @@
   },
   "RegisterLogin": {
     "title": "Willkommen",
-    "subtitle": "Registriere dich mit deinem Discord- oder Google-Konto",
+    "subtitle": "Registriere Dich mit Deinem Discord- oder Google-Konto.",
     "oauth": {
       "discord": "Mit Discord registrieren",
       "google": "Mit Google registrieren"
@@ -419,7 +429,7 @@
     },
     "login": {
       "title": "Willkommen zurück",
-      "subtitle": "Melde dich mit deinem Discord- oder Google-Konto an",
+      "subtitle": "Melde Dich mit Deinem Discord- oder Google-Konto an.",
       "oauthDiscord": "Mit Discord anmelden",
       "oauthGoogle": "Mit Google anmelden",
       "orContinueWith": "Oder weiter mit",
@@ -459,13 +469,13 @@
     },
     "forgotPassword": {
       "title": "Passwort vergessen?",
-      "subtitle": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen.",
+      "subtitle": "Gib Deine E-Mail-Adresse ein und wir senden Dir einen Link zum Zurücksetzen.",
       "button": {
         "send": "Link zum Zurücksetzen senden",
         "sending": "Sende..."
       },
       "success": {
-        "request": "Wenn ein Konto für diese E-Mail existiert, haben wir dir gerade Anweisungen geschickt."
+        "request": "Wenn ein Konto für diese E-Mail existiert, haben wir Dir gerade Anweisungen geschickt."
       },
       "errors": {
         "requestFailed": "Wir konnten die Reset-E-Mail nicht senden. Bitte versuche es erneut."
@@ -473,43 +483,43 @@
     },
     "resetPassword": {
       "title": "Passwort zurücksetzen",
-      "subtitle": "Lege ein neues Passwort fest, um wieder Zugriff auf dein Konto zu erhalten.",
+      "subtitle": "Lege ein neues Passwort fest, um wieder Zugriff auf Dein Konto zu erhalten.",
       "button": {
         "reset": "Passwort zurücksetzen",
         "resetting": "Setze zurück..."
       },
       "success": {
-        "reset": "Dein Passwort wurde aktualisiert. Du kannst dich jetzt anmelden."
+        "reset": "Dein Passwort wurde aktualisiert. Du kannst Dich jetzt anmelden."
       },
       "errors": {
-        "tokenMissing": "Der Reset-Token fehlt. Bitte verwende den Link aus deiner E-Mail.",
+        "tokenMissing": "Der Reset-Token fehlt. Bitte verwende den Link aus Deiner E-Mail.",
         "tokenInvalid": "Dieser Reset-Link ist ungültig oder abgelaufen. Fordere einen neuen an.",
-        "resetFailed": "Wir konnten dein Passwort nicht zurücksetzen. Bitte versuche es erneut.",
-        "generic": "Beim Überprüfen deines Reset-Links ist ein Fehler aufgetreten."
+        "resetFailed": "Wir konnten Dein Passwort nicht zurücksetzen. Bitte versuche es erneut.",
+        "generic": "Beim Überprüfen Deines Reset-Links ist ein Fehler aufgetreten."
       },
       "backToLogin": "Zurück zur Anmeldung"
     },
     "verifyEmail": {
-      "title": "Bestätige deine E-Mail",
+      "title": "Bestätige Deine E-Mail",
       "titleVerified": "E-Mail bestätigt",
       "subtitle": "Wir haben einen Bestätigungslink an <strong>{email}</strong> geschickt.",
-      "subtitleFallback": "Wir haben dir gerade einen Bestätigungslink geschickt.",
-      "description": "Öffne die E-Mail und klicke auf den Link, um dein Konto freizuschalten.",
+      "subtitleFallback": "Wir haben Dir gerade einen Bestätigungslink geschickt.",
+      "description": "Öffne die E-Mail und klicke auf den Link, um Dein Konto freizuschalten.",
       "resend": {
         "button": "E-Mail erneut senden",
         "sending": "Sende..."
       },
       "status": {
-        "sent": "Verifizierungs-E-Mail wurde erneut gesendet. Bitte prüfe dein Postfach.",
+        "sent": "Verifizierungs-E-Mail wurde erneut gesendet. Bitte prüfe Dein Postfach.",
         "error": "Die E-Mail konnte nicht gesendet werden. Versuche es bitte erneut.",
         "missingEmail": "Wir benötigen eine E-Mail-Adresse, um den Link erneut zu senden.",
         "alreadyVerified": "Deine E-Mail <strong>{email}</strong> ist bereits bestätigt.",
         "verifiedInfo": "Alles erledigt! Zurück zur Übersicht und weiter geht's."
       },
       "tips": {
-        "checkSpam": "Schau auch im Spam- oder Junk-Ordner nach, falls du nichts findest.",
-        "contact": "Immer noch nichts? Wende dich an den Support, wir helfen dir weiter.",
-        "typo": "Vertippt bei der Anmeldung? Registriere dich mit der richtigen Adresse erneut."
+        "checkSpam": "Schau auch im Spam- oder Junk-Ordner nach, falls Du nichts findest.",
+        "contact": "Immer noch nichts? Wende Dich an den Support, wir helfen Dir weiter.",
+        "typo": "Vertippt bei der Anmeldung? Registriere Dich mit der richtigen Adresse erneut."
       },
       "cta": {
         "dashboard": "Zur Übersicht"
@@ -525,7 +535,7 @@
       "name": "Vollständiger Name",
       "namePlaceholder": "Dein Name",
       "username": "Benutzername",
-      "usernamePlaceholder": "dein_benutzername",
+      "usernamePlaceholder": "dein Benutzername",
       "email": "E-Mail",
       "emailPlaceholder": "mail@beispiel.de",
       "password": "Passwort",
@@ -535,7 +545,7 @@
       "confirmPassword": "Passwort bestätigen",
       "confirmPasswordPlaceholder": "Passwort bestätigen",
       "currentPassword": "Aktuelles Passwort",
-      "currentPasswordPlaceholder": "Gib dein aktuelles Passwort ein"
+      "currentPasswordPlaceholder": "Gib Dein aktuelles Passwort ein"
     },
     "validation": {
       "passwordMin": "Das Passwort muss mindestens {min} Zeichen lang sein",
@@ -557,10 +567,10 @@
       "registering": "Registriere...",
       "register": "Registrieren"
     },
-    "disclaimer": "Durch Klicken auf Weiter stimmst du unseren <terms>Nutzungsbedingungen</terms> und unserer <privacy>Datenschutzerklärung</privacy> zu.",
+    "disclaimer": "Durch Klicken auf Weiter stimmst Du unseren <terms>Nutzungsbedingungen</terms> und unserer <privacy>Datenschutzerklärung</privacy> zu.",
     "changePassword": {
       "title": "Passwort ändern",
-      "subtitle": "Gib dein aktuelles Passwort ein und wähle ein neues.",
+      "subtitle": "Gib Dein aktuelles Passwort ein und wähle ein neues.",
       "button": {
         "change": "Passwort ändern",
         "changing": "Ändere..."
@@ -569,12 +579,12 @@
         "changed": "Dein Passwort wurde erfolgreich geändert. Weiterleitung zum Profil..."
       },
       "errors": {
-        "changeFailed": "Wir konnten dein Passwort nicht ändern. Bitte versuche es erneut."
+        "changeFailed": "Wir konnten Dein Passwort nicht ändern. Bitte versuche es erneut."
       },
       "oauthNotAvailable": {
         "title": "Passwortänderung nicht verfügbar",
-        "subtitle": "Du bist mit einem OAuth-Anbieter angemeldet",
-        "description": "Da du soziales Login verwendest, wird dein Passwort von deinem OAuth-Anbieter verwaltet. Bitte verwalte dein Passwort über deine Google- oder Discord-Kontoeinstellungen.",
+        "subtitle": "Du bist mit einem OAuth-Anbieter angemeldet.",
+        "description": "Da Du soziales Login verwendest, wird Dein Passwort von Deinem OAuth-Anbieter verwaltet. Bitte verwalte Dein Passwort über Deine Google- oder Discord-Kontoeinstellungen.",
         "backButton": "Zurück zum Profil"
       }
     }
@@ -602,8 +612,8 @@
       "title": "Kostenlose Server"
     },
     "supportInfo": {
-      "text": "Fragen zu einer Zahlung, Gameserver oder Rückerstattung? Kontaktiere unser",
-      "link": "Support-Team"
+      "text": "Fragen zu einer Zahlung, Gameserver oder Rückerstattung? Kontaktiere unseren",
+      "link": "Support"
     },
     "serverExpired": "Server abgelaufen",
     "extendServer": "Server verlängern",
@@ -617,9 +627,9 @@
     "loggedInVia": "Angemeldet via",
     "changePassword": "Passwort ändern",
     "loadingPayments": "Zahlungshistorie wird geladen...",
-    "oauthPasswordChangeNotice1": "Da du über",
-    "oauthPasswordChangeNotice2": "angemeldet bist, kannst du dein Passwort nicht ändern.",
-    "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn du dich mit E-Mail angemeldet hast.",
+    "oauthPasswordChangeNotice1": "Da Du über",
+    "oauthPasswordChangeNotice2": "angemeldet bist, kannst Du Dein Passwort nicht ändern.",
+    "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn Du Dich mit E-Mail angemeldet hast.",
     "noReceipt": "Kein Beleg",
     "refund": {
       "requestRefund": "Rückerstattung anfordern",
@@ -630,7 +640,7 @@
       "usedDays": "Genutzte Zeit",
       "days": "Tage",
       "refundAmount": "Erstattungsbetrag",
-      "refundNote": "Die Rückerstattung wird innerhalb von 5-10 Werktagen auf deine ursprüngliche Zahlungsmethode überwiesen.",
+      "refundNote": "Die Rückerstattung wird innerhalb von 5-10 Werktagen auf Deine ursprüngliche Zahlungsmethode überwiesen.",
       "cancel": "Abbrechen",
       "confirm": "Rückerstattung bestätigen",
       "successTitle": "Rückerstattung eingeleitet",
@@ -655,7 +665,7 @@
       "usedDays": "Genutzte Zeit",
       "days": "Tage",
       "withdrawalAmount": "Widerrufsbetrag",
-      "withdrawalNote": "Dies ist ein gesetzlicher Widerruf gemäß §355 BGB. Der Vertrag wird beendet und dein Server wird pausiert. Die Erstattung wird innerhalb von 5-10 Werktagen auf deine ursprüngliche Zahlungsmethode überwiesen.",
+      "withdrawalNote": "Dies ist ein gesetzlicher Widerruf gemäß §355 BGB. Der Vertrag wird beendet und Dein Server wird pausiert. Die Erstattung wird innerhalb von 5-10 Werktagen auf Deine ursprüngliche Zahlungsmethode überwiesen.",
       "cancel": "Abbrechen",
       "confirm": "Widerruf bestätigen",
       "successTitle": "Widerruf eingeleitet",
@@ -762,7 +772,7 @@
       },
       "privacy": {
         "title": "Datenschutzerklärung",
-        "description": "Wie wir deine persönlichen Daten erheben, verwenden und schützen."
+        "description": "Wie wir Deine persönlichen Daten erheben, verwenden und schützen."
       },
       "imprint": {
         "title": "Impressum",
@@ -780,15 +790,15 @@
   },
   "changeGame": {
     "flavorChangeTitle": "Spiel-Variante ändern",
-    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Deine Weltdaten bleiben erhalten, außer du wählst alle Dateien zu löschen.",
+    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Deine Weltdaten bleiben erhalten, außer Du wählst alle Dateien zu löschen.",
     "flavorChangeCheckbox": "Alle Dateien löschen (Neuinstallation)",
     "gameChangeTitle": "Achtung: Alle Dateien werden gelöscht!",
-    "gameChangeDesc": "Der Wechsel zu einem anderen Spiel erfordert eine saubere Installation. Alle vorhandenen Dateien werden dauerhaft gelöscht. Stelle sicher, dass du wichtige Daten vorher gesichert hast!",
+    "gameChangeDesc": "Der Wechsel zu einem anderen Spiel erfordert eine saubere Installation. Alle vorhandenen Dateien werden dauerhaft gelöscht. Stelle sicher, dass Du wichtige Daten vorher gesichert hast!",
     "gameChangeCheckbox": "Alle Dateien löschen (erforderlich für Spielwechsel)",
     "filesKeptTitle": "Dateien bleiben erhalten",
     "filesKeptDesc": "Deine aktuellen Server-Dateien und Weltdaten werden bei der Neuinstallation behalten. Dies wird für Varianten-Wechsel innerhalb des gleichen Spiels empfohlen.",
     "filesDeletedTitle": "Alle Dateien werden gelöscht!",
-    "filesDeletedDesc": "Deine aktuellen Server-Dateien und Weltdaten werden vor der Neuinstallation dauerhaft gelöscht. Dies stellt eine saubere Installation sicher, aber du verlierst alle vorhandenen Daten."
+    "filesDeletedDesc": "Deine aktuellen Server-Dateien und Weltdaten werden vor der Neuinstallation dauerhaft gelöscht. Dies stellt eine saubere Installation sicher, aber Du verlierst alle vorhandenen Daten."
   },
   "legal": {
     "impressum": "Impressum",
@@ -828,7 +838,7 @@
     "errorLoading": "Ein Fehler ist beim Laden der Server-Daten aufgetreten",
     "installation": {
       "title": "Server-Installation läuft",
-      "description": "Dein Server <strong>{serverName}</strong> wird gerade installiert. Diese Seite wird automatisch aktualisiert und dich zum Dashboard weitergeleitet, sobald die Installation abgeschlossen ist.",
+      "description": "Dein Server <strong>{serverName}</strong> wird gerade installiert. Diese Seite wird automatisch aktualisiert und Dich zum Dashboard weitergeleitet, sobald die Installation abgeschlossen ist.",
       "step1": "Abhängigkeiten und Spieldateien werden installiert",
       "step2": "Server-Einstellungen werden konfiguriert",
       "step3": "Dies dauert normalerweise 1-3 Minuten"
@@ -852,7 +862,7 @@
     },
     "eula": {
       "title": "Minecraft® EULA akzeptieren",
-      "description": "Durch Klicken auf \"EULA akzeptieren\" bestätigst du, dass du der",
+      "description": "Durch Klicken auf \"EULA akzeptieren\" bestätigst Du, dass Du der",
       "eulaLink": "Minecraft® EULA zustimmst.",
       "cancel": "Abbrechen",
       "accept": "EULA akzeptieren"
@@ -865,7 +875,7 @@
     "features": {
       "hytaleOauth": {
         "title": "Authentifizierung erforderlich",
-        "description": "Du musst dich mit deinem Hytale-Konto authentifizieren, um Serverdateien herunterzuladen oder zu aktualisieren. Bitte melde dich an, um fortzufahren.",
+        "description": "Du musst Dich mit Deinem Hytale-Konto authentifizieren, um Serverdateien herunterzuladen oder zu aktualisieren. Bitte melde Dich an, um fortzufahren.",
         "cancel": "Abbrechen",
         "login": "Anmelden"
       }
@@ -929,15 +939,15 @@
         "username": "Benutzername",
         "password": "Passwort",
         "changePasswordButton": "FTP-Passwort ändern",
-        "description": "Verwende diese Zugangsdaten mit deinem bevorzugten FTP/SFTP-Client. Du kannst das Passwort jederzeit ändern.",
+        "description": "Verwende diese Zugangsdaten mit Deinem bevorzugten FTP/SFTP-Client. Du kannst das Passwort jederzeit ändern.",
         "copiedToast": "{label} kopiert",
         "copyFailedToast": "{label} konnte nicht kopiert werden",
         "copyFailedDescription": "Bitte kopiere es stattdessen manuell."
       },
       "ftpPassword": {
         "dialogTitle": "FTP-Passwort ändern",
-        "dialogDescriptionSet": "Gib ein neues Passwort ein oder lasse die Felder leer, damit wir eines für dich generieren.",
-        "dialogDescriptionResult": "Kopiere das neue Passwort, bevor du dieses Fenster schließt.",
+        "dialogDescriptionSet": "Gib ein neues Passwort ein oder lasse die Felder leer, damit wir eines für Dich generieren.",
+        "dialogDescriptionResult": "Kopiere das neue Passwort, bevor Du dieses Fenster schließt.",
         "newPasswordLabel": "Neues Passwort",
         "confirmPasswordLabel": "Passwort bestätigen",
         "copyButton": "Kopieren",
@@ -945,7 +955,7 @@
         "doneButton": "Fertig",
         "setPasswordButton": "Passwort setzen",
         "generatePasswordButton": "Passwort generieren",
-        "warningText": "Dieses Passwort wird nur einmal angezeigt. Bewahre es an einem sicheren Ort auf, bevor du den Dialog schließt.",
+        "warningText": "Dieses Passwort wird nur einmal angezeigt. Bewahre es an einem sicheren Ort auf, bevor Du den Dialog schließt.",
         "errors": {
           "passwordMismatch": "Passwörter stimmen nicht überein.",
           "passwordTooShort": "Passwort muss mindestens {min} Zeichen lang sein.",
@@ -953,7 +963,7 @@
         },
         "toasts": {
           "passwordCopied": "Passwort kopiert",
-          "passwordCopiedDescription": "Füge es in deinen FTP-Client ein, um dich anzumelden.",
+          "passwordCopiedDescription": "Füge es in Deinen FTP-Client ein, um Dich anzumelden.",
           "passwordUpdated": "FTP-Passwort aktualisiert",
           "passwordUpdatedDescription": "Verwende das folgende Passwort bei der Verbindung über SFTP.",
           "updateFailed": "Passwort konnte nicht aktualisiert werden",
@@ -963,7 +973,7 @@
       "upload": {
         "dialogTitle": "Dateien hochladen",
         "dialogDescription": "Dateien werden nach {directory} hochgeladen",
-        "selectFilesText": "Wähle von deinem Gerät aus.",
+        "selectFilesText": "Wähle von Deinem Gerät aus.",
         "chooseFilesButton": "Dateien auswählen",
         "selectedFilesLabel": "Ausgewählte Dateien:",
         "cancelButton": "Abbrechen",
@@ -971,7 +981,7 @@
       },
       "editor": {
         "dialogTitle": "Datei",
-        "dialogDescriptionEditable": "Mache deine Änderungen unten und drücke auf Speichern, um die Datei zu aktualisieren.",
+        "dialogDescriptionEditable": "Mache Deine Änderungen unten und drücke auf Speichern, um die Datei zu aktualisieren.",
         "dialogDescriptionBinary": "Binärdateien können nicht im Browser bearbeitet werden.",
         "loadingText": "Dateiinhalt wird geladen…",
         "binaryFileWarning": "Diese Datei scheint binär zu sein oder ist zu groß für die Anzeige im Browser.",
@@ -1007,7 +1017,7 @@
         "unableToSave": "Datei konnte nicht gespeichert werden",
         "unableToDownload": "Download nicht möglich",
         "nameRequired": "Name erforderlich",
-        "nameRequiredDescription": "Bitte gib einen neuen Namen ein, bevor du speicherst.",
+        "nameRequiredDescription": "Bitte gib einen neuen Namen ein, bevor Du speicherst.",
         "entryRenamed": "Eintrag umbenannt",
         "entryRenamedDescription": "{oldName} heißt jetzt {newName}.",
         "unableToRename": "Umbenennen nicht möglich",
@@ -1015,7 +1025,7 @@
         "entryDeletedDescription": "{name} wurde entfernt.",
         "unableToDelete": "Löschen nicht möglich",
         "noFilesSelected": "Keine Dateien ausgewählt",
-        "noFilesSelectedDescription": "Wähle eine oder mehrere Dateien aus, bevor du hochlädst.",
+        "noFilesSelectedDescription": "Wähle eine oder mehrere Dateien aus, bevor Du hochlädst.",
         "uploadComplete": "Upload abgeschlossen",
         "uploadCompleteDescription": "{count} Datei(en) erfolgreich hochgeladen.",
         "uploadFailed": "Upload fehlgeschlagen",
@@ -1024,7 +1034,7 @@
     },
     "networkManager": {
       "title": "Netzwerk",
-      "description": "Verwalte IP-Zuweisungen und Ports deines Servers.",
+      "description": "Verwalte IP-Zuweisungen und Ports Deines Servers.",
       "primary": "Primär",
       "noteLabel": "Notiz",
       "notes": "Notizen",
@@ -1048,7 +1058,7 @@
       "notesDialogDescription": "Beschriftung oder Beschreibung für {address} hinzufügen.",
       "notesPlaceholder": "z.B. Haupt-Spielport, RCON, Web-Panel...",
       "deleteDialogTitle": "Zuweisung entfernen?",
-      "deleteDialogDescription": "Möchtest du {address} wirklich entfernen?",
+      "deleteDialogDescription": "Möchtest Du {address} wirklich entfernen?",
       "deleteDialogWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Die Zuweisung wird zum Pool zurückgegeben.",
       "deleteConfirm": "Zuweisung entfernen",
       "deleting": "Wird entfernt...",
@@ -1058,8 +1068,8 @@
       "refresh": "Aktualisieren",
       "fixPorts": "Ports neu zuweisen",
       "fixPortsDialogTitle": "Ports neu zuweisen",
-      "fixPortsDialogDescription": "Manchmal kann es vorkommen, dass die Port-Zuweisungen deines Servers nicht korrekt sind, was zu Verbindungsproblemen führen kann.",
-      "fixPortsDialogDetail": "Du kannst probieren die Ports neu zuzuweisen, was aber nicht immer funktioniert. (Minecraft-Server haben Probleme damit) \n Der Server muss danach neu gestartet werden.",
+      "fixPortsDialogDescription": "Manchmal kann es vorkommen, dass die Port-Zuweisungen Deines Servers nicht korrekt sind, was zu Verbindungsproblemen führen kann.",
+      "fixPortsDialogDetail": "Du kannst versuchen, die Ports neu zuzuweisen, was aber nicht immer funktioniert. (Minecraft-Server haben dabei Probleme.) Der Server muss danach neu gestartet werden.",
       "fixPortsConfirm": "Ports neu zuweisen",
       "fixingPorts": "Ports werden neu zugewiesen...",
       "fixPortsSuccess": "Ports erfolgreich neu zugewiesen",
@@ -1075,7 +1085,7 @@
         "updated": "Servername aktualisiert",
         "updatedDescription": "Der Servername wurde erfolgreich aktualisiert.",
         "updateFailed": "Servername konnte nicht geändert werden",
-        "updateFailedDescription": "Die Änderung des Servernamens ist fehlgeschlagen"
+        "updateFailedDescription": "Die Änderung des Servernamens ist fehlgeschlagen."
       },
       "expiry": {
         "label": "Server-Ablauf",
@@ -1094,7 +1104,7 @@
   },
   "freeServerUpgrade": {
     "title": "Kostenlosen Server verlängern oder upgraden",
-    "description": "Wähle, wie du mit deinem kostenlosen Gameserver fortfahren möchtest.",
+    "description": "Wähle, wie Du mit Deinem kostenlosen Gameserver fortfahren möchtest.",
     "backToOptions": "Zurück zu Optionen",
     "badge": {
       "freeServer": "Kostenloser Server"
@@ -1111,10 +1121,10 @@
     "extend": {
       "badge": "GRATIS",
       "title": "Kostenlos verlängern",
-      "description": "Halte deinen kostenlosen Server weiter am Laufen",
+      "description": "Halte Deinen kostenlosen Server weiter am Laufen.",
       "feature1": "100% kostenlos, keine Zahlung erforderlich",
       "feature2": "Verlängere bis zu {days} Tage in die Zukunft",
-      "feature3": "Behalte deine aktuelle Hardware und Einstellungen",
+      "feature3": "Behalte Deine aktuelle Hardware und Einstellungen",
       "willExtendTo": "Neues Ablaufdatum: {date}",
       "button": "Kostenlos verlängern",
       "extending": "Verlängere...",
@@ -1130,7 +1140,7 @@
     "upgrade": {
       "badge": "BELIEBT",
       "title": "Auf Bezahlplan upgraden",
-      "description": "Schalte mehr Leistung frei und verlängere über die Grenzen des Free-Tiers hinaus",
+      "description": "Schalte mehr Leistung frei und verlängere über die Grenzen des Free-Tiers hinaus.",
       "feature1": "Mehr CPU- und RAM-Optionen",
       "feature2": "Längere Laufzeiten verfügbar",
       "feature3": "Prioritäts-Support",
@@ -1138,20 +1148,20 @@
       "button": "Upgrade konfigurieren",
       "pricing": {
         "title": "Flexible Preise",
-        "description": "Zahle nur für das, was du nutzt, ab 1,00 €"
+        "description": "Zahle nur für das, was Du nutzt, ab 1,00 €."
       }
     },
     "helpText": {
       "pre": "Noch unsicher?",
-      "link": "Kontaktiere unser Support-Team",
-      "post": "wenn du Hilfe brauchst."
+      "link": "Kontaktiere unseren Support",
+      "post": "wenn Du Hilfe brauchst."
     }
   },
   "provisioning": {
     "title": "Server wird eingerichtet",
     "description": "Dein Server wird bereitgestellt",
     "loading": "Lädt...",
-    "stateQueued": "Dein Server steht in der Warteschlange und wird bald erstellt",
+    "stateQueued": "Dein Server steht in der Warteschlange und wird bald erstellt.",
     "stateActive": "Server wird erstellt...",
     "stateCompleted": "Server erfolgreich erstellt!",
     "stateFailed": "Servererstellung fehlgeschlagen",
@@ -1160,20 +1170,20 @@
     "attempts": "Versuche",
     "orderId": "Bestell-ID",
     "pleaseWait": "Dies kann einige Momente dauern. Bitte schließe diese Seite nicht.",
-    "redirecting": "Weiterleitung zu deinem Server...",
+    "redirecting": "Weiterleitung zu Deinem Server...",
     "error": "Fehler",
     "errorFetchingStatus": "Status konnte nicht abgerufen werden",
     "provisioningFailed": "Serverbereitstellung fehlgeschlagen. Bitte kontaktiere den Support.",
     "backToProfile": "Zurück zum Profil",
     "notFoundTitle": "Job nicht gefunden",
-    "notFoundDescription": "Der Bereitstellungsjob, den du suchst, existiert nicht oder ist abgelaufen. Bitte überprüfe die Job-ID und versuche es erneut."
+    "notFoundDescription": "Der Bereitstellungsjob, den Du suchst, existiert nicht oder ist abgelaufen. Bitte überprüfe die Job-ID und versuche es erneut."
   },
   "withdrawalPage": {
     "title": "Widerruf & Erstattungen",
-    "subtitle": "Nutze dein Widerrufsrecht gemäß §355 BGB oder sieh dir deine Erstattungshistorie an.",
+    "subtitle": "Nutze Dein Widerrufsrecht gemäß §355 BGB oder sieh Dir Deine Erstattungshistorie an.",
     "eligibleOrders": {
       "title": "Widerrufsfähige Bestellungen",
-      "description": "Bestellungen der letzten {days} Tage, von denen du zurücktreten kannst. Du erhältst eine anteilige Erstattung für die ungenutzte Servicezeit.",
+      "description": "Bestellungen der letzten {days} Tage, von denen Du zurücktreten kannst. Du erhältst eine anteilige Erstattung für die ungenutzte Servicezeit.",
       "noOrders": "Derzeit sind keine Bestellungen widerrufsfähig.",
       "daysRemaining": "{days} Tage verbleibend",
       "alreadyRefunded": "Bereits erstattet"
@@ -1201,9 +1211,9 @@
         "none": "Keine Server-Änderungen"
       }
     },
-    "legalNote": "Nach EU-Verbraucherschutzrecht (§355 BGB) hast du das Recht, innerhalb von 14 Tagen nach dem Kauf von jedem Vertrag zurückzutreten. Die Erstattung wird anteilig basierend auf der ungenutzten Servicezeit berechnet.",
-    "supportNote": "Bei Fragen oder Hilfe zu einer Erstattung kontaktiere unser",
-    "supportLink": "Support-Team"
+    "legalNote": "Nach EU-Verbraucherschutzrecht (§355 BGB) hast Du das Recht, innerhalb von 14 Tagen nach dem Kauf von jedem Vertrag zurückzutreten. Die Erstattung wird anteilig basierend auf der ungenutzten Servicezeit berechnet.",
+    "supportNote": "Bei Fragen oder Hilfe zu einer Erstattung kontaktiere unseren",
+    "supportLink": "Support"
   },
   "CookieBanner": {
     "title": "Cookie-Hinweis",
@@ -1215,7 +1225,7 @@
   },
   "backupManager": {
     "title": "Backups",
-    "description": "Erstelle, lade herunter und stelle Snapshots deines Servers wieder her.",
+    "description": "Erstelle, lade herunter und stelle Snapshots Deines Servers wieder her.",
     "refresh": "Aktualisieren",
     "newBackup": "Neues Backup",
     "slotsUsed": "{used}/{limit} Backup-Slots belegt · Gesamtgröße {size}",
@@ -1225,7 +1235,7 @@
     "configRequiredTitle": "Konfiguration erforderlich",
     "configRequiredDescription": "Bitte setze NEXT_PUBLIC_PTERODACTYL_URL, um die Backup-Verwaltung zu aktivieren.",
     "unableToLoad": "Backups konnten nicht geladen werden",
-    "noBackups": "Noch keine Backups. Erstelle deinen ersten Snapshot, um den Serverzustand zu sichern.",
+    "noBackups": "Noch keine Backups. Erstelle Deinen ersten Snapshot, um den Serverzustand zu sichern.",
     "toasts": {
       "notConfigured": "Pterodactyl-URL ist nicht konfiguriert.",
       "missingConfig": "Fehlende Konfiguration",

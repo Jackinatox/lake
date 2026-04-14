@@ -101,7 +101,7 @@
     "ctaButton": "Get Started",
     "getFreeServer": "Create a free server"
   },
-  "notAdmin": "You are not an admin",
+  "notAdmin": "You are not an admin.",
   "notAdminDescription": "You do not have admin rights to view this page.",
   "freeServer": {
     "buttonText": "Free Server",
@@ -140,8 +140,8 @@
     }
   },
   "info-buttons": {
-    "cpu": "Explaination of the CPU",
-    "ram": "Explaination of the RAM"
+    "cpu": "Explanation of the CPU",
+    "ram": "Explanation of the RAM"
   },
   "getHelp": {
     "title1": "We don't have a FAQ yet, but you can ",
@@ -312,11 +312,11 @@
       "continue": "Continue"
     },
     "auth": {
-      "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings"
+      "loginRequiredGameConfig": "You need to be logged in to configure game-specific settings."
     },
     "payment": {
       "title": "Complete Your Payment",
-      "footerHint": "Complete payment above to create your server"
+      "footerHint": "Complete payment above to create your server."
     },
     "hardware": {
       "title": "Performance Configuration",
@@ -337,7 +337,7 @@
         "discount": "Discount (-{percent}%)",
         "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
-        "minOrderHint": "Minimum order value is 1.00 €"
+        "minOrderHint": "Minimum order value is 1.00 €."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -408,7 +408,7 @@
   },
   "RegisterLogin": {
     "title": "Welcome",
-    "subtitle": "Register with your Discord or Google account",
+    "subtitle": "Register with your Discord or Google account.",
     "oauth": {
       "discord": "Register with Discord",
       "google": "Register with Google"
@@ -419,7 +419,7 @@
     },
     "login": {
       "title": "Welcome back",
-      "subtitle": "Login with your Discord or Google account",
+      "subtitle": "Login with your Discord or Google account.",
       "oauthDiscord": "Login with Discord",
       "oauthGoogle": "Login with Google",
       "orContinueWith": "Or continue with",
@@ -573,7 +573,7 @@
       },
       "oauthNotAvailable": {
         "title": "Password Change Not Available",
-        "subtitle": "You are logged in with an OAuth provider",
+        "subtitle": "You are logged in with an OAuth provider.",
         "description": "Since you're using social login, your password is managed by your OAuth provider. Please manage your password through your Google or Discord account settings.",
         "backButton": "Back to Profile"
       }
@@ -1027,7 +1027,7 @@
       "description": "Manage IP allocations and ports assigned to your server.",
       "primary": "Primary",
       "noteLabel": "Note",
-      "emptyNoteHint": "No note set — click Edit Note to add one",
+      "emptyNoteHint": "No note set — click Edit Note to add one.",
       "editNote": "Edit Note",
       "setPrimary": "Set Primary",
       "remove": "Remove",
@@ -1059,7 +1059,7 @@
       "fixPorts": "Fix assigned Ports",
       "fixPortsDialogTitle": "Fix Assigned Ports",
       "fixPortsDialogDescription": "This action will try to reassign some ports and reconfigure the server.",
-      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesnt work for all games (issues with Minecraft).",
+      "fixPortsDialogDetail": "Use this if your server is unreachable or showing incorrect ports. You need to restart the server afterwards. This doesn't work for all games (issues with Minecraft).",
       "fixPortsConfirm": "Fix Ports",
       "fixingPorts": "Fixing...",
       "fixPortsSuccess": "Ports reassigned successfully",
@@ -1075,7 +1075,7 @@
         "updated": "Server name updated",
         "updatedDescription": "The server name has been successfully updated.",
         "updateFailed": "Server name update failed",
-        "updateFailedDescription": "The server name update has failed"
+        "updateFailedDescription": "The server name update has failed."
       },
       "expiry": {
         "label": "Server Expiry",
@@ -1111,7 +1111,7 @@
     "extend": {
       "badge": "FREE",
       "title": "Extend for Free",
-      "description": "Keep your free server running",
+      "description": "Keep your free server running.",
       "feature1": "100% free, no payment required",
       "feature2": "Extend up to {days} days into the future",
       "feature3": "Keep your current hardware and settings",
@@ -1130,7 +1130,7 @@
     "upgrade": {
       "badge": "POPULAR",
       "title": "Upgrade to Paid",
-      "description": "Unlock more power and extend beyond free tier limits",
+      "description": "Unlock more power and extend beyond free tier limits.",
       "feature1": "More CPU and RAM options",
       "feature2": "Longer durations available",
       "feature3": "Priority support",
@@ -1138,11 +1138,11 @@
       "button": "Configure Upgrade",
       "pricing": {
         "title": "Flexible Pricing",
-        "description": "Pay only for what you use, starting from €1.00"
+        "description": "Pay only for what you use, starting from €1.00."
       }
     },
     "helpText": {
-      "link": "Contact our support-team",
+      "link": "Contact our support",
       "post": "if you need help.",
       "pre": "Not sure?"
     }
@@ -1151,7 +1151,7 @@
     "title": "Setting Up Your Server",
     "description": "Your server is being provisioned",
     "loading": "Loading...",
-    "stateQueued": "Your server is queued and will be created shortly",
+    "stateQueued": "Your server is queued and will be created shortly.",
     "stateActive": "Creating your server...",
     "stateCompleted": "Server created successfully!",
     "stateFailed": "Server creation failed",
