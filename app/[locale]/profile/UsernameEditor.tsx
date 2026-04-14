@@ -163,16 +163,24 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
                     <X className="h-3.5 w-3.5" />
                 </Button>
             </div>
-            {status === 'available' && (
-                <p className="text-xs text-green-600">{t('account.usernameAvailable')}</p>
-            )}
-            {status === 'taken' && (
-                <p className="text-xs text-destructive">{t('account.usernameTaken')}</p>
-            )}
-            {status === 'invalid' && (
-                <p className="text-xs text-destructive">{t('account.usernameNoAt')}</p>
-            )}
-            {saveError && <p className="text-xs text-destructive">{saveError}</p>}
+            <p
+                className={`text-xs h-4 ${
+                    saveError || status === 'taken' || status === 'invalid'
+                        ? 'text-destructive'
+                        : status === 'available'
+                          ? 'text-green-600'
+                          : 'invisible'
+                }`}
+            >
+                {saveError ||
+                    (status === 'available'
+                        ? t('account.usernameAvailable')
+                        : status === 'taken'
+                          ? t('account.usernameTaken')
+                          : status === 'invalid'
+                            ? t('account.usernameNoAt')
+                            : '\u00a0')}
+            </p>
         </div>
     );
 }

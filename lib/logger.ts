@@ -49,6 +49,10 @@ class Logger {
         this.prisma = prismaClient;
     }
 
+    private shouldNotifyTelegram(type: LogType): boolean {
+        return type !== 'AUTHENTICATION';
+    }
+
     /**
      * Formats details for clean console output
      */
@@ -196,6 +200,10 @@ class Logger {
             ...context,
         });
 
+        if (!this.shouldNotifyTelegram(type)) {
+            return;
+        }
+
         // Send Telegram notification with all context
         sendErrorNotification({
             errorMessage: message,
@@ -256,6 +264,10 @@ class Logger {
             type,
             ...context,
         });
+
+        if (!this.shouldNotifyTelegram(type)) {
+            return;
+        }
 
         // Send Telegram notification with all context
         sendFatalErrorNotification({

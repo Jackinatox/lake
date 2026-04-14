@@ -12,6 +12,7 @@ import prisma from '@/lib/prisma';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { logger } from '@/lib/logger';
 import { headers } from 'next/headers';
+import formatDate from '@/lib/formatDate';
 
 async function requireAdmin() {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -153,8 +154,8 @@ export async function getPterodactylUserInfo(ptUserId: number) {
                 language: ptUser.language,
                 rootAdmin: ptUser.rootAdmin,
                 twoFactor: ptUser.twoFactor,
-                createdAt: String(ptUser.createdAt),
-                updatedAt: String(ptUser.updatedAt),
+                createdAt: formatDate(ptUser.createdAt),
+                updatedAt: formatDate(ptUser.updatedAt),
             },
         };
     } catch (error) {

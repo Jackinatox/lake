@@ -81,8 +81,8 @@ export default function Profile() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem>
-                    <Link href="/profile" className="flex items-center w-full cursor-pointer">
+                <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </Link>
@@ -119,8 +119,8 @@ export default function Profile() {
                 {(mounted || session?.user.role === 'admin') && <DropdownMenuSeparator />}
                 {session?.user.role === 'admin' && (
                     <>
-                        <DropdownMenuItem>
-                            <Link href="/admin" className="flex items-center w-full cursor-pointer">
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin" className="flex items-center cursor-pointer">
                                 <UserRoundCog className="mr-2 h-4 w-4" />
                                 <span>Admin Panel</span>
                             </Link>

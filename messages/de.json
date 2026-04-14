@@ -102,7 +102,7 @@
     "getFreeServer": "Kostenlosen Server erstellen"
   },
   "freeServer": {
-    "buttonText": "Kostenloser Server",
+    "buttonText": "Gratis Server",
     "buttonDescription": "Erstelle einen kostenlosen Gameserver mit begrenzter Hardware",
     "pageTitle": "Kostenloser Server",
     "featuresTitle": "Free-Tier Funktionen",

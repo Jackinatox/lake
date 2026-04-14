@@ -1,7 +1,7 @@
 import { optionalStringSchema, requiredStringSchema, z } from './common';
 
 export const AUTH_NAME_MAX_LENGTH = 80;
-export const AUTH_USERNAME_MAX_LENGTH = 32;
+export const AUTH_USERNAME_MAX_LENGTH = 30;
 export const AUTH_EMAIL_MAX_LENGTH = 254;
 export const AUTH_PASSWORD_MIN_LENGTH = 8;
 export const AUTH_PASSWORD_MAX_LENGTH = 128;

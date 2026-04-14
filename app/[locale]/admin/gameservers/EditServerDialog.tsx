@@ -93,13 +93,13 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                                 }
                                 className="col-span-3"
                                 min="1"
-                                max="1600"
+                                max="3200"
                                 required
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="ramMB" className="text-right">
-                                RAM (MB)
+                                RAM (MiB)
                             </Label>
                             <Input
                                 id="ramMB"
@@ -113,14 +113,14 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                                 }
                                 className="col-span-3"
                                 min="512"
-                                max="32768"
+                                max="65536"
                                 step="512"
                                 required
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="diskMB" className="text-right">
-                                Disk (MB)
+                                Disk (MiB)
                             </Label>
                             <Input
                                 id="diskMB"
@@ -155,7 +155,7 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                                 }
                                 className="col-span-3"
                                 min="0"
-                                max="10"
+                                max="50"
                                 required
                             />
                         </div>
