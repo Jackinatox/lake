@@ -13,7 +13,7 @@ export const authClient = createAuthClient({
     plugins: [
         lastLoginMethodClient(),
         adminClient(),
-        twoFactorClient(),
+        twoFactorClient({ twoFactorPage: '/verify-2fa' }),
         usernameClient(),
         apiKeyClient(),
         inferAdditionalFields<typeof auth>(),

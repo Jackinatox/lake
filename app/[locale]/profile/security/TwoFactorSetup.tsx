@@ -115,7 +115,7 @@ export default function TwoFactorSetup() {
                 return;
             }
             const data = result?.data;
-            if (data?.totpURI) {
+            if (data?.method === 'totp' && data.totpURI) {
                 setTotpUri(data.totpURI);
                 setBackupCodes(data.backupCodes ?? []);
                 setStep('setup-verify');

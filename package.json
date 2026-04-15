@@ -15,7 +15,7 @@
     "dependencies": {
         "@auth/prisma-adapter": "^2.11.1",
         "@avionrx/pterodactyl-js": "^2.1.5",
-        "@better-auth/api-key": "^1.6.3",
+        "@better-auth/api-key": "1.7.0-beta.1",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@marsidev/react-turnstile": "^1.4.2",
@@ -58,7 +58,7 @@
         "ansi-to-html": "^0.7.2",
         "ansi-to-react": "^6.2.6",
         "autoprefixer": "^10.4.24",
-        "better-auth": "^1.6.3",
+        "better-auth": "1.7.0-beta.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",

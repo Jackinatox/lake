@@ -15,31 +15,13 @@ import { getValidationMessage } from '@/lib/validation/common';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { env } from 'next-runtime-env';
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
-
-type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;
-type SignInEmailData = SignInEmailResult['data'];
-
-function getTwoFactorRedirect(data: SignInEmailData) {
-    return (
-        typeof data === 'object' &&
-        data !== null &&
-        'twoFactorRedirect' in data &&
-        data.twoFactorRedirect === true
-    );
-}
-
-function getErrorMessage(error: unknown) {
-    return error instanceof Error ? error.message : null;
-}
+import { Eye, EyeOff } from 'lucide-react';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');
     const tr = useTranslations('RegisterLogin');
-    const router = useRouter();
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -48,10 +30,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const [turnstileToken, setTurnstileToken] = useState('');
     const turnstileRef = useRef<TurnstileInstance | undefined>(undefined);
 
-    // 2FA state
-    const [showTwoFactor, setShowTwoFactor] = useState(false);
-    const [useBackupCode, setUseBackupCode] = useState(false);
-    const [twoFactorCode, setTwoFactorCode] = useState('');
+    const resetTurnstile = useCallback(() => {
+        turnstileRef.current?.reset();
+        setTurnstileToken('');
+    }, []);
 
     const handleSubmit = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,168 +44,38 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                 const parsed = loginFormSchema.parse({ identity: identifier, password });
                 const isEmail = parsed.identity.includes('@');
 
-                let result: SignInEmailResult;
-                if (isEmail) {
-                    result = await authClient.signIn.email({
-                        email: parsed.identity,
-                        password: parsed.password,
-                        callbackURL: '/gameserver',
-                        fetchOptions: {
-                            headers: { 'X-captcha-response': turnstileToken },
-                        },
-                    });
-                } else {
-                    result = await authClient.signIn.username({
-                        username: parsed.identity,
-                        password: parsed.password,
-                        callbackURL: '/gameserver',
-                        fetchOptions: {
-                            headers: { 'X-captcha-response': turnstileToken },
-                        },
-                    });
-                }
-
-                const { data, error } = result as {
-                    data: SignInEmailData;
-                    error: { message?: string; code?: string } | null;
+                const signInOpts = {
+                    password: parsed.password,
+                    callbackURL: '/gameserver',
+                    fetchOptions: {
+                        headers: { 'X-captcha-response': turnstileToken },
+                    },
                 };
 
+                const { error } = isEmail
+                    ? await authClient.signIn.email({ email: parsed.identity, ...signInOpts })
+                    : await authClient.signIn.username({
+                          username: parsed.identity,
+                          ...signInOpts,
+                      });
+
                 if (error) {
-                    const message = error.message || t('errors.loginFailed');
-                    const errorCode = error.code?.toLowerCase();
-                    const shouldRedirectToVerification =
-                        errorCode === 'email_not_verified' ||
-                        errorCode === 'email-not-verified' ||
-                        /verify/.test(message.toLowerCase());
-
-                    if (shouldRedirectToVerification) {
-                        const redirectUrl = isEmail
-                            ? `/verify-email?email=${encodeURIComponent(parsed.identity)}`
-                            : '/verify-email';
-                        router.push(redirectUrl);
-                        return;
-                    }
-
-                    turnstileRef.current?.reset();
-                    setTurnstileToken('');
-                    setError(message);
-                } else if (getTwoFactorRedirect(data)) {
-                    setShowTwoFactor(true);
+                    resetTurnstile();
+                    setError(error.message || t('errors.loginFailed'));
                 }
-            } catch (error: unknown) {
-                turnstileRef.current?.reset();
-                setTurnstileToken('');
-                setError(getValidationMessage(error) || t('errors.unexpected'));
+            } catch (err: unknown) {
+                resetTurnstile();
+                setError(getValidationMessage(err) || t('errors.unexpected'));
             } finally {
                 setLoading(false);
             }
         },
-        [identifier, password, router, t, turnstileToken],
+        [identifier, password, t, turnstileToken, resetTurnstile],
     );
 
-    const handleTwoFactorVerify = useCallback(
-        async (e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            setError(null);
-            setLoading(true);
-            try {
-                const result = useBackupCode
-                    ? await authClient.twoFactor.verifyBackupCode({ code: twoFactorCode.trim() })
-                    : await authClient.twoFactor.verifyTotp({ code: twoFactorCode.trim() });
-
-                if (result?.error) {
-                    setError(t('twoFactor.error'));
-                } else {
-                    router.push('/gameserver');
-                }
-            } catch (error: unknown) {
-                setError(getErrorMessage(error) || t('twoFactor.error'));
-            } finally {
-                setLoading(false);
-            }
-        },
-        [twoFactorCode, useBackupCode, t, router],
-    );
-
-    // ── 2FA verification step ─────────────────────────────────────────────────
-    if (showTwoFactor) {
-        return (
-            <div className={cn('flex flex-col gap-6 w-full', className)} {...props}>
-                <Card>
-                    <CardHeader className="text-center">
-                        <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
-                            <ShieldCheck className="h-6 w-6 text-primary" />
-                        </div>
-                        <CardTitle className="text-xl">{t('twoFactor.title')}</CardTitle>
-                        <CardDescription>{t('twoFactor.subtitle')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleTwoFactorVerify}>
-                            <div className="grid gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="two-factor-code">
-                                        {useBackupCode
-                                            ? t('twoFactor.backupLabel')
-                                            : t('twoFactor.codeLabel')}
-                                    </Label>
-                                    <Input
-                                        id="two-factor-code"
-                                        placeholder={
-                                            useBackupCode
-                                                ? t('twoFactor.backupPlaceholder')
-                                                : t('twoFactor.codePlaceholder')
-                                        }
-                                        value={twoFactorCode}
-                                        onChange={(e) =>
-                                            setTwoFactorCode(
-                                                useBackupCode
-                                                    ? e.target.value
-                                                    : e.target.value.replace(/\D/g, '').slice(0, 6),
-                                            )
-                                        }
-                                        inputMode={useBackupCode ? 'text' : 'numeric'}
-                                        autoComplete="one-time-code"
-                                        maxLength={useBackupCode ? 32 : 6}
-                                        className={cn(
-                                            !useBackupCode && 'tracking-widest text-center text-lg',
-                                        )}
-                                        autoFocus
-                                    />
-                                </div>
-                                <Button
-                                    type="submit"
-                                    className="w-full"
-                                    disabled={
-                                        loading ||
-                                        (!useBackupCode && twoFactorCode.length !== 6) ||
-                                        (useBackupCode && twoFactorCode.trim().length < 6)
-                                    }
-                                >
-                                    {loading ? t('twoFactor.verifying') : t('twoFactor.verify')}
-                                </Button>
-                                {error && (
-                                    <p className="text-sm text-destructive text-center">{error}</p>
-                                )}
-                                <button
-                                    type="button"
-                                    className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 text-center"
-                                    onClick={() => {
-                                        setUseBackupCode((v) => !v);
-                                        setTwoFactorCode('');
-                                        setError(null);
-                                    }}
-                                >
-                                    {useBackupCode
-                                        ? t('twoFactor.totpLink')
-                                        : t('twoFactor.backupLink')}
-                                </button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+    const handleSocialSignIn = useCallback(async (provider: 'discord' | 'google') => {
+        authClient.signIn.social({ provider, callbackURL: '/verify-2fa' });
+    }, []);
 
     return (
         <div className={cn('flex flex-col gap-5 w-full', className)} {...props}>
@@ -241,12 +93,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                     variant="outline"
                                     className="w-full h-11"
                                     type="button"
-                                    onClick={() =>
-                                        authClient.signIn.social({
-                                            provider: 'discord',
-                                            callbackURL: '/gameserver',
-                                        })
-                                    }
+                                    onClick={() => handleSocialSignIn('discord')}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -263,12 +110,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                     variant="outline"
                                     className="w-full h-11"
                                     type="button"
-                                    onClick={() =>
-                                        authClient.signIn.social({
-                                            provider: 'google',
-                                            callbackURL: '/gameserver',
-                                        })
-                                    }
+                                    onClick={() => handleSocialSignIn('google')}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
