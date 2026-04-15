@@ -74,6 +74,8 @@
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",
     "heroSubtitle": "Starte deinen Gameserver in Sekunden — zuverlässige Hardware und ein übersichtliches Control Panel.",
+    "highlightUptime": "99% Verfügbarkeit",
+    "highlightSetup": "Server in unter 60 Sekunden bereit",
     "statUptime": "99,0%",
     "statUptimeLabel": "Verfügbarkeit",
     "statSupport": "Hilfsbereit",
