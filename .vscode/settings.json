@@ -16,6 +16,7 @@
         "public/locales"
     ],
     "i18n-ally.enabledFrameworks": ["next-intl"],
+    "window.title": "Lake",
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.tsserver.experimental.enableProjectDiagnostics": true,
 }
