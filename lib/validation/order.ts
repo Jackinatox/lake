@@ -6,18 +6,25 @@ import {
     UPGRADE_DURATIONS,
     integerRangeSchema,
     localeSchema,
+    optionalStringSchema,
     orderIdSchema,
     requiredStringSchema,
     serverIdentifierSchema,
     z,
 } from './common';
 
-const configuredDurationSchema = z
-    .enum(ORDER_DURATIONS.map(String) as [string, ...string[]])
-    .transform(Number);
-const upgradeDurationSchema = z
-    .enum(UPGRADE_DURATIONS.map(String) as [string, ...string[]])
-    .transform(Number);
+const configuredDurationSchema = z.union(
+    ORDER_DURATIONS.map((v) => z.literal(v)) as [
+        z.ZodLiteral<(typeof ORDER_DURATIONS)[number]>,
+        ...z.ZodLiteral<(typeof ORDER_DURATIONS)[number]>[],
+    ],
+);
+const upgradeDurationSchema = z.union(
+    UPGRADE_DURATIONS.map((v) => z.literal(v)) as [
+        z.ZodLiteral<(typeof UPGRADE_DURATIONS)[number]>,
+        ...z.ZodLiteral<(typeof UPGRADE_DURATIONS)[number]>[],
+    ],
+);
 
 const baseHardwareConfigSchema = z.object({
     pfGroupId: integerRangeSchema('Performance group', 1, 10_000),
@@ -195,7 +202,7 @@ export const adminRefundSchema = z.object({
 });
 
 export const supportTicketSchema = z.object({
-    subject: z.string().trim().max(120, 'Subject is too long').optional(),
+    subject: optionalStringSchema(120),
     description: requiredStringSchema('Message', 2_000),
     category: z.nativeEnum(TicketCategory).optional(),
 });

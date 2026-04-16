@@ -46,7 +46,7 @@ export async function GET(
             select: { id: true },
         });
         if (!order) {
-            return NextResponse.json({ error: 'Invalid job ID' }, { status: 400 });
+            return NextResponse.json({ error: 'Job not found' }, { status: 404 });
         }
         const workerUrl = env('WORKER_IP');
         const encodedJobId = encodeURIComponent(parsedJobId.data);

@@ -4,48 +4,33 @@ import { cn } from '@/lib/utils';
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { env } from 'next-runtime-env';
-import { useEffect, useState } from 'react';
-
 const stripePromise = loadStripe(env('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')!);
 
 interface CustomServerPaymentElementsProps {
     clientSecret: string;
-    className?: string; // optional container class to control width/layout
+    className?: string;
 }
 
 function CustomServerPaymentElements({
     clientSecret,
     className,
 }: CustomServerPaymentElementsProps) {
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (clientSecret) {
-            setLoading(false);
-        }
-    }, [clientSecret]);
-
-    const options = {
-        clientSecret: `${clientSecret}`,
-    };
+    const ready = !!clientSecret;
 
     return (
         <div className={cn('w-full', className)}>
-            {loading ? (
-                <div className="flex items-center justify-center min-h-[200px]">
-                    <div className="text-center space-y-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                        <p className="text-sm text-muted-foreground">Loading payment form...</p>
+            {!ready ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-20">
+                    <div className="relative h-9 w-9">
+                        <div className="absolute inset-0 rounded-full border-2 border-border" />
+                        <div className="absolute inset-0 rounded-full border-2 border-t-primary animate-spin" />
                     </div>
+                    <p className="text-sm text-muted-foreground">Loading secure payment form…</p>
                 </div>
             ) : (
-                <div className="bg-card rounded-lg border shadow-sm w-full">
-                    <EmbeddedCheckoutProvider stripe={stripePromise} options={{ ...options }}>
-                        <div className="p-2 sm:p-4 md:p-6">
-                            <EmbeddedCheckout />
-                        </div>
-                    </EmbeddedCheckoutProvider>
-                </div>
+                <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+                    <EmbeddedCheckout />
+                </EmbeddedCheckoutProvider>
             )}
         </div>
     );

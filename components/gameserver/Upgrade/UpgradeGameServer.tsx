@@ -3,7 +3,6 @@
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { getValidationMessage } from '@/lib/validation/common';
 import { checkoutUpgradeParamsSchema } from '@/lib/validation/order';
@@ -88,17 +87,12 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             )}
 
             {step === 'pay' && clientSecret && (
-                <Card className="w-full max-w-4xl mx-auto space-y-6 p-4 md:p-6">
-                    <Button variant="outline" onClick={() => handleBackToConfigure()}>
-                        {t('backToConfig')}
+                <div className="w-full max-w-2xl mx-auto space-y-5">
+                    <Button variant="ghost" size="sm" onClick={() => handleBackToConfigure()}>
+                        ← {t('backToConfig')}
                     </Button>
-                    <div className="w-full">
-                        <CustomServerPaymentElements
-                            className="w-full"
-                            clientSecret={clientSecret}
-                        />
-                    </div>
-                </Card>
+                    <CustomServerPaymentElements clientSecret={clientSecret} />
+                </div>
             )}
 
             {loading && <div className="text-sm text-muted-foreground">{t('preparing')}</div>}

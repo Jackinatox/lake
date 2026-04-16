@@ -39,9 +39,19 @@ export async function changeGame({
     const server = await prisma.gameServer.findFirst({
         where: { ptServerId: parsed.ptServerId, userId: session.user.id },
     });
+    const selectedGame = await prisma.gameData.findUnique({
+        where: { id: parsed.gameId },
+        select: { slug: true },
+    });
 
     if (!server) {
         throw new Error('Server not found or wrong user');
+    }
+    if (!selectedGame) {
+        throw new Error('Game not found');
+    }
+    if (selectedGame.slug !== parsed.gameConfig.gameSlug) {
+        throw new Error('Game configuration does not match the selected game');
     }
 
     logger.info(

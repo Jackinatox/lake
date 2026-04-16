@@ -26,21 +26,18 @@ export async function POST(req: NextRequest) {
         throw new Error('Missing signature header');
     }
 
-    logger.info('Webhook request received', 'PAYMENT_LOG', {
-        details: {
-            bodyLength: body.length,
-            hasSignature: !!signature,
-        },
-    });
-
     try {
         event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
-        logger.info(`Webhook event: ${event}`, 'PAYMENT_LOG', { details: { event: event } });
+        logger.info(`Webhook event`, 'PAYMENT_LOG', {
+            details: { eventType: event.type, event: event },
+        });
     } catch (error) {
         logger.error('Webhook signature failed: ', 'PAYMENT_LOG', {
             details: {
                 error: error,
-                secretType: endpointSecret.startsWith('whsec_') ? 'webhook' : 'unknown',
+                secretType: endpointSecret.startsWith('whsec_')
+                    ? 'webhook'
+                    : 'probably wrong secret',
             },
         });
         return new Response('Webhook signature verification failed', {
@@ -48,7 +45,6 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    logger.info('Received Stripe webhook', 'PAYMENT_LOG', { details: { eventType: event.type } });
     switch (event.type) {
         case 'payment_intent.succeeded':
             // TODO: For Sepa this can fire up to 14 days later, handle accordingly, maybe block server

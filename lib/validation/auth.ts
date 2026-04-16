@@ -33,7 +33,7 @@ export const authUsernameSchema = z
         AUTH_USERNAME_MAX_LENGTH,
         `Username must be at most ${AUTH_USERNAME_MAX_LENGTH} characters`,
     )
-    .regex(/^[A-Za-z0-9._-]+$/, 'Username may only contain letters, numbers, ., _, and -')
+    .regex(/^[A-Za-z0-9._]+$/, 'Username may only contain letters, numbers, ., and _')
     .refine((value) => !value.includes('@'), 'Username must not contain @');
 
 export const authDisplayNameSchema = requiredStringSchema('Name', AUTH_NAME_MAX_LENGTH);

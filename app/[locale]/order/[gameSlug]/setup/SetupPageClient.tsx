@@ -68,9 +68,7 @@ export default function SetupPageClient({
     const isLoggedIn = Boolean(session.data?.user);
 
     // Read hardware config from URL params
-    const configuredResult = resourceTiers
-        ? configuredHardwareFromParams(searchParams, resourceTiers)
-        : null;
+    const configuredResult = configuredHardwareFromParams(searchParams, resourceTiers);
     const hardwareConfig = configuredResult?.hardwareConfig ?? null;
 
     // Find the matching performance group for price display
@@ -78,6 +76,7 @@ export default function SetupPageClient({
 
     // Calculate price
     const price = useMemo(() => {
+        console.log({ hardwareConfig, performanceGroup });
         if (!hardwareConfig || !performanceGroup) return null;
         return calculateNew(
             performanceGroup,
@@ -95,7 +94,7 @@ export default function SetupPageClient({
                     No hardware configuration found. Please configure your hardware first.
                 </p>
                 <Button asChild>
-                    <Link href={`/order/${gameSlug}/configure`}>Configure Hardware</Link>
+                    <Link href={`/order/${gameSlug}`}>Configure Hardware</Link>
                 </Button>
             </div>
         );

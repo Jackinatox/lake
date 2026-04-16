@@ -185,7 +185,12 @@ export default function AccountTab() {
                                 </p>
                             </div>
                         </div>
-                        <Button asChild variant="destructive" size="sm" className="w-full sm:w-auto shrink-0">
+                        <Button
+                            asChild
+                            variant="destructive"
+                            size="sm"
+                            className="w-full sm:w-auto shrink-0"
+                        >
                             <Link href="?tab=security">{t('account.goToSecurity')}</Link>
                         </Button>
                     </div>
