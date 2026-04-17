@@ -17,9 +17,11 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [tempInput, setTempInput] = useState(''); // Store current input when navigating history
-    const [isAtBottom, setIsAtBottom] = useState(true);
+    const isAtBottomRef = useRef(true);
 
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const logContainerRef = useRef<HTMLDivElement>(null);
+    const renderedLogsCountRef = useRef(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Initialize ANSI to HTML converter
@@ -48,17 +50,41 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
 
     // Handle scroll events to track if user is at bottom
     const handleScroll = useCallback(() => {
-        setIsAtBottom(checkIfAtBottom());
+        isAtBottomRef.current = checkIfAtBottom();
     }, [checkIfAtBottom]);
 
-    // Auto-scroll to bottom when new logs arrive, only if already at bottom
+    // Imperatively append only new log lines so existing DOM nodes are never touched,
+    // which preserves any active text selection.
     useEffect(() => {
-        const container = scrollAreaRef.current;
-        if (isAtBottom && container) {
-            // Use scrollTop instead of scrollIntoView to avoid scrolling the whole page
-            container.scrollTop = container.scrollHeight;
+        const container = logContainerRef.current;
+        if (!container) return;
+
+        // If logs were cleared/reset, wipe the container
+        if (logs.length < renderedLogsCountRef.current) {
+            container.innerHTML = '';
+            renderedLogsCountRef.current = 0;
         }
-    }, [logs, isAtBottom]);
+
+        const newLogs = logs.slice(renderedLogsCountRef.current);
+        if (newLogs.length > 0) {
+            const fragment = document.createDocumentFragment();
+            newLogs.forEach((log) => {
+                const div = document.createElement('div');
+                div.className =
+                    'text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text';
+                div.innerHTML = ansiConverter.toHtml(log);
+                fragment.appendChild(div);
+            });
+            container.appendChild(fragment);
+        }
+        renderedLogsCountRef.current = logs.length;
+
+        // Auto-scroll only when at bottom and no text is selected
+        const scrollContainer = scrollAreaRef.current;
+        if (isAtBottomRef.current && scrollContainer && !window.getSelection()?.toString()) {
+            scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+    }, [logs, ansiConverter]);
 
     const handleSubmit = useCallback(() => {
         const trimmedCommand = inputValue.trim();
@@ -121,13 +147,6 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
         }
     };
 
-    // Focus input when clicking on console area
-    const handleConsoleClick = () => {
-        if (!disabled) {
-            inputRef.current?.focus();
-        }
-    };
-
     return (
         <div className="flex flex-col h-full rounded-lg overflow-hidden bg-zinc-950 border border-zinc-800">
             {/* Terminal Header */}
@@ -149,21 +168,11 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
             {/* Log Output Area */}
             <div
                 ref={scrollAreaRef}
-                onClick={handleConsoleClick}
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text min-h-50 max-h-75 md:max-h-100"
             >
-                {logs.length === 0 ? (
-                    <div className="text-zinc-600 italic">No output yet...</div>
-                ) : (
-                    logs.map((log, index) => (
-                        <div
-                            key={index}
-                            className="text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text"
-                            dangerouslySetInnerHTML={{ __html: ansiConverter.toHtml(log) }}
-                        />
-                    ))
-                )}
+                {logs.length === 0 && <div className="text-zinc-600 italic">No output yet...</div>}
+                <div ref={logContainerRef} />
             </div>
 
             {/* Input Area */}

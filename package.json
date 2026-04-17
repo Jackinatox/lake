@@ -1,12 +1,13 @@
 {
     "name": "lake",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "private": true,
     "scripts": {
         "dev": "bun run --bun next dev",
         "build": "bun run --bun next build",
         "start": "bun run --bun next start",
         "worker": "cd worker && bun run index.ts",
+        "updateMc": "bun run updateMc",
         "knip": "knip"
     },
     "prisma": {
