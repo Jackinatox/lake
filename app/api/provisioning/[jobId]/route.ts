@@ -46,6 +46,10 @@ export async function GET(
             select: { id: true },
         });
         if (!order) {
+            logger.warn('Job not found or does not belong to user', 'SYSTEM', {
+                userId: session.user.id,
+                details: { jobId: parsedJobId.data },
+            });
             return NextResponse.json({ error: 'Job not found' }, { status: 404 });
         }
         const workerUrl = env('WORKER_IP');

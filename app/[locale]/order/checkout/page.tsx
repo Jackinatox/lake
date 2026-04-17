@@ -81,7 +81,7 @@ export default async function OrderCheckoutPage({
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-2xl mx-auto md:px-4  md:py-12">
+            <div className="max-w-2xl mx-auto md:px-4">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-8">
                     <Button variant="ghost" size="icon" className="shrink-0 rounded-full" asChild>

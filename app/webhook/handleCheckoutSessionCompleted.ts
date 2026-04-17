@@ -112,11 +112,10 @@ export default async function handleCheckoutSessionCompleted(
                 case 'NEW':
                 case 'CONFIGURED':
                 case 'PACKAGE': {
-                    const jobId = await provisionWithRetry(orderUnprocessed);
+                    await provisionWithRetry(orderUnprocessed);
                     await prisma.gameServerOrder.update({
                         where: { id: orderUnprocessed.id },
                         data: {
-                            workerJobId: jobId,
                             provisioningStatus: 'SUBMITTED',
                         },
                     });

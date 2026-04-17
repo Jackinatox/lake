@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import type { JobStatusResponse } from '@/app/api/provisioning/[jobId]/route';
 import { useRouter } from 'next/navigation';
@@ -15,6 +16,7 @@ interface ProvisioningStatusProps {
 }
 
 export default function ProvisioningStatus({ jobId }: ProvisioningStatusProps) {
+    const [initialLoading, setInitialLoading] = useState(true);
     const [status, setStatus] = useState<JobStatusResponse | null>(null);
     const [error, setError] = useState<{ message: string; code?: number } | null>(null);
     const { toast } = useToast();
@@ -65,6 +67,8 @@ export default function ProvisioningStatus({ jobId }: ProvisioningStatusProps) {
             } catch (err) {
                 console.error('Error fetching job status:', err);
                 setError({ message: t('errorFetchingStatus') });
+            } finally {
+                setInitialLoading(false);
             }
         };
 
@@ -154,6 +158,31 @@ export default function ProvisioningStatus({ jobId }: ProvisioningStatusProps) {
                     <Button onClick={() => router.push('/profile')} className="w-full">
                         {t('backToProfile')}
                     </Button>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (initialLoading) {
+        return (
+            <Card className="w-full max-w-2xl mx-auto">
+                <CardHeader>
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-4 w-10" />
+                        </div>
+                        <Skeleton className="h-3 w-full" />
+                    </div>
                 </CardContent>
             </Card>
         );

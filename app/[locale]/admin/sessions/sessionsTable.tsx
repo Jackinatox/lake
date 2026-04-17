@@ -168,7 +168,7 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
                                 <TableCell className="font-mono text-xs">
                                     {s.stripeSessionId}
                                 </TableCell>
-                                <TableCell>#{s.id}</TableCell>
+                                <TableCell>{s.id}</TableCell>
                                 <TableCell className="uppercase">{s.status}</TableCell>
                                 <TableCell>{s.type}</TableCell>
                                 <TableCell>{s.price.toFixed(2)}</TableCell>
