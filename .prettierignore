@@ -6,3 +6,5 @@ build
 public
 pnpm-lock.yaml
 .env
+de.json
+en.json

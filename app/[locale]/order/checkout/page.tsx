@@ -3,12 +3,12 @@
 import { auth } from '@/auth';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
 import { orderCheckoutSearchParamsSchema } from '@/lib/validation/order';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { headers } from 'next/headers';
-import { Card } from '@/components/ui/card';
 
 export default async function OrderCheckoutPage({
     searchParams,
@@ -42,9 +42,7 @@ export default async function OrderCheckoutPage({
             createdAt: true,
             creationLocationId: true,
             creationGameData: {
-                select: {
-                    slug: true,
-                },
+                select: { slug: true },
             },
         },
     });
@@ -69,7 +67,6 @@ export default async function OrderCheckoutPage({
             },
             select: { id: true },
         });
-
         if (matchingPackage) {
             backHref = `/order/${order.creationGameData.slug}/package/${matchingPackage.id}?days=${durationDays}&orderId=${orderId}`;
         }
@@ -80,33 +77,55 @@ export default async function OrderCheckoutPage({
     }
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-2xl mx-auto md:px-4">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-8">
-                    <Button variant="ghost" size="icon" className="shrink-0 rounded-full" asChild>
+        <div className="md:-my-4">
+            {/* Sticky top bar */}
+            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-3">
+                <div className="w-full px-4 max-w-7xl mx-auto">
+                    <div className="flex items-center gap-3">
+                        <Button variant="ghost" size="icon" className="shrink-0" asChild>
+                            <Link href={backHref}>
+                                <ArrowLeft className="h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-base sm:text-lg font-bold leading-tight">
+                                Payment
+                            </h1>
+                            <p className="text-xs text-muted-foreground hidden sm:block">
+                                Final step — secure checkout
+                            </p>
+                        </div>
+                        <Lock className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </div>
+
+                    {/* Progress: step 3 of 3 */}
+                    <div className="mt-2 flex gap-2">
+                        <div className="h-1.5 flex-1 rounded bg-primary" />
+                        <div className="h-1.5 flex-1 rounded bg-primary" />
+                        <div className="h-1.5 flex-1 rounded bg-primary" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="w-full  pb-28 max-w-2xl mx-auto md:px-4">
+                <CustomServerPaymentElements clientSecret={order.stripeClientSecret} />
+            </div>
+
+            {/* Sticky bottom bar */}
+            <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-4">
+                <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
+                    <Button variant="outline" asChild>
                         <Link href={backHref}>
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="h-4 w-4 mr-2" />
+                            Back
                         </Link>
                     </Button>
-                    <div>
-                        <h1 className="text-xl font-semibold tracking-tight">
-                            Complete your order
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                            Secure checkout powered by Stripe
-                        </p>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <ShieldCheck className="h-4 w-4 shrink-0" />
+                        <span className="hidden sm:inline">256-bit SSL · Secured by Stripe</span>
+                        <span className="sm:hidden">Secured by Stripe</span>
                     </div>
-                    <Lock className="h-4 w-4 text-muted-foreground ml-auto shrink-0 mr-4" />
-                </div>
-
-                {/* Payment form — no wrapper border, Stripe provides its own UI */}
-                <CustomServerPaymentElements clientSecret={order.stripeClientSecret} />
-
-                {/* Trust line */}
-                <div className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>256-bit SSL encryption · Payments processed by Stripe</span>
                 </div>
             </div>
         </div>

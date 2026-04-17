@@ -10,13 +10,10 @@
     },
     "i18n-ally.namespace": true,
     "i18n-ally.keystyle": "nested",
-    "i18n-ally.localesPaths": [
-        "i18n",
-        "messages",
-        "public/locales"
-    ],
+    "i18n-ally.localesPaths": ["i18n", "messages", "public/locales"],
     "i18n-ally.enabledFrameworks": ["next-intl"],
     "window.title": "Lake",
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+    "editor.formatOnSave": true
 }
