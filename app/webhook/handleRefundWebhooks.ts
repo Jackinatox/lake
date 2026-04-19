@@ -1,7 +1,12 @@
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { sendRefundEmail, sendWithdrawalEmail } from '@/lib/email/sendEmailEmailsFromLake';
+import {
+    sendInvoiceEmail,
+    sendRefundEmail,
+    sendWithdrawalEmail,
+} from '@/lib/email/sendEmailEmailsFromLake';
 import { undoRefundedOrder } from '@/lib/refund/undoRefundedOrder';
+import { env } from 'next-runtime-env';
 import Stripe from 'stripe';
 
 /**
@@ -381,7 +386,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
 export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
     try {
         if (!invoice.invoice_pdf) {
-            logger.info('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
+            logger.error('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
                 details: { invoiceId: invoice.id },
             });
             return;
@@ -389,11 +394,15 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
 
         const order = await prisma.gameServerOrder.findFirst({
             where: { stripeInvoiceId: invoice.id },
-            select: { id: true, userId: true, gameServerId: true },
+            include: {
+                user: { select: { email: true, name: true } },
+                creationGameData: { select: { name: true } },
+                creationLocation: { select: { name: true } },
+            },
         });
 
         if (!order) {
-            logger.warn('invoice.payment_succeeded: No order found for invoice', 'PAYMENT_LOG', {
+            logger.error('invoice.payment_succeeded: No order found for invoice', 'PAYMENT_LOG', {
                 details: { invoiceId: invoice.id },
             });
             return;
@@ -409,6 +418,33 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             gameServerId: order.gameServerId ?? undefined,
             details: { orderId: order.id, invoiceId: invoice.id },
         });
+
+        try {
+            const gameName = order.creationGameData.name;
+            await sendInvoiceEmail({
+                userName: order.user.name || 'Spieler',
+                userEmail: order.user.email,
+                invoiceNumber: `${order.stripeInvoiceId || order.id}`,
+                invoiceDate: order.paidAt ?? new Date(),
+                gameName,
+                gameImageUrl: `${env('NEXT_PUBLIC_APP_URL')}/images/light/games/icons/${gameName.toLowerCase()}.webp`,
+                serverName: 'Gameserver',
+                orderType: order.type,
+                ramMB: order.ramMB,
+                cpuPercent: order.cpuPercent,
+                diskMB: order.diskMB,
+                location: order.creationLocation.name || 'Unknown',
+                price: order.price,
+                expiresAt: order.expiresAt,
+                invoicePdfUrl: invoice.invoice_pdf,
+            });
+        } catch (emailError) {
+            logger.error('Failed to send invoice email', 'EMAIL', {
+                userId: order.userId,
+                gameServerId: order.gameServerId ?? undefined,
+                details: { orderId: order.id, invoiceId: invoice.id, error: emailError },
+            });
+        }
     } catch (error) {
         logger.error('Error handling invoice.payment_succeeded', 'PAYMENT_LOG', {
             details: { invoiceId: invoice.id, error },

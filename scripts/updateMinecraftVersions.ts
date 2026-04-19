@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 
 try {
     const newMinecraftVersions = await fetch(
-        'https://tea.scyed.de/Scyed/GameDataJsons/raw/branch/main/MinecraftVersions/MinecraftVersions.json',
+        'https://tea.scyed.de/Scyed/GameDataJsons/releases/download/latest/MinecraftVersions.json',
         {
             headers: {
                 Authorization: `token ${process.env.GITTEA_MINECRAFT_JSONTOKEN}`,

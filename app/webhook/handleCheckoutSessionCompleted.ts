@@ -5,8 +5,6 @@ import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
 import { Stripe } from 'stripe';
-import { sendInvoiceEmail } from '@/lib/email/sendEmailEmailsFromLake';
-import { env } from 'next-runtime-env';
 import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
 const PROVISION_RETRIES = 2;
@@ -54,15 +52,11 @@ export default async function handleCheckoutSessionCompleted(
         }
 
         const session = await stripe.checkout.sessions.retrieve(checkoutSession.id, {
-            expand: ['payment_intent.latest_charge', 'invoice'],
+            expand: ['payment_intent.latest_charge'],
         });
 
-        let receiptUrl: string | null = null;
-        let receiptPdfUrl: string | null = null;
-        let invoicePdfUrl: string | null = null;
         let paymentIntentId: string | null = null;
         let chargeId: string | null = null;
-        let stripeInvoiceId: string | null = null;
         let paidAt: Date | null = null;
 
         if (typeof session.payment_intent !== 'string' && session.payment_intent) {
@@ -72,23 +66,15 @@ export default async function handleCheckoutSessionCompleted(
                 session.payment_intent.latest_charge &&
                 typeof session.payment_intent.latest_charge !== 'string'
             ) {
-                receiptUrl = session.payment_intent.latest_charge.receipt_url;
-                receiptPdfUrl = session.payment_intent.latest_charge.receipt_url;
                 chargeId = session.payment_intent.latest_charge.id;
-                // Use Stripe's authoritative charge timestamp as the legal payment date
                 paidAt = new Date(session.payment_intent.latest_charge.created * 1000);
             }
         } else if (typeof session.payment_intent === 'string') {
             paymentIntentId = session.payment_intent;
         }
 
-        // Save invoice ID so invoice.payment_succeeded can map the PDF later
-        if (typeof session.invoice === 'string') {
-            stripeInvoiceId = session.invoice;
-        } else if (session.invoice) {
-            stripeInvoiceId = session.invoice.id ?? null;
-            invoicePdfUrl = session.invoice.invoice_pdf ?? null;
-        }
+        const stripeInvoiceId =
+            typeof session.invoice === 'string' ? session.invoice : (session.invoice?.id ?? null);
 
         await prisma.gameServerOrder.update({
             where: {
@@ -100,8 +86,7 @@ export default async function handleCheckoutSessionCompleted(
                 stripeChargeId: chargeId,
                 stripeInvoiceId,
                 status: 'PAID',
-                paidAt: paidAt ?? new Date(), // Stripe charge timestamp; fallback to webhook receipt time
-                invoicePdfUrl,
+                paidAt: paidAt ?? new Date(),
             },
         });
 
@@ -162,64 +147,6 @@ export default async function handleCheckoutSessionCompleted(
                 },
             });
             return;
-        }
-
-        // Fetch updated order with all relations after provisioning
-        const updatedOrder = await prisma.gameServerOrder.findUniqueOrThrow({
-            where: { id: serverOrderId },
-            include: {
-                user: true,
-                creationGameData: true,
-                creationLocation: true,
-            },
-        });
-
-        // Send emails only if we have the necessary data
-        if (updatedOrder.creationGameData && updatedOrder.creationLocation) {
-            const appUrl = env('NEXT_PUBLIC_APP_URL');
-            const gameName = updatedOrder.creationGameData.name;
-            const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
-
-            try {
-                // Send invoice email
-                await sendInvoiceEmail({
-                    userName: updatedOrder.user.name || 'Spieler',
-                    userEmail: updatedOrder.user.email,
-                    invoiceNumber: `${updatedOrder.stripeInvoiceId || updatedOrder.id}`,
-                    invoiceDate: updatedOrder.paidAt ?? new Date(),
-                    gameName: gameName,
-                    gameImageUrl: gameImageUrl,
-                    serverName: 'Gameserver',
-                    orderType: updatedOrder.type,
-                    ramMB: updatedOrder.ramMB,
-                    cpuPercent: updatedOrder.cpuPercent,
-                    diskMB: updatedOrder.diskMB,
-                    location: updatedOrder.creationLocation.name || 'Unknown',
-                    price: updatedOrder.price,
-                    expiresAt: updatedOrder.expiresAt,
-                    invoicePdfUrl: receiptUrl || '',
-                });
-
-                logger.info('Sent booking confirmation and invoice emails', 'EMAIL', {
-                    userId: updatedOrder.userId,
-                    gameServerId: updatedOrder.gameServerId ?? undefined,
-                    details: {
-                        serverOrderId: updatedOrder.id,
-                        userEmail: updatedOrder.user.email,
-                        gameName: gameName,
-                    },
-                });
-            } catch (emailError) {
-                logger.error('Failed to send booking/invoice emails', 'EMAIL', {
-                    userId: updatedOrder.userId,
-                    gameServerId: updatedOrder.gameServerId ?? undefined,
-                    details: {
-                        error: emailError,
-                        serverOrderId: updatedOrder.id,
-                        userEmail: updatedOrder.user.email,
-                    },
-                });
-            }
         }
     } catch (error) {
         logger.fatal('Error handling checkout.session.completed', 'PAYMENT_LOG', {
