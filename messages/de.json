@@ -1355,7 +1355,7 @@
     }
   },
   "order": {
-    "storageTier": "Speicher-Stufe",
+    "storageTier": "Resource-Tier",
     "resourceTier": {
       "free": "Kostenlos",
       "disk": "Speicher",

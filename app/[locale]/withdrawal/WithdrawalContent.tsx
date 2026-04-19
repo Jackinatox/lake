@@ -72,7 +72,7 @@ export async function WithdrawalContent({ userId }: WithdrawalContentProps) {
                     id: true,
                     type: true,
                     price: true,
-                    receipt_url: true,
+                    invoicePdfUrl: true,
                     creationGameData: { select: { name: true } },
                     gameServer: { select: { name: true, ptServerId: true } },
                 },
@@ -165,7 +165,7 @@ export async function WithdrawalContent({ userId }: WithdrawalContentProps) {
                                 originalPrice={refund.order.price}
                                 gameName={refund.order.creationGameData.name}
                                 serverName={refund.order.gameServer?.name ?? undefined}
-                                chargeReceiptUrl={refund.order.receipt_url ?? undefined}
+                                chargeReceiptUrl={refund.order.invoicePdfUrl ?? undefined}
                             />
                         ))
                     )}

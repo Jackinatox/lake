@@ -1343,7 +1343,7 @@
     }
   },
   "order": {
-    "storageTier": "Storage Tier",
+    "storageTier": "Resource Tier",
     "resourceTier": {
       "free": "Free",
       "disk": "Disk",

@@ -101,9 +101,7 @@ export default async function handleCheckoutSessionCompleted(
                 stripeInvoiceId,
                 status: 'PAID',
                 paidAt: paidAt ?? new Date(), // Stripe charge timestamp; fallback to webhook receipt time
-                receipt_url: receiptUrl,
                 invoicePdfUrl,
-                receiptPdfUrl,
             },
         });
 

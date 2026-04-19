@@ -96,7 +96,7 @@ export default function Profile() {
                             variant={theme === 'light' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setTheme('light')}
-                            className="flex-1"
+                            className="flex-1 cursor-pointer"
                         >
                             <Sun className="h-5 w-5" />
                         </Button>
@@ -104,7 +104,7 @@ export default function Profile() {
                             variant={theme === 'dark' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setTheme('dark')}
-                            className="flex-1"
+                            className="flex-1 cursor-pointer"
                         >
                             <Moon className="h-5 w-5" />
                         </Button>
@@ -112,7 +112,7 @@ export default function Profile() {
                             variant={theme === 'system' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setTheme('system')}
-                            className="flex-1"
+                            className="flex-1 cursor-pointer"
                         >
                             <Laptop className="h-5 w-5" />
                         </Button>
