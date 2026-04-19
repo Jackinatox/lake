@@ -13,10 +13,7 @@ export default async function OrderPage() {
         const imgName = `${game.name.toLowerCase()}.webp`;
         return {
             ...game,
-            images: {
-                dark: `/images/dark/games/icons/${imgName}`,
-                light: `/images/light/games/icons/${imgName}`,
-            },
+            imageSrc: `/images/games/icons/${imgName}`,
         };
     });
 
@@ -55,7 +52,7 @@ export default async function OrderPage() {
                                     link: `/order/free/${game.slug}`,
                                     name: game.name,
                                 }}
-                                images={game.images}
+                                imageSrc={game.imageSrc}
                             />
                         ))}
                     </div>

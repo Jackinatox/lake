@@ -1,8 +1,8 @@
 import { ThemeSwitcher } from '@/components/Menu/theme-switcher';
+import { ThemeImage } from '@/components/ui/theme-image';
 import CookieSettingsButton from '@/components/CookieSettingsButton';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 
 export default function Footer() {
     const t = useTranslations('footer');
@@ -126,26 +126,14 @@ export default function Footer() {
                             className="mr-4 flex items-center"
                             style={{ height: '100%' }}
                         >
-                            <Image
-                                src="/images/light/logo/ScyedLogo.webp"
+                            <ThemeImage
+                                src="/images/logo/ScyedLogo.webp"
                                 alt="Scyed"
                                 fill={false}
                                 width={1084}
                                 height={482}
                                 sizes="64px"
                                 style={{ width: 'auto', maxHeight: '100%' }}
-                                className="block dark:hidden"
-                                priority
-                            />
-                            <Image
-                                src="/images/dark/logo/ScyedLogo.webp"
-                                alt="Scyed"
-                                fill={false}
-                                width={1084}
-                                height={482}
-                                sizes="64px"
-                                style={{ width: 'auto', maxHeight: '100%' }}
-                                className="hidden dark:block"
                                 priority
                             />
                         </Link>

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import prisma from '@/lib/prisma';
 import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { Gift, ChevronRight } from 'lucide-react';
@@ -23,8 +24,7 @@ export default async function LandingPage() {
         {
             title: t('panelTitle'),
             desc: t('panelDesc'),
-            darkImg: '/images/dark/home/panel.webp',
-            lightImg: '/images/light/home/panel.webp',
+            imageSrc: '/images/home/panel.webp',
             width: 2074,
             height: 1412,
             alt: 'Control panel screenshot',
@@ -32,8 +32,7 @@ export default async function LandingPage() {
         {
             title: t('fileManagerTitle'),
             desc: t('fileManagerDesc'),
-            darkImg: '/images/dark/home/filemanager.webp',
-            lightImg: '/images/light/home/filemanager.webp',
+            imageSrc: '/images/home/filemanager.webp',
             width: 1812,
             height: 906,
             alt: 'File manager screenshot',
@@ -41,8 +40,7 @@ export default async function LandingPage() {
         {
             title: t('backupTitle'),
             desc: t('backupDesc'),
-            darkImg: '/images/dark/home/backups.webp',
-            lightImg: '/images/light/home/backups.webp',
+            imageSrc: '/images/home/backups.webp',
             width: 1608,
             height: 818,
             alt: 'Backups screenshot',
@@ -84,18 +82,13 @@ export default async function LandingPage() {
             <section className="relative lg:min-h-[94vh] flex items-center overflow-hidden">
                 {/* Hero background image */}
                 <div className="absolute inset-0 z-0">
-                    <Image
-                        src="/images/light/bgs/background-hero.png"
+                    <ThemeImage
+                        src="/images/bgs/background-hero.png"
                         alt=""
                         fill
-                        className="object-cover opacity-40 block dark:hidden"
-                        priority
-                    />
-                    <Image
-                        src="/images/dark/bgs/background-hero.png"
-                        alt=""
-                        fill
-                        className="object-cover opacity-30 hidden dark:block"
+                        className="object-cover"
+                        lightClassName="opacity-40"
+                        darkClassName="opacity-30"
                         priority
                     />
                     <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
@@ -142,7 +135,10 @@ export default async function LandingPage() {
                                     className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
                                     asChild
                                 >
-                                    <Link href="/order/free" className="flex items-center justify-center gap-2">
+                                    <Link
+                                        href="/order/free"
+                                        className="flex items-center justify-center gap-2"
+                                    >
                                         <Gift className="h-4 w-4" />
                                         {t('getFreeServer')}
                                     </Link>
@@ -161,20 +157,12 @@ export default async function LandingPage() {
                         {/* ── Mobile: panel preview (shown below copy) ───── */}
                         <div className="hidden lp-in d5 relative -mx-4 px-4">
                             <div className="relative rounded-xl border overflow-hidden shadow-xl shadow-black/20">
-                                <Image
-                                    src="/images/dark/home/panel.webp"
+                                <ThemeImage
+                                    src="/images/home/panel.webp"
                                     alt="Control panel"
                                     width={2074}
                                     height={1412}
-                                    className="w-full h-auto hidden dark:block"
-                                    priority
-                                />
-                                <Image
-                                    src="/images/light/home/panel.webp"
-                                    alt="Control panel"
-                                    width={2074}
-                                    height={1412}
-                                    className="w-full h-auto block dark:hidden"
+                                    className="w-full h-auto"
                                     priority
                                 />
                             </div>
@@ -184,20 +172,12 @@ export default async function LandingPage() {
                         <div className="hidden lg:block relative h-130">
                             <div className="lp-in d6 absolute inset-y-0 left-0 right-[-12vw] flex items-center">
                                 <div className="panel-tilt w-full rounded-xl border overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.35)]">
-                                    <Image
-                                        src="/images/dark/home/panel.webp"
+                                    <ThemeImage
+                                        src="/images/home/panel.webp"
                                         alt="Control panel"
                                         width={2074}
                                         height={1412}
-                                        className="w-full h-auto hidden dark:block"
-                                        priority
-                                    />
-                                    <Image
-                                        src="/images/light/home/panel.webp"
-                                        alt="Control panel"
-                                        width={2074}
-                                        height={1412}
-                                        className="w-full h-auto block dark:hidden"
+                                        className="w-full h-auto"
                                         priority
                                     />
                                 </div>
@@ -273,21 +253,13 @@ export default async function LandingPage() {
                         </CardDescription>
                     </CardHeader>
                     <div className="overflow-hidden order-1 md:order-2 bg-muted/20">
-                        <Image
-                            src={tools[0].darkImg}
+                        <ThemeImage
+                            src={tools[0].imageSrc}
                             width={tools[0].width}
                             height={tools[0].height}
                             alt={tools[0].alt}
                             sizes="(max-width: 768px) 100vw, 60vw"
-                            className="w-full h-auto hidden dark:block"
-                        />
-                        <Image
-                            src={tools[0].lightImg}
-                            width={tools[0].width}
-                            height={tools[0].height}
-                            alt={tools[0].alt}
-                            sizes="(max-width: 768px) 100vw, 60vw"
-                            className="w-full h-auto block dark:hidden"
+                            className="w-full h-auto"
                         />
                     </div>
                 </Card>
@@ -300,21 +272,13 @@ export default async function LandingPage() {
                             className="group rounded-2xl overflow-hidden p-0 gap-0 flex flex-col"
                         >
                             <div className="overflow-hidden bg-muted/20 order-1">
-                                <Image
-                                    src={tool.darkImg}
+                                <ThemeImage
+                                    src={tool.imageSrc}
                                     width={tool.width}
                                     height={tool.height}
                                     alt={tool.alt}
                                     sizes="(max-width: 768px) 100vw, 50vw"
-                                    className="w-full h-auto hidden dark:block"
-                                />
-                                <Image
-                                    src={tool.lightImg}
-                                    width={tool.width}
-                                    height={tool.height}
-                                    alt={tool.alt}
-                                    sizes="(max-width: 768px) 100vw, 50vw"
-                                    className="w-full h-auto block dark:hidden"
+                                    className="w-full h-auto"
                                 />
                             </div>
                             <CardHeader className="border-t order-2 p-5 md:p-6">
@@ -346,17 +310,15 @@ export default async function LandingPage() {
                             className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
                             asChild
                         >
-                            <Link href="/order/free" className="flex items-center justify-center gap-2">
+                            <Link
+                                href="/order/free"
+                                className="flex items-center justify-center gap-2"
+                            >
                                 <Gift className="h-4 w-4" />
                                 {t('getFreeServer')}
                             </Link>
                         </Button>
-                        <Button
-                            size="lg"
-                            variant="outline"
-                            className="w-full sm:w-auto"
-                            asChild
-                        >
+                        <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                             <Link href="/order/configure">{t('buttonComparePlans')}</Link>
                         </Button>
                     </div>

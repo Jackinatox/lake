@@ -1,5 +1,6 @@
 'use client';
 
+import { ThemeImage } from '@/components/ui/theme-image';
 import * as React from 'react';
 import Link from 'next/link';
 import {
@@ -10,7 +11,6 @@ import {
     HeadphonesIcon,
     Gift,
 } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -163,27 +163,14 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                 <SheetHeader>
                                     <SheetTitle>
                                         <Link href="/" onClick={() => setOpen(false)}>
-                                            {/* Light mode logo */}
-                                            <Image
-                                                src="/images/light/logo/ScyedLogo.webp"
+                                            <ThemeImage
+                                                src="/images/logo/ScyedLogo.webp"
                                                 alt="Scyed"
                                                 fill={false}
                                                 width={1084}
                                                 height={482}
                                                 sizes="64px"
                                                 style={{ width: 'auto', maxHeight: '100%' }}
-                                                className="block dark:hidden"
-                                                priority
-                                            />
-                                            <Image
-                                                src="/images/dark/logo/ScyedLogo.webp"
-                                                alt="Scyed"
-                                                fill={false}
-                                                width={1084}
-                                                height={482}
-                                                sizes="64px"
-                                                style={{ width: 'auto', maxHeight: '100%' }}
-                                                className="hidden dark:block"
                                                 priority
                                             />
                                         </Link>

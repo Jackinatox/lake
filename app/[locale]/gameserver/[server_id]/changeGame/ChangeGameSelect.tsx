@@ -28,10 +28,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
 
         return {
             ...game,
-            images: {
-                dark: `/images/dark/games/icons/${imgName}`,
-                light: `/images/light/games/icons/${imgName}`,
-            },
+            imageSrc: `/images/games/icons/${imgName}`,
         };
     });
 
@@ -49,7 +46,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
                                 link: `/gameserver/${serverId}/changeGame/${game.id.toString()}`,
                                 name: game.name ?? '',
                             }}
-                            images={game.images}
+                            imageSrc={game.imageSrc}
                         />
                     );
                 })}

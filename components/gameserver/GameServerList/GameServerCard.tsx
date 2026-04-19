@@ -1,9 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { ClientServer } from '@/models/prisma';
 import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
 import { useTranslations } from 'next-intl';
@@ -61,26 +61,14 @@ function ServerCard({
             <div className="flex gap-3">
                 {/* Game icon */}
                 <div className="shrink-0">
-                    <span className="block dark:hidden">
-                        <Image
-                            src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                            alt={server.gameData.name}
-                            width={48}
-                            height={48}
-                            className="w-11 h-11 rounded-lg object-cover"
-                            priority
-                        />
-                    </span>
-                    <span className="hidden dark:block">
-                        <Image
-                            src={`/images/dark/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                            alt={server.gameData.name}
-                            width={48}
-                            height={48}
-                            className="w-11 h-11 rounded-lg object-cover"
-                            priority
-                        />
-                    </span>
+                    <ThemeImage
+                        src={`/images/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                        alt={server.gameData.name}
+                        width={48}
+                        height={48}
+                        className="w-11 h-11 rounded-lg object-cover"
+                        priority
+                    />
                 </div>
 
                 {/* Content */}

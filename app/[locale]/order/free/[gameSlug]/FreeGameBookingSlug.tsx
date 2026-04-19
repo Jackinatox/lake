@@ -4,13 +4,13 @@ import { checkoutFreeGameServer } from '@/app/actions/checkout/checkout';
 import { GameConfigComponent } from '@/components/booking2/game-config';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { useToast } from '@/hooks/use-toast';
 import { authClient } from '@/lib/auth-client';
 import { getValidationMessage } from '@/lib/validation/common';
 import { gameConfigSchema } from '@/lib/validation/order';
 import { Game, GameConfig } from '@/models/config';
 import { ArrowLeft, Gift, Server } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -98,17 +98,11 @@ export default function FreeGameServerBooking({
                                 </Link>
                             </Button>
                             <div className="relative w-8 h-8 shrink-0">
-                                <Image
-                                    src={`/images/light/games/icons/${imgName}`}
+                                <ThemeImage
+                                    src={`/images/games/icons/${imgName}`}
                                     alt={game.name}
                                     fill
-                                    className="object-cover rounded-md block dark:hidden"
-                                />
-                                <Image
-                                    src={`/images/dark/games/icons/${imgName}`}
-                                    alt={game.name}
-                                    fill
-                                    className="object-cover rounded-md hidden dark:block"
+                                    className="object-cover rounded-md"
                                 />
                             </div>
                             <div className="min-w-0">

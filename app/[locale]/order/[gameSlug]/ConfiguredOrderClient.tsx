@@ -2,9 +2,9 @@
 
 import PerformanceConfigurator from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useCallback } from 'react';
 
@@ -48,17 +48,11 @@ export default function ConfiguredOrderClient({
                             </Link>
                         </Button>
                         <div className="relative w-8 h-8 shrink-0">
-                            <Image
-                                src={`/images/light/games/icons/${imgName}`}
+                            <ThemeImage
+                                src={`/images/games/icons/${imgName}`}
                                 alt={game.name}
                                 fill
-                                className="object-cover rounded-md block dark:hidden"
-                            />
-                            <Image
-                                src={`/images/dark/games/icons/${imgName}`}
-                                alt={game.name}
-                                fill
-                                className="object-cover rounded-md hidden dark:block"
+                                className="object-cover rounded-md"
                             />
                         </div>
                         <div className="flex-1 min-w-0">

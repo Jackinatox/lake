@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import PackageCard, { PackageDisplay } from '@/components/order/PackageCard';
 import { ArrowLeft, ArrowRight, Gift, Wrench } from 'lucide-react';
 
@@ -21,10 +21,7 @@ export default function GameLandingClient({
     recommendation,
 }: GameLandingProps) {
     const imgName = `${game.name.toLowerCase()}.webp`;
-    const gameImages = {
-        light: `/images/light/games/icons/${imgName}`,
-        dark: `/images/dark/games/icons/${imgName}`,
-    };
+    const gameImageSrc = `/images/games/icons/${imgName}`;
 
     // Build custom configure URL with recommendation defaults
     const configureParams = new URLSearchParams();
@@ -47,17 +44,11 @@ export default function GameLandingClient({
 
                 <div className="flex items-center gap-4">
                     <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                        <Image
-                            src={gameImages.light}
+                        <ThemeImage
+                            src={gameImageSrc}
                             alt={game.name}
                             fill
-                            className="object-cover rounded-xl block dark:hidden"
-                        />
-                        <Image
-                            src={gameImages.dark}
-                            alt={game.name}
-                            fill
-                            className="object-cover rounded-xl hidden dark:block"
+                            className="object-cover rounded-xl"
                         />
                     </div>
                     <div className="min-w-0">

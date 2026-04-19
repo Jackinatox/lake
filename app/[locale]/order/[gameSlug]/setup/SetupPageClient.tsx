@@ -6,6 +6,7 @@ import HardwareChipBar from '@/components/order/HardwareChipBar';
 import { configuredHardwareFromParams } from '@/components/order/PerformanceConfigurator';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { useToast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { authClient } from '@/lib/auth-client';
@@ -16,7 +17,6 @@ import { checkoutConfiguredParamsSchema, gameConfigSchema } from '@/lib/validati
 import type { Game, GameConfig } from '@/models/config';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info, Pencil } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -188,17 +188,11 @@ export default function SetupPageClient({
                                 </Link>
                             </Button>
                             <div className="relative w-10 h-10 shrink-0">
-                                <Image
-                                    src={`/images/light/games/icons/${imgName}`}
+                                <ThemeImage
+                                    src={`/images/games/icons/${imgName}`}
                                     alt={game.name}
                                     fill
-                                    className="object-cover rounded-lg block dark:hidden"
-                                />
-                                <Image
-                                    src={`/images/dark/games/icons/${imgName}`}
-                                    alt={game.name}
-                                    fill
-                                    className="object-cover rounded-lg hidden dark:block"
+                                    className="object-cover rounded-lg"
                                 />
                             </div>
                             <div>
@@ -256,17 +250,11 @@ export default function SetupPageClient({
                     {/* Header with Game Icon */}
                     <div className="mb-4 md:mb-6 flex items-center gap-4">
                         <div className="relative w-14 h-14 md:w-16 md:h-16 shrink-0">
-                            <Image
-                                src={`/images/light/games/icons/${imgName}`}
+                            <ThemeImage
+                                src={`/images/games/icons/${imgName}`}
                                 alt={game.name}
                                 fill
-                                className="object-cover rounded-lg block dark:hidden shadow-md"
-                            />
-                            <Image
-                                src={`/images/dark/games/icons/${imgName}`}
-                                alt={game.name}
-                                fill
-                                className="object-cover rounded-lg hidden dark:block shadow-md"
+                                className="object-cover rounded-lg shadow-md"
                             />
                         </div>
                         <div>

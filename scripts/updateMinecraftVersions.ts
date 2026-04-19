@@ -6,8 +6,8 @@ try {
         {
             headers: {
                 Authorization: `token ${process.env.GITTEA_MINECRAFT_JSONTOKEN}`,
-            }
-        }
+            },
+        },
     );
     if (!newMinecraftVersions.ok) {
         throw new Error(

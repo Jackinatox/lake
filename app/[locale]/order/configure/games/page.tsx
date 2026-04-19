@@ -21,10 +21,7 @@ export default async function GamesAfterHardwarePage() {
         const imgName = `${game.name.toLowerCase()}.webp`;
         return {
             ...game,
-            images: {
-                dark: `/images/dark/games/icons/${imgName}`,
-                light: `/images/light/games/icons/${imgName}`,
-            },
+            imageSrc: `/images/games/icons/${imgName}`,
         };
     });
 

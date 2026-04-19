@@ -11,7 +11,7 @@ import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { GameData, PerformanceGroup, ResourceTier } from '@/models/prisma';
 
 type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & {
-    images: { dark: string; light: string };
+    imageSrc: string;
 };
 
 function parseFiniteNumber(value: string | null, fallback: number) {
@@ -128,7 +128,7 @@ export default function GamesAfterHardwareClient({
                                 link: `/order/${game.slug}/setup?${hwParamsStr}&mode=configured`,
                                 name: game.name,
                             }}
-                            images={game.images}
+                            imageSrc={game.imageSrc}
                         />
                     ))}
                 </div>
