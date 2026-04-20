@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import {
     Download,
+    FileQuestion,
     FileText,
     Folder,
     FolderOpen,
@@ -221,10 +222,20 @@ const DirectoryTableComponent = ({
 
                     {!loading &&
                         entries.map((entry) => {
-                            const Icon = entry.isFile ? FileText : Folder;
-                            const OpenIcon = entry.isFile ? FileText : FolderOpen;
                             const entryKey = `${currentPath}${entry.name}`;
                             const fileTooBig = (entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE;
+
+                            const isEditable = entry.isFile && isTextLikeFile(entry);
+                            const Icon = entry.isFile
+                                ? isEditable
+                                    ? FileText
+                                    : FileQuestion
+                                : Folder;
+                            const OpenIcon = entry.isFile
+                                ? isEditable
+                                    ? FileText
+                                    : FileQuestion
+                                : FolderOpen;
 
                             return (
                                 <TableRow
@@ -245,7 +256,9 @@ const DirectoryTableComponent = ({
                                                 className={cn(
                                                     'h-4 w-4',
                                                     entry.isFile
-                                                        ? 'text-blue-500'
+                                                        ? isEditable
+                                                            ? 'text-blue-500'
+                                                            : 'text-muted-foreground'
                                                         : 'text-amber-500',
                                                 )}
                                             />
