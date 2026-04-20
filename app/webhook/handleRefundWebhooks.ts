@@ -10,58 +10,14 @@ import { env } from 'next-runtime-env';
 import Stripe from 'stripe';
 
 /**
- * Handle charge.refunded webhook.
- * This fires when any refund (full or partial) is created on a charge.
- * We use this as a fallback — the primary state machine is driven by refund.updated.
- */
-export async function handleChargeRefunded(charge: Stripe.Charge) {
-    try {
-        const order = await prisma.gameServerOrder.findFirst({
-            where: { stripeChargeId: charge.id },
-            include: { refunds: true },
-        });
-
-        if (!order) {
-            logger.warn('charge.refunded: No order found for charge', 'PAYMENT_LOG', {
-                details: { chargeId: charge.id },
-            });
-            return;
-        }
-
-        // Calculate total refunded from Stripe charge object (source of truth)
-        const totalRefundedCents = charge.amount_refunded;
-        const priceCents = Math.round(order.price);
-        const isFullRefund = totalRefundedCents >= priceCents;
-
-        await prisma.gameServerOrder.update({
-            where: { id: order.id },
-            data: {
-                refundStatus: isFullRefund ? 'FULL' : 'PARTIAL',
-                status: isFullRefund ? 'REFUNDED' : 'PARTIALLY_REFUNDED',
-            },
-        });
-
-        logger.info('charge.refunded processed', 'PAYMENT_LOG', {
-            userId: order.userId,
-            gameServerId: order.gameServerId ?? undefined,
-            details: {
-                orderId: order.id,
-                chargeId: charge.id,
-                totalRefundedCents,
-                isFullRefund,
-            },
-        });
-    } catch (error) {
-        logger.error('Error handling charge.refunded', 'PAYMENT_LOG', {
-            details: { chargeId: charge.id, error },
-        });
-    }
-}
-
-/**
- * Handle refund.updated and refund.failed webhooks.
+ * Handle refund.created and refund.updated webhooks.
  * This is the primary handler for updating refund state in the DB.
  * Never trust the API response — only update from this webhook.
+ *
+ * Both events route here because card refunds often arrive already SUCCEEDED
+ * on refund.created and never fire refund.updated (no status transition).
+ * The undo + email side effects are gated on a real status transition
+ * (prev !== SUCCEEDED → SUCCEEDED) so replays are idempotent.
  */
 export async function handleRefundUpdated(refund: Stripe.Refund) {
     try {
@@ -93,6 +49,9 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
         };
 
         const newStatus = statusMap[refund.status ?? ''] ?? 'PENDING';
+        const prevStatus = refundRecord.status;
+        const transitionedToSucceeded =
+            prevStatus !== 'SUCCEEDED' && newStatus === 'SUCCEEDED';
 
         await prisma.refund.update({
             where: { id: refundRecord.id },
@@ -162,9 +121,10 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             });
         }
 
-        // If refund succeeded, execute server action (suspend/revert/nothing)
-        // and send a confirmation email to the user
-        if (newStatus === 'SUCCEEDED') {
+        // Only run undo + email on the transition into SUCCEEDED so repeated
+        // webhooks (refund.created + refund.updated, or retries) don't re-suspend
+        // the server or re-send the email.
+        if (transitionedToSucceeded) {
             try {
                 await undoRefundedOrder(refundRecord.orderId, refundRecord.serverAction);
             } catch (undoError) {

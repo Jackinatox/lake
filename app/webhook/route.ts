@@ -13,7 +13,6 @@ import {
 } from './handleCheckoutSessionCompleted';
 import {
     handleRefundUpdated,
-    handleChargeRefunded,
     handleChargeDisputeCreated,
     handlePaymentSucceded,
 } from './handleRefundWebhooks';
@@ -133,28 +132,17 @@ export async function POST(req: NextRequest) {
             }
             break;
 
-        case 'charge.refunded':
-            const charge = event.data.object as Stripe.Charge;
-            logger.info('Charge refunded webhook received', 'PAYMENT_LOG', {
-                details: { chargeId: charge.id },
-            });
-            await handleChargeRefunded(charge);
-            break;
-
+        // This account's API version delivers the legacy event name
+        // `charge.refund.updated` (with a Refund payload) instead of the
+        // newer `refund.created` / `refund.updated`. Match both schemes.
+        case 'refund.created':
         case 'refund.updated':
-            const refundUpdated = event.data.object as Stripe.Refund;
-            logger.info('Refund updated webhook received', 'PAYMENT_LOG', {
-                details: { refundId: refundUpdated.id, status: refundUpdated.status },
+        case 'charge.refund.updated' as Stripe.Event.Type:
+            const refundEvent = event.data.object as Stripe.Refund;
+            logger.info(`${event.type} webhook received`, 'PAYMENT_LOG', {
+                details: { refundId: refundEvent.id, status: refundEvent.status },
             });
-            await handleRefundUpdated(refundUpdated);
-            break;
-
-        case 'refund.failed':
-            const refundFailed = event.data.object as Stripe.Refund;
-            logger.error('Refund failed webhook received', 'PAYMENT_LOG', {
-                details: { refundId: refundFailed.id, failureReason: refundFailed.failure_reason },
-            });
-            await handleRefundUpdated(refundFailed);
+            await handleRefundUpdated(refundEvent);
             break;
 
         case 'charge.dispute.created':

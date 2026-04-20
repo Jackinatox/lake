@@ -106,12 +106,12 @@ export async function adminRefund(
             idempotencyKey: `admin-refund-${order.id}-${refundRecord.id}`,
         });
 
-        // Update the refund record with Stripe refund ID
+        // Only persist the Stripe refund ID. Status stays PENDING until the
+        // webhook confirms it — the webhook is what runs undoRefundedOrder.
         await prisma.refund.update({
             where: { id: refundRecord.id },
             data: {
                 stripeRefundId: stripeRefund.id,
-                status: stripeRefund.status === 'succeeded' ? 'SUCCEEDED' : 'PENDING',
             },
         });
 

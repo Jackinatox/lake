@@ -331,6 +331,6 @@ async function suspendAndExpire(gameServerId: string) {
     await toggleSuspendGameServer(gameServerId, 'suspend');
     await prisma.gameServer.update({
         where: { id: gameServerId },
-        data: { expires: new Date() },
+        data: { expires: new Date(), status: 'EXPIRED' },
     });
 }
