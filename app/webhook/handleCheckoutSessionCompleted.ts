@@ -32,130 +32,142 @@ async function provisionWithRetry(
     throw new Error('unreachable');
 }
 
-export default async function handleCheckoutSessionCompleted(
+/**
+ * Synchronously persist IDs from the webhook payload + mark order PAID.
+ * Must run before the webhook 200 response so invoice.payment_succeeded
+ * (which races with this) can find the order by stripeInvoiceId.
+ *
+ * Only uses data already in the webhook event — no Stripe API calls.
+ * The charge id + paidAt are filled in later by provisionCheckoutSession.
+ *
+ * Returns the order id if provisioning should run, or null if already processed.
+ */
+export async function recordCheckoutSession(
     checkoutSession: Stripe.Checkout.Session,
+): Promise<string | null> {
+    const serverOrderId = checkoutSession.metadata?.orderId || '';
+
+    const orderUnprocessed = await prisma.gameServerOrder.findUniqueOrThrow({
+        where: { id: serverOrderId },
+    });
+
+    if (orderUnprocessed.status === 'PAID') {
+        logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
+            userId: orderUnprocessed.userId,
+            gameServerId: orderUnprocessed.gameServerId ?? undefined,
+            details: { serverOrderId },
+        });
+        return null;
+    }
+
+    const paymentIntentId =
+        typeof checkoutSession.payment_intent === 'string'
+            ? checkoutSession.payment_intent
+            : (checkoutSession.payment_intent?.id ?? null);
+
+    const stripeInvoiceId =
+        typeof checkoutSession.invoice === 'string'
+            ? checkoutSession.invoice
+            : (checkoutSession.invoice?.id ?? null);
+
+    await prisma.gameServerOrder.update({
+        where: { id: serverOrderId },
+        data: {
+            stripeSessionId: checkoutSession.id,
+            stripePaymentIntent: paymentIntentId,
+            stripeInvoiceId,
+            status: 'PAID',
+            paidAt: new Date(),
+        },
+    });
+
+    return serverOrderId;
+}
+
+export async function provisionCheckoutSession(
+    checkoutSession: Stripe.Checkout.Session,
+    serverOrderId: string,
 ) {
     try {
-        const serverOrderId = checkoutSession.metadata?.orderId || '';
+        // Enrich with charge id + authoritative paidAt from Stripe (not race-critical)
+        try {
+            const session = await stripe.checkout.sessions.retrieve(checkoutSession.id, {
+                expand: ['payment_intent.latest_charge'],
+            });
 
-        const orderUnprocessed = await prisma.gameServerOrder.findUniqueOrThrow({
+            if (
+                typeof session.payment_intent !== 'string' &&
+                session.payment_intent?.latest_charge &&
+                typeof session.payment_intent.latest_charge !== 'string'
+            ) {
+                await prisma.gameServerOrder.update({
+                    where: { id: serverOrderId },
+                    data: {
+                        stripeChargeId: session.payment_intent.latest_charge.id,
+                        paidAt: new Date(session.payment_intent.latest_charge.created * 1000),
+                    },
+                });
+            }
+        } catch (enrichError) {
+            logger.warn('Failed to enrich order with chargeId/paidAt', 'PAYMENT_LOG', {
+                details: { serverOrderId, error: enrichError },
+            });
+        }
+
+        const order = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: serverOrderId },
         });
 
-        if (orderUnprocessed?.status === 'PAID') {
-            logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
-                userId: orderUnprocessed.userId,
-                gameServerId: orderUnprocessed.gameServerId ?? undefined,
-                details: { serverOrderId: serverOrderId },
-            });
-            return;
-        }
-
-        const session = await stripe.checkout.sessions.retrieve(checkoutSession.id, {
-            expand: ['payment_intent.latest_charge'],
-        });
-
-        let paymentIntentId: string | null = null;
-        let chargeId: string | null = null;
-        let paidAt: Date | null = null;
-
-        if (typeof session.payment_intent !== 'string' && session.payment_intent) {
-            paymentIntentId = session.payment_intent.id;
-
-            if (
-                session.payment_intent.latest_charge &&
-                typeof session.payment_intent.latest_charge !== 'string'
-            ) {
-                chargeId = session.payment_intent.latest_charge.id;
-                paidAt = new Date(session.payment_intent.latest_charge.created * 1000);
-            }
-        } else if (typeof session.payment_intent === 'string') {
-            paymentIntentId = session.payment_intent;
-        }
-
-        const stripeInvoiceId =
-            typeof session.invoice === 'string' ? session.invoice : (session.invoice?.id ?? null);
-
-        await prisma.gameServerOrder.update({
-            where: {
-                id: serverOrderId,
-            },
-            data: {
-                stripeSessionId: checkoutSession.id,
-                stripePaymentIntent: paymentIntentId,
-                stripeChargeId: chargeId,
-                stripeInvoiceId,
-                status: 'PAID',
-                paidAt: paidAt ?? new Date(),
-            },
-        });
-
         try {
-            switch (orderUnprocessed.type) {
+            switch (order.type) {
                 case 'NEW':
                 case 'CONFIGURED':
                 case 'PACKAGE': {
-                    await provisionWithRetry(orderUnprocessed);
+                    await provisionWithRetry(order);
                     await prisma.gameServerOrder.update({
-                        where: { id: orderUnprocessed.id },
-                        data: {
-                            provisioningStatus: 'SUBMITTED',
-                        },
+                        where: { id: order.id },
+                        data: { provisioningStatus: 'SUBMITTED' },
                     });
                     break;
                 }
                 case 'UPGRADE':
-                    await upgradeGameServer(orderUnprocessed);
+                    await upgradeGameServer(order);
                     await prisma.gameServerOrder.update({
-                        where: { id: orderUnprocessed.id },
+                        where: { id: order.id },
                         data: { provisioningStatus: 'SUBMITTED' },
                     });
                     break;
                 case 'TO_PAYED':
                     throw new Error('Feature not implemented yet.');
-                    await upgradeFromFreeGameServer(orderUnprocessed);
+                    await upgradeFromFreeGameServer(order);
                     break;
                 default:
-                    logger.fatal(
-                        `Unhandled server order type: ${orderUnprocessed.type}`,
-                        'SYSTEM',
-                        {
-                            userId: orderUnprocessed.userId,
-                            gameServerId: orderUnprocessed.gameServerId ?? undefined,
-                            details: {
-                                serverOrderId: serverOrderId,
-                                orderType: orderUnprocessed.type,
-                            },
-                        },
-                    );
+                    logger.fatal(`Unhandled server order type: ${order.type}`, 'SYSTEM', {
+                        userId: order.userId,
+                        gameServerId: order.gameServerId ?? undefined,
+                        details: { serverOrderId, orderType: order.type },
+                    });
             }
         } catch (provisionError) {
             logger.error('Provisioning failed after all retries', 'PAYMENT_LOG', {
-                userId: orderUnprocessed.userId,
-                gameServerId: orderUnprocessed.gameServerId ?? undefined,
-                details: {
-                    error: provisionError,
-                    serverOrderId: serverOrderId,
-                    orderType: orderUnprocessed.type,
-                },
+                userId: order.userId,
+                gameServerId: order.gameServerId ?? undefined,
+                details: { error: provisionError, serverOrderId, orderType: order.type },
             });
             await prisma.gameServerOrder.update({
-                where: { id: orderUnprocessed.id },
+                where: { id: order.id },
                 data: {
                     provisioningStatus: 'FAILED',
                     errorText: `Provisioning failed: ${provisionError instanceof Error ? provisionError.message : 'Unknown error'}`,
                 },
             });
-            return;
         }
     } catch (error) {
-        logger.fatal('Error handling checkout.session.completed', 'PAYMENT_LOG', {
-            details: { error, checkoutSessionId: checkoutSession.id },
+        logger.fatal('Error provisioning checkout session', 'PAYMENT_LOG', {
+            details: { error, serverOrderId },
         });
         await prisma.gameServerOrder.updateMany({
-            where: {
-                stripeSessionId: checkoutSession.id,
-            },
+            where: { id: serverOrderId },
             data: {
                 errorText: `Error processing order: ${error instanceof Error ? error.message : 'Unknown error'}`,
             },

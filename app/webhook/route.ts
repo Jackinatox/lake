@@ -7,7 +7,10 @@ import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
-import handleCheckoutSessionCompleted from './handleCheckoutSessionCompleted';
+import {
+    recordCheckoutSession,
+    provisionCheckoutSession,
+} from './handleCheckoutSessionCompleted';
 import {
     handleRefundUpdated,
     handleChargeRefunded,
@@ -59,9 +62,14 @@ export async function POST(req: NextRequest) {
             logger.info('Handling checkout.session.completed', 'PAYMENT_LOG', {
                 details: { sessionId: checkoutSession.id },
             });
-            after(async () => {
-                await handleCheckoutSessionCompleted(checkoutSession);
-            });
+            // Persist Stripe IDs synchronously so invoice.payment_succeeded
+            // (which can arrive before this response returns) can find the order.
+            const orderIdToProvision = await recordCheckoutSession(checkoutSession);
+            if (orderIdToProvision) {
+                after(async () => {
+                    await provisionCheckoutSession(checkoutSession, orderIdToProvision);
+                });
+            }
             break;
 
         case 'checkout.session.expired':

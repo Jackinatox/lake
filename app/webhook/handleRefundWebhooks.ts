@@ -392,19 +392,33 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             return;
         }
 
-        const order = await prisma.gameServerOrder.findFirst({
-            where: { stripeInvoiceId: invoice.id },
-            include: {
-                user: { select: { email: true, name: true } },
-                creationGameData: { select: { name: true } },
-                creationLocation: { select: { name: true } },
-            },
-        });
+        // checkout.session.completed and invoice.payment_succeeded are delivered
+        // in parallel by Stripe. Retry briefly in case the checkout handler
+        // hasn't persisted stripeInvoiceId yet.
+        const findOrder = () =>
+            prisma.gameServerOrder.findFirst({
+                where: { stripeInvoiceId: invoice.id },
+                include: {
+                    user: { select: { email: true, name: true } },
+                    creationGameData: { select: { name: true } },
+                    creationLocation: { select: { name: true } },
+                },
+            });
+
+        const LOOKUP_RETRIES = 5;
+        const LOOKUP_DELAY_MS = 1000;
+        let order = await findOrder();
+        for (let attempt = 1; attempt < LOOKUP_RETRIES && !order; attempt++) {
+            await new Promise((r) => setTimeout(r, LOOKUP_DELAY_MS));
+            order = await findOrder();
+        }
 
         if (!order) {
-            logger.error('invoice.payment_succeeded: No order found for invoice', 'PAYMENT_LOG', {
-                details: { invoiceId: invoice.id },
-            });
+            logger.error(
+                'invoice.payment_succeeded: No order found for invoice after retries',
+                'PAYMENT_LOG',
+                { details: { invoiceId: invoice.id, retries: LOOKUP_RETRIES } },
+            );
             return;
         }
 
