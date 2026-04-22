@@ -186,7 +186,7 @@ export default function InvoiceTemplate({
                 <Text
                     style={{ ...mutedTextStyle, fontSize: '12px', marginTop: 8, marginBottom: 0 }}
                 >
-                    Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
+                    Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer gemäß §19 UStG.
                 </Text>
             </EmailCard>
 

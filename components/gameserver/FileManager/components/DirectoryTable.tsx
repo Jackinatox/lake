@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import {
     Download,
-    FileQuestion,
+    File,
     FileText,
     Folder,
     FolderOpen,
@@ -229,12 +229,12 @@ const DirectoryTableComponent = ({
                             const Icon = entry.isFile
                                 ? isEditable
                                     ? FileText
-                                    : FileQuestion
+                                    : File
                                 : Folder;
                             const OpenIcon = entry.isFile
                                 ? isEditable
                                     ? FileText
-                                    : FileQuestion
+                                    : File
                                 : FolderOpen;
 
                             return (

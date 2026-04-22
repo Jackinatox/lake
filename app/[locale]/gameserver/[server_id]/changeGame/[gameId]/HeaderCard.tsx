@@ -16,12 +16,6 @@ export default function HeaderCard({ currentGameName, game }: HeaderCardProps) {
         <Card className="relative overflow-hidden border-primary/20 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
             <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-3">
-                    <Badge
-                        variant="secondary"
-                        className="w-fit uppercase tracking-widest text-[0.65rem]"
-                    >
-                        Game switch
-                    </Badge>
                     <div className="space-y-1 text-left">
                         <CardTitle className="text-lg font-semibold leading-snug sm:text-xl">
                             Configure the new game experience
