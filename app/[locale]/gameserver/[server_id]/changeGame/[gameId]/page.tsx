@@ -95,7 +95,7 @@ async function Page({
     };
 
     return (
-        <div className="mx-auto w-full max-w-5xl md:px-4 md:py-6 sm:py-10">
+        <div className="w-full">
             <ChangeGameConfigClient
                 serverId={serverId}
                 game={gameForConfig}
