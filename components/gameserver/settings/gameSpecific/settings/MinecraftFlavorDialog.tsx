@@ -13,8 +13,8 @@ export function MinecraftFlavorDialog({
     triggerText = 'Server flavour ändern',
     server,
 }: MinecraftFlavorDialogProps) {
-    // Link to the change game page with the server's gameDataId and deleteFiles=false for flavor changes
-    const changeGameUrl = `/gameserver/${server.identifier}/changeGame/${server.gameDataId}?deleteFiles=false`;
+    // Link to the change game page with the server's gameSlug and deleteFiles=false for flavor changes
+    const changeGameUrl = `/gameserver/${server.identifier}/changeGame/${server.gameSlug}?deleteFiles=false`;
 
     return (
         <Button variant="outline" className="w-full sm:w-auto" asChild>

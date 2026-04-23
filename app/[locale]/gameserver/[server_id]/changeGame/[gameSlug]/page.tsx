@@ -8,12 +8,12 @@ import prisma from '@/lib/prisma';
 import { z } from '@/lib/validation/common';
 
 import { headers } from 'next/headers';
-import type { Game } from '@/models/config';
+import type { Game, GameConfig } from '@/models/config';
 
 interface PageParams {
     locale: string;
     server_id: string;
-    gameId: string;
+    gameSlug: string;
 }
 
 async function Page({
@@ -23,13 +23,12 @@ async function Page({
     params: Promise<PageParams>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const { server_id: serverId, gameId } = await params;
+    const { server_id: serverId, gameSlug } = await params;
     const search = await searchParams;
-    const parsedGameId = z
+    const parsedGameSlug = z
         .string()
         .trim()
-        .regex(/^[1-9]\d*$/, 'Game ID must be a positive integer')
-        .safeParse(gameId);
+        .safeParse(gameSlug);
     const deleteFilesParam = Array.isArray(search.deleteFiles)
         ? search.deleteFiles[0]
         : search.deleteFiles;
@@ -60,9 +59,9 @@ async function Page({
                 },
             },
         }),
-        prisma.gameData.findUnique({
+        prisma.gameData.findFirst({
             where: {
-                id: parsedGameId.success ? Number(parsedGameId.data) : -1,
+                slug: parsedGameSlug.data,
             },
             select: {
                 id: true,
@@ -77,7 +76,7 @@ async function Page({
         return <NotAllowedMessage />;
     }
 
-    if (!parsedGameId.success || !game || !game.data) {
+    if (!parsedGameSlug.success || !game || !game.data) {
         return (
             <div className="flex min-h-[40vh] items-center justify-center">
                 <div className="text-center text-sm text-muted-foreground">
@@ -100,7 +99,7 @@ async function Page({
                 serverId={serverId}
                 game={gameForConfig}
                 currentGameName={gameServer.gameData?.name.toLowerCase() ?? null}
-                currentGameEggId={gameServer.gameDataId}
+                currentGameEggId={(gameServer.gameConfig as unknown as GameConfig).eggId}
                 defaultDeleteFiles={deleteFiles}
             />
         </div>

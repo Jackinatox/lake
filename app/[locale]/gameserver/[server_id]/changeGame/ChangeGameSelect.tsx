@@ -13,6 +13,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     const data = await prisma.gameData.findMany({
         select: {
             id: true,
+            slug: true,
             name: true,
         },
         where: { enabled: true },
@@ -58,7 +59,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
                         <GameCard
                             key={game.id}
                             card={{
-                                link: `/gameserver/${serverId}/changeGame/${game.id.toString()}`,
+                                link: `/gameserver/${serverId}/changeGame/${game.slug}`,
                                 name: game.name ?? '',
                             }}
                             imageSrc={game.imageSrc}
