@@ -18,6 +18,7 @@ type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 
 
 export default function UsernameEditor({ currentUsername }: { currentUsername: string }) {
     const t = useTranslations('profile');
+    const hasUsername = currentUsername.trim().length > 0;
 
     const [editing, setEditing] = useState(false);
     const [input, setInput] = useState('');
@@ -107,11 +108,19 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
                     <button
                         type="button"
                         onClick={startEditing}
-                        className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        aria-label={t('account.editUsername')}
+                        className={
+                            hasUsername
+                                ? 'group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer'
+                                : 'inline-flex items-center rounded-md border border-dashed border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground'
+                        }
+                        aria-label={
+                            hasUsername ? t('account.editUsername') : t('account.addUsername')
+                        }
                     >
-                        <span>{currentUsername}</span>
-                        <Pencil className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+                        <span>{hasUsername ? currentUsername : t('account.addUsername')}</span>
+                        {hasUsername && (
+                            <Pencil className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+                        )}
                     </button>
                 ) : (
                     <ButtonGroup className="w-full">
