@@ -37,8 +37,9 @@ export default function ChangeGameConfigClient({
     const gameConfigRef = useRef<{ submit: () => void }>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles);
+    const targetGameEggId = game.data?.eggId ?? game.data?.egg_id;
 
-    const isFlavorChange = currentGameEggId === game.data.eggId;
+    const isFlavorChange = currentGameEggId === targetGameEggId;
 
     const handleSubmit = async (config: GameConfig) => {
         try {

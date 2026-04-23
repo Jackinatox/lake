@@ -43,6 +43,8 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
+    const eggId = game.data?.eggId ?? game.data?.egg_id;
+    const dockerImage = game.data?.dockerImage ?? game.data?.docker_image;
 
     const [config, setConfig] = useState<FactorioConfig>({
         version: 'latest',
@@ -85,10 +87,10 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
         submit: () => {
             const completeConfig: GameConfig = {
                 gameSlug: game.slug,
-                eggId: game.data.egg_id,
+                eggId,
                 version:
                     config.version === 'custom' ? config.customVersion || 'latest' : config.version,
-                dockerImage: game.data.docker_image,
+                dockerImage,
                 gameSpecificConfig: {
                     ...config,
                 },
