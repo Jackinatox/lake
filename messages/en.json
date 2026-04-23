@@ -249,6 +249,7 @@
       "title": "Performance Configuration",
       "description": "Customize your server hardware.",
       "performance-tier": "Performance Tier",
+      "resource-tier": "Resource Tier",
       "extend-title": "Extend Server",
       "duration": {
         "none": "None",
@@ -271,7 +272,8 @@
       "description": "Summary of your configuration.",
       "headers": {
         "vcpu": "vCPU",
-        "ram": "RAM"
+        "ram": "RAM",
+        "tier": "Tier"
       },
       "rows": {
         "upgrade-for-days": "Upgrade for {days} days",
@@ -1349,7 +1351,11 @@
       "free": "Free",
       "disk": "Disk",
       "backups": "Backups",
-      "ports": "Ports"
+      "ports": "Ports",
+      "unavailable": "No longer available for new changes",
+      "diskUsageExceeded": "Unavailable: current usage is {usedGiB} GiB",
+      "legacySelected": "Current",
+      "legacyDescription": "This tier is no longer offered, but your existing server can stay on it."
     },
     "package": {
       "recommended": "Recommended",

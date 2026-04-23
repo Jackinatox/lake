@@ -43,7 +43,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                     io: ptServer.limits.io,
                     cpu: serverOrder.cpuPercent,
                     feature_limits: {
-                        allocations: ptServer.featureLimits.allocations,
+                        allocations: serverOrder.allocations,
                         databases: ptServer.featureLimits.databases,
                         backups: serverOrder.backupCount,
                     },
@@ -61,6 +61,8 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                 ramMB: serverOrder.ramMB,
                 diskMB: serverOrder.diskMB,
                 backupCount: serverOrder.backupCount,
+                allocations: serverOrder.allocations,
+                resourceTierId: serverOrder.resourceTierId,
                 expires: serverOrder.expiresAt,
                 status: 'ACTIVE',
                 lastExtended: new Date(),

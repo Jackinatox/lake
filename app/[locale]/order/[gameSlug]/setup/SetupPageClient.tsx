@@ -76,7 +76,6 @@ export default function SetupPageClient({
 
     // Calculate price
     const price = useMemo(() => {
-        console.log({ hardwareConfig, performanceGroup });
         if (!hardwareConfig || !performanceGroup) return null;
         return calculateNew(
             performanceGroup,

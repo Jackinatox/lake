@@ -143,6 +143,7 @@ export const checkoutUpgradeParamsSchema = z.object({
     type: z.literal('UPGRADE'),
     locale: localeSchema,
     ptServerId: serverIdentifierSchema,
+    resourceTierId: integerRangeSchema('Resource tier', 1, 10_000),
     upgradeConfig: upgradeHardwareConfigSchema,
 });
 

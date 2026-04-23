@@ -6,13 +6,15 @@ type PriceBreakdown = {
     cents: { cpu: number; ram: number };
 };
 
+type UpgradeBreakdown = { cpu: number; ram: number; tier: number };
+
 type Discount = { cents: number; percent: number };
 
 export type NewPriceDef = PriceBreakdown & { discount: Discount; tierPriceCents: number };
 export type UpgradePriceDef = {
     totalCents: number;
-    upgradeCents: { cpu: number; ram: number };
-    extendCents: { cpu: number; ram: number };
+    upgradeCents: UpgradeBreakdown;
+    extendCents: UpgradeBreakdown;
     discount: Discount;
 };
 
@@ -38,36 +40,63 @@ export function calculateNew(
     return totalPrice;
 }
 
-export function calculateUpgradeCost(
-    oldConfig: HardwareConfig,
-    upgradeByConfig: HardwareConfig,
-    pf: PerformanceGroup,
-): UpgradePriceDef {
+export function calculateUpgradeCost(params: {
+    currentConfig: HardwareConfig;
+    targetConfig: HardwareConfig;
+    performanceGroup: PerformanceGroup;
+    currentTierPriceCents: number;
+    newTierPriceCents: number;
+}): UpgradePriceDef {
+    const {
+        currentConfig,
+        targetConfig,
+        performanceGroup,
+        currentTierPriceCents,
+        newTierPriceCents,
+    } = params;
+
+    const upgradeCpuPercent = Math.max(targetConfig.cpuPercent - currentConfig.cpuPercent, 0);
+    const upgradeRamMb = Math.max(targetConfig.ramMb - currentConfig.ramMb, 0);
+    const upgradeTierPriceCents = Math.max(newTierPriceCents - currentTierPriceCents, 0);
+
     const costToUpgrade = calculateBase(
-        pf,
-        upgradeByConfig.cpuPercent,
-        upgradeByConfig.ramMb,
-        oldConfig.durationsDays,
+        performanceGroup,
+        upgradeCpuPercent,
+        upgradeRamMb,
+        currentConfig.durationsDays,
     );
+    const proratedUpgradeTierCents = Math.round(
+        (upgradeTierPriceCents / 30) * currentConfig.durationsDays,
+    );
+
     const costToExtend = calculateBase(
-        pf,
-        upgradeByConfig.cpuPercent + oldConfig.cpuPercent,
-        upgradeByConfig.ramMb + oldConfig.ramMb,
-        upgradeByConfig.durationsDays,
+        performanceGroup,
+        targetConfig.cpuPercent,
+        targetConfig.ramMb,
+        targetConfig.durationsDays,
+    );
+    const proratedExtendTierCents = Math.round(
+        (newTierPriceCents / 30) * targetConfig.durationsDays,
     );
 
-    const totalCents = costToExtend.totalCents + costToUpgrade.totalCents;
+    const totalCents =
+        costToExtend.totalCents +
+        proratedExtendTierCents +
+        costToUpgrade.totalCents +
+        proratedUpgradeTierCents;
 
-    const { cents, percent } = calculateDiscount(upgradeByConfig.durationsDays, totalCents);
+    const { cents, percent } = calculateDiscount(targetConfig.durationsDays, totalCents);
 
     const res: UpgradePriceDef = {
         extendCents: {
             cpu: costToExtend.cents.cpu,
             ram: costToExtend.cents.ram,
+            tier: proratedExtendTierCents,
         },
         upgradeCents: {
             cpu: costToUpgrade.cents.cpu,
             ram: costToUpgrade.cents.ram,
+            tier: proratedUpgradeTierCents,
         },
         discount: {
             cents: cents,

@@ -8,6 +8,7 @@ export interface OrderRestoreData {
     cpuPercent: number;
     diskMB: number;
     backupCount: number;
+    resourceTierId: number | null;
     creationLocationId: number;
     type: string;
 }

@@ -53,3 +53,4 @@ knip.json
 .worker.env
 .codex
 graphify-out/
+.graphify*

@@ -261,6 +261,7 @@
       "title": "Performance-Konfiguration",
       "description": "Passe die Hardware Deines Servers an.",
       "performance-tier": "Performance-Stufe",
+      "resource-tier": "Resource-Tier",
       "extend-title": "Server verlängern",
       "duration": {
         "none": "Keine",
@@ -283,13 +284,14 @@
       "description": "Zusammenfassung Deiner Konfiguration.",
       "headers": {
         "vcpu": "vCPU",
-        "ram": "RAM"
+        "ram": "RAM",
+        "tier": "Tier"
       },
       "rows": {
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
       },
-      "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+      "discount-with-amount": "(-{amount} € Rabatt)"
     },
     "footer": {
       "total": "Gesamt",
@@ -1361,7 +1363,11 @@
       "free": "Kostenlos",
       "disk": "Speicher",
       "backups": "Backups",
-      "ports": "Ports"
+      "ports": "Ports",
+      "unavailable": "Für neue Änderungen nicht mehr verfügbar",
+      "diskUsageExceeded": "Nicht verfügbar: aktueller Verbrauch liegt bei {usedGiB} GiB",
+      "legacySelected": "Aktuell",
+      "legacyDescription": "Dieser Tier wird nicht mehr neu angeboten, kann für Deinen bestehenden Server aber weiter genutzt werden."
     },
     "package": {
       "recommended": "Empfohlen",

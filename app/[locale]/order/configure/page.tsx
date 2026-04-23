@@ -16,6 +16,7 @@ export default async function ConfigureHardwarePage() {
                 backups: true,
                 ports: true,
                 priceCents: true,
+                enabled: true,
             },
         }),
     ]);

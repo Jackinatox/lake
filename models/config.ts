@@ -2,6 +2,7 @@ import { FactorioConfig } from './gameSpecificConfig/FactorioConfig';
 import { HytaleConfig } from './gameSpecificConfig/HytaleConfig';
 import { MinecraftConfig } from './gameSpecificConfig/MinecraftConfig';
 import { SatisfactoryConfig } from './gameSpecificConfig/SatisfactoryConfig';
+import type { ResourceTierDisplay } from './prisma';
 
 export interface Game {
     id: number;
@@ -20,7 +21,13 @@ export interface HardwareConfig {
     durationsDays: number;
 }
 
-export interface  GameConfig {
+export type UpgradeBaseConfig = HardwareConfig & {
+    resourceTierId: number | null;
+    currentDiskUsageMb: number;
+    resourceTier: ResourceTierDisplay | null;
+};
+
+export interface GameConfig {
     gameSlug: string;
     eggId: number;
     version: string;

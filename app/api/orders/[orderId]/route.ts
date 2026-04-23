@@ -31,6 +31,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ord
                 cpuPercent: true,
                 diskMB: true,
                 backupCount: true,
+                resourceTierId: true,
                 creationLocationId: true,
                 type: true,
             },

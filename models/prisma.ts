@@ -102,5 +102,6 @@ export type ResourceTierDisplay = Prisma.ResourceTierGetPayload<{
         backups: true;
         ports: true;
         priceCents: true;
+        enabled: true;
     };
 }>;

@@ -48,6 +48,7 @@ export default async function GameLandingPage({
                 backups: true,
                 ports: true,
                 priceCents: true,
+                enabled: true,
             },
         }),
         prisma.location.findMany({

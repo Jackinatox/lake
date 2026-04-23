@@ -10,6 +10,7 @@ import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeS
 import { getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import { resolveResourceTier } from '@/lib/resourceTier';
 import { checkoutParamsSchema, gameConfigSchema } from '@/lib/validation/order';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
@@ -124,6 +125,7 @@ export type CheckoutParams =
           locale: 'de' | 'en';
           upgradeConfig: HardwareConfig;
           ptServerId: string;
+          resourceTierId: number;
       }
     | {
           type: 'TO_PAYED';
@@ -172,9 +174,9 @@ export async function checkoutAction(
 
             // Look up the resource tier to get its flat-fee price
             const tier = await prisma.resourceTier.findUnique({
-                where: { id: resourceTierId, enabled: true },
+                where: { id: resourceTierId },
             });
-            if (!tier) throw new Error(`ResourceTier not found: ${resourceTierId}`);
+            if (!tier?.enabled) throw new Error(`ResourceTier not found: ${resourceTierId}`);
 
             const location = await prisma.location.findFirstOrThrow({
                 where: { id: creationServerConfig.hardwareConfig.pfGroupId },
@@ -210,6 +212,7 @@ export async function checkoutAction(
                     status: 'PENDING',
                     creationGameDataId,
                     creationLocationId: creationServerConfig.hardwareConfig.pfGroupId,
+                    resourceTierId: tier.id,
                     gameConfig: creationServerConfig.gameConfig as any,
                 },
             });
@@ -237,8 +240,8 @@ export async function checkoutAction(
             return { client_secret, orderId: order.id };
         }
         case 'UPGRADE': {
-            const { ptServerId, upgradeConfig } = validatedParams;
-            const { cpuPercent, ramMb, diskMb, durationsDays, allocations } = upgradeConfig;
+            const { ptServerId, upgradeConfig, resourceTierId } = validatedParams;
+            const { cpuPercent, ramMb, durationsDays } = upgradeConfig;
 
             const server = await prisma.gameServer.findFirst({
                 where: { ptServerId: ptServerId, userId: user.id },
@@ -259,6 +262,32 @@ export async function checkoutAction(
                     `No performanceGroup Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id} pfId: ${server.locationId}`,
                 );
 
+            const resourceTiers = await prisma.resourceTier.findMany({
+                orderBy: [{ sorting: 'asc' }, { id: 'asc' }],
+                select: {
+                    id: true,
+                    name: true,
+                    diskMB: true,
+                    backups: true,
+                    ports: true,
+                    priceCents: true,
+                    enabled: true,
+                },
+            });
+
+            const currentTier = resolveResourceTier(resourceTiers, {
+                resourceTierId: server.resourceTierId,
+                diskMB: server.diskMB,
+                backupCount: server.backupCount,
+                allocations: server.allocations,
+            });
+            const newTier = resourceTiers.find((tier) => tier.id === resourceTierId);
+
+            if (!newTier) throw new Error(`ResourceTier not found: ${resourceTierId}`);
+            if (!newTier.enabled && currentTier?.id !== newTier.id) {
+                throw new Error('Selected resource tier is no longer available');
+            }
+
             const oldConfig: HardwareConfig = {
                 cpuPercent: server.cpuPercent,
                 ramMb: server.ramMB,
@@ -274,30 +303,37 @@ export async function checkoutAction(
                 pfGroupId: server.locationId,
             };
 
-            const newConfig: HardwareConfig = {
-                cpuPercent: cpuPercent - oldConfig.cpuPercent,
-                ramMb: ramMb - oldConfig.ramMb,
-                diskMb: diskMb - oldConfig.diskMb,
-                backupCount: oldConfig.backupCount, // TODO: check this when custom servers allow for disk and backup config. Then the backup count may increase the price and is important here. but then also during inittial buy
-                allocations: allocations - oldConfig.allocations,
+            const targetConfig: HardwareConfig = {
+                cpuPercent,
+                ramMb,
+                diskMb: newTier.diskMB,
+                backupCount: newTier.backups,
+                allocations: newTier.ports,
                 durationsDays: durationsDays,
                 pfGroupId: server.locationId,
             };
 
-            const price = calculateUpgradeCost(oldConfig, newConfig, performanceGroup);
+            const price = calculateUpgradeCost({
+                currentConfig: oldConfig,
+                targetConfig,
+                performanceGroup,
+                currentTierPriceCents: currentTier?.priceCents ?? 0,
+                newTierPriceCents: newTier.priceCents,
+            });
 
             const order = await prisma.gameServerOrder.create({
                 data: {
                     type: params.type,
                     gameServerId: server.id,
                     userId: user.id,
-                    ramMB: ramMb,
-                    cpuPercent: cpuPercent,
-                    backupCount: server.backupCount,
-                    allocations: allocations,
-                    diskMB: diskMb,
+                    ramMB: targetConfig.ramMb,
+                    cpuPercent: targetConfig.cpuPercent,
+                    backupCount: targetConfig.backupCount,
+                    allocations: targetConfig.allocations,
+                    diskMB: targetConfig.diskMb,
                     creationLocationId: server.locationId,
                     creationGameDataId: server.gameDataId,
+                    resourceTierId: newTier.id,
                     price: price.totalCents,
                     expiresAt: new Date(
                         Math.max(server.expires.getTime(), new Date().getTime()) +
@@ -311,14 +347,21 @@ export async function checkoutAction(
             // 2. Create Stripe Checkout Session
             const cpuDiff = cpuPercent - oldConfig.cpuPercent;
             const ramDiffMb = ramMb - oldConfig.ramMb;
+            const tierChanged = currentTier?.id !== newTier.id;
 
             const changeParts: string[] = [];
             if (cpuDiff !== 0) changeParts.push(`+${cpuDiff}% CPU`);
             if (ramDiffMb !== 0) changeParts.push(`+${formatMBToGiB(ramDiffMb)} RAM`);
-            const changeStr = changeParts.length > 0 ? `${changeParts.join(', ')} → ` : '';
+            if (tierChanged) {
+                changeParts.push(
+                    `Tier ${currentTier?.name ?? formatMBToGiB(oldConfig.diskMb)} -> ${newTier.name ?? formatMBToGiB(newTier.diskMB)}`,
+                );
+            }
+            const changeStr = changeParts.length > 0 ? `${changeParts.join(', ')}; ` : '';
             const finalStr: string[] = [];
-            if (cpuDiff !== 0) finalStr.push(`${cpuPercent}% CPU`);
-            if (ramDiffMb !== 0) finalStr.push(`${formatMBToGiB(ramMb)} RAM`);
+            if (cpuPercent !== oldConfig.cpuPercent) finalStr.push(`${cpuPercent}% CPU`);
+            if (ramMb !== oldConfig.ramMb) finalStr.push(`${formatMBToGiB(ramMb)} RAM`);
+            finalStr.push(`${newTier.name ?? formatMBToGiB(newTier.diskMB)} Tier`);
             const upgradeDescription = `${changeStr}${finalStr.join(', ')}${finalStr.length > 0 ? ', ' : ''}+${durationsDays} Tage`;
 
             const stripeSession = await createCheckoutSession({

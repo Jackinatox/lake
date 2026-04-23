@@ -20,6 +20,7 @@ export default async function SetupPage({ params }: { params: Promise<{ gameSlug
                 backups: true,
                 ports: true,
                 priceCents: true,
+                enabled: true,
             },
         }),
     ]);

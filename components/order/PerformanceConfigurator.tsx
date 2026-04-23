@@ -460,7 +460,6 @@ export function configuredHardwareFromParams(
     resourceTiers: ResourceTierDisplay[],
 ): { hardwareConfig: HardwareConfig; tierId: number; tierPriceCents: number } | null {
     const parsed = parsePerformanceQuery(searchParams);
-    console.log(parsed);
     if (!parsed.success) return null;
 
     const { pf, cpu, ram, days, tier } = parsed.data;

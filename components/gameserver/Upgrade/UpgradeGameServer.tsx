@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { getValidationMessage } from '@/lib/validation/common';
 import { checkoutUpgradeParamsSchema } from '@/lib/validation/order';
-import { HardwareConfig } from '@/models/config';
-import { PerformanceGroup } from '@/models/prisma';
+import { HardwareConfig, UpgradeBaseConfig } from '@/models/config';
+import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
@@ -20,18 +20,30 @@ interface UpgradeGameServerProps {
     serverId: string;
     apiKey: string;
     performanceOptions: PerformanceGroup[];
-    minOptions: HardwareConfig;
+    resourceTiers: ResourceTierDisplay[];
+    minOptions: UpgradeBaseConfig;
 }
 
-function UpgradeGameServer({ serverId, performanceOptions, minOptions }: UpgradeGameServerProps) {
+type UpgradeDraftSelection = {
+    hardwareConfig: HardwareConfig;
+    resourceTierId: number;
+};
+
+function UpgradeGameServer({
+    serverId,
+    performanceOptions,
+    resourceTiers,
+    minOptions,
+}: UpgradeGameServerProps) {
     const searchParams = useSearchParams();
     const initialDays = searchParams.get('extend') === '30' ? 30 : undefined;
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
-    const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
+    const [selectedConfig, setSelectedConfig] = React.useState<UpgradeDraftSelection | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const locale = useLakeLocale();
     const t = useTranslations('upgradeCheckout');
+    const tu = useTranslations('upgrade');
 
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
@@ -39,12 +51,13 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
         setStep('configure');
     }, []);
 
-    const handleNext = async (newHardwareConfig: HardwareConfig) => {
+    const handleNext = async (selection: UpgradeDraftSelection) => {
         const params: CheckoutParams = {
             type: 'UPGRADE',
             locale: locale,
             ptServerId: serverId,
-            upgradeConfig: newHardwareConfig,
+            upgradeConfig: selection.hardwareConfig,
+            resourceTierId: selection.resourceTierId,
         };
 
         try {
@@ -54,7 +67,7 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
             }
 
             setLoading(true);
-            setSelectedConfig(newHardwareConfig);
+            setSelectedConfig(selection);
             const secret = await checkoutAction(parsedParams.data);
 
             setClientSecret((secret as { client_secret: string }).client_secret);
@@ -131,18 +144,44 @@ function UpgradeGameServer({ serverId, performanceOptions, minOptions }: Upgrade
     }
 
     return (
-        <div className="space-y-4">
+        <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {step === 'configure' && (
                 <>
-                    <Button variant="outline" size="sm" asChild>
-                        <Link href={`/gameserver/${serverId}`}>{t('goBack')}</Link>
-                    </Button>
-                    <UpgradeHardwareConfig
-                        performanceOptions={performanceOptions}
-                        initialConfig={selectedConfig ?? minOptions}
-                        onNext={handleNext}
-                        initialDays={initialDays}
-                    />
+                    <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
+                        <div className="w-full px-1 max-w-7xl mx-auto">
+                            <div className="flex items-center gap-3">
+                                <Button variant="ghost" size="icon" asChild className="shrink-0">
+                                    <Link href={`/gameserver/${serverId}`}>
+                                        <ArrowLeft className="h-4 w-4" />
+                                    </Link>
+                                </Button>
+                                <div className="flex-1 min-w-0">
+                                    <h1 className="text-base sm:text-lg font-bold leading-tight">
+                                        {tu('info.title')}
+                                    </h1>
+                                    <p className="text-xs text-muted-foreground hidden sm:block">
+                                        {tu('info.description')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-2 flex gap-2">
+                                <div className="h-1.5 flex-1 rounded bg-primary" />
+                                <div className="h-1.5 flex-1 rounded bg-muted" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full pt-4 pb-4 lg:pb-8 max-w-7xl mx-auto flex-1">
+                        <UpgradeHardwareConfig
+                            performanceOptions={performanceOptions}
+                            resourceTiers={resourceTiers}
+                            initialConfig={minOptions}
+                            draftSelection={selectedConfig}
+                            onNext={handleNext}
+                            initialDays={initialDays}
+                        />
+                    </div>
                 </>
             )}
 
