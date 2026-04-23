@@ -18,10 +18,11 @@ export interface GameConfigProps {
     game: Game;
     onSubmit: (config: GameConfig) => void;
     initialConfig?: GameConfig | null;
+    eggId?: number; // Optional eggId for flavor changes
 }
 
 export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
-    { game, onSubmit, initialConfig }: GameConfigProps,
+    { game, onSubmit, initialConfig, eggId }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -33,8 +34,12 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
     const flavors = useMemo(() => (game.data.flavors as GameFlavor[]) ?? [], [game]);
 
     useEffect(() => {
+        const preselectedMinecraftFlavor = flavors.find((f) => f.egg_id === eggId);
         const defaultEggId =
-            flavors.find((f) => f.name === 'Paper')?.egg_id || flavors[0]?.egg_id || null;
+            preselectedMinecraftFlavor?.egg_id ||
+            flavors.find((f) => f.name === 'Paper')?.egg_id ||
+            flavors[0]?.egg_id ||
+            null;
         setSelectedFlavorId(defaultEggId);
 
         // Set default version to the first version of the selected flavor
@@ -45,7 +50,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
                 setGameVersions(flavor.versions);
             }
         }
-    }, [flavors]);
+    }, [flavors, eggId]);
 
     useEffect(() => {
         if (selectedEggId !== null) {
@@ -141,7 +146,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
                     <SelectContent>
                         {flavors.map((flavor) => (
                             <SelectItem key={flavor.egg_id} value={flavor.egg_id.toString()}>
-                                {flavor.name}
+                                {flavor.name} {flavor.egg_id === eggId && '(current)'}
                             </SelectItem>
                         ))}
                     </SelectContent>

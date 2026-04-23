@@ -17,10 +17,11 @@ interface GameConfigProps {
     onSubmit: (config: GameConfig) => void;
     fullWidth?: boolean;
     initialConfig?: GameConfig | null;
+    eggId?: number; // Optional eggId for flavor changes
 }
 
 export const GameConfigComponent = forwardRef(function GameConfigComponent(
-    { game, onSubmit, fullWidth = false, initialConfig }: GameConfigProps,
+    { game, onSubmit, fullWidth = false, initialConfig, eggId }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -60,6 +61,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
+                                eggId={eggId}
                             />
                         );
                     case 'satisfactory':

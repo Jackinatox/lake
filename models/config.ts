@@ -20,7 +20,7 @@ export interface HardwareConfig {
     durationsDays: number;
 }
 
-export interface GameConfig {
+export interface  GameConfig {
     gameSlug: string;
     eggId: number;
     version: string;

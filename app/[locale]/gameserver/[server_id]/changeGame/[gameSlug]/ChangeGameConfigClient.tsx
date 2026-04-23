@@ -45,7 +45,7 @@ export default function ChangeGameConfigClient({
             setIsSubmitting(true);
             await changeGame({
                 ptServerId: serverId,
-                gameId: game.id,
+                gameSlug: game.slug,
                 gameConfig: config,
                 deleteFiles,
             });
@@ -151,6 +151,7 @@ export default function ChangeGameConfigClient({
                             game={game}
                             fullWidth
                             onSubmit={handleSubmit}
+                            eggId={currentGameEggId}
                         />
                     </CardContent>
                 </Card>

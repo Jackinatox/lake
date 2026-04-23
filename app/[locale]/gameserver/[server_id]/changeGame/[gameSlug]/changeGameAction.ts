@@ -10,23 +10,23 @@ import { headers } from 'next/headers';
 
 interface SubmitGameChangeInput {
     ptServerId: string;
-    gameId: number;
+    gameSlug: string;
     gameConfig: GameConfig;
     deleteFiles?: boolean;
 }
 
 export async function changeGame({
     ptServerId,
-    gameId,
+    gameSlug,
     gameConfig,
     deleteFiles = true,
 }: SubmitGameChangeInput) {
     const parsed = changeGameRequestSchema.parse({
         ptServerId,
-        gameId,
         gameConfig,
+        gameEggId: gameConfig.eggId,
         deleteFiles,
-        gameSlug: gameConfig.gameSlug,
+        gameSlug
     });
     const workerUrl = env('WORKER_IP');
     const session = await auth.api.getSession({
