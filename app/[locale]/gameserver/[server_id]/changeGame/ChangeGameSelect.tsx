@@ -30,8 +30,8 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
 
     return (
         <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
-            {/* Fixed top bar — sits below the navbar (h-16) */}
-            <div className="fixed top-16 left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            {/* Sticky top bar — sits below the navbar in flow, then sticks on scroll */}
+            <div className="sticky top-0 z-40 -mx-2 md:-mx-8 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
@@ -52,7 +52,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
             </div>
 
             {/* Game grid — flex-1 pushes sticky bar to viewport bottom on short pages */}
-            <div className="flex-1 mx-auto w-full max-w-5xl px-0 pt-14 pb-4">
+            <div className="flex-1 mx-auto w-full max-w-5xl px-0 pt-4 pb-4">
                 <div className="flex flex-wrap gap-4 justify-center">
                     {games.map((game) => (
                         <GameCard
@@ -70,7 +70,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
             {/* Sticky bottom bar — breaks out of layout's px-2 md:px-8 padding */}
             <div className="sticky bottom-0 z-40 -mx-2 md:-mx-8 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground h-9">
                         <MousePointerClick className="h-4 w-4 shrink-0" />
                         <span>Select a game to continue to configuration</span>
                     </div>

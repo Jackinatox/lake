@@ -398,7 +398,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             await sendInvoiceEmail({
                 userName: order.user.name || 'Spieler',
                 userEmail: order.user.email,
-                invoiceNumber: `${order.stripeInvoiceId || order.id}`,
+                invoiceNumber: `${order.stripeInvoiceId || "Stripe invoice war null"}`,
                 invoiceDate: order.paidAt ?? new Date(),
                 gameName,
                 gameImageUrl: `${env('NEXT_PUBLIC_APP_URL')}/images/light/games/icons/${gameName.toLowerCase()}.webp`,

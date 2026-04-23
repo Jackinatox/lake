@@ -69,8 +69,8 @@ export default function ChangeGameConfigClient({
 
     return (
         <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
-            {/* Fixed top bar — sits below the navbar (h-16) */}
-            <div className="fixed top-16 left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            {/* Sticky top bar — sits below the navbar in flow, then sticks on scroll */}
+            <div className="sticky top-0 z-40 -mx-2 md:-mx-8 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
@@ -128,7 +128,7 @@ export default function ChangeGameConfigClient({
             </div>
 
             {/* Main content — flex-1 pushes the sticky bar to the viewport bottom on short pages */}
-            <div className="flex-1 mx-auto w-full max-w-5xl space-y-4 px-0 pt-14 pb-4">
+            <div className="flex-1 mx-auto w-full max-w-5xl space-y-2 px-0 py-2">
                 {isFlavorChange && <ChangeInfoBox />}
 
                 <FilesWarning deleteFiles={deleteFiles} />
