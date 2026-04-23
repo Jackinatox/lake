@@ -108,15 +108,6 @@ async function resolveGameData(gameConfig: GameConfig): Promise<{ id: number; na
         if (!gameData) throw new Error(`Game not found for slug: ${gameConfig.gameSlug}`);
         return gameData;
     }
-    // Fallback for legacy configs that only have gameId
-    if (gameConfig.gameId) {
-        const gameData = await prisma.gameData.findUnique({
-            where: { id: gameConfig.gameId },
-            select: { id: true, name: true },
-        });
-        if (!gameData) throw new Error(`Game not found for id: ${gameConfig.gameId}`);
-        return gameData;
-    }
     throw new Error('GameConfig must have gameSlug or gameId');
 }
 

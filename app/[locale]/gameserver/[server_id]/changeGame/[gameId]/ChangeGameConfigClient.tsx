@@ -21,7 +21,7 @@ interface ChangeGameConfigClientProps {
     serverId: string;
     game: Game;
     currentGameName: string;
-    currentGameId: number;
+    currentGameEggId: number;
     defaultDeleteFiles: boolean;
 }
 
@@ -29,7 +29,7 @@ export default function ChangeGameConfigClient({
     serverId,
     game,
     currentGameName,
-    currentGameId,
+    currentGameEggId,
     defaultDeleteFiles = true,
 }: ChangeGameConfigClientProps) {
     const { toast } = useToast();
@@ -38,7 +38,7 @@ export default function ChangeGameConfigClient({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deleteFiles, setDeleteFiles] = useState(defaultDeleteFiles);
 
-    const isFlavorChange = currentGameId === game.id;
+    const isFlavorChange = currentGameEggId === game.data.eggId;
 
     const handleSubmit = async (config: GameConfig) => {
         try {
@@ -70,7 +70,7 @@ export default function ChangeGameConfigClient({
     return (
         <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Sticky top bar — sits below the navbar in flow, then sticks on scroll */}
-            <div className="sticky top-0 z-40 -mx-2 md:-mx-8 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="sticky top-0 z-40 -mx-2 md:-mx-8 border-b border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
@@ -157,7 +157,7 @@ export default function ChangeGameConfigClient({
             </div>
 
             {/* Sticky bottom bar — breaks out of the layout's px-2 md:px-8 padding */}
-            <div className="sticky bottom-0 z-40 -mx-2 md:-mx-8 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="sticky bottom-0 z-40 -mx-2 md:-mx-8 border-t border-border/60 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">

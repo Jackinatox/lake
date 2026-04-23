@@ -26,6 +26,7 @@ export async function changeGame({
         gameId,
         gameConfig,
         deleteFiles,
+        gameSlug: gameConfig.gameSlug,
     });
     const workerUrl = env('WORKER_IP');
     const session = await auth.api.getSession({
@@ -40,7 +41,7 @@ export async function changeGame({
         where: { ptServerId: parsed.ptServerId, userId: session.user.id },
     });
     const selectedGame = await prisma.gameData.findUnique({
-        where: { id: parsed.gameId },
+        where: { slug: parsed.gameSlug },
         select: { slug: true },
     });
 
@@ -55,7 +56,7 @@ export async function changeGame({
     }
 
     logger.info(
-        `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameId}`,
+        `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameSlug}`,
         'GAME_SERVER',
     );
     const response = await fetch(`${workerUrl}/v1/queue/changeGame`, {
@@ -64,7 +65,7 @@ export async function changeGame({
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            gameId: parsed.gameId,
+            gameSlug: parsed.gameSlug,
             ptServerId: parsed.ptServerId,
             userId: session.user.id,
             deleteFiles: parsed.deleteFiles,

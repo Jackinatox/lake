@@ -100,7 +100,7 @@ async function Page({
                 serverId={serverId}
                 game={gameForConfig}
                 currentGameName={gameServer.gameData?.name.toLowerCase() ?? null}
-                currentGameId={gameServer.gameDataId}
+                currentGameEggId={gameServer.gameDataId}
                 defaultDeleteFiles={deleteFiles}
             />
         </div>
