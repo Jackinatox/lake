@@ -156,6 +156,7 @@ model GameServerOrder {
   stripePaymentIntent String?      @unique
   stripeChargeId      String?      @unique
   stripeInvoiceId     String?      @unique
+  stripeInvoiceNumber String?      @unique
   stripeClientSecret  String?
   status              OrderStatus  @default(PENDING)
   refundStatus        RefundStatus @default(NONE)

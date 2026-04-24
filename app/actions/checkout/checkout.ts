@@ -45,6 +45,7 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
         locale: 'auto',
         mode: 'payment',
         ui_mode: 'embedded',
+        billing_address_collection: item.amountCents >= 5000 ? 'required' : 'auto',
         invoice_creation: {
             enabled: true,
             invoice_data: {

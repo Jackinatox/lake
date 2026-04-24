@@ -14,9 +14,9 @@ import {
     textStyle,
 } from '../components';
 
-interface InvoiceTemplateProps {
+export interface InvoiceTemplateProps {
     userName: string;
-    invoiceNumber: string;
+    stripeInvoiceId: string;
     invoiceDate: Date;
     gameName: string;
     gameImageUrl: string;
@@ -40,7 +40,7 @@ const formatPrice = (cents: number) => {
 
 export default function InvoiceTemplate({
     userName,
-    invoiceNumber,
+    stripeInvoiceId,
     invoiceDate,
     gameName,
     gameImageUrl,
@@ -62,7 +62,7 @@ export default function InvoiceTemplate({
         >
             <Heading style={headingStyle}>Rechnungsübersicht</Heading>
             <Text style={{ ...mutedTextStyle, marginTop: 6 }}>
-                Rechnungsnummer: {invoiceNumber}
+                Rechnungsnummer: {stripeInvoiceId}
             </Text>
 
             <Text style={textStyle}>Hallo {userName},</Text>

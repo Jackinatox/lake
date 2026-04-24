@@ -158,7 +158,7 @@ export async function sendTwoFactorOtpEmail(
 interface InvoiceEmailData {
     userName: string;
     userEmail: string;
-    invoiceNumber: string;
+    stripeInvoiceId: string;
     invoiceDate: Date;
     gameName: string;
     gameImageUrl: string;
@@ -177,7 +177,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
     const html = await render(
         InvoiceTemplate({
             userName: data.userName,
-            invoiceNumber: data.invoiceNumber,
+            stripeInvoiceId: data.stripeInvoiceId,
             invoiceDate: data.invoiceDate,
             gameName: data.gameName,
             gameImageUrl: data.gameImageUrl,

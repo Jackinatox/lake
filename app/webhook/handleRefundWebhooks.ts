@@ -382,9 +382,12 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             return;
         }
 
-        await prisma.gameServerOrder.update({
+        const latest = await prisma.gameServerOrder.update({
             where: { id: order.id },
-            data: { invoicePdfUrl: invoice.invoice_pdf },
+            data: {
+                invoicePdfUrl: invoice.invoice_pdf,
+                stripeInvoiceNumber: invoice.number ?? undefined,
+            },
         });
 
         logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT_LOG', {
@@ -398,8 +401,8 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             await sendInvoiceEmail({
                 userName: order.user.name || 'Spieler',
                 userEmail: order.user.email,
-                invoiceNumber: `${order.stripeInvoiceId || "Stripe invoice war null"}`,
-                invoiceDate: order.paidAt ?? new Date(),
+                stripeInvoiceId: `${latest.stripeInvoiceNumber || "Stripe invoice war null"}`,
+                invoiceDate: latest.paidAt ?? new Date(),
                 gameName,
                 gameImageUrl: `${env('NEXT_PUBLIC_APP_URL')}/images/light/games/icons/${gameName.toLowerCase()}.webp`,
                 serverName: 'Gameserver',
