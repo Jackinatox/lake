@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import {
     Table,
     TableBody,
@@ -26,7 +27,7 @@ type RefundEntry = {
         id: string;
         price: number;
         type: string;
-        user: { id: string; email: string; name: string };
+        user: { id: string; email: string; name: string; username?: string | null };
         creationGameData: { name: string };
     };
 };
@@ -85,7 +86,7 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                                         {refund.order.user.email}
                                     </p>
                                     <p className="text-xs text-muted-foreground truncate max-w-[180px]">
-                                        {refund.order.user.name}
+                                        {getUserDisplayName(refund.order.user)}
                                     </p>
                                 </div>
                             </TableCell>

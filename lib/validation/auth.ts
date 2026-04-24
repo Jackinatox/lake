@@ -44,7 +44,6 @@ export const authOtpSchema = z
 
 export const registerFormSchema = z
     .object({
-        name: authDisplayNameSchema,
         username: authUsernameSchema,
         email: authEmailSchema,
         password: authPasswordSchema,

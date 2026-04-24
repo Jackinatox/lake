@@ -27,6 +27,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import type { RefundServerAction, RefundType } from '@/app/client/generated/browser';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import type { RefundableOrder } from '@/models/prisma';
 
 interface AdminRefundPanelProps {
@@ -53,6 +54,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
             order.id.toLowerCase().includes(q) ||
             order.user.email.toLowerCase().includes(q) ||
             order.user.name.toLowerCase().includes(q) ||
+            (order.user.username ?? '').toLowerCase().includes(q) ||
             order.creationGameData.name.toLowerCase().includes(q)
         );
     });
@@ -179,7 +181,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search by order ID, email, name, or game..."
+                    placeholder="Search by order ID, email, username, or game..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-9"
@@ -261,7 +263,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                     {selectedOrder.id}
                                 </p>
                                 <p className="text-sm mt-1">
-                                    {selectedOrder.user.name} ({selectedOrder.user.email})
+                                    {getUserDisplayName(selectedOrder.user)} ({selectedOrder.user.email})
                                 </p>
                             </div>
 

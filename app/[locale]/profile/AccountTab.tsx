@@ -6,23 +6,13 @@ import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { Mail, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from './LogoutButton';
 import UsernameEditor from './UsernameEditor';
-
-function getInitials(name: string): string {
-    return (
-        name
-            .split(' ')
-            .map((p) => p[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2) || 'U'
-    );
-}
 
 type Account = { id: string; providerId: string };
 
@@ -106,6 +96,7 @@ export default function AccountTab() {
 
     const user = session.user;
     const currentUsername = (user as { username?: string }).username ?? '';
+    const displayName = getUserDisplayName(user);
 
     return (
         <div className="space-y-4">
@@ -114,14 +105,14 @@ export default function AccountTab() {
                     {/* Avatar + identity */}
                     <div className="flex items-start gap-4">
                         <Avatar className="h-16 w-16 shrink-0 ring-2 ring-border">
-                            <AvatarImage src={user.image || undefined} alt={user.name || ''} />
+                            <AvatarImage src={user.image || undefined} alt={displayName} />
                             <AvatarFallback className="text-xl font-semibold">
-                                {getInitials(user.name || 'User')}
+                                {getUserInitials(user)}
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 pt-0.5">
                             <p className="font-semibold text-base leading-tight truncate">
-                                {user.name}
+                                {displayName}
                             </p>
                             <p className="text-xs text-muted-foreground/80 truncate mt-0.5">
                                 {user.email}

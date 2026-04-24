@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import {
     AUTH_EMAIL_MAX_LENGTH,
-    AUTH_NAME_MAX_LENGTH,
     AUTH_PASSWORD_MAX_LENGTH,
     AUTH_PASSWORD_MIN_LENGTH,
     AUTH_USERNAME_MAX_LENGTH,
@@ -31,7 +30,6 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
     const router = useRouter();
     const t = useTranslations('RegisterLogin');
 
-    const [name, setName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -81,12 +79,10 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
     const passwordTooShort = password.length > 0 && password.length < AUTH_PASSWORD_MIN_LENGTH;
     const usernameIsValid = username.length >= 3 && authUsernameSchema.safeParse(username).success;
     const emailValid = email.trim().length > 0;
-    const nameValid = name.trim().length > 0;
 
     const canSubmit =
         !loading &&
         !!turnstileToken &&
-        nameValid &&
         usernameIsValid &&
         usernameStatus === 'available' &&
         emailValid &&
@@ -100,7 +96,6 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
 
             try {
                 const parsed = registerFormSchema.parse({
-                    name,
                     username,
                     email,
                     password,
@@ -112,7 +107,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                     {
                         email: parsed.email,
                         password: parsed.password,
-                        name: parsed.name,
+                        name: parsed.username,
                         username: parsed.username,
                         displayUsername: parsed.username,
                         image: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(parsed.username)}`,
@@ -136,7 +131,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                 setLoading(false);
             }
         },
-        [username, password, confirmPassword, email, name, t, turnstileToken, router],
+        [username, password, confirmPassword, email, t, turnstileToken, router],
     );
 
     return (
@@ -207,22 +202,6 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
 
                             {/* Form fields */}
                             <div className="flex flex-col gap-4">
-                                {/* Full name */}
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="name">{t('fields.name')}</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        placeholder={t('fields.namePlaceholder')}
-                                        required
-                                        maxLength={AUTH_NAME_MAX_LENGTH}
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        autoComplete="name"
-                                        className="h-11"
-                                    />
-                                </div>
-
                                 {/* Username with live check */}
                                 <div className="flex flex-col gap-2">
                                     <Label htmlFor="username">{t('fields.username')}</Label>

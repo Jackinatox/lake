@@ -19,6 +19,7 @@ interface ErrorCardProps {
         user?: {
             id: string;
             name: string;
+            username?: string | null;
             email: string;
         } | null;
     };

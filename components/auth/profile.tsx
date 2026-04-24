@@ -11,19 +11,18 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { authClient } from '@/lib/auth-client';
+import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { Laptop, LogOut, Moon, Sun, User, UserRoundCog } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+const subscribe = () => () => {};
 
 export default function Profile() {
     const { data: session, isPending, error } = authClient.useSession();
-    const [mounted, setMounted] = useState(false);
+    const mounted = useSyncExternalStore(subscribe, () => true, () => false);
     const { theme, setTheme } = useTheme();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     if (isPending) {
         return (
@@ -48,15 +47,8 @@ export default function Profile() {
     }
 
     const { user } = session;
-    const username = (user as { username?: string }).username;
-    const displayName = username || user.name;
-    const initials = user.name
-        ? user.name
-              .split(' ')
-              .map((n) => n[0])
-              .join('')
-              .toUpperCase()
-        : user.email?.[0]?.toUpperCase() || 'U';
+    const displayName = getUserDisplayName(user);
+    const initials = getUserInitials(user);
 
     return (
         <DropdownMenu>
@@ -64,7 +56,7 @@ export default function Profile() {
                 <Button variant="ghost" className="relative h-10 w-auto px-2">
                     <div className="flex items-center space-x-2">
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={user.image || ''} alt={user.name || 'User'} />
+                            <AvatarImage src={user.image || ''} alt={displayName} />
                             <AvatarFallback>{initials}</AvatarFallback>
                         </Avatar>
                         <div className="hidden md:flex md:flex-col md:items-start md:text-left">

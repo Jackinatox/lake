@@ -55,7 +55,7 @@ export async function searchUsers(query: string) {
                 OR: [
                     { email: { contains: trimmed, mode: 'insensitive' } },
                     { id: { contains: trimmed, mode: 'insensitive' } },
-                    { name: { contains: trimmed, mode: 'insensitive' } },
+                    { username: { contains: trimmed, mode: 'insensitive' } },
                     { ptUsername: { contains: trimmed, mode: 'insensitive' } },
                     ...(numericQuery != null ? [{ ptUserId: numericQuery }] : []),
                 ],

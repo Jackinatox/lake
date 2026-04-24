@@ -6,6 +6,7 @@ import { Mail, Shield, User, Lock } from 'lucide-react';
 import React from 'react';
 import LogoutButton from './LogoutButton';
 import { authClient } from '@/lib/auth-client';
+import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
@@ -23,6 +24,7 @@ function ProfileInfo() {
     }
 
     const user = session?.data?.user;
+    const displayName = getUserDisplayName(user);
     const method = authClient.getLastUsedLoginMethod();
     const wasEmail = authClient.isLastUsedLoginMethod('email');
     return (
@@ -33,13 +35,13 @@ function ProfileInfo() {
             <CardContent className="space-y-4">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-16 w-16">
-                        <AvatarImage src={user?.image || undefined} alt="Profile" />
-                        <AvatarFallback>PB</AvatarFallback>
+                        <AvatarImage src={user?.image || undefined} alt={displayName} />
+                        <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            <span className="font-medium">{user?.name ?? ''}</span>
+                            <span className="font-medium">{displayName}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Mail className="h-4 w-4" />

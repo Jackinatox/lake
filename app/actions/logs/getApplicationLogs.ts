@@ -105,7 +105,7 @@ export async function getApplicationLogs(filters: LogFilters = {}) {
                 user: {
                     select: {
                         id: true,
-                        name: true,
+                        username: true,
                         email: true,
                     },
                 },

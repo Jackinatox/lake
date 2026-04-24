@@ -38,7 +38,7 @@ export type PackageWithCPURAM = Prisma.PackageGetPayload<{
 
 export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
     include: {
-        user: { select: { id: true; name: true; email: true } };
+        user: { select: { id: true; name: true; username: true; email: true } };
         gameServer: { select: { id: true; name: true } };
     };
 }>;
@@ -56,7 +56,7 @@ export type PaymentWithRefunds = Prisma.GameServerOrderGetPayload<{
 
 export type RefundableOrder = Prisma.GameServerOrderGetPayload<{
     include: {
-        user: { select: { id: true; email: true; name: true } };
+        user: { select: { id: true; email: true; name: true; username: true } };
         refunds: true;
         gameServer: { select: { ptServerId: true; name: true; status: true } };
         creationGameData: { select: { name: true } };
@@ -67,7 +67,7 @@ export type RefundWithOrder = Prisma.RefundGetPayload<{
     include: {
         order: {
             include: {
-                user: { select: { id: true; email: true; name: true } };
+                user: { select: { id: true; email: true; name: true; username: true } };
                 creationGameData: { select: { name: true } };
             };
         };

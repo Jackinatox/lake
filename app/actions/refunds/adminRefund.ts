@@ -38,7 +38,10 @@ export async function adminRefund(
 
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
         where: { id: orderId },
-        include: { refunds: true, user: { select: { email: true, name: true, id: true } } },
+        include: {
+            refunds: true,
+            user: { select: { email: true, name: true, username: true, id: true } },
+        },
     });
 
     if (!order.stripePaymentIntent && !order.stripeChargeId) {
@@ -218,7 +221,7 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
                 stripePaymentIntent: { not: null },
             },
             include: {
-                user: { select: { id: true, email: true, name: true } },
+                user: { select: { id: true, email: true, name: true, username: true } },
                 refunds: { orderBy: { createdAt: 'desc' } },
                 gameServer: { select: { ptServerId: true, name: true, status: true } },
                 creationGameData: { select: { name: true } },
@@ -256,7 +259,7 @@ export async function getRefundHistory(page: number = 1, pageSize: number = 20) 
             include: {
                 order: {
                     include: {
-                        user: { select: { id: true, email: true, name: true } },
+                        user: { select: { id: true, email: true, name: true, username: true } },
                         creationGameData: { select: { name: true } },
                     },
                 },
