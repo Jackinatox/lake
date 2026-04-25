@@ -86,6 +86,7 @@ export default async function LandingPage() {
                         src="/images/bgs/background-hero.png"
                         alt=""
                         fill
+                        sizes="100vw"
                         className="object-cover"
                         lightClassName="opacity-40"
                         darkClassName="opacity-30"
