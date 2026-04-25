@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { JobStatusGrid } from './JobStatusGridNew';
 import { RecentRunsTable } from './RecentRunsTable';
 import { JobRunDetailsModal } from './JobRunDetailsModal';
+import { useWorkerVersion } from '@/hooks/useJobsApi';
 
 export function JobStatusPageClient() {
     const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { data: versionData, isLoading: versionLoading } = useWorkerVersion();
 
     const handleViewDetails = (runId: string) => {
         setSelectedRunId(runId);
@@ -29,6 +31,9 @@ export function JobStatusPageClient() {
                     </h1>
                     <p className="text-muted-foreground">
                         Monitor, manage, and trigger background worker jobs in real-time
+                        {!versionLoading && versionData && (
+                            <div> · Worker v{versionData.version}</div>
+                        )}
                     </p>
                 </header>
 

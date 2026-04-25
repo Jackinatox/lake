@@ -221,7 +221,7 @@ export async function checkoutAction(
             const stripeSession = await createCheckoutSession({
                 lineItems: [
                     {
-                        name: `${gameData.name} Gameserver – ${location.name} – ${formatVCoresFromPercent(cpuPercent)}, ${formatMBToGiB(ramMB)} RAM, ${formatMBToGiB(diskMB)} Speicher, ${backupCount} Backups, ${allocations} Ports – ${duration} Tage`,
+                        name: `${gameData.name} Gameserver: ${location.name}, ${formatVCoresFromPercent(cpuPercent)}, ${formatMBToGiB(ramMB)} RAM, ${formatMBToGiB(diskMB)} Speicher, ${backupCount} Backups, ${allocations} Ports, ${duration} Tage`,
                         amountCents: price.totalCents,
                     },
                 ],

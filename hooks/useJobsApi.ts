@@ -121,6 +121,22 @@ export function useJobRunDetails(runId: string | null, enabled: boolean = true) 
     return { data, error, isLoading, refetch: fetchDetails };
 }
 
+// Hook for worker version
+export function useWorkerVersion() {
+    const [data, setData] = useState<{ version: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetch('/api/jobs/version')
+            .then((r) => (r.ok ? r.json() : null))
+            .then((json) => setData(json))
+            .catch(() => setData(null))
+            .finally(() => setIsLoading(false));
+    }, []);
+
+    return { data, isLoading };
+}
+
 // Hook for triggering jobs
 export function useTriggerJob() {
     const [isTriggering, setIsTriggering] = useState(false);
