@@ -11,7 +11,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default async function LandingPage() {
-    const t = await getTranslations('landingpage');
+    const [t, tFreeServer] = await Promise.all([
+        getTranslations('landingpage'),
+        getTranslations('freeServer'),
+    ]);
 
     const games = await prisma.gameData.findMany({
         select: { id: true, name: true, slug: true },
@@ -141,7 +144,7 @@ export default async function LandingPage() {
                                         className="flex items-center justify-center gap-2"
                                     >
                                         <Gift className="h-4 w-4" />
-                                        {t('getFreeServer')}
+                                        {tFreeServer('buttonText')}
                                     </Link>
                                 </Button>
                                 <Button
@@ -316,7 +319,7 @@ export default async function LandingPage() {
                                 className="flex items-center justify-center gap-2"
                             >
                                 <Gift className="h-4 w-4" />
-                                {t('getFreeServer')}
+                                {tFreeServer('buttonText')}
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>

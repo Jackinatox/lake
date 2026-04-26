@@ -111,10 +111,10 @@
     "ctaHeader": "Bereit zum Hosten?",
     "ctaDesc": "Wähle ein Spiel und bringe Deinen Server in wenigen Minuten online.",
     "ctaButton": "Loslegen",
-    "getFreeServer": "Kostenlosen Server erstellen"
+    "getFreeServer": "Kostenloser Server"
   },
   "freeServer": {
-    "buttonText": "Gratis Server",
+    "buttonText": "Kostenloser Server",
     "buttonDescription": "Erstelle einen kostenlosen Gameserver mit begrenzter Hardware",
     "pageTitle": "Kostenloser Server",
     "featuresTitle": "Free-Tier Funktionen",

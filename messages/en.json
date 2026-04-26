@@ -99,7 +99,7 @@
     "ctaHeader": "Ready to host?",
     "ctaDesc": "Choose a game and get your server online in minutes.",
     "ctaButton": "Get Started",
-    "getFreeServer": "Create a free server"
+    "getFreeServer": "Free Server"
   },
   "notAdmin": "You are not an admin.",
   "notAdminDescription": "You do not have admin rights to view this page.",

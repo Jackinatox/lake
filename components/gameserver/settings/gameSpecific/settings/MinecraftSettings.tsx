@@ -54,7 +54,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
                     (flavor) => flavor.egg_id === server.gameData.eggId,
                 );
                 if (currentFlavor) {
-                    setAvailableVersions(currentFlavor.versions.reverse());
+                    setAvailableVersions(currentFlavor.versions);
                 }
             } catch (error) {
                 console.error('Error fetching versions:', error);
