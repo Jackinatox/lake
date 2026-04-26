@@ -60,19 +60,19 @@ export const SatisfactoryConfigComponent = forwardRef(function SatisfactoryConfi
     return (
         <ConfigContainer>
             {/* Early Access Toggle */}
-            {/* <ConfigSettingItem
+            <ConfigSettingItem
+                id="isEarlyAccess"
+                label="Use Early Access Branch (Experimental)"
+                description="Enable experimental features and latest updates"
+            >
+                <Switch
                     id="isEarlyAccess"
-                    label="Use Early Access (Experimental)"
-                    description="Enable experimental features and latest updates"
-                >
-                    <Switch
-                        id="isEarlyAccess"
-                        checked={config.version === 'experimental'}
-                        onCheckedChange={(checked) =>
-                            handleChange('version', checked ? 'experimental' : 'release')
-                        }
-                    />
-                </ConfigSettingItem> */}
+                    checked={config.version === 'experimental'}
+                    onCheckedChange={(checked) =>
+                        handleChange('version', checked ? 'experimental' : 'release')
+                    }
+                />
+            </ConfigSettingItem>
 
             {/* MAX_PLAYERS */}
             <ConfigSettingItem
