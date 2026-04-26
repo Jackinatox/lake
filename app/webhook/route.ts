@@ -7,10 +7,7 @@ import prisma from '@/lib/prisma';
 import { env } from 'next-runtime-env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
-import {
-    recordCheckoutSession,
-    provisionCheckoutSession,
-} from './handleCheckoutSessionCompleted';
+import { recordCheckoutSession, provisionCheckoutSession } from './handleCheckoutSessionCompleted';
 import {
     handleRefundUpdated,
     handleChargeDisputeCreated,

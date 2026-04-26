@@ -21,7 +21,11 @@ const subscribe = () => () => {};
 
 export default function Profile() {
     const { data: session, isPending, error } = authClient.useSession();
-    const mounted = useSyncExternalStore(subscribe, () => true, () => false);
+    const mounted = useSyncExternalStore(
+        subscribe,
+        () => true,
+        () => false,
+    );
     const { theme, setTheme } = useTheme();
 
     if (isPending) {

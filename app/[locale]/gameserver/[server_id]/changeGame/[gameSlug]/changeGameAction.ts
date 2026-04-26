@@ -26,7 +26,7 @@ export async function changeGame({
         gameConfig,
         gameEggId: gameConfig.eggId,
         deleteFiles,
-        gameSlug
+        gameSlug,
     });
     const workerUrl = env('WORKER_IP');
     const session = await auth.api.getSession({

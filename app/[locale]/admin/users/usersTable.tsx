@@ -135,7 +135,10 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onRefresh }) => {
                             <TableRow key={user.id}>
                                 <TableCell>
                                     <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user.image || ''} alt={getUserDisplayName(user)} />
+                                        <AvatarImage
+                                            src={user.image || ''}
+                                            alt={getUserDisplayName(user)}
+                                        />
                                         <AvatarFallback className="text-xs">
                                             {getUserInitials(user)}
                                         </AvatarFallback>

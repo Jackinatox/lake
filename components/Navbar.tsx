@@ -11,7 +11,13 @@ const isDev = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV === 'development';
 
 export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
-    const bookingPages = ['/booking', '/upgrade/freeServer/pay', '/order', '/changeGame', '/upgrade/payedServer'];
+    const bookingPages = [
+        '/booking',
+        '/upgrade/freeServer/pay',
+        '/order',
+        '/changeGame',
+        '/upgrade/payedServer',
+    ];
     const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
     return (
         <nav
@@ -21,7 +27,7 @@ export default function Navbar({ locale }: { locale: string }) {
                 <div className="flex items-center font-semibold">
                     <Link href="/" className="mr-4 flex items-center" style={{ height: '100%' }}>
                         <ThemeImage
-                        src="/images/logo/ScyedLogo.webp"
+                            src="/images/logo/ScyedLogo.webp"
                             alt="Scyed"
                             fill={false}
                             width={1084}

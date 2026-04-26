@@ -263,7 +263,8 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                     {selectedOrder.id}
                                 </p>
                                 <p className="text-sm mt-1">
-                                    {getUserDisplayName(selectedOrder.user)} ({selectedOrder.user.email})
+                                    {getUserDisplayName(selectedOrder.user)} (
+                                    {selectedOrder.user.email})
                                 </p>
                             </div>
 

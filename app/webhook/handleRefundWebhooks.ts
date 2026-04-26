@@ -50,8 +50,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
 
         const newStatus = statusMap[refund.status ?? ''] ?? 'PENDING';
         const prevStatus = refundRecord.status;
-        const transitionedToSucceeded =
-            prevStatus !== 'SUCCEEDED' && newStatus === 'SUCCEEDED';
+        const transitionedToSucceeded = prevStatus !== 'SUCCEEDED' && newStatus === 'SUCCEEDED';
 
         await prisma.refund.update({
             where: { id: refundRecord.id },
@@ -401,7 +400,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             await sendInvoiceEmail({
                 userName: order.user.name || 'Spieler',
                 userEmail: order.user.email,
-                stripeInvoiceId: `${latest.stripeInvoiceNumber || "Stripe invoice war null"}`,
+                stripeInvoiceId: `${latest.stripeInvoiceNumber || 'Stripe invoice war null'}`,
                 invoiceDate: latest.paidAt ?? new Date(),
                 gameName,
                 gameImageUrl: `${env('NEXT_PUBLIC_APP_URL')}/images/light/games/icons/${gameName.toLowerCase()}.webp`,

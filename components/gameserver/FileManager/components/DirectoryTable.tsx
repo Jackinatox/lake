@@ -226,11 +226,7 @@ const DirectoryTableComponent = ({
                             const fileTooBig = (entry.size ?? 0) > MAX_EDITABLE_FILE_SIZE;
 
                             const isEditable = entry.isFile && isTextLikeFile(entry);
-                            const Icon = entry.isFile
-                                ? isEditable
-                                    ? FileText
-                                    : File
-                                : Folder;
+                            const Icon = entry.isFile ? (isEditable ? FileText : File) : Folder;
                             const OpenIcon = entry.isFile
                                 ? isEditable
                                     ? FileText
