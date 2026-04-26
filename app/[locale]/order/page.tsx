@@ -1,7 +1,26 @@
 import prisma from '@/lib/prisma';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/order',
+        title: copy.orderIndexTitle,
+        description: copy.orderIndexDescription,
+        keywords: ['game server hosting', 'gameserver', 'server hosting', 'game hosting'],
+    });
+}
 
 export default async function OrderPage() {
     const games = await prisma.gameData.findMany({

@@ -1,21 +1,17 @@
 import prisma from '@/lib/prisma';
 import { fetchPerformanceGroups } from '@/lib/actions';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ConfiguredOrderClient from './ConfiguredOrderClient';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 
 // Old imports — kept so the file is easy to restore
 // import GameLandingClient from './GameLandingClient';
 // import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 
-export default async function GameLandingPage({
-    params,
-}: {
-    params: Promise<{ gameSlug: string }>;
-}) {
-    const { gameSlug } = await params;
-
-    const [game, performanceGroups, resourceTiers, freeLocations] = await Promise.all([
+const getGameLandingPageData = cache(async (gameSlug: string) => {
+    return Promise.all([
         prisma.gameData.findUnique({
             where: { slug: gameSlug, enabled: true },
             select: {
@@ -56,6 +52,44 @@ export default async function GameLandingPage({
             select: { id: true },
         }),
     ]);
+});
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string; gameSlug: string }>;
+}): Promise<Metadata> {
+    const { locale, gameSlug } = await params;
+    const copy = getMetadataCopy(locale);
+    const [game] = await getGameLandingPageData(gameSlug);
+
+    if (!game) {
+        notFound();
+    }
+
+    return createPublicMetadata({
+        locale,
+        path: `/order/${gameSlug}`,
+        title: copy.gameOrderTitle(game.name),
+        description: copy.gameOrderDescription(game.name),
+        keywords: [
+            `${game.name} server`,
+            `${game.name} hosting`,
+            `${game.name} gameserver`,
+            'game server hosting',
+        ],
+    });
+}
+
+export default async function GameLandingPage({
+    params,
+}: {
+    params: Promise<{ locale: string; gameSlug: string }>;
+}) {
+    const { gameSlug } = await params;
+
+    const [game, performanceGroups, resourceTiers, freeLocations] =
+        await getGameLandingPageData(gameSlug);
 
     if (!game) {
         notFound();

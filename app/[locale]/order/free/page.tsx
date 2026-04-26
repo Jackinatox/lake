@@ -1,6 +1,25 @@
 import prisma from '@/lib/prisma';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
 import { Gift } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/order/free',
+        title: copy.freeOrderIndexTitle,
+        description: copy.freeOrderIndexDescription,
+        keywords: ['free game server', 'free gameserver', 'free minecraft server', 'free hosting'],
+    });
+}
 
 export default async function OrderPage() {
     const games = await prisma.gameData.findMany({

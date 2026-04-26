@@ -4,11 +4,79 @@ import { auth } from '@/auth';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import prisma from '@/lib/prisma';
 import { orderCheckoutSearchParamsSchema } from '@/lib/validation/order';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { headers } from 'next/headers';
+import { cache } from 'react';
+
+const getCheckoutOrder = cache(async (userId: string, orderId: string) => {
+    return prisma.gameServerOrder.findFirst({
+        where: { id: orderId, userId },
+        select: {
+            stripeClientSecret: true,
+            type: true,
+            ramMB: true,
+            cpuPercent: true,
+            diskMB: true,
+            backupCount: true,
+            gameConfig: true,
+            expiresAt: true,
+            createdAt: true,
+            creationLocationId: true,
+            creationGameData: {
+                select: { slug: true, name: true },
+            },
+            creationLocation: {
+                select: { name: true },
+            },
+        },
+    });
+});
+
+export async function generateMetadata({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ locale: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+    const [{ locale }, awaitedSearchParams] = await Promise.all([params, searchParams]);
+    const copy = getMetadataCopy(locale);
+    const parsedSearchParams = orderCheckoutSearchParamsSchema.safeParse({
+        orderId: awaitedSearchParams.orderId,
+    });
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user || !parsedSearchParams.success) {
+        return createPrivateMetadata({
+            title: copy.orderCheckoutTitle,
+            description: copy.orderCheckoutDescription,
+        });
+    }
+
+    const order = await getCheckoutOrder(session.user.id, parsedSearchParams.data.orderId);
+
+    if (!order || !order.stripeClientSecret) {
+        return createPrivateMetadata({
+            title: copy.orderCheckoutTitle,
+            description: copy.orderCheckoutDescription,
+        });
+    }
+
+    return createPrivateMetadata({
+        title: copy.checkoutOrderTitle(order.creationGameData.name, order.creationLocation?.name),
+        description: copy.checkoutOrderDescription(
+            order.creationGameData.name,
+            order.creationLocation?.name,
+        ),
+    });
+}
 
 export default async function OrderCheckoutPage({
     searchParams,
@@ -28,24 +96,7 @@ export default async function OrderCheckoutPage({
     }
     const { orderId } = parsedSearchParams.data;
 
-    const order = await prisma.gameServerOrder.findFirst({
-        where: { id: orderId, userId: session.user.id },
-        select: {
-            stripeClientSecret: true,
-            type: true,
-            ramMB: true,
-            cpuPercent: true,
-            diskMB: true,
-            backupCount: true,
-            gameConfig: true,
-            expiresAt: true,
-            createdAt: true,
-            creationLocationId: true,
-            creationGameData: {
-                select: { slug: true },
-            },
-        },
-    });
+    const order = await getCheckoutOrder(session.user.id, orderId);
 
     if (!order || !order.stripeClientSecret) {
         return <NotFoundComp />;

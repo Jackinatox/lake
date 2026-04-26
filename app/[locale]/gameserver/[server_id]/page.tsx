@@ -1,5 +1,6 @@
 'use server';
 
+import { getOwnedGameServerSummary } from '@/app/data-access-layer/gameServer/getOwnedGameServerSummary';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
@@ -7,11 +8,45 @@ import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader from '@/components/gameserver/ServerLoader';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import prisma from '@/lib/prisma';
-
+import type { Metadata } from 'next';
 import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string; server_id: string }>;
+}): Promise<Metadata> {
+    const { locale, server_id } = await params;
+    const copy = getMetadataCopy(locale);
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user) {
+        return createPrivateMetadata({
+            title: copy.gameserverFallbackTitle,
+            description: copy.gameserversDescription,
+        });
+    }
+
+    const server = await getOwnedGameServerSummary(session.user.id, server_id);
+
+    if (!server) {
+        return createPrivateMetadata({
+            title: copy.gameserverFallbackTitle,
+            description: copy.gameserversDescription,
+        });
+    }
+
+    return createPrivateMetadata({
+        title: copy.gameserverDashboardTitle(server.name),
+        description: copy.gameserverDashboardDescription(server.name, server.gameData?.name),
+    });
+}
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
     // -- Auth
@@ -25,12 +60,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     }
 
     // actual server data
-    const isServerValid = await prisma.gameServer.findFirst({
-        where: {
-            ptServerId: serverId,
-            userId: session.user.id,
-        },
-    });
+    const isServerValid = await getOwnedGameServerSummary(session.user.id, serverId);
 
     if (!isServerValid || !isServerValid.ptAdminId) {
         return <NotAllowedMessage />;

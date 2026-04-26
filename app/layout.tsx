@@ -18,7 +18,11 @@ export async function generateMetadata(): Promise<Metadata> {
     const appUrl = env('NEXT_PUBLIC_APP_URL');
     return {
         metadataBase: appUrl ? new URL(appUrl) : undefined,
-        title: 'Scyed Hosting',
+        applicationName: 'Scyed Hosting',
+        title: {
+            default: 'Scyed Hosting',
+            template: '%s | Scyed Hosting',
+        },
         description: 'A little above average Gameserver hosting platform',
     };
 }
