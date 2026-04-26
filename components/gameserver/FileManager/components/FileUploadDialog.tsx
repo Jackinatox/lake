@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { UploadCloud } from 'lucide-react';
 import { formatFileSize } from '@/lib/Pterodactyl/file-utils';
-import { ChangeEvent, ReactNode, memo, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, memo, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface FileUploadDialogProps {
@@ -27,6 +27,7 @@ interface FileUploadDialogProps {
     files: FileList | null;
     onOpenChange: (open: boolean) => void;
     onFileSelect: (files: FileList | null) => void;
+    onAbort: () => void;
     onUpload: () => void;
 }
 
@@ -58,6 +59,7 @@ const FileUploadDialogComponent = ({
     files,
     onOpenChange,
     onFileSelect,
+    onAbort,
     onUpload,
 }: FileUploadDialogProps) => {
     const t = useTranslations('gameserver.fileManager.upload');
@@ -68,10 +70,6 @@ const FileUploadDialogComponent = ({
     }, [isUploading, progress]);
 
     const totalBytes = useMemo(() => getTotalBytes(files), [files]);
-
-    useEffect(() => {
-        if (!open) setOmittedCount(0);
-    }, [open]);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selected = event.target.files;
@@ -176,17 +174,16 @@ const FileUploadDialogComponent = ({
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => onOpenChange(false)}
-                        disabled={isUploading}
+                        onClick={() => (isUploading ? onAbort() : onOpenChange(false))}
                     >
-                        {t('cancelButton')}
+                        {isUploading ? t('abortButton') : t('cancelButton')}
                     </Button>
                     <Button
                         type="button"
                         onClick={onUpload}
                         disabled={isUploading || !files || files.length === 0}
                     >
-                        {t('uploadButton')}
+                        {isUploading ? t('uploadingButton') : t('uploadButton')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

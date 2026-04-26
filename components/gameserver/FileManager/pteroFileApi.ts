@@ -16,6 +16,18 @@ export type DirectoryListingResponse = {
     data: PteroFileEntry[];
 };
 
+export class UploadAbortedError extends Error {
+    constructor() {
+        super('Upload aborted');
+        this.name = 'UploadAbortedError';
+    }
+}
+
+export type UploadRequest = {
+    promise: Promise<void>;
+    abort: () => void;
+};
+
 function assertConfig(apiKey: string | undefined) {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     if (!PANEL_URL) {
@@ -171,13 +183,17 @@ export async function getDownloadUrl(
 
 export type UploadProgressHandler = (percent: number) => void;
 
-export async function uploadFiles(
+export function isUploadAbortedError(error: unknown): error is UploadAbortedError {
+    return error instanceof UploadAbortedError;
+}
+
+export function uploadFiles(
     serverId: string,
     directory: string,
     files: FileList | File[],
     apiKey: string,
     onProgress?: UploadProgressHandler,
-): Promise<void> {
+): UploadRequest {
     const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
     assertConfig(apiKey);
 
@@ -190,54 +206,87 @@ export async function uploadFiles(
         normalizedDir = normalizedDir.slice(0, -1);
     }
 
-    // Get signed upload URL from the Panel
-    const signedResponse = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/upload`, {
-        headers: buildHeaders(apiKey),
-    });
-
-    if (!signedResponse.ok) {
-        const message = await signedResponse.text();
-        throw new Error(message || `Failed to get upload URL: ${signedResponse.status}`);
-    }
-
-    const signedData = await signedResponse.json();
-    const signedUrl = signedData?.attributes?.url as string | undefined;
-    if (!signedUrl) {
-        throw new Error('Signed upload URL missing in response');
-    }
-
     const list = Array.isArray(files) ? files : Array.from(files);
     const formData = new FormData();
     list.forEach((file) => formData.append('files', file));
+    formData.append('directory', normalizedDir);
 
-    // Directory is passed as a query parameter to Wings
-    const uploadUrl = new URL(signedUrl);
-    uploadUrl.searchParams.set('directory', normalizedDir);
+    const abortController = new AbortController();
+    let xhr: XMLHttpRequest | null = null;
 
-    await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', uploadUrl.toString());
+    const abort = () => {
+        abortController.abort();
+        xhr?.abort();
+    };
 
-        xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable && onProgress) {
-                onProgress(Math.round((event.loaded / event.total) * 100));
+    const promise = (async () => {
+        try {
+            const safeDirectory = encodeURIComponent(normalizedDir);
+            const signedResponse = await fetch(
+                `${PANEL_URL}/api/client/servers/${serverId}/files/upload?directory=${safeDirectory}`,
+                {
+                    headers: buildHeaders(apiKey),
+                    signal: abortController.signal,
+                },
+            );
+
+            if (!signedResponse.ok) {
+                const message = await signedResponse.text();
+                throw new Error(message || `Failed to get upload URL: ${signedResponse.status}`);
             }
-        };
 
-        xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                onProgress?.(100);
-                resolve();
-            } else {
-                reject(new Error(`Upload failed with status ${xhr.status}`));
+            const signedData = await signedResponse.json();
+            const signedUrl = signedData?.attributes?.url as string | undefined;
+            if (!signedUrl) {
+                throw new Error('Signed upload URL missing in response');
             }
-        };
 
-        xhr.onerror = () => reject(new Error('Upload failed'));
-        xhr.onabort = () => reject(new Error('Upload aborted'));
+            const uploadUrl = new URL(signedUrl);
+            uploadUrl.searchParams.set('directory', normalizedDir);
 
-        xhr.send(formData);
-    });
+            await new Promise<void>((resolve, reject) => {
+                xhr = new XMLHttpRequest();
+                xhr.open('POST', uploadUrl.toString());
+
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable && onProgress) {
+                        onProgress(Math.round((event.loaded / event.total) * 100));
+                    }
+                };
+
+                xhr.onload = () => {
+                    if (xhr && xhr.status >= 200 && xhr.status < 300) {
+                        onProgress?.(100);
+                        resolve();
+                    } else {
+                        reject(new Error(`Upload failed with status ${xhr?.status ?? 0}`));
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Upload failed'));
+                xhr.onabort = () => reject(new UploadAbortedError());
+
+                if (abortController.signal.aborted) {
+                    xhr.abort();
+                    return;
+                }
+
+                xhr.send(formData);
+            });
+        } catch (error) {
+            if (
+                abortController.signal.aborted ||
+                (error instanceof DOMException && error.name === 'AbortError') ||
+                isUploadAbortedError(error)
+            ) {
+                throw new UploadAbortedError();
+            }
+
+            throw error;
+        }
+    })();
+
+    return { promise, abort };
 }
 
 function normalizeDirectoryRoot(directory: string) {
@@ -299,5 +348,34 @@ export async function deleteEntry(
     if (!response.ok) {
         const message = await response.text();
         throw new Error(message || `Failed to delete entry: ${response.status}`);
+    }
+}
+
+export async function createFolder(
+    serverId: string,
+    directory: string,
+    name: string,
+    apiKey: string,
+): Promise<void> {
+    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    assertConfig(apiKey);
+    const response = await fetch(
+        `${PANEL_URL}/api/client/servers/${serverId}/files/create-folder`,
+        {
+            method: 'POST',
+            headers: {
+                ...buildHeaders(apiKey),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                root: normalizeDirectoryRoot(directory),
+                name,
+            }),
+        },
+    );
+
+    if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || `Failed to create folder: ${response.status}`);
     }
 }

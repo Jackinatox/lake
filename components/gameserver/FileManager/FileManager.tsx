@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -20,15 +20,19 @@ import { useToast } from '@/hooks/use-toast';
 import { DirectoryBreadcrumb } from './components/DirectoryBreadcrumb';
 import { FileManagerToolbar } from './components/FileManagerToolbar';
 import { DirectoryTable } from './components/DirectoryTable';
+import { CreateEntryDialog } from './components/CreateEntryDialog';
 import { FileEditorDialog } from './components/FileEditorDialog';
 import { FileUploadDialog } from './components/FileUploadDialog';
-import type { FileEntry, SortColumn, SortDirection } from './types';
+import type { CreateEntryType, FileEntry, SortColumn, SortDirection } from './types';
 import {
+    createFolder,
     getDownloadUrl,
+    isUploadAbortedError,
     listDirectory,
     readFile,
     deleteEntry,
     renameEntry,
+    type UploadRequest,
     uploadFiles,
     writeFile,
 } from './pteroFileApi';
@@ -49,6 +53,13 @@ type UploadState = {
     files: FileList | null;
     uploading: boolean;
     progress: number;
+};
+
+type CreateEntryState = {
+    open: boolean;
+    name: string;
+    entryType: CreateEntryType;
+    creating: boolean;
 };
 
 type FileEditorState = {
@@ -76,6 +87,13 @@ const initialUploadState: UploadState = {
     files: null,
     uploading: false,
     progress: 0,
+};
+
+const initialCreateEntryState: CreateEntryState = {
+    open: false,
+    name: '',
+    entryType: 'file',
+    creating: false,
 };
 
 const textLikeMimePrefixes = [
@@ -163,6 +181,18 @@ function normalizeDirectoryPath(path: string) {
     return path.endsWith('/') ? path : `${path}/`;
 }
 
+function validateEntryName(name: string) {
+    if (!name) {
+        return 'required';
+    }
+
+    if (name === '.' || name === '..' || name.includes('/')) {
+        return 'invalid';
+    }
+
+    return null;
+}
+
 const parseTimestamp = (value: string | undefined) => {
     if (!value) return 0;
     const timestamp = Date.parse(value);
@@ -187,6 +217,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     const [filter, setFilter] = useState<string>('');
     const [editorState, setEditorState] = useState<FileEditorState>(initialEditorState);
     const [uploadState, setUploadState] = useState<UploadState>(initialUploadState);
+    const [createEntryState, setCreateEntryState] =
+        useState<CreateEntryState>(initialCreateEntryState);
     const [isFtpDetailsOpen, setIsFtpDetailsOpen] = useState<boolean>(false);
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
     const [renameTarget, setRenameTarget] = useState<FileEntry | null>(null);
@@ -195,6 +227,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     const [deleteTarget, setDeleteTarget] = useState<FileEntry | null>(null);
     const [deleting, setDeleting] = useState<boolean>(false);
     const [openMenuKey, setOpenMenuKey] = useState<string | null>(null);
+    const activeUploadRef = useRef<UploadRequest | null>(null);
     const { data: session } = authClient.useSession();
     const t = useTranslations('gameserver.fileManager');
 
@@ -476,12 +509,20 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         if (open) {
             setUploadState((state) => ({ ...state, open: true }));
         } else {
+            if (uploadState.uploading) {
+                activeUploadRef.current?.abort();
+                return;
+            }
             setUploadState(initialUploadState);
         }
     };
 
     const handleFileSelect = (files: FileList | null) => {
         setUploadState((state) => ({ ...state, files }));
+    };
+
+    const handleAbortUpload = () => {
+        activeUploadRef.current?.abort();
     };
 
     const handleUpload = async () => {
@@ -496,16 +537,19 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
 
         setUploadState((state) => ({ ...state, uploading: true, progress: 0 }));
 
+        const request = uploadFiles(
+            server.identifier,
+            currentPath,
+            uploadState.files,
+            apiKey,
+            (progress) => {
+                setUploadState((state) => ({ ...state, progress }));
+            },
+        );
+        activeUploadRef.current = request;
+
         try {
-            await uploadFiles(
-                server.identifier,
-                currentPath,
-                uploadState.files,
-                apiKey,
-                (progress) => {
-                    setUploadState((state) => ({ ...state, progress }));
-                },
-            );
+            await request.promise;
 
             toast({
                 title: t('toasts.uploadComplete'),
@@ -517,13 +561,130 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
             setUploadState(initialUploadState);
             await fetchDirectory(currentPath);
         } catch (err) {
+            if (isUploadAbortedError(err)) {
+                toast({
+                    title: t('toasts.uploadCancelled'),
+                    description: t('toasts.uploadCancelledDescription'),
+                });
+                setUploadState((state) => ({
+                    ...state,
+                    uploading: false,
+                    progress: 0,
+                }));
+                return;
+            }
+
             const message = err instanceof Error ? err.message : t('toasts.uploadFailed');
             toast({
                 title: t('toasts.unableToUpload'),
                 description: message,
                 variant: 'destructive',
             });
-            setUploadState((state) => ({ ...state, uploading: false }));
+            setUploadState((state) => ({ ...state, uploading: false, progress: 0 }));
+        } finally {
+            if (activeUploadRef.current === request) {
+                activeUploadRef.current = null;
+            }
+        }
+    };
+
+    const handleCreateDialogOpen = (open: boolean) => {
+        if (open) {
+            setCreateEntryState((state) => ({ ...state, open: true }));
+            return;
+        }
+
+        if (createEntryState.creating) {
+            return;
+        }
+
+        setCreateEntryState(initialCreateEntryState);
+    };
+
+    const handleCreateRequest = (entryType: CreateEntryType) => {
+        if (!canInteract) return;
+        setCreateEntryState({
+            open: true,
+            name: '',
+            entryType,
+            creating: false,
+        });
+    };
+
+    const handleCreateConfirm = async () => {
+        if (!canInteract) return;
+
+        const trimmed = createEntryState.name.trim();
+        const validationError = validateEntryName(trimmed);
+        if (validationError === 'required') {
+            toast({
+                title: t('toasts.createNameRequired'),
+                description: t('toasts.createNameRequiredDescription'),
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (validationError === 'invalid') {
+            toast({
+                title: t('toasts.invalidEntryName'),
+                description: t('toasts.invalidEntryNameDescription'),
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (entries.some((entry) => entry.name === trimmed)) {
+            toast({
+                title: t('toasts.entryAlreadyExists'),
+                description: t('toasts.entryAlreadyExistsDescription', { name: trimmed }),
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setCreateEntryState((state) => ({ ...state, creating: true }));
+
+        try {
+            if (createEntryState.entryType === 'folder') {
+                await createFolder(server.identifier, currentPath, trimmed, apiKey);
+                toast({
+                    title: t('toasts.folderCreated'),
+                    description: t('toasts.folderCreatedDescription', { name: trimmed }),
+                });
+            } else {
+                await writeFile(
+                    server.identifier,
+                    buildChildPath(currentPath, trimmed, false),
+                    '',
+                    apiKey,
+                );
+                toast({
+                    title: t('toasts.fileCreated'),
+                    description: t('toasts.fileCreatedDescription', { name: trimmed }),
+                });
+            }
+
+            setCreateEntryState(initialCreateEntryState);
+            await fetchDirectory(currentPath);
+        } catch (err) {
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : createEntryState.entryType === 'folder'
+                      ? t('toasts.unableToCreateFolder')
+                      : t('toasts.unableToCreateFile');
+
+            toast({
+                title:
+                    createEntryState.entryType === 'folder'
+                        ? t('toasts.unableToCreateFolder')
+                        : t('toasts.unableToCreateFile'),
+                description: message,
+                variant: 'destructive',
+            });
+        } finally {
+            setCreateEntryState((state) => ({ ...state, creating: false }));
         }
     };
 
@@ -559,6 +720,8 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
 
                 <FileManagerToolbar
                     onRefresh={() => fetchDirectory(currentPath)}
+                    onCreateFileClick={() => handleCreateRequest('file')}
+                    onCreateFolderClick={() => handleCreateRequest('folder')}
                     onUploadClick={() => handleUploadDialogOpen(true)}
                     onFilterChange={setFilter}
                     disabled={!canInteract || loading}
@@ -604,6 +767,17 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 onClose={handleEditorClose}
             />
 
+            <CreateEntryDialog
+                open={createEntryState.open}
+                directory={currentPath}
+                entryType={createEntryState.entryType}
+                name={createEntryState.name}
+                isCreating={createEntryState.creating}
+                onOpenChange={handleCreateDialogOpen}
+                onNameChange={(name) => setCreateEntryState((state) => ({ ...state, name }))}
+                onCreate={handleCreateConfirm}
+            />
+
             <FileUploadDialog
                 open={uploadState.open}
                 directory={currentPath}
@@ -612,6 +786,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                 files={uploadState.files}
                 onOpenChange={handleUploadDialogOpen}
                 onFileSelect={handleFileSelect}
+                onAbort={handleAbortUpload}
                 onUpload={handleUpload}
             />
 
