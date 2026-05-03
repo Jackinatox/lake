@@ -906,7 +906,13 @@
         "start": "Starten",
         "restart": "Neustart",
         "stop": "Stoppen",
-        "kill": "Beenden"
+        "kill": "Beenden",
+        "killConfirm": {
+          "title": "Server beenden?",
+          "description": "Der Serverprozess wird sofort beendet. Nicht gespeicherte Daten können verloren gehen.",
+          "cancel": "Abbrechen",
+          "confirm": "Server beenden"
+        }
       }
     },
     "fileManager": {

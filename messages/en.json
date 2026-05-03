@@ -894,7 +894,13 @@
         "start": "Start",
         "restart": "Restart",
         "stop": "Stop",
-        "kill": "Kill"
+        "kill": "Kill",
+        "killConfirm": {
+          "title": "Kill server?",
+          "description": "This will instantly terminate the server process. Any unsaved data may be lost.",
+          "cancel": "Cancel",
+          "confirm": "Kill server"
+        }
       }
     },
     "fileManager": {

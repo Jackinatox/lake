@@ -10,8 +10,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { GameServer } from '@/models/gameServerModel';
-import { ChevronDown, Gauge, Play, Power, RefreshCw, Square } from 'lucide-react';
+import { ChevronDown, Gauge, Play, Power, RefreshCw, Skull } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
@@ -91,26 +102,45 @@ function PowerControls({
                         disabled={loading || isOffline}
                         className="h-8 w-8"
                     >
-                        <Square className="h-4 w-4" />
+                        <Power className="h-4 w-4" />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>{t('stop')}</TooltipContent>
             </Tooltip>
 
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => onPowerAction('kill')}
-                        disabled={loading || isOffline}
-                        className="h-8 w-8"
-                    >
-                        <Power className="h-4 w-4" />
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t('kill')}</TooltipContent>
-            </Tooltip>
+            <AlertDialog>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                disabled={loading || isOffline}
+                                className="h-8 w-8"
+                            >
+                                <Skull className="h-4 w-4" />
+                            </Button>
+                        </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('kill')}</TooltipContent>
+                </Tooltip>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>{t('killConfirm.title')}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('killConfirm.description')}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>{t('killConfirm.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => onPowerAction('kill')}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            <Skull className="h-4 w-4 mr-2" />
+                            {t('killConfirm.confirm')}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
@@ -135,7 +165,7 @@ function MobilePowerDropdown({
 
     const isTransitioning = serverStatus === 'starting' || serverStatus === 'stopping';
     const primaryAction = isTransitioning ? 'kill' : isRunning ? 'stop' : 'start';
-    const PrimaryIcon = isTransitioning ? Power : isRunning ? Square : Play;
+    const PrimaryIcon = isTransitioning ? Skull : isRunning ? Power : Play;
     const primaryIconClass = isTransitioning
         ? 'h-4 w-4 text-destructive'
         : isRunning
@@ -143,64 +173,96 @@ function MobilePowerDropdown({
           : 'h-4 w-4 text-green-500';
 
     return (
-        <div className="flex items-center">
-            <Button
-                variant="outline"
-                size="sm"
-                className="h-8 px-2 rounded-r-none border-r-0"
-                onClick={() => onPowerAction(primaryAction)}
-                disabled={loading}
-            >
-                <PrimaryIcon className={primaryIconClass} />
-            </Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 px-1 rounded-l-none">
-                        <ChevronDown className="h-3 w-3" />
+        <AlertDialog>
+            <div className="flex items-center">
+                {isTransitioning ? (
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2 rounded-r-none border-r-0"
+                            disabled={loading}
+                        >
+                            <PrimaryIcon className={primaryIconClass} />
+                        </Button>
+                    </AlertDialogTrigger>
+                ) : (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2 rounded-r-none border-r-0"
+                        onClick={() => onPowerAction(primaryAction)}
+                        disabled={loading}
+                    >
+                        <PrimaryIcon className={primaryIconClass} />
                     </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                        onClick={() => onPowerAction('start')}
-                        disabled={
-                            loading ||
-                            isRunning ||
-                            serverStatus === 'stopping' ||
-                            serverStatus === 'starting'
-                        }
-                        className="gap-2"
-                    >
-                        <Play className="h-4 w-4 text-green-500" />
-                        {t('start')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={() => onPowerAction('restart')}
-                        disabled={loading || isOffline}
-                        className="gap-2"
-                    >
-                        <RefreshCw className="h-4 w-4" />
-                        {t('restart')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        onClick={() => onPowerAction('stop')}
-                        disabled={loading || isOffline}
-                        className="gap-2"
-                    >
-                        <Square className="h-4 w-4" />
-                        {t('stop')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
+                )}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 px-1 rounded-l-none">
+                            <ChevronDown className="h-3 w-3" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                            onClick={() => onPowerAction('start')}
+                            disabled={
+                                loading ||
+                                isRunning ||
+                                serverStatus === 'stopping' ||
+                                serverStatus === 'starting'
+                            }
+                            className="gap-2"
+                        >
+                            <Play className="h-4 w-4 text-green-500" />
+                            {t('start')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => onPowerAction('restart')}
+                            disabled={loading || isOffline}
+                            className="gap-2"
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                            {t('restart')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => onPowerAction('stop')}
+                            disabled={loading || isOffline}
+                            className="gap-2"
+                        >
+                            <Power className="h-4 w-4" />
+                            {t('stop')}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <AlertDialogTrigger asChild disabled={loading || isOffline}>
+                            <DropdownMenuItem
+                                className="gap-2 text-destructive focus:text-destructive"
+                                onSelect={(e) => e.preventDefault()}
+                            >
+                                <Skull className="h-4 w-4" />
+                                {t('kill')}
+                            </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{t('killConfirm.title')}</AlertDialogTitle>
+                    <AlertDialogDescription>{t('killConfirm.description')}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{t('killConfirm.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction
                         onClick={() => onPowerAction('kill')}
-                        disabled={loading || isOffline}
-                        className="gap-2 text-destructive focus:text-destructive"
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        <Power className="h-4 w-4" />
-                        {t('kill')}
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+                        <Skull className="h-4 w-4 mr-2" />
+                        {t('killConfirm.confirm')}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
 
