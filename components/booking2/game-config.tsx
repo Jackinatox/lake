@@ -8,6 +8,7 @@ import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
 import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
 import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
 import { HytaleConfigComponent } from './GameInstallConfig/HytaleConfig';
+import { ValheimConfigComponent } from './GameInstallConfig/valheim-config';
 import { useToast } from '@/hooks/use-toast';
 import { gameConfigSchema } from '@/lib/validation/order';
 import { getValidationMessage } from '@/lib/validation/common';
@@ -85,6 +86,15 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                     case 'hytale':
                         return (
                             <HytaleConfigComponent
+                                ref={configRef}
+                                onSubmit={handleValidatedSubmit}
+                                game={game}
+                                initialConfig={initialConfig}
+                            />
+                        );
+                    case 'valheim':
+                        return (
+                            <ValheimConfigComponent
                                 ref={configRef}
                                 onSubmit={handleValidatedSubmit}
                                 game={game}

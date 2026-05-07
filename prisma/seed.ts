@@ -73,6 +73,26 @@ async function main() {
         },
     });
 
+    await prisma.gameData.create({
+        data: {
+            data: {
+                vanilla: {
+                    eggId: 24,
+                    docker_image: 'ghcr.io/pterodactyl/games:valheim',
+                },
+                modded: {
+                    eggId: 25,
+                    docker_image: 'ghcr.io/pterodactyl/games:valheim-modded',
+                    mod_loader: 'BepInEx',
+                    modpack_source: 'thunderstore',
+                },
+            },
+            name: 'Valheim',
+            slug: 'valheim',
+            enabled: true,
+        },
+    });
+
     const cpu1 = await prisma.cPU.create({
         data: {
             name: 'R9-5900X',

@@ -89,6 +89,18 @@ export const satisfactoryGameSpecificSchema = z.object({
     autosave_interval: integerRangeSchema('Autosave interval', 60, 3_600),
 });
 
+export const valheimGameSpecificSchema = z.object({
+    mode: z.enum(['vanilla', 'modded']),
+    password: z.string().trim().min(5, 'Password must be at least 5 characters').max(20, 'Password must be at most 20 characters'),
+    world_name: requiredStringSchema('World name', 20),
+    max_players: integerRangeSchema('Max players', 1, 64),
+    public_server: z.boolean(),
+    enable_crossplay: z.boolean(),
+    backup_interval: integerRangeSchema('Backup interval', 0, 86_400),
+    backup_count: integerRangeSchema('Backup count', 0, 100),
+    modpack: z.string().trim().max(255, 'Modpack string is too long').optional(),
+});
+
 export const hytaleGameSpecificSchema = z.object({
     auth_mode: z.enum(['authenticated', 'offline']),
     patchline: z.enum(['release', 'pre-release']),
@@ -126,6 +138,11 @@ export const gameConfigSchema: z.ZodType<GameConfig> = z.union([
         ...baseGameConfigShape,
         gameSlug: z.literal('hytale'),
         gameSpecificConfig: hytaleGameSpecificSchema,
+    }),
+    z.object({
+        ...baseGameConfigShape,
+        gameSlug: z.literal('valheim'),
+        gameSpecificConfig: valheimGameSpecificSchema,
     }),
 ]);
 

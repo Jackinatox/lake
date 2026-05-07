@@ -2,6 +2,7 @@ import { FactorioConfig } from './gameSpecificConfig/FactorioConfig';
 import { HytaleConfig } from './gameSpecificConfig/HytaleConfig';
 import { MinecraftConfig } from './gameSpecificConfig/MinecraftConfig';
 import { SatisfactoryConfig } from './gameSpecificConfig/SatisfactoryConfig';
+import { ValheimConfig } from './gameSpecificConfig/ValheimConfig';
 import type { ResourceTierDisplay } from './prisma';
 
 export interface Game {
@@ -32,7 +33,7 @@ export interface GameConfig {
     eggId: number;
     version: string;
     dockerImage: string;
-    gameSpecificConfig: SatisfactoryConfig | MinecraftConfig | FactorioConfig | HytaleConfig;
+    gameSpecificConfig: SatisfactoryConfig | MinecraftConfig | FactorioConfig | HytaleConfig | ValheimConfig;
 }
 
 export type ServerConfig = {
