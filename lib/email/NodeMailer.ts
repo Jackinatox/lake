@@ -24,7 +24,19 @@ const supportMailer = nodemailer.createTransport({
     },
 });
 
-export async function sendMail(to: string, subject: string, html: string, type: EmailType) {
+export interface EmailAttachment {
+    filename: string;
+    data: Buffer;
+    contentType: string;
+}
+
+export async function sendMail(
+    to: string,
+    subject: string,
+    html: string,
+    type: EmailType,
+    attachments?: EmailAttachment[],
+) {
     const email = await prisma.email.create({
         data: {
             recipient: to,
@@ -32,6 +44,15 @@ export async function sendMail(to: string, subject: string, html: string, type: 
             html: html,
             type: type,
             status: 'SENT',
+            attachments: attachments
+                ? {
+                      create: attachments.map((a) => ({
+                          filename: a.filename,
+                          contentType: a.contentType,
+                          data: a.data,
+                      })),
+                  }
+                : undefined,
         },
     });
 
@@ -45,6 +66,11 @@ export async function sendMail(to: string, subject: string, html: string, type: 
             to,
             subject: subject,
             html: html,
+            attachments: attachments?.map((a) => ({
+                filename: a.filename,
+                content: a.data,
+                contentType: a.contentType,
+            })),
         });
 
         // save everything for now - Debugging purposes

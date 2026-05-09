@@ -1,6 +1,8 @@
 import { render } from '@react-email/render';
+import { readFileSync } from 'fs';
 import { env } from 'next-runtime-env';
 import { sendMail } from './NodeMailer';
+import path from 'path';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
 import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
@@ -193,11 +195,16 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
         }),
     );
 
+    const returnPolicyPdf = readFileSync(
+        path.join(process.cwd(), 'public/static/pdfs/returnPolicy.pdf'),
+    );
+
     await sendMail(
         data.userEmail,
         `Rechnungsübersicht für deinen ${data.gameName} Server`,
         html,
         'INVOICE',
+        [{ filename: 'Widerrufsbelehrung.pdf', data: returnPolicyPdf, contentType: 'application/pdf' }],
     );
 }
 

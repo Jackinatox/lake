@@ -75,17 +75,17 @@ model GameServer {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  ramMB        Int
-  cpuPercent   Int
-  diskMB       Int
-  backupCount  Int
-  allocations  Int
+  ramMB          Int
+  cpuPercent     Int
+  diskMB         Int
+  backupCount    Int
+  allocations    Int
   resourceTierId Int?
-  resourceTier   ResourceTier? @relation(fields: [resourceTierId], references: [id], onDelete: SetNull)
-  expires      DateTime
-  price        Float // To let the user extend his server at the original price in case we increase prices
-  type         GameServerType @default(CUSTOM)
-  lastExtended DateTime       @default(now())
+  resourceTier   ResourceTier?  @relation(fields: [resourceTierId], references: [id], onDelete: SetNull)
+  expires        DateTime
+  price          Float // To let the user extend his server at the original price in case we increase prices
+  type           GameServerType @default(CUSTOM)
+  lastExtended   DateTime       @default(now())
 
   ptServerId String?
   ptAdminId  Int?
@@ -141,15 +141,15 @@ model GameServerOrder {
   workerJobId        String? // Job that processed this order
   provisioningStatus ProvisioningStatus @default(PENDING)
 
-  type        OrderType
-  ramMB       Int
-  cpuPercent  Int
-  diskMB      Int
-  backupCount Int
-  allocations Int
+  type           OrderType
+  ramMB          Int
+  cpuPercent     Int
+  diskMB         Int
+  backupCount    Int
+  allocations    Int
   resourceTierId Int?
   resourceTier   ResourceTier? @relation(fields: [resourceTierId], references: [id], onDelete: SetNull)
-  price       Float
+  price          Float
 
   invoicePdfUrl       String?
   stripeSessionId     String?      @unique
@@ -496,31 +496,45 @@ model ApplicationLog {
   @@index([level, createdAt])
   @@index([type, createdAt])
   @@index([userId])
-  @@index([gameServerId])
+  @@index([gameServerId]) 
   @@index([path, method])
   @@index([createdAt])
 }
 
 model Email {
-  id                 Int         @id @default(autoincrement())
+  id                 Int               @id @default(autoincrement())
   recipient          String
   subject            String
   html               String
-  sentAt             DateTime    @default(now())
+  sentAt             DateTime          @default(now())
   type               EmailType
-  status             EmailStatus @default(PENDING)
+  status             EmailStatus       @default(PENDING)
   GameServerId       String?
-  GameServer         GameServer? @relation(fields: [GameServerId], references: [id], onDelete: SetNull)
+  GameServer         GameServer?       @relation(fields: [GameServerId], references: [id], onDelete: SetNull)
   errorText          String?
-  retries            Int         @default(0)
+  retries            Int               @default(0)
   expiresAt          DateTime?
   nodeMailerResponse Json?
+  attachments        EmailAttachment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([GameServerId, status])
   @@index([GameServerId, type, expiresAt])
+}
+
+model EmailAttachment {
+  id          Int    @id @default(autoincrement())
+  emailId     Int
+  Email       Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  filename    String
+  contentType String
+  data        Bytes
+
+  createdAt DateTime @default(now())
+
+  @@index([emailId])
 }
 
 enum EmailStatus {
