@@ -10,7 +10,6 @@ import {
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
 } from '@/app/GlobalConstants';
-import { renderToHtml } from '@/components/legal/renderLegalMarkdown';
 import { Card, CardContent } from '@/components/ui/card';
 import { LegalTopic } from './page';
 import { getKeyValueString } from '@/lib/keyValue';
@@ -29,8 +28,7 @@ interface LegalPageTemplateProps {
 }
 
 async function LegalPageTemplate({ pageType, locale }: LegalPageTemplateProps) {
-    const content = await getLegalContent(locale, pageType);
-    const htmlContent = renderToHtml(content);
+    const htmlContent = await getLegalContent(locale, pageType);
 
     return (
         <div className="w-full max-w-4xl mx-auto">

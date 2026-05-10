@@ -49,7 +49,7 @@ export async function sendMail(
                       create: attachments.map((a) => ({
                           filename: a.filename,
                           contentType: a.contentType,
-                          data: a.data,
+                          data: a.data as Buffer<ArrayBuffer>,
                       })),
                   }
                 : undefined,
