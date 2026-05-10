@@ -8,6 +8,8 @@ import {
     PaymentElement,
     useCheckoutElements,
 } from '@stripe/react-stripe-js/checkout';
+
+const BILLING_ADDRESS_THRESHOLD_CENTS = 5000;
 import { loadStripe } from '@stripe/stripe-js';
 import { env } from 'next-runtime-env';
 import { useRouter } from 'next/navigation';
@@ -93,13 +95,15 @@ function CheckoutForm({ sessionId }: { sessionId: string }) {
         }
     };
 
-    const canSubmit = tosAccepted && widerrufsAccepted && !loading;
+    const requiresBillingAddress =
+        checkout.total.total.minorUnitsAmount >= BILLING_ADDRESS_THRESHOLD_CENTS;
+    const canSubmit = tosAccepted && widerrufsAccepted && checkout.canConfirm && !loading;
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-1">
             <PaymentElement />
 
-            <BillingAddressElement />
+            {requiresBillingAddress && <BillingAddressElement />}
 
             <div className="flex flex-col gap-3 pt-1">
                 <label className="flex items-start gap-3 cursor-pointer">

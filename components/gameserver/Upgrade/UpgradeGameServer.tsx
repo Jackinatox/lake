@@ -89,7 +89,7 @@ function UpgradeGameServer({
 
     if (step === 'pay' && clientSecret && sessionId) {
         return (
-            <div className="md:-my-4 w-full">
+            <div className="md:-my-4 w-full flex flex-col min-h-[calc(100dvh-4rem)]">
                 {/* Sticky top bar */}
                 <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-3">
                     <div className="w-full px-4 max-w-7xl mx-auto">
@@ -122,7 +122,7 @@ function UpgradeGameServer({
                 </div>
 
                 {/* Content */}
-                <div className="w-full pt-4 pb-28 max-w-2xl mx-auto px-4">
+                <div className="flex-1 w-full pt-4 pb-8 max-w-2xl mx-auto px-4">
                     <CustomServerPaymentElements clientSecret={clientSecret} sessionId={sessionId} />
                 </div>
 

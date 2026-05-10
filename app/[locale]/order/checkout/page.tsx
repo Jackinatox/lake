@@ -129,7 +129,7 @@ export default async function OrderCheckoutPage({
     }
 
     return (
-        <div className="md:-my-4">
+        <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Sticky top bar */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-3">
                 <div className="w-full px-4 max-w-7xl mx-auto">
@@ -160,7 +160,7 @@ export default async function OrderCheckoutPage({
             </div>
 
             {/* Content */}
-            <div className="w-full  pb-28 max-w-2xl mx-auto md:px-4">
+            <div className="flex-1 w-full pt-2 md:pt-6 pb-8 max-w-2xl mx-auto md:px-4">
                 <CustomServerPaymentElements
                     clientSecret={order.stripeClientSecret}
                     sessionId={order.stripeSessionId}
