@@ -44,7 +44,7 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
     return stripe.checkout.sessions.create({
         locale: 'auto',
         mode: 'payment',
-        ui_mode: 'embedded',
+        ui_mode: 'custom',
         billing_address_collection: item.amountCents >= 5000 ? 'required' : 'auto',
         invoice_creation: {
             enabled: true,
@@ -74,21 +74,10 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
                 quantity: 1,
             },
         ],
-        ...(locale && {
-            custom_text: {
-                terms_of_service_acceptance: {
-                    message: getTermsMessage(locale),
-                },
-            },
-            consent_collection: {
-                terms_of_service: 'required',
-            },
-        }),
         metadata: { orderId },
         tax_id_collection: { enabled: false },
         automatic_tax: { enabled: false },
         customer: stripeUserId,
-        return_url: `${env('NEXT_PUBLIC_APP_URL')}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
     });
 }
 
@@ -137,7 +126,7 @@ export type CheckoutParams =
 
 export async function checkoutAction(
     params: CheckoutParams,
-): Promise<{ client_secret: string | null; orderId: string }> {
+): Promise<{ client_secret: string | null; orderId: string; sessionId: string }> {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({
@@ -238,7 +227,7 @@ export async function checkoutAction(
                 data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
             });
 
-            return { client_secret, orderId: order.id };
+            return { client_secret, orderId: order.id, sessionId: stripeSession.id };
         }
         case 'UPGRADE': {
             const { ptServerId, upgradeConfig, resourceTierId } = validatedParams;
@@ -387,7 +376,7 @@ export async function checkoutAction(
                 data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
             });
 
-            return { client_secret, orderId: order.id };
+            return { client_secret, orderId: order.id, sessionId: stripeSession.id };
         }
         case 'TO_PAYED': {
             throw new Error('Feature not implemented yet.');
@@ -467,10 +456,3 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     }
 }
 
-function getTermsMessage(locale: 'de' | 'en') {
-    if (locale === 'de') {
-        return "Ich stimme Scyed's [AGB](https://scyed.com/de/legal/tos) und der [Widerrufsbelehrung](https://scyed.com/de/legal/returns) zu.";
-    } else {
-        return "I agree to Scyed's Terms of Service [ToS](https://scyed.com/en/legal/tos) and [Refund Policy](https://scyed.com/en/legal/returns).";
-    }
-}

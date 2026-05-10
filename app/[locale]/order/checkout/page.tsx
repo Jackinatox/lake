@@ -18,6 +18,7 @@ const getCheckoutOrder = cache(async (userId: string, orderId: string) => {
         where: { id: orderId, userId },
         select: {
             stripeClientSecret: true,
+            stripeSessionId: true,
             type: true,
             ramMB: true,
             cpuPercent: true,
@@ -98,7 +99,7 @@ export default async function OrderCheckoutPage({
 
     const order = await getCheckoutOrder(session.user.id, orderId);
 
-    if (!order || !order.stripeClientSecret) {
+    if (!order || !order.stripeClientSecret || !order.stripeSessionId) {
         return <NotFoundComp />;
     }
 
@@ -160,7 +161,10 @@ export default async function OrderCheckoutPage({
 
             {/* Content */}
             <div className="w-full  pb-28 max-w-2xl mx-auto md:px-4">
-                <CustomServerPaymentElements clientSecret={order.stripeClientSecret} />
+                <CustomServerPaymentElements
+                    clientSecret={order.stripeClientSecret}
+                    sessionId={order.stripeSessionId}
+                />
             </div>
 
             {/* Sticky bottom bar */}

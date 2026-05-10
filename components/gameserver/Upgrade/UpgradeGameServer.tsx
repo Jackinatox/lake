@@ -40,6 +40,7 @@ function UpgradeGameServer({
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<UpgradeDraftSelection | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
+    const [sessionId, setSessionId] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const locale = useLakeLocale();
     const t = useTranslations('upgradeCheckout');
@@ -48,6 +49,7 @@ function UpgradeGameServer({
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
         setClientSecret(null);
+        setSessionId(null);
         setStep('configure');
     }, []);
 
@@ -71,6 +73,7 @@ function UpgradeGameServer({
             const secret = await checkoutAction(parsedParams.data);
 
             setClientSecret((secret as { client_secret: string }).client_secret);
+            setSessionId((secret as { sessionId: string }).sessionId);
             setStep('pay');
         } catch (error) {
             console.error('Error during checkout:', error);
@@ -84,7 +87,7 @@ function UpgradeGameServer({
         }
     };
 
-    if (step === 'pay' && clientSecret) {
+    if (step === 'pay' && clientSecret && sessionId) {
         return (
             <div className="md:-my-4 w-full">
                 {/* Sticky top bar */}
@@ -120,7 +123,7 @@ function UpgradeGameServer({
 
                 {/* Content */}
                 <div className="w-full pt-4 pb-28 max-w-2xl mx-auto px-4">
-                    <CustomServerPaymentElements clientSecret={clientSecret} />
+                    <CustomServerPaymentElements clientSecret={clientSecret} sessionId={sessionId} />
                 </div>
 
                 {/* Sticky bottom bar */}
