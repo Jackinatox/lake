@@ -23,6 +23,7 @@ import { DirectoryTable } from './components/DirectoryTable';
 import { CreateEntryDialog } from './components/CreateEntryDialog';
 import { FileEditorDialog } from './components/FileEditorDialog';
 import { FileUploadDialog } from './components/FileUploadDialog';
+import { FileDropZone } from './components/FileDropZone';
 import type { CreateEntryType, FileEntry, SortColumn, SortDirection } from './types';
 import {
     createFolder,
@@ -42,6 +43,7 @@ import { FtpPasswordDialog } from './components/FtpPasswordDialog';
 import { authClient } from '@/lib/auth-client';
 import { MAX_EDITABLE_FILE_SIZE, MAX_EDITABLE_FILE_SIZE_LABEL } from '@/app/GlobalConstants';
 import { useTranslations } from 'next-intl';
+import { limitFileList, MAX_UPLOAD_FILES } from './uploadLimits';
 
 interface FileManagerProps {
     apiKey: string;
@@ -517,8 +519,47 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
         }
     };
 
+    const normalizeUploadSelection = (files: FileList) => {
+        if (files.length <= MAX_UPLOAD_FILES) {
+            return files;
+        }
+
+        toast({
+            title: t('toasts.uploadSelectionLimited'),
+            description: t('toasts.uploadSelectionLimitedDescription', {
+                maxFiles: MAX_UPLOAD_FILES,
+                omittedCount: files.length - MAX_UPLOAD_FILES,
+            }),
+        });
+
+        return limitFileList(files);
+    };
+
     const handleFileSelect = (files: FileList | null) => {
-        setUploadState((state) => ({ ...state, files }));
+        setUploadState((state) => ({
+            ...state,
+            files: files ? normalizeUploadSelection(files) : null,
+        }));
+    };
+
+    const handleFilesDrop = (files: FileList) => {
+        if (!canInteract || uploadState.uploading) return;
+
+        setUploadState({
+            open: true,
+            files: normalizeUploadSelection(files),
+            uploading: false,
+            progress: 0,
+        });
+    };
+
+    const handleFolderDrop = () => {
+        setIsFtpDetailsOpen(true);
+        toast({
+            title: t('toasts.folderDropRejected'),
+            description: t('toasts.folderDropRejectedDescription'),
+            variant: 'destructive',
+        });
     };
 
     const handleAbortUpload = () => {
@@ -736,22 +777,28 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
                     </Alert>
                 )}
 
-                <DirectoryTable
-                    entries={sortedEntries}
-                    currentPath={currentPath}
-                    loading={loading}
-                    sortColumn={sortColumn}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onOpen={handleEntryOpen}
-                    onDownload={handleDownload}
-                    onRename={handleRenameRequest}
-                    onDelete={handleDeleteRequest}
-                    onNavigateUp={handleNavigateUp}
-                    menuOpenKey={openMenuKey}
-                    onMenuOpenKeyChange={setOpenMenuKey}
-                    isTextLikeFile={isTextLikeFile}
-                />
+                <FileDropZone
+                    disabled={!canInteract || loading || uploadState.uploading}
+                    onFilesDrop={handleFilesDrop}
+                    onFolderDrop={handleFolderDrop}
+                >
+                    <DirectoryTable
+                        entries={sortedEntries}
+                        currentPath={currentPath}
+                        loading={loading}
+                        sortColumn={sortColumn}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onOpen={handleEntryOpen}
+                        onDownload={handleDownload}
+                        onRename={handleRenameRequest}
+                        onDelete={handleDeleteRequest}
+                        onNavigateUp={handleNavigateUp}
+                        menuOpenKey={openMenuKey}
+                        onMenuOpenKeyChange={setOpenMenuKey}
+                        isTextLikeFile={isTextLikeFile}
+                    />
+                </FileDropZone>
             </CardContent>
 
             <FileEditorDialog
