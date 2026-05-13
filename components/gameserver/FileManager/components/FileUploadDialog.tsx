@@ -17,6 +17,7 @@ import { UploadCloud } from 'lucide-react';
 import { formatFileSize } from '@/lib/Pterodactyl/file-utils';
 import { ChangeEvent, ReactNode, memo, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { limitFileList, MAX_UPLOAD_FILES } from '../uploadLimits';
 
 interface FileUploadDialogProps {
     children?: ReactNode;
@@ -33,16 +34,6 @@ interface FileUploadDialogProps {
 
 function formatDirectory(directory: string) {
     return directory || '/';
-}
-
-const MAX_FILES = 200;
-
-function limitFileList(files: FileList, limit: number): FileList {
-    const transfer = new DataTransfer();
-    for (const file of Array.from(files).slice(0, limit)) {
-        transfer.items.add(file);
-    }
-    return transfer.files;
 }
 
 function getTotalBytes(files: FileList | null): number {
@@ -79,9 +70,9 @@ const FileUploadDialogComponent = ({
             return;
         }
 
-        if (selected.length > MAX_FILES) {
-            setOmittedCount(selected.length - MAX_FILES);
-            onFileSelect(limitFileList(selected, MAX_FILES));
+        if (selected.length > MAX_UPLOAD_FILES) {
+            setOmittedCount(selected.length - MAX_UPLOAD_FILES);
+            onFileSelect(limitFileList(selected));
         } else {
             setOmittedCount(0);
             onFileSelect(selected);
@@ -127,18 +118,20 @@ const FileUploadDialogComponent = ({
                                 <p className="font-medium">
                                     {t('selectedFilesLabel')}{' '}
                                     <span className="text-muted-foreground">
-                                        ({files.length}/{MAX_FILES})
+                                        ({files.length}/{MAX_UPLOAD_FILES})
                                     </span>
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    Total: {formatFileSize(totalBytes)}
+                                    {t('totalLabel', { size: formatFileSize(totalBytes) })}
                                 </p>
                             </div>
 
                             {omittedCount > 0 && (
                                 <p className="mt-2 text-xs text-destructive">
-                                    Only the first {MAX_FILES} files were selected. {omittedCount}{' '}
-                                    file(s) were ignored.
+                                    {t('selectionLimitedMessage', {
+                                        maxFiles: MAX_UPLOAD_FILES,
+                                        omittedCount,
+                                    })}
                                 </p>
                             )}
 

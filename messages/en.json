@@ -934,6 +934,17 @@
           "delete": "Delete"
         }
       },
+      "dropZone": {
+        "title": "Drop files here",
+        "description": "Upload one or more files to the current directory. Folders are not accepted here.",
+        "filesOnlyBadge": "Files only",
+        "rejectTitle": "Folders are not supported here",
+        "rejectDescription": "Use FTP/SFTP access for folder uploads.",
+        "overlayTitle": "Release to add files",
+        "overlayDescription": "The upload dialog will open so you can review the selected files.",
+        "overlayRejectTitle": "Folder upload needs FTP/SFTP",
+        "overlayRejectDescription": "Drop individual files here, or use the FTP/SFTP access details above for complete folders."
+      },
       "ftpAccess": {
         "title": "FTP access details",
         "host": "Host",
@@ -977,6 +988,8 @@
         "selectFilesText": "Select from your device.",
         "chooseFilesButton": "Choose files",
         "selectedFilesLabel": "Selected files:",
+        "totalLabel": "Total: {size}",
+        "selectionLimitedMessage": "Only the first {maxFiles} files were selected. {omittedCount} file(s) were ignored.",
         "cancelButton": "Cancel",
         "abortButton": "Abort upload",
         "uploadingButton": "Uploading…",
@@ -1055,12 +1068,16 @@
         "unableToCreateFolder": "Unable to create folder",
         "noFilesSelected": "No files selected",
         "noFilesSelectedDescription": "Choose one or more files before uploading.",
+        "uploadSelectionLimited": "File selection limited",
+        "uploadSelectionLimitedDescription": "Only the first {maxFiles} files were selected. {omittedCount} file(s) were ignored.",
         "uploadComplete": "Upload complete",
         "uploadCompleteDescription": "{count} file(s) uploaded successfully.",
         "uploadCancelled": "Upload aborted",
         "uploadCancelledDescription": "The active upload was stopped.",
         "uploadFailed": "Upload failed",
-        "unableToUpload": "Unable to upload"
+        "unableToUpload": "Unable to upload",
+        "folderDropRejected": "Folder upload needs FTP/SFTP",
+        "folderDropRejectedDescription": "The browser file manager only accepts individual files. Use the FTP/SFTP access details for complete folders."
       }
     },
     "networkManager": {

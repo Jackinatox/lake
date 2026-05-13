@@ -1,9 +1,18 @@
+import { Fragment } from 'react';
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
 import { Database } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { getKeyValuesAction, KeyValueRow } from '@/app/actions/keyvalue/keyValueActions';
 import { KeyValueType } from '@/app/client/generated/enums';
 import { EntryDialog, DeleteButton } from './KeyValueClient';
@@ -38,6 +47,37 @@ function valuePreview(row: KeyValueRow): string {
     }
 }
 
+type CategoryGroup = {
+    category: string | null;
+    entries: KeyValueRow[];
+};
+
+function groupByCategory(entries: KeyValueRow[]): CategoryGroup[] {
+    const groups = new Map<string, CategoryGroup>();
+
+    entries.forEach((entry) => {
+        const groupKey = entry.category?.trim() || '';
+        const existing = groups.get(groupKey);
+
+        if (existing) {
+            existing.entries.push(entry);
+            return;
+        }
+
+        groups.set(groupKey, {
+            category: groupKey || null,
+            entries: [entry],
+        });
+    });
+
+    return Array.from(groups.values()).sort((a, b) => {
+        if (a.category === null) return 1;
+        if (b.category === null) return -1;
+
+        return a.category.localeCompare(b.category);
+    });
+}
+
 export default async function KeyValuePage() {
     const session = await auth.api.getSession({ headers: await headers() });
 
@@ -46,8 +86,13 @@ export default async function KeyValuePage() {
     }
 
     const entries = await getKeyValuesAction();
+    const groupedEntries = groupByCategory(entries);
     const categories = [
-        ...new Set(entries.map((e) => e.category).filter((c): c is string => c !== null)),
+        ...new Set(
+            entries
+                .map((entry) => entry.category?.trim())
+                .filter((category): category is string => Boolean(category)),
+        ),
     ].sort();
 
     return (
@@ -68,52 +113,82 @@ export default async function KeyValuePage() {
                             No entries yet.
                         </p>
                     ) : (
-                        <div className="divide-y rounded-lg border">
-                            <div className="flex flex-row items-center gap-3 px-3 py-2 bg-muted/50 text-xs font-medium text-muted-foreground rounded-t-lg">
-                                <div className="min-w-0 flex-1">Variable</div>
-                                <div className="hidden min-w-0 max-w-xs flex-1 sm:block">
-                                    Preview
-                                </div>
-                                <div className="hidden min-w-0 max-w-28 flex-1 lg:block">
-                                    Category
-                                </div>
-                                <div className="hidden min-w-0 max-w-40 flex-1 xl:block">Note</div>
-                                <div className="shrink-0 w-18 text-right">Actions</div>
-                            </div>
-                            {entries.map((row) => (
-                                <div
-                                    key={row.id}
-                                    className="flex flex-col gap-1 p-3 sm:flex-row sm:items-center sm:gap-3"
-                                >
-                                    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                                        <span className="font-mono text-sm font-semibold break-all">
-                                            {row.key}
-                                        </span>
-                                        <span
-                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${typeBadgeColor[row.type]}`}
-                                        >
-                                            {row.type}
-                                        </span>
-                                    </div>
-                                    <div className="hidden min-w-0 max-w-xs flex-1 text-xs text-muted-foreground sm:block truncate">
-                                        {valuePreview(row)}
-                                    </div>
-                                    <div className="hidden min-w-0 max-w-28 flex-1 lg:block">
-                                        {row.category && (
-                                            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                                {row.category}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="hidden min-w-0 max-w-40 flex-1 text-xs text-muted-foreground xl:block truncate">
-                                        {row.note ?? ''}
-                                    </div>
-                                    <div className="flex shrink-0 gap-2">
-                                        <EntryDialog entry={row} categories={categories} />
-                                        <DeleteButton id={row.id} keyName={row.key} />
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="rounded-lg border">
+                            <Table className="min-w-[860px] table-fixed">
+                                <colgroup>
+                                    <col className="w-[34%]" />
+                                    <col className="w-[7.5rem]" />
+                                    <col className="w-[30%]" />
+                                    <col className="w-[13.75rem]" />
+                                    <col className="w-[9rem]" />
+                                </colgroup>
+                                <TableHeader>
+                                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                                        <TableHead>Variable</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Preview</TableHead>
+                                        <TableHead>Note</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {groupedEntries.map((group) => (
+                                        <Fragment key={group.category ?? '__uncategorized'}>
+                                            <TableRow className="border-y-2 border-y-border bg-muted/70 hover:bg-muted/70">
+                                                <TableCell colSpan={5} className="px-4 py-4">
+                                                    <div className="flex items-center justify-between gap-4 border-l-4 border-l-primary pl-3">
+                                                        <div>
+                                                            <p className="text-base font-semibold">
+                                                                {group.category ?? 'Uncategorized'}
+                                                            </p>
+                                                            <p className="mt-0.5 text-xs text-muted-foreground">
+                                                                {group.entries.length}{' '}
+                                                                {group.entries.length === 1
+                                                                    ? 'entry'
+                                                                    : 'entries'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                            {group.entries.map((row) => (
+                                                <TableRow key={row.id}>
+                                                    <TableCell>
+                                                        <span className="block break-all font-mono text-sm font-semibold">
+                                                            {row.key}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span
+                                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${typeBadgeColor[row.type]}`}
+                                                        >
+                                                            {row.type}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell className="truncate text-xs text-muted-foreground">
+                                                        {valuePreview(row)}
+                                                    </TableCell>
+                                                    <TableCell className="truncate text-xs text-muted-foreground">
+                                                        {row.note ?? '—'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex justify-end gap-2">
+                                                            <EntryDialog
+                                                                entry={row}
+                                                                categories={categories}
+                                                            />
+                                                            <DeleteButton
+                                                                id={row.id}
+                                                                keyName={row.key}
+                                                            />
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </Fragment>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
                     )}
                 </CardContent>

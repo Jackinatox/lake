@@ -198,13 +198,25 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
     const returnPolicyPdf = readFileSync(
         path.join(process.cwd(), 'public/static/pdfs/returnPolicy.pdf'),
     );
+    const agbPdf = readFileSync(path.join(process.cwd(), 'public/static/pdfs/scyed-agb.pdf'));
 
     await sendMail(
         data.userEmail,
         `Rechnungsübersicht für deinen ${data.gameName} Server`,
         html,
         'INVOICE',
-        [{ filename: 'Widerrufsbelehrung.pdf', data: returnPolicyPdf, contentType: 'application/pdf' }],
+        [
+            {
+                filename: 'Scyed-Widerrufsbelehrung.pdf',
+                data: returnPolicyPdf,
+                contentType: 'application/pdf',
+            },
+            {
+                filename: 'Scyed-AGB.pdf',
+                data: agbPdf,
+                contentType: 'application/pdf',
+            },
+        ],
     );
 }
 

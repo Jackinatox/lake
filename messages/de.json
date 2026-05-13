@@ -946,6 +946,17 @@
           "delete": "Löschen"
         }
       },
+      "dropZone": {
+        "title": "Dateien hier ablegen",
+        "description": "Lade eine oder mehrere Dateien in das aktuelle Verzeichnis hoch. Ordner werden hier nicht angenommen.",
+        "filesOnlyBadge": "Nur Dateien",
+        "rejectTitle": "Ordner werden hier nicht unterstützt",
+        "rejectDescription": "Nutze FTP/SFTP für Ordner-Uploads.",
+        "overlayTitle": "Loslassen, um Dateien hinzuzufügen",
+        "overlayDescription": "Der Upload-Dialog öffnet sich, damit Du die ausgewählten Dateien prüfen kannst.",
+        "overlayRejectTitle": "Ordner-Uploads brauchen FTP/SFTP",
+        "overlayRejectDescription": "Lege hier einzelne Dateien ab oder nutze die FTP/SFTP-Zugangsdaten oben für ganze Ordner."
+      },
       "ftpAccess": {
         "title": "FTP-Zugangsdaten",
         "host": "Host",
@@ -989,6 +1000,8 @@
         "selectFilesText": "Wähle von Deinem Gerät aus.",
         "chooseFilesButton": "Dateien auswählen",
         "selectedFilesLabel": "Ausgewählte Dateien:",
+        "totalLabel": "Gesamt: {size}",
+        "selectionLimitedMessage": "Nur die ersten {maxFiles} Dateien wurden ausgewählt. {omittedCount} Datei(en) wurden ignoriert.",
         "cancelButton": "Abbrechen",
         "abortButton": "Upload abbrechen",
         "uploadingButton": "Wird hochgeladen…",
@@ -1067,12 +1080,16 @@
         "unableToCreateFolder": "Ordner konnte nicht erstellt werden",
         "noFilesSelected": "Keine Dateien ausgewählt",
         "noFilesSelectedDescription": "Wähle eine oder mehrere Dateien aus, bevor Du hochlädst.",
+        "uploadSelectionLimited": "Dateiauswahl begrenzt",
+        "uploadSelectionLimitedDescription": "Nur die ersten {maxFiles} Dateien wurden ausgewählt. {omittedCount} Datei(en) wurden ignoriert.",
         "uploadComplete": "Upload abgeschlossen",
         "uploadCompleteDescription": "{count} Datei(en) erfolgreich hochgeladen.",
         "uploadCancelled": "Upload abgebrochen",
         "uploadCancelledDescription": "Der laufende Upload wurde gestoppt.",
         "uploadFailed": "Upload fehlgeschlagen",
-        "unableToUpload": "Hochladen nicht möglich"
+        "unableToUpload": "Hochladen nicht möglich",
+        "folderDropRejected": "Ordner-Upload braucht FTP/SFTP",
+        "folderDropRejectedDescription": "Der Datei-Manager im Browser akzeptiert nur einzelne Dateien. Nutze die FTP/SFTP-Zugangsdaten für ganze Ordner."
       }
     },
     "networkManager": {
