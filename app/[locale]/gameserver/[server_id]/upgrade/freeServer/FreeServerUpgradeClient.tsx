@@ -1,7 +1,6 @@
 'use client';
 
 import { extendFreeServer } from '@/app/actions/gameservers/extendFreeServer';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -82,14 +81,6 @@ export default function FreeServerUpgradeClient({
         <div className="space-y-6">
             {/* Header Section */}
             <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs">
-                        {t('badge.freeServer')}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                        {server.gameData.name}
-                    </Badge>
-                </div>
                 <h1 className="text-2xl sm:text-3xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground text-sm sm:text-base">{t('description')}</p>
             </div>

@@ -138,9 +138,6 @@ export default async function KeyValuePage() {
                                                 <TableCell colSpan={5} className="px-4 py-4">
                                                     <div className="flex items-center justify-between gap-4 border-l-4 border-l-primary pl-3">
                                                         <div>
-                                                            <p className="text-[11px] font-medium uppercase text-muted-foreground">
-                                                                Category
-                                                            </p>
                                                             <p className="text-base font-semibold">
                                                                 {group.category ?? 'Uncategorized'}
                                                             </p>
