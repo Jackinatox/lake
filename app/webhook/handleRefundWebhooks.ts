@@ -381,10 +381,35 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             return;
         }
 
+        // Download the PDF from Stripe and persist it in our DB so we are not
+        // dependent on Stripe's hosted URL. invoicePdfUrl points at our own
+        // /api/invoice/{orderId} route — when we migrate to S3 later we just
+        // re-point that URL and drop the InvoicePdf table.
+        let ownInvoiceUrl: string | null = null;
+        try {
+            const pdfRes = await fetch(invoice.invoice_pdf);
+            if (!pdfRes.ok) {
+                throw new Error(`Stripe PDF fetch failed: ${pdfRes.status} ${pdfRes.statusText}`);
+            }
+            const pdfBytes = Buffer.from(await pdfRes.arrayBuffer());
+            await prisma.invoicePdf.upsert({
+                where: { orderId: order.id },
+                create: { orderId: order.id, data: pdfBytes },
+                update: { data: pdfBytes },
+            });
+            ownInvoiceUrl = `${env('NEXT_PUBLIC_APP_URL')}/api/invoice/${order.id}`;
+        } catch (downloadError) {
+            logger.error('Failed to download/store Stripe invoice PDF', 'PAYMENT_LOG', {
+                userId: order.userId,
+                gameServerId: order.gameServerId ?? undefined,
+                details: { orderId: order.id, invoiceId: invoice.id, error: downloadError },
+            });
+        }
+
         const latest = await prisma.gameServerOrder.update({
             where: { id: order.id },
             data: {
-                invoicePdfUrl: invoice.invoice_pdf,
+                invoicePdfUrl: ownInvoiceUrl ?? invoice.invoice_pdf,
                 stripeInvoiceNumber: invoice.number ?? undefined,
             },
         });
@@ -392,7 +417,11 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
         logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT_LOG', {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
-            details: { orderId: order.id, invoiceId: invoice.id },
+            details: {
+                orderId: order.id,
+                invoiceId: invoice.id,
+                stored: ownInvoiceUrl !== null,
+            },
         });
 
         try {
@@ -412,7 +441,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
                 location: order.creationLocation.name || 'Unknown',
                 price: order.price,
                 expiresAt: order.expiresAt,
-                invoicePdfUrl: invoice.invoice_pdf,
+                invoicePdfUrl: latest.invoicePdfUrl ?? invoice.invoice_pdf,
             });
         } catch (emailError) {
             logger.error('Failed to send invoice email', 'EMAIL', {
