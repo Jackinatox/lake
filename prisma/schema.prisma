@@ -172,13 +172,26 @@ model GameServerOrder {
   creationLocationId Int
   creationLocation   Location @relation(fields: [creationLocationId], references: [id], onDelete: Restrict)
 
-  refunds Refund[]
+  refunds    Refund[]
+  invoicePdf InvoicePdf?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([stripeSessionId])
   @@index([resourceTierId])
+}
+
+// Temporary: store invoice PDF bytes in DB until S3 migration.
+// invoicePdfUrl on GameServerOrder points to our own /api/invoice/{orderId}
+// route, so swapping the storage backend later won't break any callers.
+model InvoicePdf {
+  id      String          @id @default(cuid(2))
+  orderId String          @unique
+  order   GameServerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  data    Bytes
+
+  createdAt DateTime @default(now())
 }
 
 enum OrderStatus {
