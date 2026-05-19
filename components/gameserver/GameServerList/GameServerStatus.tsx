@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import React, { useEffect, useState } from 'react';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { Status } from '../Console/status';
 import { ClientServer } from '@/models/prisma';
 

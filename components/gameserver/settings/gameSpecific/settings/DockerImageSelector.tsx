@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { Loader2, Save } from 'lucide-react';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Button } from '@/components/ui/button';

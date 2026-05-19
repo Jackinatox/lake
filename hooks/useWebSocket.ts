@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 type ReadyState = 'CONNECTING' | 'AUTHENTICATING' | 'OPEN' | 'CLOSING' | 'CLOSED';

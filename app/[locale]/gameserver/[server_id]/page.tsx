@@ -12,7 +12,7 @@ import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 export async function generateMetadata({

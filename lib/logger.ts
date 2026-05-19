@@ -3,7 +3,7 @@ import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
 import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 const SEVERITY_MAP: Record<LogLevel, SeverityNumber> = {
     TRACE: SeverityNumber.TRACE,

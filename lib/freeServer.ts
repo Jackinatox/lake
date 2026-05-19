@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { sendFreeServerCreatedEmail } from './email/sendEmailEmailsFromLake';
 import { logger } from './logger';
 

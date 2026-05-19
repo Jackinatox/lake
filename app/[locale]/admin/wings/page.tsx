@@ -1,7 +1,7 @@
 import React from 'react';
 import WingsTable from './WingsTable';
 import { Builder } from '@avionrx/pterodactyl-js';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';

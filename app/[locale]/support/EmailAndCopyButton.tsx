@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export default function EmailAndCopyButton() {
     const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_MAIL')!;

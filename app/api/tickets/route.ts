@@ -7,7 +7,7 @@ import { sendTicketCreatedEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
 import { TicketCategory } from '@/app/client/generated/enums';
 import { sendSupportTicketNotification } from '@/lib/Notifications/telegram';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { supportTicketSchema } from '@/lib/validation/order';
 import { getValidationMessage } from '@/lib/validation/common';
 

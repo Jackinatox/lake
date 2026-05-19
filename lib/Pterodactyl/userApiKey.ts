@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { logger } from '../logger';
 
 async function createUserApiKey(userId: number): Promise<any> {

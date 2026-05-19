@@ -3,7 +3,7 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 export async function reassignPortsAction(

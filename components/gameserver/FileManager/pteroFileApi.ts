@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export type PteroFileEntry = {
     name: string;

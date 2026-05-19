@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import type { Allocation, AllocationListResponse, PtErrorResponse } from './types';
 
 type UseAllocationsReturn = {

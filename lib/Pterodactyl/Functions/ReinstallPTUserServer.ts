@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import DeleteAllFilesUserServer from './DeleteAllFilesUser';
 
 export default async function ReinstallPTServerClient(

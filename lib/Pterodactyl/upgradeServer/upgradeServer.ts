@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 
 import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { createPtClient } from '../ptAdminClient';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
 

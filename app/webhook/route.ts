@@ -4,7 +4,7 @@ import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { recordCheckoutSession, provisionCheckoutSession } from './handleCheckoutSessionCompleted';

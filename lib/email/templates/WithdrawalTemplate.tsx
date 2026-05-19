@@ -1,5 +1,5 @@
 import { Heading, Hr, Section, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { formatDate } from '../../formatDate';
 import { OrderType } from '@/app/client/generated/enums';
 import {

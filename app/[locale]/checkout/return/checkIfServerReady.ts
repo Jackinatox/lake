@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@/auth';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import prisma from '@/lib/prisma';
 
 import { GameServerStatus } from '@/types/gameData';

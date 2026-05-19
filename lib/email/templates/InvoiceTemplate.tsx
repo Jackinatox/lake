@@ -1,5 +1,5 @@
 import { Heading, Img, Section, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';

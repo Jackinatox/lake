@@ -1,6 +1,6 @@
 import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export type JobId = string;
 

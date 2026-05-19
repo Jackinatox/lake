@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { Metadata } from 'next';
 
 export async function generateMetadata({

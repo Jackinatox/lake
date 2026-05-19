@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';

@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export default async function PTUserServerPowerAction(
     server: string,

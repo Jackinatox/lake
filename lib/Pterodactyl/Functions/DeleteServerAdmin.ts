@@ -1,5 +1,5 @@
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export default async function deleteServerAdmin(ptAdminId: number) {
     const apiKey = env('PTERODACTYL_API_KEY');

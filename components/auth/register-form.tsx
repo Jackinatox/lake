@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { CheckCircle2, Eye, EyeOff, Loader2, XCircle } from 'lucide-react';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';

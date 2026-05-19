@@ -20,7 +20,7 @@ import {
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 /**
  * List of all required KeyValue constants that must exist in the database

@@ -1,6 +1,6 @@
 import { EmailType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import nodemailer from 'nodemailer';
 import { logger } from '../logger';
 

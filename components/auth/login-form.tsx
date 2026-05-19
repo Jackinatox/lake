@@ -17,7 +17,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;

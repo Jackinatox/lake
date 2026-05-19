@@ -12,7 +12,7 @@ import type { Appearance } from '@stripe/stripe-js';
 
 const BILLING_ADDRESS_THRESHOLD_CENTS = 5000;
 import { loadStripe } from '@stripe/stripe-js';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';

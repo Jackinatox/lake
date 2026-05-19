@@ -1,7 +1,7 @@
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { RefundServerAction } from '@/app/client/generated/browser';
 
 /**

@@ -2,7 +2,7 @@ import { apiKey } from '@better-auth/api-key';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import {
     sendConfirmEmail,

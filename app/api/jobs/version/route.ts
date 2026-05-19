@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 

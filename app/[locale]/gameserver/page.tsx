@@ -5,7 +5,7 @@ import GameServersPage from './ServerTable';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { headers } from 'next/headers';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import type { Metadata } from 'next';
 import { Skeleton } from '@/components/ui/skeleton';
 

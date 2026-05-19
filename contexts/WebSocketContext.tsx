@@ -9,7 +9,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 // ============================================================================

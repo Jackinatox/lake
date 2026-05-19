@@ -1,6 +1,6 @@
 import { render } from '@react-email/render';
 import { readFileSync } from 'fs';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { sendMail } from './NodeMailer';
 import path from 'path';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';

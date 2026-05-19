@@ -1,6 +1,6 @@
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
 import { createPtClient } from '../ptAdminClient';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { logger } from '@/lib/logger';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import prisma from '@/lib/prisma';

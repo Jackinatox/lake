@@ -1,5 +1,5 @@
 import { Builder } from 'pterodactyl.js';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 export function createPtUserClient(apiKey: string) {
     const url = env('NEXT_PUBLIC_PTERODACTYL_URL');

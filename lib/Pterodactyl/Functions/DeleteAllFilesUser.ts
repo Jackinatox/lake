@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import PTUserServerPowerAction from './StopPTUserServer';
 
 export default async function DeleteAllFilesUserServer(server: string, apiKey: string) {

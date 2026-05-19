@@ -1,5 +1,5 @@
 import { Body, Container, Head, Hr, Html, Preview, Tailwind, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import type { ReactNode } from 'react';
 
 const bodyStyle = {

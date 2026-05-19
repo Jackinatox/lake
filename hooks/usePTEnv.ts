@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 type EnvStore = {
     vars: Record<string, string> | null;

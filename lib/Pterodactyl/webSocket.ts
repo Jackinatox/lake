@@ -1,4 +1,4 @@
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 
 async function webSocket(serverId: string, apiKey: string) {
     const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');

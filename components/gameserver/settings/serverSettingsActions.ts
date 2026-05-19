@@ -12,7 +12,7 @@ import {
 } from '@/lib/validation/gameserver';
 import { serverIdentifierSchema } from '@/lib/validation/common';
 
-import { env } from 'next-runtime-env';
+import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 export async function renameClientServer(ptServerId: string, newName: string): Promise<boolean> {
