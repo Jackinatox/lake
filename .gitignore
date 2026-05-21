@@ -54,3 +54,4 @@ knip.json
 .codex
 graphify-out/
 .graphify*
+.idea/
