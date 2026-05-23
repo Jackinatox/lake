@@ -270,7 +270,12 @@ const collectors: Metric[] = [
                 windows.map(({ label, ms }) =>
                     prisma.gameServerOrder
                         .aggregate({
-                            where: { status: 'PAID', createdAt: { gte: new Date(now - ms) } },
+                            where: {
+                                status: {
+                                    in: ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'],
+                                },
+                                createdAt: { gte: new Date(now - ms) },
+                            },
                             _sum: { price: true },
                         })
                         .then((r) => ({ label, value: Math.round(r._sum.price ?? 0) })),
@@ -286,7 +291,12 @@ const collectors: Metric[] = [
         collect: async () => {
             const [paid, refunded] = await Promise.all([
                 prisma.gameServerOrder.aggregate({
-                    where: { status: 'PAID' },
+                    where: {
+                        // Its substracted in he refuind aggregate
+                        status: {
+                            in: ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'],
+                        },
+                    },
                     _sum: { price: true },
                 }),
                 prisma.refund.aggregate({
@@ -304,7 +314,11 @@ const collectors: Metric[] = [
         type: 'gauge',
         collect: async () => {
             const result = await prisma.gameServerOrder.aggregate({
-                where: { status: 'PAID' },
+                where: {
+                    status: {
+                        in: ['PAID', 'PARTIALLY_REFUNDED', 'REFUNDED'],
+                    },
+                },
                 _avg: { price: true },
             });
             const avg = Math.round(result._avg.price ?? 0);
