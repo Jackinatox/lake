@@ -145,7 +145,7 @@ export default function FreeGameServerBooking({
                     )}
                     <Button
                         onClick={handleCreateFreeServer}
-                        disabled={isCreationDisabled || loading}
+                        disabled={Boolean(isCreationDisabled || loading)}
                         className="w-full sm:w-auto sm:ml-auto bg-green-600 hover:bg-green-700"
                     >
                         <Gift className="mr-2 h-4 w-4" />
