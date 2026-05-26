@@ -10,6 +10,7 @@ import { ValheimConfig } from '@/models/gameSpecificConfig/ValheimConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
 import { GameConfigProps } from './minecraft-config';
+import { FactorioConfig } from '@/models/gameSpecificConfig/FactorioConfig';
 
 export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent(
     { game, onSubmit, initialConfig }: GameConfigProps,
@@ -44,7 +45,7 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
 
             const completeConfig: GameConfig = {
                 gameSlug: game.slug,
-                eggId: flavor.egg_id,
+                eggId: flavor.eggId,
                 version: 'latest',
                 dockerImage: flavor.docker_image,
                 gameSpecificConfig: { ...config },
@@ -65,7 +66,9 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                 <Switch
                     id="valheimMode"
                     checked={config.mode === 'modded'}
-                    onCheckedChange={(checked) => handleChange('mode', checked ? 'modded' : 'vanilla')}
+                    onCheckedChange={(checked) =>
+                        handleChange('mode', checked ? 'modded' : 'vanilla')
+                    }
                 />
             </ConfigSettingItem>
 

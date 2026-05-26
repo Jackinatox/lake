@@ -10,6 +10,7 @@ import {
     Gamepad2,
     HeadphonesIcon,
     Gift,
+    BadgeEuro,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -42,14 +43,19 @@ type MenuItem = {
 // 2) Centralized menu "JSON"
 const MENU: MenuItem[] = [
     {
+        labelKey: 'dashboard',
+        Icon: LayoutDashboard,
+        href: '/gameserver',
+    },
+    {
         labelKey: 'games',
         Icon: Gamepad2,
         href: '/order',
     },
     {
-        labelKey: 'dashboard',
-        Icon: LayoutDashboard,
-        href: '/gameserver',
+        labelKey: 'pricing',
+        Icon: BadgeEuro,
+        href: '/pricing',
     },
     {
         labelKey: 'support',

@@ -1446,7 +1446,132 @@
   "menu": {
     "games": "Spiele",
     "dashboard": "Dashboard",
-    "support": "Support"
+    "support": "Support",
+    "pricing": "Preise"
+  },
+  "pricing": {
+    "meta": {
+      "title": "Preise",
+      "description": "Faire, transparente Preise. Konfiguriere Deinen Gameserver und zahle nur für das, was Du wirklich brauchst."
+    },
+    "hero": {
+      "badge": "Preise",
+      "title": "Faire, transparente Preise",
+      "subtitle": "Bau Dir den Server, den Du wirklich brauchst. Wähle eine Performance-Gruppe, dann CPU und Speicher, und kombiniere ein Ressourcenpaket. Kein Abo — Du zahlst einmalig für die Laufzeit, die Du willst."
+    },
+    "highlights": {
+      "noSubscription": "Kein Abo",
+      "noSubscriptionDesc": "Einmalige Zahlung für die gewählte Laufzeit.",
+      "transparent": "Transparent",
+      "transparentDesc": "Jeder Cent für CPU, RAM und Ressourcen ist sichtbar.",
+      "flexible": "Flexibel",
+      "flexibleDesc": "Jederzeit upgraden oder verlängern."
+    },
+    "howItWorks": {
+      "title": "So funktionieren die Preise",
+      "subtitle": "Drei einfache Schritte — kombiniere genau das, was Du brauchst.",
+      "step1": {
+        "title": "Performance-Gruppe wählen",
+        "description": "Wähle die Hardware-Familie, die zu Dir passt. Jede Gruppe hat eigene CPU- und RAM-Preise."
+      },
+      "step2": {
+        "title": "CPU und Speicher festlegen",
+        "description": "Stelle mit den Slidern genau ein, wie viele vCores und GiB RAM Dein Spiel braucht."
+      },
+      "step3": {
+        "title": "Ressourcenpaket wählen",
+        "description": "Füge Speicherplatz, Backup-Slots und Ports mit einem Klick hinzu — wähle das Paket, das zu Deinem Projekt passt."
+      }
+    },
+    "performance": {
+      "title": "Performance-Gruppen",
+      "subtitle": "Jede Gruppe hat eigene CPU- und Speicher-Preise.",
+      "cpuLabel": "CPU",
+      "ramLabel": "RAM",
+      "perVCore": "€ / vCore / Monat",
+      "perGiB": "€ / GiB / Monat",
+      "vCoreRange": "{min}–{max} vCores",
+      "ramRange": "{min}–{max} GiB"
+    },
+    "resourceTiers": {
+      "title": "Ressourcenpakete",
+      "subtitle": "Disk-, Backup- und Port-Pakete — wähle, was Dein Server braucht.",
+      "diskLabel": "Speicher",
+      "backupsLabel": "Backups",
+      "portsLabel": "Ports",
+      "perMonth": "/ Monat",
+      "free": "Kostenlos"
+    },
+    "discounts": {
+      "title": "Laufzeit-Rabatte",
+      "subtitle": "Längere Laufzeit, niedrigerer Preis.",
+      "weekLabel": "1 Woche",
+      "weekModifier": "+15 % Kurzzeit-Aufschlag",
+      "monthLabel": "1 Monat",
+      "monthModifier": "Basispreis",
+      "threeMonthsLabel": "3 Monate",
+      "threeMonthsModifier": "−10 % Rabatt",
+      "sixMonthsLabel": "6 Monate",
+      "sixMonthsModifier": "−15 % Rabatt"
+    },
+    "configurator": {
+      "continueLabel": "Spiel wählen"
+    },
+    "table": {
+      "performanceGroup": "Performance-Gruppe",
+      "headers": {
+        "item": "Position",
+        "selection": "Auswahl",
+        "unit": "Einzelpreis",
+        "subtotal": "Zwischensumme"
+      },
+      "cpu": "CPU",
+      "ram": "RAM",
+      "resources": "Ressourcen",
+      "duration": "Laufzeit",
+      "gib": "GiB",
+      "perVCore": "€/vCore/Mt.",
+      "perGiB": "€/GiB/Mt.",
+      "perMonth": "€/Monat",
+      "free": "Kostenlos",
+      "tierSummary": "{disk} GiB · {backups} Backups · {ports} Ports",
+      "durations": {
+        "week": "1 Woche",
+        "month": "1 Monat",
+        "threeMonths": "3 Monate",
+        "sixMonths": "6 Monate"
+      },
+      "daysValue": "{days} Tage",
+      "baseLabel": "Basis",
+      "discount": "Rabatt (−{percent} %)",
+      "surcharge": "Kurzzeit-Aufschlag (+{percent} %)",
+      "total": "Gesamt",
+      "totalSub": "Einmalige Zahlung für {days} Tage",
+      "minOrderHint": "Mindestbestellwert beträgt 1,00 €"
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "items": {
+        "billing": {
+          "question": "Wie funktioniert die Abrechnung?",
+          "answer": "Du zahlst einmalig für die gewählte Laufzeit. Kein Abo, keine automatische Verlängerung — der Server stoppt, wenn die bezahlte Zeit abgelaufen ist."
+        },
+        "upgrade": {
+          "question": "Kann ich später upgraden?",
+          "answer": "Ja. Du kannst Deinen Server jederzeit upgraden oder verlängern und zahlst nur die Differenz, anteilig für die verbleibende Zeit."
+        },
+        "refund": {
+          "question": "Wie sieht es mit Rückerstattungen aus?",
+          "answer": "Nach EU-Verbraucherschutzrecht (§355 BGB) kannst Du innerhalb von 14 Tagen widerrufen und erhältst eine anteilige Rückerstattung für ungenutzte Zeit."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit, Deinen Server zu starten?",
+      "subtitle": "Konfiguriere Deine Hardware und wähle Dein Spiel — in unter einer Minute.",
+      "primary": "Jetzt konfigurieren",
+      "secondary": "Kostenlose Variante testen"
+    }
   },
   "blog": {
     "title": "Zurück zur Übersicht",

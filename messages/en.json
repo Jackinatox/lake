@@ -1434,7 +1434,132 @@
   "menu": {
     "games": "Games",
     "dashboard": "Dashboard",
-    "support": "Support"
+    "support": "Support",
+    "pricing": "Pricing"
+  },
+  "pricing": {
+    "meta": {
+      "title": "Pricing",
+      "description": "Transparent, fair pricing. Configure your gameserver and pay only for what you actually need."
+    },
+    "hero": {
+      "badge": "Pricing",
+      "title": "Fair, transparent pricing",
+      "subtitle": "Build the server you actually need. Pick a performance group, choose CPU and memory, then add a resource package. No subscriptions — pay once for the duration you want."
+    },
+    "highlights": {
+      "noSubscription": "No subscription",
+      "noSubscriptionDesc": "One-time payment for the duration you choose.",
+      "transparent": "Transparent",
+      "transparentDesc": "Every cent for CPU, RAM and resources is visible.",
+      "flexible": "Flexible",
+      "flexibleDesc": "Scale up or extend whenever you need to."
+    },
+    "howItWorks": {
+      "title": "How pricing works",
+      "subtitle": "Three simple steps — combine exactly what you need.",
+      "step1": {
+        "title": "Pick a performance group",
+        "description": "Choose the hardware family that matches your needs. Each group has its own CPU and RAM pricing."
+      },
+      "step2": {
+        "title": "Choose CPU and memory",
+        "description": "Use the sliders to dial in exactly how many vCores and GiB of RAM your game needs."
+      },
+      "step3": {
+        "title": "Pick a resource package",
+        "description": "Add disk space, backup slots and ports in a single click — pick the package that fits your project."
+      }
+    },
+    "performance": {
+      "title": "Performance groups",
+      "subtitle": "Each group has its own CPU and memory pricing.",
+      "cpuLabel": "CPU",
+      "ramLabel": "RAM",
+      "perVCore": "€ / vCore / month",
+      "perGiB": "€ / GiB / month",
+      "vCoreRange": "{min}–{max} vCores",
+      "ramRange": "{min}–{max} GiB"
+    },
+    "resourceTiers": {
+      "title": "Resource packages",
+      "subtitle": "Disk, backup and port packages — pick whatever your server needs.",
+      "diskLabel": "Disk",
+      "backupsLabel": "Backups",
+      "portsLabel": "Ports",
+      "perMonth": "/ month",
+      "free": "Free"
+    },
+    "discounts": {
+      "title": "Duration discounts",
+      "subtitle": "Pay longer, pay less.",
+      "weekLabel": "1 week",
+      "weekModifier": "+15% short-term surcharge",
+      "monthLabel": "1 month",
+      "monthModifier": "Base price",
+      "threeMonthsLabel": "3 months",
+      "threeMonthsModifier": "−10% discount",
+      "sixMonthsLabel": "6 months",
+      "sixMonthsModifier": "−15% discount"
+    },
+    "configurator": {
+      "continueLabel": "Choose a Game"
+    },
+    "table": {
+      "performanceGroup": "Performance group",
+      "headers": {
+        "item": "Item",
+        "selection": "Selection",
+        "unit": "Unit price",
+        "subtotal": "Subtotal"
+      },
+      "cpu": "CPU",
+      "ram": "RAM",
+      "resources": "Resources",
+      "duration": "Duration",
+      "gib": "GiB",
+      "perVCore": "€/vCore/mo",
+      "perGiB": "€/GiB/mo",
+      "perMonth": "€/mo",
+      "free": "Free",
+      "tierSummary": "{disk} GiB · {backups} backups · {ports} ports",
+      "durations": {
+        "week": "1 week",
+        "month": "1 month",
+        "threeMonths": "3 months",
+        "sixMonths": "6 months"
+      },
+      "daysValue": "{days} days",
+      "baseLabel": "Base",
+      "discount": "Discount (−{percent}%)",
+      "surcharge": "Short-term surcharge (+{percent}%)",
+      "total": "Total",
+      "totalSub": "One-time payment for {days} days",
+      "minOrderHint": "Minimum order value is 1.00 €"
+    },
+    "faq": {
+      "title": "Common questions",
+      "items": {
+        "billing": {
+          "question": "How is billing handled?",
+          "answer": "It's a one-time payment for the duration you choose. No subscriptions, no auto-renewals — your server stops when the time you paid for runs out."
+        },
+        "upgrade": {
+          "question": "Can I upgrade later?",
+          "answer": "Yes. You can upgrade or extend your server at any time and only pay the difference, prorated for the remaining time."
+        },
+        "refund": {
+          "question": "What about refunds?",
+          "answer": "Under EU consumer protection law you can withdraw within 14 days and receive a pro-rata refund for any unused service time."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to spin up your server?",
+      "subtitle": "Configure your hardware and pick your game in under a minute.",
+      "primary": "Configure now",
+      "secondary": "Try the free tier"
+    }
   },
   "blog": {
     "title": "Back to overview",
