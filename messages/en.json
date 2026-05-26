@@ -1444,7 +1444,7 @@
     "hero": {
       "badge": "Pricing",
       "title": "Fair, transparent pricing",
-      "subtitle": "Build the server you actually need. Pick a performance group, choose CPU and memory, then add a resource package. No subscriptions — pay once for the duration you want."
+      "subtitle": "You choose a performance group, which determines the base performance so the server runs smoothly. Then you select CPU and RAM based on your game requirements. Finally, add resources like storage space, backups and ports."
     },
     "highlights": {
       "noSubscription": "No subscription",

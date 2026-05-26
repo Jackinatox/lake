@@ -290,8 +290,11 @@ export default function PricingClient({ performanceGroups, resourceTiers }: Pric
                                                     {rt.name || `Tier ${rt.id}`}
                                                 </span>
                                                 <span className="text-xs text-muted-foreground">
-                                                    {rt.diskMB / 1024} GiB · {rt.backups} ·{' '}
-                                                    {rt.ports}
+                                                    {t('table.tierSummary', {
+                                                        disk: rt.diskMB / 1024,
+                                                        backups: rt.backups,
+                                                        ports: rt.ports,
+                                                    })}
                                                 </span>
                                             </span>
                                         </SelectItem>

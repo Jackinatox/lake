@@ -1456,7 +1456,7 @@
     "hero": {
       "badge": "Preise",
       "title": "Faire, transparente Preise",
-      "subtitle": "Bau Dir den Server, den Du wirklich brauchst. Wähle eine Performance-Gruppe, dann CPU und Speicher, und kombiniere ein Ressourcenpaket. Kein Abo — Du zahlst einmalig für die Laufzeit, die Du willst."
+      "subtitle": "Du wählst eine Performance Gruppe, das bestimmt die Basis Performance, damit läuft der Server flüssiger. Dann wählst du CPU und RAM nach Anforderungen von deinem Spiel. Zum Schluss noch die Ressourcen, wie viel Speicherplatz, Backups und Ports du brauchst."
     },
     "highlights": {
       "noSubscription": "Kein Abo",
