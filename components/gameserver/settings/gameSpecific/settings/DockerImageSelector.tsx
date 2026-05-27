@@ -22,6 +22,7 @@ interface DockerImageSelectorProps {
     disabled?: boolean;
     ptSelectedDockerImage: string;
     title: string;
+    hint?: string;
 }
 
 function DockerImageSelector({
@@ -30,6 +31,7 @@ function DockerImageSelector({
     disabled = false,
     title,
     ptSelectedDockerImage,
+    hint,
 }: DockerImageSelectorProps) {
     const [dockerImages, setDockerImages] = useState<PterodactylDockerImage>({});
     const [selectedDockerImage, setSelectedDockerImage] = useState<string>(
@@ -139,12 +141,13 @@ function DockerImageSelector({
     };
 
     return (
-        <div className="space-y-2">
+        <div>
             <div className="flex items-center gap-2">
                 <Label className="text-sm font-medium">{title}</Label>
                 <span className="text-xs text-muted-foreground italic">(Restart required)</span>
                 {(loading || saving) && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
             </div>
+            {hint && <span className="text-muted-foreground text-xs">{hint}</span>}
             <ButtonGroup className="w-full">
                 <Select
                     value={selectedDockerImage}

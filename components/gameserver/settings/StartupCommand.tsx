@@ -1,13 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { updateStartupCommand } from './serverSettingsActions';
@@ -69,31 +66,10 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
     };
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1">
             <Label htmlFor="startup-command">{t('label')}</Label>
-            <Textarea
-                id="startup-command"
-                value={value}
-                onChange={
-                    editable
-                        ? (e) => {
-                              setValue(e.target.value);
-                              setError('');
-                          }
-                        : undefined
-                }
-                readOnly={!editable}
-                className={`font-mono text-sm resize-none ${!editable ? 'bg-muted/50' : ''}`}
-                rows={3}
-                autoCorrect="off"
-                autoComplete="off"
-                autoCapitalize="none"
-                spellCheck={false}
-            />
-            <div className="flex items-start justify-between gap-2">
-                <p className="text-xs text-muted-foreground flex-1 min-w-0">
-                    {t('description')}
-                </p>
+            <div className="flex items-end justify-between gap-2 !mt-1">
+                <p className="text-xs text-muted-foreground flex-1 min-w-0">{t('description')}</p>
                 {editable && (
                     <span
                         className={`text-xs shrink-0 ${tooLong ? 'text-destructive font-medium' : 'text-muted-foreground'}`}
@@ -102,39 +78,36 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
                     </span>
                 )}
             </div>
-            {editable && isDirty && (
-                <div className="flex items-center justify-end gap-2">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleReset}
-                        disabled={isSaving}
-                        className="h-7 px-2 text-xs"
-                    >
-                        <RotateCcw className="h-3 w-3 mr-1" />
-                        {t('reset')}
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSave}
-                        disabled={!canSave}
-                        className="h-7 px-3 text-xs flex items-center gap-1"
-                    >
-                        {isSaving ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                            <Save className="h-3 w-3" />
-                        )}
-                        {isSaving ? t('saving') : t('save')}
-                    </Button>
-                </div>
-            )}
-            {isEmpty && isDirty && <p className="text-xs text-destructive">{t('required')}</p>}
-            {error && <p className="text-xs text-destructive">{error}</p>}
-            {hasDefault && (
-                <Collapsible open={defaultOpen} onOpenChange={setDefaultOpen}>
-                    <div className="flex items-center justify-between gap-2">
+            <div className="relative">
+                <span
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 select-none font-mono text-sm text-muted-foreground/70"
+                    aria-hidden="true"
+                >
+                    {'>'}
+                </span>
+                <Input
+                    id="startup-command"
+                    type="text"
+                    value={value}
+                    onChange={
+                        editable
+                            ? (e) => {
+                                  setValue(e.target.value.replace(/[\r\n]+/g, ' '));
+                                  setError('');
+                              }
+                            : undefined
+                    }
+                    readOnly={!editable}
+                    className={`h-10 pl-7 font-mono text-sm ${!editable ? 'bg-muted/50' : ''}`}
+                    autoCorrect="off"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                />
+            </div>
+            <Collapsible open={hasDefault && defaultOpen} onOpenChange={setDefaultOpen}>
+                <div className="flex items-center justify-between gap-2 min-h-7 pt-1">
+                    {hasDefault ? (
                         <CollapsibleTrigger asChild>
                             <Button
                                 variant="ghost"
@@ -149,26 +122,64 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
                                 {defaultOpen ? t('hideDefault') : t('showDefault')}
                             </Button>
                         </CollapsibleTrigger>
-                        {editable && defaultOpen && (
+                    ) : (
+                        <span />
+                    )}
+                    {editable && isDirty && (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleReset}
+                                disabled={isSaving}
+                                className="h-7 px-2 text-xs"
+                            >
+                                <RotateCcw className="h-3 w-3 mr-1" />
+                                {t('reset')}
+                            </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={handleUseDefault}
-                                disabled={!canUseDefault || isSaving}
+                                onClick={handleSave}
+                                disabled={!canSave}
                                 className="h-7 px-3 text-xs flex items-center gap-1"
                             >
-                                <Undo2 className="h-3 w-3" />
-                                {t('useDefault')}
+                                {isSaving ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                    <Save className="h-3 w-3" />
+                                )}
+                                {isSaving ? t('saving') : t('save')}
                             </Button>
-                        )}
-                    </div>
-                    <CollapsibleContent>
-                        <pre className="mt-2 rounded-md border bg-muted/50 p-2 font-mono text-xs whitespace-pre-wrap break-all">
-                            {defaultCommand}
-                        </pre>
+                        </div>
+                    )}
+                </div>
+                {hasDefault && (
+                    <CollapsibleContent className="mt-2">
+                        <ButtonGroup className="w-full">
+                            <ButtonGroupText className="flex-1 min-w-0 bg-muted/50 px-2 py-2 font-mono text-xs whitespace-pre-wrap break-all">
+                                {defaultCommand}
+                            </ButtonGroupText>
+                            {editable && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleUseDefault}
+                                    disabled={!canUseDefault || isSaving}
+                                    title={t('useDefault')}
+                                    aria-label={t('useDefault')}
+                                    className="px-3 flex items-center gap-1 text-xs"
+                                >
+                                    <Undo2 className="h-3.5 w-3.5" />
+                                    <span className="hidden sm:inline">{t('useDefault')}</span>
+                                </Button>
+                            )}
+                        </ButtonGroup>
                     </CollapsibleContent>
-                </Collapsible>
-            )}
+                )}
+            </Collapsible>
+            {isEmpty && isDirty && <p className="text-xs text-destructive">{t('required')}</p>}
+            {error && <p className="text-xs text-destructive">{error}</p>}
         </div>
     );
 }
