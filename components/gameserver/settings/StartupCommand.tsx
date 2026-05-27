@@ -17,6 +17,7 @@ interface StartupCommandProps {
 
 function StartupCommand({ command, ptServerId }: StartupCommandProps) {
     const t = useTranslations('gameserver.settings.startupCommand');
+    const editable = ptServerId !== undefined;
     const [value, setValue] = useState(command);
     const [saved, setSaved] = useState(command);
     const [isSaving, setIsSaving] = useState(false);
@@ -28,7 +29,7 @@ function StartupCommand({ command, ptServerId }: StartupCommandProps) {
     const canSave = isDirty && !isEmpty && !tooLong && !isSaving;
 
     const handleSave = async () => {
-        if (!canSave) return;
+        if (!canSave || !ptServerId) return;
         setIsSaving(true);
         setError('');
         const ok = await updateStartupCommand(ptServerId, value);
@@ -51,52 +52,59 @@ function StartupCommand({ command, ptServerId }: StartupCommandProps) {
             <Textarea
                 id="startup-command"
                 value={value}
-                onChange={(e) => {
-                    setValue(e.target.value);
-                    setError('');
-                }}
-                className="font-mono text-sm resize-none"
+                onChange={
+                    editable
+                        ? (e) => {
+                              setValue(e.target.value);
+                              setError('');
+                          }
+                        : undefined
+                }
+                readOnly={!editable}
+                className={`font-mono text-sm resize-none ${!editable ? 'bg-muted/50' : ''}`}
                 rows={3}
                 autoCorrect="off"
                 autoComplete="off"
                 autoCapitalize="none"
                 spellCheck={false}
             />
-            <div className="flex items-center justify-between gap-2">
-                <span
-                    className={`text-xs ${tooLong ? 'text-destructive font-medium' : 'text-muted-foreground'}`}
-                >
-                    {value.length}/{MAX_LENGTH}
-                </span>
-                {isDirty && (
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleReset}
-                            disabled={isSaving}
-                            className="h-7 px-2 text-xs"
-                        >
-                            <RotateCcw className="h-3 w-3 mr-1" />
-                            {t('reset')}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleSave}
-                            disabled={!canSave}
-                            className="h-7 px-3 text-xs flex items-center gap-1"
-                        >
-                            {isSaving ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                                <Save className="h-3 w-3" />
-                            )}
-                            {isSaving ? t('saving') : t('save')}
-                        </Button>
-                    </div>
-                )}
-            </div>
+            {editable && (
+                <div className="flex items-center justify-between gap-2">
+                    <span
+                        className={`text-xs ${tooLong ? 'text-destructive font-medium' : 'text-muted-foreground'}`}
+                    >
+                        {value.length}/{MAX_LENGTH}
+                    </span>
+                    {isDirty && (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleReset}
+                                disabled={isSaving}
+                                className="h-7 px-2 text-xs"
+                            >
+                                <RotateCcw className="h-3 w-3 mr-1" />
+                                {t('reset')}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleSave}
+                                disabled={!canSave}
+                                className="h-7 px-3 text-xs flex items-center gap-1"
+                            >
+                                {isSaving ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                    <Save className="h-3 w-3" />
+                                )}
+                                {isSaving ? t('saving') : t('save')}
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
             {isEmpty && isDirty && <p className="text-xs text-destructive">{t('required')}</p>}
             {error && <p className="text-xs text-destructive">{error}</p>}
             <p className="text-xs text-muted-foreground">{t('description')}</p>
