@@ -100,7 +100,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     return (
         <div className="space-y-4">
             <div className="">
-                <StartupCommand command={server.invocation} />
+                <StartupCommand command={server.invocation} ptServerId={server.identifier} />
                 <div className="flex items-center gap-2 pt-4">
                     <Label className="text-sm font-medium">Minecraft Version</Label>
                     <span className="text-xs text-muted-foreground italic">

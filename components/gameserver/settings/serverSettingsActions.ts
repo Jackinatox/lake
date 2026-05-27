@@ -9,6 +9,7 @@ import {
     reinstallServerSchema,
     renameServerSchema,
     serverStartupSchema,
+    updateStartupCommandSchema,
 } from '@/lib/validation/gameserver';
 import { serverIdentifierSchema } from '@/lib/validation/common';
 
@@ -170,6 +171,98 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
         });
         return false;
     }
+}
+
+export async function updateStartupCommand(
+    ptServerId: string,
+    startupCommand: string,
+): Promise<boolean> {
+    const parsedResult = updateStartupCommandSchema.safeParse({ ptServerId, startupCommand });
+    if (!parsedResult.success) {
+        return false;
+    }
+    const parsed = parsedResult.data;
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.ptKey) {
+        return false;
+    }
+
+    const server = await prisma.gameServer.findFirst({
+        where: { ptServerId: parsed.ptServerId, userId: session.user.id },
+        select: { id: true, ptAdminId: true },
+    });
+
+    if (!server?.ptAdminId) {
+        logger.warn(
+            `Startup command update attempt for unknown or unowned server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            { userId: session.user.id, details: { ptServerId: parsed.ptServerId } },
+        );
+        return false;
+    }
+
+    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptAdminKey = env('PTERODACTYL_API_KEY');
+
+    try {
+        const adminServer = await fetch(`${ptUrl}/api/application/servers/${server.ptAdminId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${ptAdminKey}`,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((r) => r.json())
+            .then((s) => s.attributes);
+
+        const response = await fetch(
+            `${ptUrl}/api/application/servers/${server.ptAdminId}/startup`,
+            {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${ptAdminKey}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    skip_scripts: false,
+                    egg: adminServer.egg,
+                    environment: adminServer.container.environment,
+                    startup: parsed.startupCommand,
+                    image: adminServer.container.image,
+                }),
+            },
+        );
+
+        if (!response.ok) {
+            logger.error(
+                `Failed to update startup command for server ${parsed.ptServerId}`,
+                'GAME_SERVER',
+                {
+                    userId: session.user.id,
+                    details: {
+                        ptServerId: parsed.ptServerId,
+                        status: response.status,
+                    },
+                },
+            );
+            return false;
+        }
+    } catch (error) {
+        logger.error(
+            `Exception updating startup command for server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            { userId: session.user.id, details: { ptServerId: parsed.ptServerId, error } },
+        );
+        return false;
+    }
+    logger.info(
+        `Updated Startupccommand for ${parsed.ptServerId} to "${parsed.startupCommand}"`,
+        'GAME_SERVER',
+        { userId: session.user.id },
+    );
+    return true;
 }
 
 export async function changeServerStartup(server: string, docker_image: string): Promise<boolean> {

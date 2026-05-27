@@ -1142,7 +1142,12 @@
       },
       "startupCommand": {
         "label": "Startup Command",
-        "description": "This command is automatically generated and cannot be modified."
+        "description": "Customize the startup command used when starting your server.",
+        "save": "Save",
+        "saving": "Saving...",
+        "saveFailed": "Failed to save startup command",
+        "reset": "Reset",
+        "required": "Startup command is required"
       }
     },
     "statusIndicator": {

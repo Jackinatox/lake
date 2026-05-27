@@ -16,6 +16,11 @@ export const serverStartupSchema = z.object({
     dockerImage: requiredStringSchema('Docker image', 255),
 });
 
+export const updateStartupCommandSchema = z.object({
+    ptServerId: serverIdentifierSchema,
+    startupCommand: requiredStringSchema('Startup command', 200),
+});
+
 export const changeGameRequestSchema = z
     .object({
         ptServerId: serverIdentifierSchema,

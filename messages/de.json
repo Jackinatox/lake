@@ -1154,7 +1154,12 @@
       },
       "startupCommand": {
         "label": "Startbefehl",
-        "description": "Dieser Befehl wird automatisch generiert und kann nicht geändert werden."
+        "description": "Passe den Startbefehl für deinen Server an.",
+        "save": "Speichern",
+        "saving": "Speichert...",
+        "saveFailed": "Startbefehl konnte nicht gespeichert werden",
+        "reset": "Zurücksetzen",
+        "required": "Startbefehl ist erforderlich"
       }
     },
     "statusIndicator": {
