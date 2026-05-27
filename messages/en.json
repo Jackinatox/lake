@@ -1147,7 +1147,10 @@
         "saving": "Saving...",
         "saveFailed": "Failed to save startup command",
         "reset": "Reset",
-        "required": "Startup command is required"
+        "required": "Startup command is required",
+        "showDefault": "Show default command",
+        "hideDefault": "Hide default command",
+        "useDefault": "Use default"
       }
     },
     "statusIndicator": {

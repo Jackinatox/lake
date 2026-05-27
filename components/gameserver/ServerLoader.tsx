@@ -64,6 +64,8 @@ export default function ServerLoader({
             const data = await response.json();
             const serverData = data.attributes;
 
+            console.log(serverData)
+
             // Merge with initial server data
             const updatedServer: GameServer = {
                 ...serverData,
@@ -73,6 +75,7 @@ export default function ServerLoader({
                 gameData: initialServer.gameData,
                 type: initialServer.type,
                 expires: initialServer.expires,
+                initial_invocation: "java -Xms128"
             };
 
             setServer(updatedServer);

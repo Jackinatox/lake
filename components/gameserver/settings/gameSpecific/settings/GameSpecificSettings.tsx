@@ -19,7 +19,7 @@ function GameSpecificSettings({ server, apiKey }: GameSpecificSettingsProps) {
 
     return (
         <Card className="border-0 shadow-sm">
-            <CardHeader className="pb-0 p-3">
+            <CardHeader className="pb-0 md:pb-0">
                 <CardTitle className="flex items-center gap-2 text-base">
                     <Gamepad2 className="h-5 w-5" />
                     Game-Specific Settings

@@ -1159,7 +1159,10 @@
         "saving": "Speichert...",
         "saveFailed": "Startbefehl konnte nicht gespeichert werden",
         "reset": "Zurücksetzen",
-        "required": "Startbefehl ist erforderlich"
+        "required": "Startbefehl ist erforderlich",
+        "showDefault": "Standardbefehl anzeigen",
+        "hideDefault": "Standardbefehl ausblenden",
+        "useDefault": "Standard verwenden"
       }
     },
     "statusIndicator": {
