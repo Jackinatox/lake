@@ -121,7 +121,7 @@ export default function FreeGameServerBooking({
             </div>
 
             {/* Main content */}
-            <div className="w-full pt-4 pb-4 max-w-7xl mx-auto px-0 md:px-6 flex-1">
+            <div className="w-full py-2 max-w-7xl mx-auto px-0 md:px-6 flex-1">
                 {/* Disabled notice */}
                 {isCreationDisabled && (
                     <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-4 text-sm text-muted-foreground">

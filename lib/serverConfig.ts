@@ -1,0 +1,73 @@
+import { CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID } from '@/app/GlobalConstants';
+import prisma from './prisma';
+
+// --- Schema definition ---
+// Add new keys here. Type inference handles the rest — no other changes needed.
+
+type ConfigEntry = { key: string; type: 'number' | 'string' };
+type ConfigSchema = Record<string, ConfigEntry>;
+
+const SCHEMA = {
+    pterodactylDefaultNestId: { key: CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID, type: 'number' as const },
+} satisfies ConfigSchema;
+
+// --- Type inference ---
+
+type InferConfig<T extends ConfigSchema> = {
+    [K in keyof T]: T[K]['type'] extends 'number' ? number : string;
+};
+
+type ServerConfig = InferConfig<typeof SCHEMA>;
+
+// --- Runtime state ---
+
+let _config: ServerConfig | null = null;
+
+export async function initServerConfig(): Promise<void> {
+    const allKeys = Object.values(SCHEMA).map((e) => e.key);
+
+    const rows = await prisma.keyValue.findMany({
+        where: { key: { in: allKeys } },
+        select: { key: true, number: true, string: true },
+    });
+
+    const rowMap = new Map(rows.map((r) => [r.key, r]));
+    const missing: string[] = [];
+    const config: Record<string, number | string> = {};
+
+    for (const [prop, entry] of Object.entries(SCHEMA)) {
+        const row = rowMap.get(entry.key);
+        const value = entry.type === 'number' ? row?.number : row?.string;
+        if (value == null) {
+            missing.push(entry.key);
+        } else {
+            config[prop] = value;
+        }
+    }
+
+    if (missing.length > 0) {
+        throw new Error(`
+╔════════════════════════════════════════════════════════════════╗
+║       🚨 CRITICAL: Missing Required Server Configuration       ║
+╠════════════════════════════════════════════════════════════════╣
+║                                                                ║
+║ The following required KeyValue entries are missing or have    ║
+║ no value set in the database:                                  ║
+║                                                                ║
+${missing.map((k) => `║   • ${k.padEnd(58)} ║`).join('\n')}
+║                                                                ║
+║ Please insert these records into the KeyValue table before     ║
+║ starting the application.                                      ║
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
+`);
+    }
+
+    _config = config as ServerConfig;
+    console.log(`✓ Server config loaded (${Object.keys(SCHEMA).length} keys)`);
+}
+
+export function serverConfig(): ServerConfig {
+    if (!_config) throw new Error('serverConfig not initialized — startup must run first');
+    return _config;
+}

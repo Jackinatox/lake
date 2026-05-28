@@ -38,3 +38,7 @@ export const MAX_EDITABLE_FILE_SIZE_LABEL = '2 MB';
 export const EGG_FEATURE_MINECRAFT_EULA = 'Minecraft Eula';
 export const EGG_FEATURE_JAVA_VERSION = 'Java Version';
 export const EGG_FEATURE_HYTALE_OAUTH = 'HytaleOAuth';
+
+
+// Config Key loaded on startup
+export const CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID = 'pterodactyl_default_nest_id';

@@ -7,13 +7,14 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
-import ServerLoader from '@/components/gameserver/ServerLoader';
+import ServerLoader, { ServerLoaderProps } from '@/components/gameserver/ServerLoader';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
 import { env } from '@/lib/env';
 import { headers } from 'next/headers';
+import { serverConfig } from '@/lib/serverConfig';
 
 export async function generateMetadata({
     params,
@@ -84,6 +85,12 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
     try {
         const pt = createPtClient();
         const adminServer = await pt.getServer(isServerValid.ptAdminId.toString());
+
+        const eegg = await pt.getEgg(
+            serverConfig().pterodactylDefaultNestId.toString(),
+            adminServer.egg.toString(),
+        );
+
         const [gameDataFeatures, gameData] = await Promise.all([
             prisma.gameDataFeature.findMany({
                 where: {
@@ -102,13 +109,14 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         // Extract just the EggFeature objects
         const features = gameDataFeatures.map((gdf) => gdf.feature);
 
-        const initialServer = {
+        const initialServer: ServerLoaderProps['initialServer'] = {
             egg_id: adminServer.egg,
             gameSlug: gameData?.slug ?? 'unknown',
             gameDataId: isServerValid.gameDataId,
             gameData: isServerValid.gameConfig as any,
             type: isServerValid.type,
             expires: isServerValid.expires,
+            defaultStartCommand: eegg.startup,
         };
 
         return (

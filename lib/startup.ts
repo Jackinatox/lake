@@ -1,3 +1,4 @@
+import { initServerConfig } from './serverConfig';
 import {
     LEGAL_IMPRESSUM_DE,
     LEGAL_IMPRESSUM_EN,
@@ -87,6 +88,7 @@ const ENV_VARS_REQUIRED = [
 export async function performVerification(): Promise<void> {
     await verifyDatabaseConst();
     await verifyEnvVars();
+    await initServerConfig();
 }
 
 /**

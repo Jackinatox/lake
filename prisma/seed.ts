@@ -22,6 +22,7 @@ import {
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
+    CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -307,6 +308,13 @@ async function main() {
                 number: 90,
                 note: 'Number of days after which suspended tier servers will be deleted',
             },
+            {
+                key: CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID,
+                type: 'NUMBER',
+                number: 1,
+                note: 'Default Nest ID for Pterodactyl, where all eggs live',
+                category: 'Global Config'
+            }
         ],
         skipDuplicates: true,
     });

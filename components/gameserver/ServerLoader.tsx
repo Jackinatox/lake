@@ -12,7 +12,7 @@ import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
 
-interface ServerLoaderProps {
+export interface ServerLoaderProps {
     serverId: string;
     ptApiKey: string;
     baseUrl: string;
@@ -23,6 +23,7 @@ interface ServerLoaderProps {
         gameData: any;
         type: GameServerType;
         expires: Date;
+        defaultStartCommand: string;
     };
     features: EggFeature[];
 }
@@ -75,7 +76,7 @@ export default function ServerLoader({
                 gameData: initialServer.gameData,
                 type: initialServer.type,
                 expires: initialServer.expires,
-                initial_invocation: "java -Xms128"
+                defaultStartCommand: initialServer.defaultStartCommand,
             };
 
             setServer(updatedServer);
