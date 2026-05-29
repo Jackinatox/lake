@@ -74,6 +74,16 @@ const metadataCopy = {
         hardwareCores: (value: string) => `${value} Kerne`,
         hardwareRam: (value: string) => `${value} GiB RAM`,
         hardwareDays: (value: string) => `${value} Tage`,
+        freePageHeading: 'Hol Dir Deinen kostenlosen Gameserver',
+        freePageHeadingHighlight: 'kostenlosen',
+        freePageSubheading: 'Keine Zahlungsdaten erforderlich',
+        freePageWhyFreeQuestion: 'Warum sind die Server kostenlos?',
+        freePageWhyFreeAnswerShort:
+            'Wir betreiben diese Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist. Die Ressourcen sind begrenzt, aber ideal für kleine Gameserver und zum Ausprobieren.',
+        freePageWhyFreeAnswerLong:
+            'Wir betreiben diese kostenlosen Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist als moderne Systeme. Die Ressourcen sind im Vergleich zu unseren bezahlten Plänen begrenzt — perfekt für kleine Gameserver, Freunde-Runden oder zum Ausprobieren, bevor Du upgradest.',
+        freePageSpecsLabel: 'Server-Specs',
+        freePageSelectGame: 'Wähle Dein Spiel',
     },
     en: {
         orderIndexTitle: 'Game Server Hosting',
@@ -134,6 +144,16 @@ const metadataCopy = {
         hardwareCores: (value: string) => `${value} cores`,
         hardwareRam: (value: string) => `${value} GiB RAM`,
         hardwareDays: (value: string) => `${value} days`,
+        freePageHeading: 'Get Your Free Game Server',
+        freePageHeadingHighlight: 'Free',
+        freePageSubheading: 'No payment details required',
+        freePageWhyFreeQuestion: 'Why are the servers free?',
+        freePageWhyFreeAnswerShort:
+            'We run these servers on older enterprise hardware that is significantly cheaper to operate. Resources are limited, but great for small game servers and trying things out.',
+        freePageWhyFreeAnswerLong:
+            'We run these free servers on older enterprise hardware that is significantly cheaper to operate than modern infrastructure. Resources are limited compared to our paid plans — perfect for small game servers, playing with friends, or trying things out before upgrading.',
+        freePageSpecsLabel: 'Server Specs',
+        freePageSelectGame: 'Select Your Game',
     },
 } satisfies Record<
     SupportedLocale,
@@ -174,6 +194,14 @@ const metadataCopy = {
         hardwareCores: (value: string) => string;
         hardwareRam: (value: string) => string;
         hardwareDays: (value: string) => string;
+        freePageHeading: string;
+        freePageHeadingHighlight: string;
+        freePageSubheading: string;
+        freePageWhyFreeQuestion: string;
+        freePageWhyFreeAnswerShort: string;
+        freePageWhyFreeAnswerLong: string;
+        freePageSpecsLabel: string;
+        freePageSelectGame: string;
     }
 >;
 

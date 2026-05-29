@@ -14,27 +14,10 @@ interface GameCardProps {
 
 export default function GameCard({ card, imageSrc }: GameCardProps) {
     return (
-        <Link href={card.link} className="block w-full md:w-[280px]">
+        <Link href={card.link} className="block w-full">
             <Card className="overflow-hidden transition-transform duration-300 hover:scale-[1.075] shadow-lg md:hover:scale-100 hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent">
-                {/* Mobile: horizontal layout with image on left */}
-                <div className="md:hidden flex h-20 bg-gradient-to-r from-background via-background to-primary/5">
-                    <div className="relative w-20 flex-shrink-0">
-                        <ThemeImage
-                            src={imageSrc || '/placeholder.svg'}
-                            alt={card.name}
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    <CardContent className="flex items-center justify-start px-4 py-2">
-                        <h3 className="text-lg font-semibold line-clamp-2 text-primary/90">
-                            {card.name}
-                        </h3>
-                    </CardContent>
-                </div>
-
-                {/* Desktop: vertical layout */}
-                <div className="hidden md:block">
+                {/* Vertical layout for all sizes */}
+                <div className="block">
                     <div className="relative w-full aspect-square">
                         <ThemeImage
                             src={imageSrc || '/placeholder.svg'}
@@ -44,7 +27,7 @@ export default function GameCard({ card, imageSrc }: GameCardProps) {
                         />
                     </div>
                     <CardContent className="pt-4">
-                        <h3 className="text-xl font-semibold">{card.name}</h3>
+                        <h3 className="text-sm md:text-base font-semibold">{card.name}</h3>
                     </CardContent>
                 </div>
             </Card>
