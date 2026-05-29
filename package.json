@@ -5,8 +5,7 @@
     "scripts": {
         "dev": "bun run --bun next dev",
         "build": "bun run --bun next build",
-        "start": "bun run --bun next start",
-        "postinstall": "prisma generate"
+        "start": "bun run --bun next start"
     },
     "prisma": {
         "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
