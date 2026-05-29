@@ -68,7 +68,7 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
     return (
         <div className="space-y-1">
             <Label htmlFor="startup-command">{t('label')}</Label>
-            <div className="flex items-end justify-between gap-2 !mt-1">
+            <div className="flex items-end justify-between gap-2 mt-1!">
                 <p className="text-xs text-muted-foreground flex-1 min-w-0">{t('description')}</p>
                 {editable && (
                     <span
@@ -168,7 +168,7 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
                                     disabled={!canUseDefault || isSaving}
                                     title={t('useDefault')}
                                     aria-label={t('useDefault')}
-                                    className="px-3 flex items-center gap-1 text-xs"
+                                    className="px-3 flex items-center gap-1 text-xs self-stretch h-auto"
                                 >
                                     <Undo2 className="h-3.5 w-3.5" />
                                     <span className="hidden sm:inline">{t('useDefault')}</span>

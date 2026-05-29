@@ -1,7 +1,18 @@
 import prisma from '@/lib/prisma';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
+import {
+    FREE_TIER_ALLOCATIONS,
+    FREE_TIER_BACKUP_COUNT,
+    FREE_TIER_CPU_PERCENT,
+    FREE_TIER_RAM_MB,
+    FREE_TIER_STORAGE_MB,
+} from '@/app/GlobalConstants';
+import { getKeyValueNumber } from '@/lib/keyValue';
+import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { Gift } from 'lucide-react';
+import FreeServerSpecs from './FreeServerSpecs';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -22,11 +33,18 @@ export async function generateMetadata({
 }
 
 export default async function OrderPage() {
-    const games = await prisma.gameData.findMany({
-        select: { id: true, name: true, slug: true },
-        where: { enabled: true },
-        orderBy: { sorting: 'asc' },
-    });
+    const [games, cpuPercent, ramMb, storageMb, backups, ports] = await Promise.all([
+        prisma.gameData.findMany({
+            select: { id: true, name: true, slug: true },
+            where: { enabled: true },
+            orderBy: { sorting: 'asc' },
+        }),
+        getKeyValueNumber(FREE_TIER_CPU_PERCENT),
+        getKeyValueNumber(FREE_TIER_RAM_MB),
+        getKeyValueNumber(FREE_TIER_STORAGE_MB),
+        getKeyValueNumber(FREE_TIER_BACKUP_COUNT),
+        getKeyValueNumber(FREE_TIER_ALLOCATIONS),
+    ]);
 
     const gameCards = games.map((game) => {
         const imgName = `${game.name.toLowerCase()}.webp`;
@@ -61,7 +79,22 @@ export default async function OrderPage() {
                 </div>
             </section>
 
-            <section className="relative -mt-20 md:-mt-32 pb-8 z-10">
+            <section className="relative -mt-20 md:-mt-32 pb-6 z-10">
+                <div className="mx-auto max-w-4xl px-2 md:px-6">
+                    <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Included Hardware
+                    </h2>
+                    <FreeServerSpecs
+                        cpu={formatVCoresFromPercent(cpuPercent)}
+                        ram={formatMB(ramMb)}
+                        disk={formatMB(storageMb)}
+                        backups={backups}
+                        ports={ports}
+                    />
+                </div>
+            </section>
+
+            <section className="pb-8 z-10">
                 <div className="mx-auto max-w-6xl px-2 md:px-6">
                     <div className="flex flex-wrap gap-4 justify-center">
                         {gameCards.map((game) => (
