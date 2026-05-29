@@ -54,7 +54,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
 
             {/* Game grid — flex-1 pushes sticky bar to viewport bottom on short pages */}
             <div className="flex-1 mx-auto w-full max-w-5xl px-0 pt-4 pb-4">
-                <div className="flex flex-wrap gap-4 justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                     {games.map((game) => (
                         <GameCard
                             key={game.id}

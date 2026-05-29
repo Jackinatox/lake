@@ -120,7 +120,7 @@ export default function GamesAfterHardwareClient({
 
             {/* Game grid */}
             <div className="w-full max-w-6xl mx-auto pb-8 px-2 md:px-6">
-                <div className="flex flex-wrap gap-4 justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                     {games.map((game) => (
                         <GameCard
                             key={game.id}

@@ -62,7 +62,7 @@ export default async function OrderPage() {
             {/* Game Grid */}
             <section className="relative -mt-20 md:-mt-32 pb-8 z-10">
                 <div className="mx-auto max-w-6xl px-2 md:px-6">
-                    <div className="flex flex-wrap gap-4 justify-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                         {gameCards.map((game) => (
                             <GameCard
                                 key={game.id}
