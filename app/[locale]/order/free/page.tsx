@@ -31,11 +31,7 @@ export async function generateMetadata({
     });
 }
 
-export default async function OrderPage({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
+export default async function OrderPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
@@ -58,6 +54,7 @@ export default async function OrderPage({
 
     const hardwareSpecs = [
         { label: 'CPU', value: `${formatVCoresFromPercent(freeTierConfig.cpu)}` },
+        { label: 'CPU Model', value: 'Xeon E5-2680v4' },
         { label: 'RAM', value: `${formatMB(freeTierConfig.ram)}` },
         { label: 'Disk', value: `${formatMB(freeTierConfig.storage)}` },
         { label: 'Ports', value: `${freeTierConfig.allocations}` },
@@ -97,73 +94,60 @@ export default async function OrderPage({
                 </div>
             </section>
 
-            {/* Server Specs Bar */}
+            {/* Server Specs + FAQ */}
             <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-4 md:pb-6">
                 <Card>
                     <CardContent className="p-3 md:p-4">
-                        {/* Mobile: table list */}
-                        <div className="md:hidden space-y-2">
-                            <h2 className="text-sm font-semibold text-foreground mb-3">
-                                {copy.freePageSpecsLabel}
-                            </h2>
-                            <ul className="space-y-2">
-                                {hardwareSpecs.map((spec) => (
-                                    <li
-                                        key={spec.label}
-                                        className="flex items-center justify-between text-sm"
-                                    >
-                                        <span className="text-muted-foreground">{spec.label}</span>
-                                        <span className="font-medium text-foreground">
-                                            {spec.value}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="pt-1 border-t border-border">
-                                <Accordion type="single" collapsible>
-                                    <AccordionItem value="why-free" className="border-none">
-                                        <AccordionTrigger className="text-xs text-muted-foreground hover:no-underline py-2">
-                                            {copy.freePageWhyFreeQuestion}
-                                        </AccordionTrigger>
-                                        <AccordionContent className="text-xs text-muted-foreground pb-1">
-                                            <p>{copy.freePageWhyFreeAnswerShort}</p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            </div>
-                        </div>
-                        {/* Desktop: horizontal bar */}
-                        <div className="hidden md:flex flex-wrap items-center gap-x-6 gap-y-2">
-                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">
-                                {copy.freePageSpecsLabel}
-                            </span>
-                            {hardwareSpecs.map((spec) => (
-                                <div key={spec.label} className="flex items-center gap-1.5 text-sm">
-                                    <span className="text-muted-foreground">{spec.label}</span>
-                                    <span className="font-medium text-foreground">
-                                        {spec.value}
-                                    </span>
+                        {/* Shared specs table */}
+                        <div className="md:flex md:gap-6">
+                            <div className="md:w-1/2 space-y-2">
+                                <h2 className="text-sm font-semibold md:text-xs md:uppercase md:tracking-wide mb-3">
+                                    {copy.freePageSpecsLabel}
+                                </h2>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                    {hardwareSpecs.map((spec) => (
+                                        <div key={spec.label} className="flex flex-col text-sm">
+                                            <span className="text-muted-foreground">
+                                                {spec.label}
+                                            </span>
+                                            <span className="font-medium text-foreground">
+                                                {spec.value}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
+
+                            {/* Divider */}
+                            <div className="hidden md:block w-px bg-border shrink-0" />
+                            <div className="mt-3 pt-1 border-t border-border md:hidden" />
+
+                            {/* FAQ — collapsible on mobile, always open on desktop */}
+                            <div className="md:w-1/2">
+                                <div className="md:hidden">
+                                    <Accordion type="single" collapsible>
+                                        <AccordionItem value="why-free" className="border-none">
+                                            <AccordionTrigger className="text-xs text-muted-foreground hover:no-underline py-2">
+                                                {copy.freePageWhyFreeQuestion}
+                                            </AccordionTrigger>
+                                            <AccordionContent className="text-xs text-muted-foreground pb-1">
+                                                <p>{copy.freePageWhyFreeAnswerShort}</p>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
+                                </div>
+                                <div className="hidden md:block space-y-1.5">
+                                    <p className="text-sm font-medium text-foreground">
+                                        {copy.freePageWhyFreeQuestion}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        {copy.freePageWhyFreeAnswerLong}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
-            </section>
-
-            {/* FAQ - desktop only, above game list */}
-            <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-4 hidden md:block">
-                <div className="rounded-lg border border-border bg-muted/30 px-4">
-                    <Accordion type="single" collapsible>
-                        <AccordionItem value="why-free" className="border-none">
-                            <AccordionTrigger className="text-sm text-muted-foreground hover:text-foreground hover:no-underline py-3">
-                                {copy.freePageWhyFreeQuestion}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-sm text-muted-foreground pb-4">
-                                <p>{copy.freePageWhyFreeAnswerLong}</p>
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </div>
             </section>
 
             {/* Game Selection */}
