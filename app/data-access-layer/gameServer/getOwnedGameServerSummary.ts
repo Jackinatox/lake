@@ -23,6 +23,7 @@ export const getOwnedGameServerSummary = cache(async (userId: string, serverId: 
                 select: {
                     name: true,
                     slug: true,
+                    nestId: true,
                 },
             },
         },

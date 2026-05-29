@@ -14,7 +14,8 @@ import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
 import { env } from '@/lib/env';
 import { headers } from 'next/headers';
-import { serverConfig } from '@/lib/serverConfig';
+import { GameConfig } from '@/models/config';
+import { gameConfigSchema } from '@/lib/validation/order';
 
 export async function generateMetadata({
     params,
@@ -50,7 +51,6 @@ export async function generateMetadata({
 }
 
 async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
-    // -- Auth
     const serverId = (await params).server_id;
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -84,14 +84,8 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
 
     try {
         const pt = createPtClient();
-        const adminServer = await pt.getServer(isServerValid.ptAdminId.toString());
 
-        const eegg = await pt.getEgg(
-            serverConfig().pterodactylDefaultNestId.toString(),
-            adminServer.egg.toString(),
-        );
-
-        const [gameDataFeatures, gameData] = await Promise.all([
+        const [gameDataFeatures, adminServer] = await Promise.all([
             prisma.gameDataFeature.findMany({
                 where: {
                     gameDataId: isServerValid.gameDataId,
@@ -100,20 +94,22 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
                     feature: true,
                 },
             }),
-            prisma.gameData.findUnique({
-                where: { id: isServerValid.gameDataId },
-                select: { slug: true },
-            }),
+            pt.getServer(isServerValid.ptAdminId.toString()),
         ]);
+        
+        const eegg = await pt.getEgg(
+            isServerValid.gameData.nestId.toString(),
+            adminServer.egg.toString(),
+        );
 
         // Extract just the EggFeature objects
         const features = gameDataFeatures.map((gdf) => gdf.feature);
 
         const initialServer: ServerLoaderProps['initialServer'] = {
             egg_id: adminServer.egg,
-            gameSlug: gameData?.slug ?? 'unknown',
+            gameSlug: isServerValid.gameData.slug,
             gameDataId: isServerValid.gameDataId,
-            gameData: isServerValid.gameConfig as any,
+            gameConfig: gameConfigSchema.parse(isServerValid.gameConfig),
             type: isServerValid.type,
             expires: isServerValid.expires,
             defaultStartCommand: eegg.startup,

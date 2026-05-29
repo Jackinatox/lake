@@ -118,7 +118,7 @@ const baseGameConfigShape = {
     dockerImage: requiredStringSchema('Docker image', 255),
 } as const;
 
-export const gameConfigSchema: z.ZodType<GameConfig> = z.union([
+export const gameConfigSchema = z.discriminatedUnion('gameSlug', [
     z.object({
         ...baseGameConfigShape,
         gameSlug: z.literal('minecraft'),

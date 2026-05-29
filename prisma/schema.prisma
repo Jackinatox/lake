@@ -11,10 +11,11 @@ model GameData {
   id       Int     @id @default(autoincrement())
   name     String
   slug     String  @unique
+  nestId   Int
   data     Json?
   enabled  Boolean @default(false)
   featured Boolean @default(false)
-  sorting  Int     @default(0)
+  sorting  Int
 
   GameServer GameServer[]
 
@@ -29,10 +30,10 @@ model Location {
   diskPrice    Float
   portsLimit   Int
   backupsLimit Int
-  enabled      Boolean @default(true)
+  enabled      Boolean @default(false)
   freeServer   Boolean @default(false)
-  ptLocationId Int     @default(1)
-  cpuId        Int     @default(1)
+  ptLocationId Int
+  cpuId        Int
   ramId        Int
   sorting      Int     @default(0)
 
@@ -50,11 +51,9 @@ model CPU {
   name         String
   cores        Int?
   threads      Int?
-  singleScore  Int?
-  multiScore   Int?
   maxThreads   Int
   minThreads   Int
-  pricePerCore Float  @default(0.2)
+  pricePerCore Float
 
   locations Location[]
 }
@@ -84,7 +83,7 @@ model GameServer {
   resourceTier   ResourceTier?  @relation(fields: [resourceTierId], references: [id], onDelete: SetNull)
   expires        DateTime
   price          Float // To let the user extend his server at the original price in case we increase prices
-  type           GameServerType @default(CUSTOM)
+  type           GameServerType
   lastExtended   DateTime       @default(now())
 
   ptServerId String?
@@ -509,7 +508,7 @@ model ApplicationLog {
   @@index([level, createdAt])
   @@index([type, createdAt])
   @@index([userId])
-  @@index([gameServerId]) 
+  @@index([gameServerId])
   @@index([path, method])
   @@index([createdAt])
 }

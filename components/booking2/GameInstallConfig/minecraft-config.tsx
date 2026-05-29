@@ -113,7 +113,7 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
 
             // Create a complete game configuration object
             const completeConfig: GameConfig = {
-                gameSlug: game.slug,
+                gameSlug: game.slug as 'minecraft',
                 eggId: selectedEggId,
                 version: selectedVersion.version,
                 dockerImage: selectedVersion.docker_image,

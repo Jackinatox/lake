@@ -34,6 +34,7 @@ async function main() {
             name: 'Minecraft',
             slug: 'minecraft',
             sorting: 1,
+            nestId: 1,
         },
     });
 
@@ -47,6 +48,7 @@ async function main() {
             name: 'Satisfactory',
             slug: 'satisfactory',
             sorting: 10,
+            nestId: 5,
         },
     });
 
@@ -59,6 +61,7 @@ async function main() {
             ),
             enabled: false,
             sorting: 20,
+            nestId: 5,
         },
     });
 
@@ -71,6 +74,8 @@ async function main() {
             name: 'Hytale',
             slug: 'hytale',
             enabled: false,
+            nestId: 5,
+            sorting: 25,
         },
     });
 
@@ -91,6 +96,8 @@ async function main() {
             name: 'Valheim',
             slug: 'valheim',
             enabled: true,
+            nestId: 5,
+            sorting: 30,
         },
     });
 

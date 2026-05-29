@@ -86,14 +86,14 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
     useImperativeHandle(ref, () => ({
         submit: () => {
             const completeConfig: GameConfig = {
-                gameSlug: game.slug,
+                gameSlug: game.slug as 'factorio',
                 eggId,
                 version:
-                    config.version === 'custom' ? config.customVersion || 'latest' : config.version,
-                dockerImage,
+                config.version === 'custom' ? config.customVersion || 'latest' : config.version,
                 gameSpecificConfig: {
                     ...config,
                 },
+                dockerImage,
             };
             onSubmit(completeConfig);
         },

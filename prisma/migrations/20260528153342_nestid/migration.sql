@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "GameData" ADD COLUMN     "nestId" INTEGER NOT NULL DEFAULT 1;

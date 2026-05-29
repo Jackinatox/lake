@@ -11,6 +11,7 @@ import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
+import { GameConfig } from '@/models/config';
 
 export interface ServerLoaderProps {
     serverId: string;
@@ -20,7 +21,7 @@ export interface ServerLoaderProps {
         egg_id: number;
         gameSlug: string;
         gameDataId: number;
-        gameData: any;
+        gameConfig: GameConfig;
         type: GameServerType;
         expires: Date;
         defaultStartCommand: string;
@@ -73,7 +74,7 @@ export default function ServerLoader({
                 egg_id: initialServer.egg_id,
                 gameSlug: initialServer.gameSlug,
                 gameDataId: initialServer.gameDataId,
-                gameData: initialServer.gameData,
+                gameConfig: initialServer.gameConfig,
                 type: initialServer.type,
                 expires: initialServer.expires,
                 defaultStartCommand: initialServer.defaultStartCommand,
@@ -93,7 +94,7 @@ export default function ServerLoader({
         baseUrl,
         initialServer.egg_id,
         initialServer.expires,
-        initialServer.gameData,
+        initialServer.gameConfig,
         initialServer.gameDataId,
         initialServer.gameSlug,
         initialServer.type,

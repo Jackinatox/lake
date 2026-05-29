@@ -44,7 +44,7 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
             const flavor = isModded ? game.data.modded : game.data.vanilla;
 
             const completeConfig: GameConfig = {
-                gameSlug: game.slug,
+                gameSlug: game.slug as 'valheim',
                 eggId: flavor.eggId,
                 version: 'latest',
                 dockerImage: flavor.docker_image,

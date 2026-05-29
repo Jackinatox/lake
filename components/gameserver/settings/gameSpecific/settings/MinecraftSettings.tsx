@@ -32,12 +32,12 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             <StartupCommand
                 command={server.invocation}
                 ptServerId={server.identifier}
-                defaultCommand={server.initial_invocation}
+                defaultCommand={server.defaultStartCommand}
             />
 
             <MinecraftVersionSelector
                 gameDataId={server.gameDataId}
-                eggId={server.gameData.eggId}
+                eggId={server.gameConfig.eggId}
                 serverIdentifier={server.identifier}
                 apiKey={apiKey}
             />
