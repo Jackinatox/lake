@@ -20,7 +20,6 @@ export interface ServerLoaderProps {
     initialServer: {
         egg_id: number;
         gameSlug: string;
-        gameDataId: number;
         gameConfig: GameConfig;
         type: GameServerType;
         expires: Date;
@@ -73,7 +72,6 @@ export default function ServerLoader({
                 ...serverData,
                 egg_id: initialServer.egg_id,
                 gameSlug: initialServer.gameSlug,
-                gameDataId: initialServer.gameDataId,
                 gameConfig: initialServer.gameConfig,
                 type: initialServer.type,
                 expires: initialServer.expires,
@@ -95,7 +93,6 @@ export default function ServerLoader({
         initialServer.egg_id,
         initialServer.expires,
         initialServer.gameConfig,
-        initialServer.gameDataId,
         initialServer.gameSlug,
         initialServer.type,
         ptApiKey,

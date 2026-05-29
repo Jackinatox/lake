@@ -39,7 +39,6 @@ export type GameServer = {
     is_suspended: boolean;
     is_installing: boolean;
     is_transferring: boolean;
-    gameDataId: number;
     gameConfig: GameConfig; // To access current game specific conf
     expires: Date;
     relationships: {

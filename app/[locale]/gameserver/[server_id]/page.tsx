@@ -108,7 +108,6 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
         const initialServer: ServerLoaderProps['initialServer'] = {
             egg_id: adminServer.egg,
             gameSlug: isServerValid.gameData.slug,
-            gameDataId: isServerValid.gameDataId,
             gameConfig: gameConfigSchema.parse(isServerValid.gameConfig),
             type: isServerValid.type,
             expires: isServerValid.expires,

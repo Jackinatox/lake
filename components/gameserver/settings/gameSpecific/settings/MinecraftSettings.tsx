@@ -36,7 +36,7 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             />
 
             <MinecraftVersionSelector
-                gameDataId={server.gameDataId}
+                gameSlug={server.gameSlug}
                 eggId={server.gameConfig.eggId}
                 serverIdentifier={server.identifier}
                 apiKey={apiKey}
@@ -58,14 +58,14 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
 }
 
 interface MinecraftVersionSelectorProps {
-    gameDataId: number;
+    gameSlug: string;
     eggId: number;
     serverIdentifier: string;
     apiKey: string;
 }
 
 function MinecraftVersionSelector({
-    gameDataId,
+    gameSlug,
     eggId,
     serverIdentifier,
     apiKey,
@@ -87,7 +87,7 @@ function MinecraftVersionSelector({
         const fetchVersions = async () => {
             try {
                 setVersionsLoading(true);
-                const data = await fetchGames(gameDataId);
+                const data = await fetchGames(gameSlug);
                 const raw = data?.data || null;
                 const flavors: GameFlavor[] = raw?.flavors ?? [];
 
@@ -102,7 +102,7 @@ function MinecraftVersionSelector({
             }
         };
         fetchVersions();
-    }, [gameDataId, eggId]);
+    }, [gameSlug, eggId]);
 
     useEffect(() => {
         if (value && !loading) {
