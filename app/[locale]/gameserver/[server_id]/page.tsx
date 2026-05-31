@@ -102,7 +102,6 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             adminServer.egg.toString(),
         );
 
-        // Extract just the EggFeature objects
         const features = gameDataFeatures.map((gdf) => gdf.feature);
 
         const initialServer: ServerLoaderProps['initialServer'] = {
