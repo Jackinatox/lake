@@ -1,6 +1,5 @@
 import { render } from '@react-email/render';
 import { readFileSync } from 'fs';
-import { env } from '@/lib/env';
 import { sendMail } from './NodeMailer';
 import path from 'path';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
@@ -70,7 +69,7 @@ export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) 
             category: ticket.category,
             message: ticket.message,
             ticketId: ticket.ticketId,
-            ticketUrl: `${env('NEXT_PUBLIC_APP_URL')}/support/tickets/${ticket.ticketId}/notImplementedYet`,
+            ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL}/support/tickets/${ticket.ticketId}/notImplementedYet`,
         }),
     );
 

@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { GameServer } from '@/models/gameServerModel';
 import { Loader2, Plus, RefreshCw } from 'lucide-react';
-import { env } from '@/lib/env';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BackupCard } from './BackupCard';
 import { CreateBackupDialog } from './CreateBackupDialog';
@@ -44,7 +43,7 @@ function mapBackup(raw: any): Backup {
 }
 
 function BackupManager({ apiKey, server }: BackupManagerProps) {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const { toast } = useToast();
     const t = useTranslations('backupManager');
     const [backups, setBackups] = useState<Backup[]>([]);

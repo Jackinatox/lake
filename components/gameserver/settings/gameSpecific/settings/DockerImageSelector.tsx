@@ -10,7 +10,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { env } from '@/lib/env';
 import { Loader2, Save } from 'lucide-react';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Button } from '@/components/ui/button';
@@ -42,7 +41,7 @@ function DockerImageSelector({
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string>('');
 
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     useEffect(() => {
         const fetchDockerImages = async () => {

@@ -3,7 +3,6 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 export async function reassignPortsAction(
@@ -28,7 +27,7 @@ export async function reassignPortsAction(
         return { success: false, message: 'Server not found' };
     }
 
-    const workerUrl = env('WORKER_IP');
+    const workerUrl = process.env.WORKER_IP;
 
     logger.info(`Reassigning ports for server ${ptServerId}`, 'GAME_SERVER', {
         userId: session.user.id,

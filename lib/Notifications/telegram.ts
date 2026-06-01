@@ -1,4 +1,3 @@
-import { env } from '@/lib/env';
 import { logger } from '../logger';
 
 type NotificationType = 'Support' | 'FatalError' | 'Error' | 'Info' | 'Warning';
@@ -33,12 +32,12 @@ async function sendTelegramMessage(
     message: string,
     options?: SendMessageOptions,
 ): Promise<boolean> {
-    const deploymentEnv = env('DEPLOYMENT_ENV') || 'development';
+    const deploymentEnv = process.env.DEPLOYMENT_ENV || 'development';
     if (deploymentEnv === 'development') {
         return false;
     }
-    const chat_id = env('TELEGRAM_CHAT_ID');
-    const bot_token = env('TELEGRAM_BOT_TOKEN');
+    const chat_id = process.env.TELEGRAM_CHAT_ID;
+    const bot_token = process.env.TELEGRAM_BOT_TOKEN;
 
     if (!bot_token || !chat_id) {
         logger.warn('Telegram credentials missing - notification skipped', 'TELEGRAM');

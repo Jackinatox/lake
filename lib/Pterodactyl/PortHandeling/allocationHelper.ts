@@ -1,4 +1,3 @@
-import { env } from '@/lib/env';
 import { logger } from '@/lib/logger';
 
 interface AllocationAttributes {
@@ -27,7 +26,7 @@ export async function listServerAllocations(
     serverId: string,
     apiKey: string,
 ): Promise<AllocationAttributes[]> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
@@ -61,7 +60,7 @@ export async function assignAllocation(
     ip?: string,
     port?: number,
 ): Promise<AllocationAttributes> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
@@ -100,7 +99,7 @@ export async function setPrimaryAllocation(
     apiKey: string,
     allocationId: number,
 ): Promise<AllocationAttributes> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
@@ -138,7 +137,7 @@ export async function removeAllocation(
     apiKey: string,
     allocationId: number,
 ): Promise<void> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
@@ -172,7 +171,7 @@ export async function updateAllocationNotes(
     allocationId: number,
     notes: string,
 ): Promise<AllocationAttributes> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }
@@ -289,7 +288,7 @@ export async function updateServerEnvironmentVariable(
     envVarName: string,
     value: string | number,
 ): Promise<void> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!panelUrl) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL is not defined');
     }

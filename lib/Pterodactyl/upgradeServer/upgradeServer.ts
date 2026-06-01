@@ -2,7 +2,6 @@ import prisma from '@/lib/prisma';
 
 import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
 import { createPtClient } from '../ptAdminClient';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
 
@@ -14,8 +13,8 @@ import toggleSuspendGameServer from '../suspendServer/suspendServer';
  * is handled before calling this function.
  */
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptApiKey = env('PTERODACTYL_API_KEY');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptApiKey = process.env.PTERODACTYL_API_KEY;
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
         where: { id: serverOrder.gameServerId || '', ptAdminId: { not: null } },
         include: { user: true },

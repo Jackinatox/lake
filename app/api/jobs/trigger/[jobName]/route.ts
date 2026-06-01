@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { env } from '@/lib/env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 
@@ -28,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ job
             return NextResponse.json({ error: 'Invalid job name' }, { status: 400 });
         }
 
-        const workerUrl = env('WORKER_IP');
+        const workerUrl = process.env.WORKER_IP;
         const response = await fetch(`${workerUrl}/v1/jobs/trigger/${jobName}`, {
             method: 'POST',
         });

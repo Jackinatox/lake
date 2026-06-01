@@ -21,7 +21,6 @@ import {
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
-import { env } from '@/lib/env';
 
 /**
  * List of all required KeyValue constants that must exist in the database
@@ -198,7 +197,7 @@ ${missingResources.map((res) => `║   • ${res.padEnd(56)} ║`).join('\n')}
 async function verifyEnvVars(): Promise<void> {
     const missingVars: string[] = [];
     for (const varName of ENV_VARS_REQUIRED) {
-        if (!env(varName)) {
+        if (!process.env[varName]) {
             missingVars.push(varName);
         }
     }

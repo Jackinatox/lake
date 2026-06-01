@@ -21,7 +21,6 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Turnstile } from '@marsidev/react-turnstile';
-import { env } from '@/lib/env';
 import { CheckCircle2, Eye, EyeOff, Loader2, XCircle } from 'lucide-react';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
@@ -357,7 +356,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
                                 )}
 
                                 <Turnstile
-                                    siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
+                                    siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
                                     onSuccess={setTurnstileToken}
                                     onError={() => setTurnstileToken('')}
                                     onExpire={() => setTurnstileToken('')}

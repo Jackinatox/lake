@@ -1,5 +1,4 @@
 import { Body, Container, Head, Hr, Html, Preview, Tailwind, Text } from '@react-email/components';
-import { env } from '@/lib/env';
 import type { ReactNode } from 'react';
 
 const bodyStyle = {
@@ -63,7 +62,7 @@ export function EmailLayout({
     hideSupport,
     hideSignature,
 }: EmailLayoutProps) {
-    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const supportHref = appUrl ? `${appUrl}/support` : undefined;
 
     return (

@@ -1,5 +1,4 @@
 import { Heading, Img, Section, Text } from '@react-email/components';
-import { env } from '@/lib/env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
@@ -208,7 +207,7 @@ export default function InvoiceTemplate({
             <Text style={{ ...textStyle, marginTop: 16 }}>
                 Bei Fragen zu dieser Rechnung{' '}
                 <a
-                    href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/support`}
                     style={{ color: '#0f172a', textDecoration: 'underline' }}
                 >
                     kontaktiere uns gerne

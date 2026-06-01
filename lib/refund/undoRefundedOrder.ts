@@ -1,7 +1,6 @@
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
-import { env } from '@/lib/env';
 import { RefundServerAction } from '@/app/client/generated/browser';
 
 /**
@@ -179,8 +178,8 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         return;
     }
 
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptApiKey = env('PTERODACTYL_API_KEY');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
         where: { id: gameServerId, ptAdminId: { not: null } },

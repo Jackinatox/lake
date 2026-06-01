@@ -1,26 +1,25 @@
 import { EmailType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
-import { env } from '@/lib/env';
 import nodemailer from 'nodemailer';
 import { logger } from '../logger';
 
 const noReplyMailer = nodemailer.createTransport({
-    host: env('SMTP_HOST'),
+    host: process.env.SMTP_HOST,
     port: 465,
     secure: true,
     auth: {
-        user: env('SMTP_USER'),
-        pass: env('SMTP_PASS'),
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
     },
 });
 
 const supportMailer = nodemailer.createTransport({
-    host: env('SUPPORT_SMTP_HOST'),
-    port: Number(env('SUPPORT_SMTP_PORT')),
+    host: process.env.SUPPORT_SMTP_HOST,
+    port: Number(process.env.SUPPORT_SMTP_PORT),
     secure: true,
     auth: {
-        user: env('SUPPORT_SMTP_USER'),
-        pass: env('SUPPORT_SMTP_PASS'),
+        user: process.env.SUPPORT_SMTP_USER,
+        pass: process.env.SUPPORT_SMTP_PASS,
     },
 });
 
@@ -62,7 +61,7 @@ export async function sendMail(
 
     try {
         const res = await mailer.sendMail({
-            from: `"Scyed" <${env('SMTP_USER')}>`,
+            from: `"Scyed" <${process.env.SMTP_USER}>`,
             to,
             subject: subject,
             html: html,

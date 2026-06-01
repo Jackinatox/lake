@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { env } from '@/lib/env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 
@@ -13,7 +12,7 @@ export async function GET() {
     }
 
     try {
-        const workerUrl = env('WORKER_IP');
+        const workerUrl = process.env.WORKER_IP;
         const response = await fetch(`${workerUrl}/v1/version`, {
             cache: 'no-store',
         });

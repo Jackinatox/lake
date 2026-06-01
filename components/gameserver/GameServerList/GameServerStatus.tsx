@@ -2,7 +2,6 @@
 
 import { Badge } from '@/components/ui/badge';
 import React, { useEffect, useState } from 'react';
-import { env } from '@/lib/env';
 import { Status } from '../Console/status';
 import { ClientServer } from '@/models/prisma';
 
@@ -26,7 +25,7 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
             }
 
             const response = await fetch(
-                `${env('NEXT_PUBLIC_PTERODACTYL_URL')}/api/client/servers/${server.ptServerId}/resources`,
+                `${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server.ptServerId}/resources`,
                 {
                     headers: {
                         Accept: 'application/json',

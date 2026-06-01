@@ -7,7 +7,6 @@ import { sendTicketCreatedEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
 import { TicketCategory } from '@/app/client/generated/enums';
 import { sendSupportTicketNotification } from '@/lib/Notifications/telegram';
-import { env } from '@/lib/env';
 import { supportTicketSchema } from '@/lib/validation/order';
 import { getValidationMessage } from '@/lib/validation/common';
 
@@ -63,7 +62,7 @@ export async function POST(req: NextRequest) {
             userEmail: session.user.email,
             subject: ticket.title,
             message: ticket.message,
-            ticketUrl: `${env('NEXT_PUBLIC_APP_URL')}/admin/tickets/${ticket.id}`,
+            ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL}/admin/tickets/${ticket.id}`,
         });
 
         return NextResponse.json({ ticket: ticket }, { status: 201 });

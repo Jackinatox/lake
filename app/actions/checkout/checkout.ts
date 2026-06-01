@@ -14,7 +14,6 @@ import { resolveResourceTier } from '@/lib/resourceTier';
 import { checkoutParamsSchema, gameConfigSchema } from '@/lib/validation/order';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
-import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 import { FREE_SERVERS_LOCATION_ID, LEGAL_GRACE_PERIOD_MS } from '../../GlobalConstants';
 

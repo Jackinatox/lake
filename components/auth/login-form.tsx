@@ -17,7 +17,6 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { env } from '@/lib/env';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;
@@ -355,7 +354,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
                                 <Turnstile
                                     ref={turnstileRef}
-                                    siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
+                                    siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
                                     onSuccess={setTurnstileToken}
                                     onError={() => setTurnstileToken('')}
                                     onExpire={() => setTurnstileToken('')}

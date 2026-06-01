@@ -1,5 +1,4 @@
 import { Heading, Hr, Section, Text } from '@react-email/components';
-import { env } from '@/lib/env';
 import { formatDate } from '../../formatDate';
 import { OrderType } from '@/app/client/generated/enums';
 import {
@@ -59,7 +58,7 @@ export default function WithdrawalTemplate({
     isFullRefund,
     withdrawalDate,
 }: WithdrawalTemplateProps) {
-    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const paymentsUrl = appUrl ? `${appUrl}/profile` : '#';
 
     return (

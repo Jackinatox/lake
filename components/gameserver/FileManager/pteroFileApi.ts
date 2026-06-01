@@ -1,5 +1,3 @@
-import { env } from '@/lib/env';
-
 export type PteroFileEntry = {
     name: string;
     mode: string;
@@ -29,7 +27,7 @@ export type UploadRequest = {
 };
 
 function assertConfig(apiKey: string | undefined) {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     if (!PANEL_URL) {
         throw new Error('NEXT_PUBLIC_PTERODACTYL_URL environment variable is not set');
     }
@@ -58,7 +56,7 @@ export async function listDirectory(
     directory: string,
     apiKey: string,
 ): Promise<DirectoryListingResponse> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const safeDirectory = encodeURIComponent(directory || '/');
     const response = await fetch(
@@ -99,7 +97,7 @@ export async function readFile(
     filePath: string,
     apiKey: string,
 ): Promise<string> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
     const response = await fetch(
@@ -126,7 +124,7 @@ export async function writeFile(
     content: string,
     apiKey: string,
 ): Promise<void> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
     const response = await fetch(
@@ -152,7 +150,7 @@ export async function getDownloadUrl(
     filePath: string,
     apiKey: string,
 ): Promise<string> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const safePath = encodeURIComponent(ensureLeadingSlash(filePath));
     const response = await fetch(
@@ -194,7 +192,7 @@ export function uploadFiles(
     apiKey: string,
     onProgress?: UploadProgressHandler,
 ): UploadRequest {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
 
     // Normalize directory: ensure leading slash, remove trailing slash (except for root)
@@ -305,7 +303,7 @@ export async function renameEntry(
     to: string,
     apiKey: string,
 ): Promise<void> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/rename`, {
         method: 'PUT',
@@ -331,7 +329,7 @@ export async function deleteEntry(
     name: string,
     apiKey: string,
 ): Promise<void> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const response = await fetch(`${PANEL_URL}/api/client/servers/${serverId}/files/delete`, {
         method: 'POST',
@@ -357,7 +355,7 @@ export async function createFolder(
     name: string,
     apiKey: string,
 ): Promise<void> {
-    const PANEL_URL = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const PANEL_URL = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     assertConfig(apiKey);
     const response = await fetch(
         `${PANEL_URL}/api/client/servers/${serverId}/files/create-folder`,

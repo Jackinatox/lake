@@ -5,7 +5,6 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import type { GameConfig } from '@/models/config';
 import { changeGameRequestSchema } from '@/lib/validation/gameserver';
-import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 interface SubmitGameChangeInput {
@@ -28,7 +27,7 @@ export async function changeGame({
         deleteFiles,
         gameSlug,
     });
-    const workerUrl = env('WORKER_IP');
+    const workerUrl = process.env.WORKER_IP;
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -58,7 +57,6 @@ export async function changeGame({
     logger.info(
         `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameSlug}`,
         'GAME_SERVER',
-        { userId: session.user.id, gameServerId: server.id },
     );
     const response = await fetch(`${workerUrl}/v1/queue/changeGame`, {
         method: 'POST',
@@ -76,11 +74,7 @@ export async function changeGame({
 
     if (!response.ok) {
         const errorData = await response.json();
-        logger.error('Error response from worker:', 'GAME_SERVER', {
-            userId: session.user.id,
-            gameServerId: server.id,
-            details: { errorData },
-        });
+        logger.error('Error response from worker:', 'GAME_SERVER', errorData);
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
 

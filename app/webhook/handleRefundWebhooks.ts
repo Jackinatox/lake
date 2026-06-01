@@ -6,7 +6,6 @@ import {
     sendWithdrawalEmail,
 } from '@/lib/email/sendEmailEmailsFromLake';
 import { undoRefundedOrder } from '@/lib/refund/undoRefundedOrder';
-import { env } from '@/lib/env';
 import Stripe from 'stripe';
 
 /**
@@ -397,7 +396,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
                 create: { orderId: order.id, data: pdfBytes },
                 update: { data: pdfBytes },
             });
-            ownInvoiceUrl = `${env('NEXT_PUBLIC_APP_URL')}/api/invoice/${order.id}`;
+            ownInvoiceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invoice/${order.id}`;
         } catch (downloadError) {
             logger.error('Failed to download/store Stripe invoice PDF', 'PAYMENT_LOG', {
                 userId: order.userId,
@@ -432,7 +431,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
                 stripeInvoiceId: `${latest.stripeInvoiceNumber || 'Stripe invoice war null'}`,
                 invoiceDate: latest.paidAt ?? new Date(),
                 gameName,
-                gameImageUrl: `${env('NEXT_PUBLIC_APP_URL')}/images/light/games/icons/${gameName.toLowerCase()}.webp`,
+                gameImageUrl: `${process.env.NEXT_PUBLIC_APP_URL}/images/light/games/icons/${gameName.toLowerCase()}.webp`,
                 serverName: 'Gameserver',
                 orderType: order.type,
                 ramMB: order.ramMB,

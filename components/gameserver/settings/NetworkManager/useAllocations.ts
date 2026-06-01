@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { env } from '@/lib/env';
 import type { Allocation, AllocationListResponse, PtErrorResponse } from './types';
 
 type UseAllocationsReturn = {
@@ -24,7 +23,7 @@ function getHeaders(apiKey: string) {
 }
 
 function baseUrl(serverId: string) {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     return `${ptUrl}/api/client/servers/${serverId}/network/allocations`;
 }
 

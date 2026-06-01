@@ -5,10 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Copy, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { env } from '@/lib/env';
 
 export default function EmailAndCopyButton() {
-    const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_MAIL')!;
+    const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_MAIL!;
     const t = useTranslations('getHelp');
     const { toast } = useToast();
 

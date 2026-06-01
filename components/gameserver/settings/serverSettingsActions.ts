@@ -13,7 +13,6 @@ import {
 } from '@/lib/validation/gameserver';
 import { serverIdentifierSchema } from '@/lib/validation/common';
 
-import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 
 export async function renameClientServer(ptServerId: string, newName: string): Promise<boolean> {
@@ -22,7 +21,7 @@ export async function renameClientServer(ptServerId: string, newName: string): P
         return false;
     }
     const parsed = parsedResult.data;
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -201,8 +200,8 @@ export async function updateStartupCommand(
         return false;
     }
 
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptAdminKey = env('PTERODACTYL_API_KEY');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptAdminKey = process.env.PTERODACTYL_API_KEY;
 
     try {
         const adminServer = await fetch(`${ptUrl}/api/application/servers/${server.ptAdminId}`, {
@@ -307,7 +306,7 @@ export async function changeServerStartup(server: string, docker_image: string):
 }
 
 async function fetchAllowedDockerImages(ptServerId: string, ptKey: string): Promise<Set<string>> {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     try {
         const response = await fetch(`${ptUrl}/api/client/servers/${ptServerId}/startup`, {
@@ -350,8 +349,8 @@ async function changeServerDockerImageInternal(
     docker_image: string | null,
     skipScripts: boolean = false,
 ): Promise<boolean> {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptAdminKey = env('PTERODACTYL_API_KEY');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptAdminKey = process.env.PTERODACTYL_API_KEY;
     try {
         // Get full server details with admin API
         const adminServer = await fetch(`${ptUrl}/api/application/servers/${ptAdminId}`, {

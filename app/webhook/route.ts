@@ -4,7 +4,6 @@ import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
-import { env } from '@/lib/env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { recordCheckoutSession, provisionCheckoutSession } from './handleCheckoutSessionCompleted';
@@ -16,7 +15,7 @@ import {
 
 export async function POST(req: NextRequest) {
     const body = await req.text();
-    const endpointSecret = env('webhookSecret')!;
+    const endpointSecret = process.env.webhookSecret!;
     let event: Stripe.Event;
 
     const signature = req.headers.get('stripe-signature');

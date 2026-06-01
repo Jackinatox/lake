@@ -1,6 +1,5 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
@@ -52,7 +51,7 @@ export async function GET(
             });
             return NextResponse.json({ error: 'Job not found' }, { status: 404 });
         }
-        const workerUrl = env('WORKER_IP');
+        const workerUrl = process.env.WORKER_IP;
         const encodedJobId = encodeURIComponent(parsedJobId.data);
 
         const response = await fetch(`${workerUrl}/v1/queue/jobstatus/${encodedJobId}`, {

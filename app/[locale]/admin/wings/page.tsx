@@ -1,15 +1,14 @@
 import React from 'react';
 import WingsTable from './WingsTable';
 import { Builder } from '@avionrx/pterodactyl-js';
-import { env } from '@/lib/env';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 
 async function Wings() {
-    const url = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const apiKey = env('PTERODACTYL_API_KEY');
+    const url = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const apiKey = process.env.PTERODACTYL_API_KEY;
     const session = await auth.api.getSession({
         headers: await headers(),
     });

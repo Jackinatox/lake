@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { env } from '@/lib/env';
 
 type EnvStore = {
     vars: Record<string, string> | null;
@@ -24,7 +23,7 @@ function getStore(server: string): EnvStore {
 
 async function fetchEnvVars(server: string, apiKey: string) {
     const store = getStore(server);
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     // Validation
     if (!server) {
@@ -118,7 +117,7 @@ export function usePTEnv(key: string, server: string, apiKey: string) {
     }, [server, apiKey, key]);
 
     const setValue = async (value: string) => {
-        const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+        const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
         if (!ptUrl) {
             throw new Error('NEXT_PUBLIC_PT_URL environment variable is not set');
         }

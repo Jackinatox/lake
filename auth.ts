@@ -2,7 +2,6 @@ import { apiKey } from '@better-auth/api-key';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
-import { env } from '@/lib/env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import {
     sendConfirmEmail,
@@ -94,12 +93,12 @@ export const auth = betterAuth({
     },
     socialProviders: {
         discord: {
-            clientId: env('DISCORD_CLIENT_ID')!,
-            clientSecret: env('DISCORD_CLIENT_SECRET')!,
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
         },
         google: {
-            clientId: env('GOOGLE_CLIENT_ID')!,
-            clientSecret: env('GOOGLE_CLIENT_SECRET')!,
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             prompt: 'select_account',
         },
     },
@@ -123,7 +122,7 @@ export const auth = betterAuth({
                 );
                 await sendPasswordResetSuccessEmail(
                     user.email,
-                    `${env('NEXT_PUBLIC_APP_URL')}/profile`,
+                    `${process.env.NEXT_PUBLIC_APP_URL}/profile`,
                     user.name || '',
                     'change',
                 );
@@ -135,7 +134,7 @@ export const auth = betterAuth({
                 );
                 await sendPasswordResetSuccessEmail(
                     user.email,
-                    `${env('NEXT_PUBLIC_APP_URL')}/login`,
+                    `${process.env.NEXT_PUBLIC_APP_URL}/login`,
                     user.name || '',
                     'reset',
                 );
@@ -176,7 +175,7 @@ export const auth = betterAuth({
         admin(),
         captcha({
             provider: 'cloudflare-turnstile',
-            secretKey: env('CF_TURNSTILE_SECRET_KEY')!,
+            secretKey: process.env.CF_TURNSTILE_SECRET_KEY!,
         }),
     ],
     databaseHooks: {

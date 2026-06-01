@@ -1,4 +1,3 @@
-import { env } from '@/lib/env';
 import DeleteAllFilesUserServer from './DeleteAllFilesUser';
 
 export default async function ReinstallPTServerClient(
@@ -6,7 +5,7 @@ export default async function ReinstallPTServerClient(
     apiKey: string,
     deleteAllFiles: boolean,
 ) {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     if (deleteAllFiles) {
         await DeleteAllFilesUserServer(server, apiKey);

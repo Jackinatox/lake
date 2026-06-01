@@ -1,12 +1,11 @@
 import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
-import { env } from '@/lib/env';
 
 export type JobId = string;
 
 export async function provisionServerWithWorker(order: GameServerOrder): Promise<JobId> {
     try {
-        const workerUrl = env('WORKER_IP');
+        const workerUrl = process.env.WORKER_IP;
 
         const response = await fetch(`${workerUrl}/v1/queue/provision`, {
             method: 'POST',
