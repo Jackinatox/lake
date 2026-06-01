@@ -63,6 +63,12 @@
     "extendServer": "Extend Server",
     "home": "Go to Home"
   },
+  "GameserverError": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or contact support if the problem persists.",
+    "tryAgain": "Try Again",
+    "contactSupport": "Contact Support"
+  },
   "ServerCreationFailed": {
     "title": "Server creation failed",
     "description": "We're sorry — creating your server failed. Our team has been notified and will resolve this as soon as possible. If you'd like immediate help, please contact support.",

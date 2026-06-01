@@ -8,14 +8,14 @@ import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader, { ServerLoaderProps } from '@/components/gameserver/ServerLoader';
-import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
-import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import prisma from '@/lib/prisma';
-import type { Metadata } from 'next';
 import { env } from '@/lib/env';
-import { headers } from 'next/headers';
-import { GameConfig } from '@/models/config';
+import { logger } from '@/lib/logger';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
+import prisma from '@/lib/prisma';
+import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import { gameConfigSchema } from '@/lib/validation/order';
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 
 export async function generateMetadata({
     params,
@@ -96,8 +96,8 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             }),
             pt.getServer(isServerValid.ptAdminId.toString()),
         ]);
-        
-        const eegg = await pt.getEgg(
+
+        const egg = await pt.getEgg(
             isServerValid.gameData.nestId.toString(),
             adminServer.egg.toString(),
         );
@@ -110,7 +110,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             gameConfig: gameConfigSchema.parse(isServerValid.gameConfig),
             type: isServerValid.type,
             expires: isServerValid.expires,
-            defaultStartCommand: eegg.startup,
+            defaultStartCommand: 'eegg.startup',
         };
 
         return (
@@ -125,7 +125,12 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             </div>
         );
     } catch (error) {
-        return <> Error from pt API {error} </>;
+        logger.error(`Error loading server data for server ID: ${serverId}`, 'GAME_SERVER', {
+            userId: session.user.id,
+            gameServerId: isServerValid.id,
+            details: { error },
+        });
+        throw error;
     }
 }
 

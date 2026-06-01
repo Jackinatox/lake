@@ -63,6 +63,12 @@
     "extendServer": "Server verlängern",
     "home": "Zur Startseite"
   },
+  "GameserverError": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem weiterhin besteht.",
+    "tryAgain": "Erneut versuchen",
+    "contactSupport": "Support kontaktieren"
+  },
   "ServerCreationFailed": {
     "title": "Servererstellung fehlgeschlagen",
     "description": "Es tut uns leid — die Erstellung Deines Servers ist fehlgeschlagen. Unser Team wurde benachrichtigt und kümmert sich so schnell wie möglich darum. Wenn Du sofort Hilfe möchtest, wende Dich bitte an den Support.",
