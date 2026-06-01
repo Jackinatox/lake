@@ -22,7 +22,8 @@ import {
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
-    CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID,
+    CONFIG_DUMMY_NUMBER,
+    CONFIG_KEY_SUPPORT_EMAIL,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -316,10 +317,17 @@ async function main() {
                 note: 'Number of days after which suspended tier servers will be deleted',
             },
             {
-                key: CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID,
+                key: CONFIG_DUMMY_NUMBER,
                 type: 'NUMBER',
                 number: 1,
-                note: 'Default Nest ID for Pterodactyl, where all eggs live',
+                note: 'Dummy number because i cant do typescript',
+                category: 'Global Config'
+            },
+            {
+                key: CONFIG_KEY_SUPPORT_EMAIL,
+                type: 'STRING',
+                string: 'support@scyed.com',
+                note: 'Support email address',
                 category: 'Global Config'
             }
         ],

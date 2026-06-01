@@ -1,4 +1,4 @@
-import { CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID } from '@/app/GlobalConstants';
+import { CONFIG_DUMMY_NUMBER, CONFIG_KEY_SUPPORT_EMAIL } from '@/app/GlobalConstants';
 import prisma from './prisma';
 
 // --- Schema definition ---
@@ -8,18 +8,15 @@ type ConfigEntry = { key: string; type: 'number' | 'string' };
 type ConfigSchema = Record<string, ConfigEntry>;
 
 const SCHEMA = {
-    pterodactylDefaultNestId: { key: CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID, type: 'number' as const },
+    supportEmail: { key: CONFIG_KEY_SUPPORT_EMAIL, type: 'string' as const },
+    dummy_number: { key: CONFIG_DUMMY_NUMBER, type: 'number' as const },
 } satisfies ConfigSchema;
-
-// --- Type inference ---
 
 type InferConfig<T extends ConfigSchema> = {
     [K in keyof T]: T[K]['type'] extends 'number' ? number : string;
 };
 
 type ServerConfig = InferConfig<typeof SCHEMA>;
-
-// --- Runtime state ---
 
 let _config: ServerConfig | null = null;
 

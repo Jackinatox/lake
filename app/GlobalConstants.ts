@@ -41,4 +41,5 @@ export const EGG_FEATURE_HYTALE_OAUTH = 'HytaleOAuth';
 
 
 // Config Key loaded on startup
-export const CONFIG_KEY_PTERODACTYL_DEFAULT_NEST_ID = 'pterodactyl_default_nest_id';
+export const CONFIG_KEY_SUPPORT_EMAIL = 'support_email';
+export const CONFIG_DUMMY_NUMBER = 'dummy_number';

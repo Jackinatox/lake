@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import EmailAndCopyButton from './EmailAndCopyButton';
 import ContactForm from './ContactForm';
 import { getTranslations } from 'next-intl/server';
+import { serverConfig } from '@/lib/serverConfig';
 
 export default async function HelpComponent() {
     const t = await getTranslations('getHelp');
@@ -20,7 +21,7 @@ export default async function HelpComponent() {
                 <CardContent className="mt-4">
                     <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
                         <ContactForm />
-                        <EmailAndCopyButton />
+                        <EmailAndCopyButton SUPPORT_EMAIL={serverConfig().supportEmail} />
                     </div>
                 </CardContent>
             </Card>
