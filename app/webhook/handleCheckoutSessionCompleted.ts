@@ -21,7 +21,7 @@ async function provisionWithRetry(
                 logger.warn(
                     `Worker unreachable, retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${PROVISION_RETRIES + 1})`,
                     'PAYMENT_LOG',
-                    { userId: order.userId, details: { orderId: order.id, error } },
+                    { userId: order.userId, gameServerId: order.gameServerId ?? undefined, details: { orderId: order.id, error } },
                 );
                 await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
             } else {

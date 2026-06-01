@@ -152,6 +152,7 @@ export async function requestUserWithdrawal(
 
         logger.info('User withdrawal (Widerruf) created', 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 refundId: refundRecord.id,
@@ -169,6 +170,7 @@ export async function requestUserWithdrawal(
     } catch (error) {
         logger.error('Failed to create user withdrawal', 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: { orderId: order.id, error },
         });
 

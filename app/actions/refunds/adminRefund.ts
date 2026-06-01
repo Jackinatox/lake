@@ -133,6 +133,7 @@ export async function adminRefund(
 
         logger.info(`Admin ${typeLabel} created`, 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 refundId: refundRecord.id,
@@ -153,6 +154,7 @@ export async function adminRefund(
     } catch (error) {
         logger.error(`Failed to create admin ${typeLabel}`, 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: { orderId: order.id, amountCents, type, serverAction, error },
         });
 
