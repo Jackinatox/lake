@@ -91,13 +91,17 @@ export const satisfactoryGameSpecificSchema = z.object({
 
 export const valheimGameSpecificSchema = z.object({
     mode: z.enum(['vanilla', 'modded']),
+    server_name: requiredStringSchema('Server name', 64),
     password: z.string().trim().min(5, 'Password must be at least 5 characters').max(20, 'Password must be at most 20 characters'),
     world_name: requiredStringSchema('World name', 20),
     max_players: integerRangeSchema('Max players', 1, 64),
     public_server: z.boolean(),
     enable_crossplay: z.boolean(),
+    auto_update: z.boolean(),
     backup_interval: integerRangeSchema('Backup interval', 0, 86_400),
     backup_count: integerRangeSchema('Backup count', 0, 100),
+    backup_shorttime: integerRangeSchema('Backup short time', 0, 86_400),
+    backup_longtime: integerRangeSchema('Backup long time', 0, 604_800),
     modpack: z.string().trim().max(255, 'Modpack string is too long').optional(),
 });
 

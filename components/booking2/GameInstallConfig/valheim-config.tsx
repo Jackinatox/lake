@@ -5,28 +5,31 @@ import { ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { generateUsername } from 'unique-username-generator';
 import type { GameConfig } from '@/models/config';
-import { ValheimConfig } from '@/models/gameSpecificConfig/ValheimConfig';
+import { ValheimConfig, ValheimModdedConfig } from '@/models/gameSpecificConfig/ValheimConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
 import { GameConfigProps } from './minecraft-config';
-import { FactorioConfig } from '@/models/gameSpecificConfig/FactorioConfig';
 
 export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent(
     { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
-    const [config, setConfig] = useState<ValheimConfig>({
+    const [config, setConfig] = useState<ValheimConfig>(() => ({
         mode: 'vanilla',
-        password: 'yggdrasil',
+        password: generateUsername('_', 0),
         world_name: 'Dedicated',
         max_players: 10,
         public_server: true,
         enable_crossplay: false,
-        backup_interval: 1800,
         backup_count: 4,
-        modpack: '',
-    });
+        backup_interval: 1800,
+        auto_update: true,
+        backup_longtime: 43200,
+        backup_shorttime: 7200,
+        server_name: 'Valheim Server',
+    }));
 
     useEffect(() => {
         if (!initialConfig) return;
@@ -38,6 +41,16 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
         setConfig((prev) => ({ ...prev, [key]: value }));
     };
 
+    const handleModeToggle = (modded: boolean) => {
+        if (modded) {
+            const { mode: _, ...shared } = config;
+            setConfig({ mode: 'modded', ...shared });
+        } else {
+            const { mode: _, modpack: __, ...shared } = config as ValheimModdedConfig;
+            setConfig({ mode: 'vanilla', ...shared });
+        }
+    };
+
     useImperativeHandle(ref, () => ({
         submit: () => {
             const isModded = config.mode === 'modded';
@@ -45,7 +58,7 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
 
             const completeConfig: GameConfig = {
                 gameSlug: game.slug as 'valheim',
-                eggId: flavor.eggId,
+                eggId: flavor.egg_Id,
                 version: 'latest',
                 dockerImage: flavor.docker_image,
                 gameSpecificConfig: { ...config },
@@ -66,9 +79,7 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                 <Switch
                     id="valheimMode"
                     checked={config.mode === 'modded'}
-                    onCheckedChange={(checked) =>
-                        handleChange('mode', checked ? 'modded' : 'vanilla')
-                    }
+                    onCheckedChange={handleModeToggle}
                 />
             </ConfigSettingItem>
 
@@ -82,8 +93,10 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                         id="modpack"
                         type="text"
                         placeholder="AuthorName-ModName-1.0.0"
-                        value={config.modpack ?? ''}
-                        onChange={(e) => handleChange('modpack', e.target.value)}
+                        value={(config as ValheimModdedConfig).modpack ?? ''}
+                        onChange={(e) =>
+                            setConfig((prev) => ({ ...prev, modpack: e.target.value }))
+                        }
                         className="w-48 md:w-64"
                     />
                 </ConfigSettingItem>
@@ -173,6 +186,17 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                                 )
                             }
                             className="w-24 md:w-40"
+                        />
+                    </ConfigSettingItem>
+                    <ConfigSettingItem
+                        id="autoUpdate"
+                        label="Auto Update"
+                        description="Automatically update the server when a new version is available"
+                    >
+                        <Switch
+                            id="autoUpdate"
+                            checked={config.auto_update}
+                            onCheckedChange={(checked) => handleChange('auto_update', checked)}
                         />
                     </ConfigSettingItem>
                     <ConfigSettingItem

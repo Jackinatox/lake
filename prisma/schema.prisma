@@ -756,3 +756,20 @@ model Apikey {
   @@index([key])
   @@map("apikey")
 }
+
+model FAQ {
+  id          Int    @id @default(autoincrement())
+  question_de String
+  question_en String
+
+  // display as markdown
+  answer_de String
+  answer_en String
+  sorting   Int     @default(0)
+  enabled   Boolean @default(true)
+
+  category String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

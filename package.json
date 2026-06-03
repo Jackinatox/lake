@@ -1,6 +1,6 @@
 {
     "name": "lake",
-    "version": "1.9.10",
+    "version": "1.9.11",
     "private": true,
     "scripts": {
         "dev": "bun run --bun next dev",
@@ -13,7 +13,7 @@
     "dependencies": {
         "@auth/prisma-adapter": "^2.11.2",
         "@avionrx/pterodactyl-js": "^2.1.5",
-        "@better-auth/api-key": "^1.6.11",
+        "@better-auth/api-key": "^1.6.13",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
         "@marsidev/react-turnstile": "^1.5.2",
@@ -56,7 +56,7 @@
         "ansi-to-html": "^0.7.2",
         "ansi-to-react": "^6.2.6",
         "autoprefixer": "^10.5.0",
-        "better-auth": "^1.6.11",
+        "better-auth": "^1.6.13",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
