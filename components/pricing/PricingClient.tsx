@@ -1,11 +1,5 @@
 'use client';
 
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -32,7 +26,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
@@ -58,9 +52,14 @@ function clampToNearest(value: number, stops: number[]): number {
 interface PricingClientProps {
     performanceGroups: PerformanceGroup[];
     resourceTiers: ResourceTierDisplay[];
+    faqSlot?: ReactNode;
 }
 
-export default function PricingClient({ performanceGroups, resourceTiers }: PricingClientProps) {
+export default function PricingClient({
+    performanceGroups,
+    resourceTiers,
+    faqSlot,
+}: PricingClientProps) {
     const t = useTranslations('pricing');
     const router = useRouter();
 
@@ -137,8 +136,6 @@ export default function PricingClient({ performanceGroups, resourceTiers }: Pric
             </div>
         );
     }
-
-    const faqKeys = ['billing', 'upgrade', 'refund'] as const;
 
     return (
         <div className="mx-auto w-full max-w-6xl flex flex-col gap-8 md:gap-12">
@@ -468,18 +465,7 @@ export default function PricingClient({ performanceGroups, resourceTiers }: Pric
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <section className="max-w-3xl mx-auto w-full pb-4 md:pb-8">
                 <h2 className="text-lg md:text-xl font-semibold mb-3">{t('faq.title')}</h2>
-                <Accordion type="single" collapsible className="w-full">
-                    {faqKeys.map((key) => (
-                        <AccordionItem key={key} value={key}>
-                            <AccordionTrigger className="text-left text-base">
-                                {t(`faq.items.${key}.question`)}
-                            </AccordionTrigger>
-                            <AccordionContent className="text-muted-foreground leading-relaxed">
-                                {t(`faq.items.${key}.answer`)}
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                {faqSlot}
             </section>
         </div>
     );

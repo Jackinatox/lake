@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import prisma from '@/lib/prisma';
 import PricingClient from '@/components/pricing/PricingClient';
+import { FaqSection } from '@/components/faq/FaqSection';
 import { createPublicMetadata } from '@/lib/metadata';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
@@ -49,7 +50,11 @@ export default async function PricingPage() {
 
     return (
         <Suspense>
-            <PricingClient performanceGroups={performanceGroups} resourceTiers={resourceTiers} />
+            <PricingClient
+                performanceGroups={performanceGroups}
+                resourceTiers={resourceTiers}
+                faqSlot={<FaqSection categories={['pricing']} />}
+            />
         </Suspense>
     );
 }
