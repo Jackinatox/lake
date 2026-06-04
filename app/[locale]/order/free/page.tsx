@@ -13,6 +13,10 @@ import {
 } from '@/components/ui/accordion';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { auth } from '@/auth';
+import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import { getKeyValueNumber } from '@/lib/keyValue';
+import { headers } from 'next/headers';
 
 export async function generateMetadata({
     params,
@@ -35,14 +39,26 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
-    const [games, freeTierConfig] = await Promise.all([
+    const [session, games, freeTierConfig, maxFreeServers] = await Promise.all([
+        auth.api.getSession({ headers: await headers() }),
         prisma.gameData.findMany({
             select: { id: true, name: true, slug: true },
             where: { enabled: true },
             orderBy: { sorting: 'asc' },
         }),
         getFreeTierConfigCached(),
+        getKeyValueNumber(FREE_TIER_MAX_SERVERS),
     ]);
+
+    const currentFreeServers = session?.user
+        ? await prisma.gameServer.count({
+              where: {
+                  userId: session.user.id,
+                  type: 'FREE',
+                  status: { notIn: ['CREATION_FAILED', 'DELETED'] },
+              },
+          })
+        : null;
 
     const gameCards = games.map((game) => {
         const imgName = `${game.name.toLowerCase()}.webp`;
@@ -152,9 +168,21 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
 
             {/* Game Selection */}
             <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-6 md:pb-6">
-                <h2 className="text-sm font-semibold text-foreground mb-3">
-                    {copy.freePageSelectGame}
-                </h2>
+                <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-sm font-semibold text-foreground">
+                        {copy.freePageSelectGame}
+                    </h2>
+                    {currentFreeServers !== null &&
+                        (currentFreeServers >= maxFreeServers ? (
+                            <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+                                {currentFreeServers}/{maxFreeServers} servers used
+                            </span>
+                        ) : (
+                            <span className="text-xs text-muted-foreground">
+                                {currentFreeServers}/{maxFreeServers} servers used
+                            </span>
+                        ))}
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                     {gameCards.map((game) => (
                         <GameCard

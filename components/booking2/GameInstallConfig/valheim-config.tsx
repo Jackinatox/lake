@@ -18,7 +18,7 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
 ) {
     const [config, setConfig] = useState<ValheimConfig>(() => ({
         mode: 'vanilla',
-        password: generateUsername('_', 0),
+        password: generateUsername('_', 0, 20),
         world_name: 'Dedicated',
         max_players: 10,
         public_server: true,
@@ -208,12 +208,13 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                             id="backupInterval"
                             type="number"
                             min={0}
+                            max={86400}
                             step={300}
                             value={config.backup_interval}
                             onChange={(e) =>
                                 handleChange(
                                     'backup_interval',
-                                    Math.max(0, Number(e.target.value) || 0),
+                                    Math.max(0, Math.min(86400, Number(e.target.value) || 0)),
                                 )
                             }
                             className="w-24 md:w-40"
@@ -228,11 +229,12 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                             id="backupCount"
                             type="number"
                             min={0}
+                            max={100}
                             value={config.backup_count}
                             onChange={(e) =>
                                 handleChange(
                                     'backup_count',
-                                    Math.max(0, Number(e.target.value) || 0),
+                                    Math.max(0, Math.min(100, Number(e.target.value) || 0)),
                                 )
                             }
                             className="w-24 md:w-40"
