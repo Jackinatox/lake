@@ -699,7 +699,7 @@
       "usernameAvailable": "Username is available",
       "usernameTaken": "Username is already taken",
       "usernameNoAt": "Username cannot contain @",
-      "usernameMinLength": "Must be at least 3 characters",
+      "usernameMinLength": "Must be at least 4 characters",
       "usernameSaveError": "Failed to update username"
     },
     "twoFactor": {

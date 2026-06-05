@@ -711,7 +711,7 @@
       "usernameAvailable": "Benutzername ist verfügbar",
       "usernameTaken": "Benutzername ist bereits vergeben",
       "usernameNoAt": "Benutzername darf kein @ enthalten",
-      "usernameMinLength": "Mindestens 3 Zeichen erforderlich",
+      "usernameMinLength": "Mindestens 4 Zeichen erforderlich",
       "usernameSaveError": "Benutzername konnte nicht aktualisiert werden"
     },
     "twoFactor": {

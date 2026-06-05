@@ -111,15 +111,13 @@ export default function AccountTab() {
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 pt-0.5">
-                            <p className="font-semibold text-base leading-tight truncate">
-                                {displayName}
-                            </p>
+                            <UsernameEditor
+                                currentUsername={currentUsername}
+                                displayName={displayName}
+                            />
                             <p className="text-xs text-muted-foreground/80 truncate mt-0.5">
                                 {user.email}
                             </p>
-                            <div className="mt-1">
-                                <UsernameEditor currentUsername={currentUsername} />
-                            </div>
                         </div>
                     </div>
 

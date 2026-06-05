@@ -13,6 +13,10 @@ import { captureServerEvent } from './lib/posthog';
 import prisma from './lib/prisma';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
+import {
+    AUTH_USERNAME_MAX_LENGTH,
+    AUTH_USERNAME_MIN_LENGTH,
+} from './lib/validation/auth';
 
 function extractIp(request?: Request | null): string | undefined {
     if (!request) return undefined;
@@ -155,7 +159,10 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
-        username({}),
+        username({
+            minUsernameLength: AUTH_USERNAME_MIN_LENGTH,
+            maxUsernameLength: AUTH_USERNAME_MAX_LENGTH,
+        }),
         apiKey({
             enableSessionForAPIKeys: true,
             enableMetadata: true,

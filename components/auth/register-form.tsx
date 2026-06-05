@@ -10,6 +10,7 @@ import {
     AUTH_PASSWORD_MAX_LENGTH,
     AUTH_PASSWORD_MIN_LENGTH,
     AUTH_USERNAME_MAX_LENGTH,
+    AUTH_USERNAME_MIN_LENGTH,
     authUsernameSchema,
     registerFormSchema,
 } from '@/lib/validation/auth';
@@ -49,7 +50,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
             setUsernameStatus('idle');
             return;
         }
-        if (username.length < 3) {
+        if (username.length < AUTH_USERNAME_MIN_LENGTH) {
             setUsernameStatus('idle');
             return;
         }
@@ -76,7 +77,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'div'
     const passwordsMatch =
         password === confirmPassword && password.length >= AUTH_PASSWORD_MIN_LENGTH;
     const passwordTooShort = password.length > 0 && password.length < AUTH_PASSWORD_MIN_LENGTH;
-    const usernameIsValid = username.length >= 3 && authUsernameSchema.safeParse(username).success;
+    const usernameIsValid =
+        username.length >= AUTH_USERNAME_MIN_LENGTH &&
+        authUsernameSchema.safeParse(username).success;
     const emailValid = email.trim().length > 0;
 
     const canSubmit =
