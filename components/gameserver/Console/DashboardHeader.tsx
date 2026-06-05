@@ -27,7 +27,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { StatusIndicator } from './StatusIndicator';
-import { CompactServerAddress } from './CompactServerAddress';
+import { ServerAddress } from './ServerAddress';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
 
 interface DashboardHeaderProps {
@@ -287,9 +287,7 @@ export function DashboardHeader({
 
     // Get allocation info
     const allocations = server.relationships.allocations.data.map((a) => a.attributes);
-    const defAlloc = allocations.find((alloc) => alloc.is_default);
-    const address = defAlloc?.ip_alias || defAlloc?.ip || '';
-    const port = defAlloc?.port || 0;
+    const hasAllocation = allocations.length > 0;
 
     const isOffline = serverStatus === 'unknown' || serverStatus === 'offline' || !isConnected;
     const isRunning = serverStatus === 'running';
@@ -307,10 +305,8 @@ export function DashboardHeader({
 
                     {/* Right: Power dropdown + Upgrade */}
                     <div className="flex items-center gap-1 shrink-0">
-                        {address && port && (
-                            <CompactServerAddress
-                                address={address}
-                                port={port}
+                        {hasAllocation && (
+                            <ServerAddress
                                 gameSlug={server.gameSlug}
                                 allocations={allocations}
                                 compact
@@ -364,10 +360,8 @@ export function DashboardHeader({
                         </div>
 
                         {/* Server Address */}
-                        {address && port ? (
-                            <CompactServerAddress
-                                address={address}
-                                port={port}
+                        {hasAllocation ? (
+                            <ServerAddress
                                 gameSlug={server.gameSlug}
                                 allocations={allocations}
                             />

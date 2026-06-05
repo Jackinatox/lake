@@ -918,6 +918,16 @@
           "cancel": "Abbrechen",
           "confirm": "Server beenden"
         }
+      },
+      "address": {
+        "address": "Adresse",
+        "serverAddress": "Serveradresse",
+        "port": "Port",
+        "connect": "Verbinden",
+        "connectionDetails": "Verbindungsdetails",
+        "copyFull": "IP & Port kopieren",
+        "copyAddress": "Adresse kopieren",
+        "copyPort": "Port kopieren"
       }
     },
     "fileManager": {

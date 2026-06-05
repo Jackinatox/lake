@@ -906,6 +906,16 @@
           "cancel": "Cancel",
           "confirm": "Kill server"
         }
+      },
+      "address": {
+        "address": "Address",
+        "serverAddress": "Server address",
+        "port": "Port",
+        "connect": "Connect",
+        "connectionDetails": "Connection details",
+        "copyFull": "Copy IP & port",
+        "copyAddress": "Copy address",
+        "copyPort": "Copy port"
       }
     },
     "fileManager": {
