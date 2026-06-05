@@ -18,7 +18,15 @@ type InferConfig<T extends ConfigSchema> = {
 
 type ServerConfig = InferConfig<typeof SCHEMA>;
 
-let _config: ServerConfig | null = null;
+// Stored on globalThis (not a plain module-level variable) because Next.js gives
+// the instrumentation hook and the SSR/route bundles separate module graphs —
+// each with its own copy of this module. A plain `let` set during startup would
+// not be visible to the rendering bundle, so serverConfig() would throw there.
+// Same reason lib/prisma.ts pins its client to global.
+const globalForConfig = globalThis as unknown as {
+    _serverConfig: ServerConfig | null;
+};
+globalForConfig._serverConfig ??= null;
 
 export async function initServerConfig(): Promise<void> {
     const allKeys = Object.values(SCHEMA).map((e) => e.key);
@@ -60,11 +68,12 @@ ${missing.map((k) => `║   • ${k.padEnd(58)} ║`).join('\n')}
 `);
     }
 
-    _config = config as ServerConfig;
+    globalForConfig._serverConfig = config as ServerConfig;
     console.log(`✓ Server config loaded (${Object.keys(SCHEMA).length} keys)`);
 }
 
 export function serverConfig(): ServerConfig {
-    if (!_config) throw new Error('serverConfig not initialized — startup must run first');
-    return _config;
+    if (!globalForConfig._serverConfig)
+        throw new Error('serverConfig not initialized — startup must run first');
+    return globalForConfig._serverConfig;
 }
