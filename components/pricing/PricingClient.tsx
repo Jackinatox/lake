@@ -246,6 +246,7 @@ export default function PricingClient({
                     <Row
                         icon={MemoryStick}
                         label={t('table.ram')}
+                        sublabel={pf.ram.name}
                         unit={`${(pf.ram.pricePerGb / 100).toFixed(2)} ${t('table.perGiB')}`}
                         subtotal={`${(price.cents.ram / 100).toFixed(2)} €`}
                     >
@@ -264,7 +265,7 @@ export default function PricingClient({
                         <Row
                             icon={HardDrive}
                             label={t('table.resources')}
-                            sublabel={tier ? tierSublabel(tier, t) : undefined}
+                            stretchControl
                             unit={
                                 tier && tier.priceCents > 0
                                     ? `${(tier.priceCents / 100).toFixed(2)} ${t('table.perMonth')}`
@@ -276,7 +277,7 @@ export default function PricingClient({
                                 value={tier ? String(tier.id) : ''}
                                 onValueChange={(v) => setTierId(Number(v))}
                             >
-                                <SelectTrigger className="h-9 w-[150px] sm:w-[220px]">
+                                <SelectTrigger className="h-9 w-full sm:w-auto">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="min-w-[280px]">
@@ -489,6 +490,7 @@ function Row({
     subtotal,
     children,
     isLast,
+    stretchControl,
 }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
@@ -497,6 +499,7 @@ function Row({
     subtotal: string;
     children: React.ReactNode;
     isLast?: boolean;
+    stretchControl?: boolean;
 }) {
     return (
         <div
@@ -521,7 +524,14 @@ function Row({
                 </div>
 
                 {/* Control */}
-                <div className="ml-auto sm:ml-0 max-w-full min-w-0 sm:flex-initial">{children}</div>
+                <div
+                    className={cn(
+                        'max-w-full min-w-0 sm:ml-0 sm:flex-initial',
+                        stretchControl ? 'basis-full w-full sm:basis-auto sm:w-auto' : 'ml-auto',
+                    )}
+                >
+                    {children}
+                </div>
             </div>
 
             {/* Unit price (sm+ third column) */}
