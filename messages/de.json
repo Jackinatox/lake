@@ -834,6 +834,7 @@
     "freeServer": "Kostenloser Server",
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",
+    "willBeDeleted": "wird gelöscht am {date}",
     "loading": "Server wird geladen...",
     "loadingSteps": {
       "fetchingData": "Serverdaten werden abgerufen",

@@ -6,7 +6,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function GameserverError({ reset }: { error: Error; reset: () => void }) {
+export default function GameserverError({
+    error,
+    unstable_retry,
+}: {
+    error: Error & { digest?: string };
+    unstable_retry: () => void;
+}) {
     const t = useTranslations('GameserverError');
 
     return (
@@ -20,7 +26,7 @@ export default function GameserverError({ reset }: { error: Error; reset: () => 
                     <CardDescription className="text-base">{t('description')}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3">
-                    <Button onClick={reset} className="w-full">
+                    <Button onClick={() => window.location.reload()} className="w-full">
                         <RefreshCw className="mr-2 h-4 w-4" />
                         {t('tryAgain')}
                     </Button>

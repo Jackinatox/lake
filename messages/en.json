@@ -822,6 +822,7 @@
     "freeServer": "Free Server",
     "creationFailed": "Creation Failed",
     "creationFailedMessage": "Our team will resolve this soon",
+    "willBeDeleted": "will be deleted on {date}",
     "loading": "Loading Server...",
     "loadingSteps": {
       "fetchingData": "Fetching server data",
