@@ -79,7 +79,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     ];
 
     return (
-        <div className="-mx-4 -my-2 md:-mx-8 md:-my-4">
+        <div className="-mx-2 -my-2 md:-mx-8 md:-my-4">
             {/* Hero Section */}
             <section className="relative pt-10 pb-6 md:pt-16 md:pb-10 overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-br from-green-500/5 via-background to-primary/5" />
