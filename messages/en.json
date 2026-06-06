@@ -1332,9 +1332,9 @@
         "none": "No server changes"
       }
     },
-    "legalNote": "Under EU consumer protection law (§355 BGB), you have the right to withdraw from any contract within 14 days of purchase. The refund is calculated pro-rata based on your unused service time.",
     "supportNote": "If you need help or have questions about a refund, contact our",
-    "supportLink": "Support Team"
+    "supportLink": "Support Team",
+    "faqHeading": "Frequently Asked Questions"
   },
   "CookieBanner": {
     "title": "Cookie Notice",

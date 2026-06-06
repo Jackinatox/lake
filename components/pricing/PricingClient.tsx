@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
@@ -117,6 +117,48 @@ export default function PricingClient({
         if (next != null) setRam(next);
     };
 
+    // Duration slider drag handling — snaps to nearest stop while dragging
+    const trackRef = useRef<HTMLDivElement>(null);
+    const draggingRef = useRef(false);
+
+    const setDaysFromPointer = (clientX: number) => {
+        const el = trackRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        // Stops are centered at 12.5% .. 87.5%, so usable track is the middle 75%.
+        const trackStart = rect.left + rect.width * 0.125;
+        const trackWidth = rect.width * 0.75;
+        if (trackWidth <= 0) return;
+        const frac = Math.min(1, Math.max(0, (clientX - trackStart) / trackWidth));
+        const idx = Math.round(frac * (DURATIONS.length - 1));
+        const next = DURATIONS[idx];
+        if (next && next.value !== days) setDays(next.value);
+    };
+
+    const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        draggingRef.current = true;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setDaysFromPointer(e.clientX);
+    };
+    const onTrackPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!draggingRef.current) return;
+        setDaysFromPointer(e.clientX);
+    };
+    const onTrackPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+        draggingRef.current = false;
+        try {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+        } catch {
+            // pointer may already be released
+        }
+    };
+
+    const stepDays = (dir: -1 | 1) => {
+        const idx = DURATIONS.findIndex((x) => x.value === days);
+        const next = DURATIONS[Math.max(0, Math.min(DURATIONS.length - 1, idx + dir))];
+        if (next) setDays(next.value);
+    };
+
     const handleContinue = () => {
         if (!pf) return;
         const params = new URLSearchParams({
@@ -139,15 +181,13 @@ export default function PricingClient({
 
     return (
         <div className="mx-auto w-full max-w-6xl flex flex-col gap-8 md:gap-12">
-            {/* ── Header ──────────────────────────────────────────────── */}
-            <section className="pt-0 md:pt-4">
-                <h1 className="text-2xl md:text-4xl font-bold tracking-tight">{t('hero.title')}</h1>
+            <section className="">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{t('hero.title')}</h1>
                 <p className="mt-2 text-sm md:text-base text-muted-foreground max-w-2xl">
                     {t('hero.subtitle')}
                 </p>
             </section>
 
-            {/* ── Pricing table ───────────────────────────────────────── */}
             <section>
                 {/* Performance group selector — card-style tabs */}
                 <div className="mb-4">
@@ -316,7 +356,28 @@ export default function PricingClient({
                             </div>
                         </div>
 
-                        <div role="radiogroup" className="relative">
+                        <div
+                            ref={trackRef}
+                            role="slider"
+                            tabIndex={0}
+                            aria-valuemin={DURATIONS[0].value}
+                            aria-valuemax={DURATIONS[DURATIONS.length - 1].value}
+                            aria-valuenow={days}
+                            aria-label={t('table.duration')}
+                            onPointerDown={onTrackPointerDown}
+                            onPointerMove={onTrackPointerMove}
+                            onPointerUp={onTrackPointerUp}
+                            onKeyDown={(e) => {
+                                if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                                    e.preventDefault();
+                                    stepDays(-1);
+                                } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                                    e.preventDefault();
+                                    stepDays(1);
+                                }
+                            }}
+                            className="relative touch-none select-none cursor-pointer focus-visible:outline-none"
+                        >
                             {/* Track — sits between first and last stop centers (12.5% inset) */}
                             <div className="pointer-events-none absolute top-2 left-[12.5%] right-[12.5%] h-1 rounded-full bg-muted">
                                 <div
@@ -349,13 +410,9 @@ export default function PricingClient({
                                         ? 'text-green-600 dark:text-green-400'
                                         : 'text-orange-600 dark:text-orange-400';
                                     return (
-                                        <button
+                                        <div
                                             key={d.value}
-                                            type="button"
-                                            role="radio"
-                                            aria-checked={active}
-                                            onClick={() => setDays(d.value)}
-                                            className="group flex flex-col items-center pt-0 pb-0 cursor-pointer focus-visible:outline-none"
+                                            className="group flex flex-col items-center pt-0 pb-0"
                                         >
                                             <span
                                                 className={cn(
@@ -394,7 +451,7 @@ export default function PricingClient({
                                             >
                                                 {meta ?? '·'}
                                             </span>
-                                        </button>
+                                        </div>
                                     );
                                 })}
                             </div>

@@ -86,100 +86,101 @@ export async function WithdrawalContent({ userId }: WithdrawalContentProps) {
         .reduce((sum, r) => sum + r.amount, 0);
 
     return (
-        <div className="space-y-6">
-            {/* Withdrawable Orders */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FileX2 className="h-5 w-5" />
-                        {t('eligibleOrders.title')}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                        {t('eligibleOrders.description', { days: WITHDRAWAL_WINDOW_DAYS })}
-                    </p>
-                </CardHeader>
-                <CardContent className="space-y-3 p-2 md:p-3">
-                    {withdrawableOrders.length === 0 ? (
-                        <div className="text-sm text-muted-foreground py-4 text-center">
-                            {t('eligibleOrders.noOrders')}
-                        </div>
-                    ) : (
-                        withdrawableOrders.map((order) => (
-                            <WithdrawableOrderItem
-                                key={order.id}
-                                orderId={order.id}
-                                orderType={order.type}
-                                price={order.price}
-                                createdAt={order.createdAt}
-                                expiresAt={order.expiresAt}
-                                gameName={order.creationGameData.name}
-                                serverName={order.gameServer?.name ?? undefined}
-                                existingRefunds={order.refunds}
-                            />
-                        ))
-                    )}
-                </CardContent>
-            </Card>
-
-            {/* Refund History */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <History className="h-5 w-5" />
-                        {t('history.title')}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 p-2 md:p-3">
-                    {totalRefunded > 0 && (
-                        <>
-                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                                <span className="font-medium text-sm">
-                                    {t('history.totalRefunded')}:
-                                </span>
-                                <span className="font-medium text-sm">
-                                    {(totalRefunded / 100).toFixed(2)} €
-                                </span>
+        <div>
+            <div className="md:space-y-4 space-y-2">
+                {/* Withdrawable Orders */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <FileX2 className="h-5 w-5" />
+                            {t('eligibleOrders.title')}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                            {t('eligibleOrders.description', { days: WITHDRAWAL_WINDOW_DAYS })}
+                        </p>
+                    </CardHeader>
+                    <CardContent className="space-y-3 p-2 md:p-3">
+                        {withdrawableOrders.length === 0 ? (
+                            <div className="text-sm text-muted-foreground py-4 text-center">
+                                {t('eligibleOrders.noOrders')}
                             </div>
-                            <Separator />
-                        </>
-                    )}
+                        ) : (
+                            withdrawableOrders.map((order) => (
+                                <WithdrawableOrderItem
+                                    key={order.id}
+                                    orderId={order.id}
+                                    orderType={order.type}
+                                    price={order.price}
+                                    createdAt={order.createdAt}
+                                    expiresAt={order.expiresAt}
+                                    gameName={order.creationGameData.name}
+                                    serverName={order.gameServer?.name ?? undefined}
+                                    existingRefunds={order.refunds}
+                                />
+                            ))
+                        )}
+                    </CardContent>
+                </Card>
 
-                    {allRefunds.length === 0 ? (
-                        <div className="text-sm text-muted-foreground py-4 text-center">
-                            {t('history.noRefunds')}
-                        </div>
-                    ) : (
-                        allRefunds.map((refund) => (
-                            <RefundHistoryItem
-                                key={refund.id}
-                                refundId={refund.id}
-                                amount={refund.amount}
-                                status={refund.status}
-                                type={refund.type}
-                                reason={refund.reason}
-                                receiptNumber={refund.receiptNumber}
-                                serverAction={refund.serverAction}
-                                createdAt={refund.createdAt}
-                                orderId={refund.order.id}
-                                orderType={refund.order.type}
-                                originalPrice={refund.order.price}
-                                gameName={refund.order.creationGameData.name}
-                                serverName={refund.order.gameServer?.name ?? undefined}
-                                chargeReceiptUrl={refund.order.invoicePdfUrl ?? undefined}
-                            />
-                        ))
-                    )}
-                </CardContent>
-            </Card>
+                {/* Refund History */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <History className="h-5 w-5" />
+                            {t('history.title')}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 p-2 md:p-3">
+                        {totalRefunded > 0 && (
+                            <>
+                                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                                    <span className="font-medium text-sm">
+                                        {t('history.totalRefunded')}:
+                                    </span>
+                                    <span className="font-medium text-sm">
+                                        {(totalRefunded / 100).toFixed(2)} €
+                                    </span>
+                                </div>
+                                <Separator />
+                            </>
+                        )}
 
+                        {allRefunds.length === 0 ? (
+                            <div className="text-sm text-muted-foreground py-4 text-center">
+                                {t('history.noRefunds')}
+                            </div>
+                        ) : (
+                            allRefunds.map((refund) => (
+                                <RefundHistoryItem
+                                    key={refund.id}
+                                    refundId={refund.id}
+                                    amount={refund.amount}
+                                    status={refund.status}
+                                    type={refund.type}
+                                    reason={refund.reason}
+                                    receiptNumber={refund.receiptNumber}
+                                    serverAction={refund.serverAction}
+                                    createdAt={refund.createdAt}
+                                    orderId={refund.order.id}
+                                    orderType={refund.order.type}
+                                    originalPrice={refund.order.price}
+                                    gameName={refund.order.creationGameData.name}
+                                    serverName={refund.order.gameServer?.name ?? undefined}
+                                    chargeReceiptUrl={refund.order.invoicePdfUrl ?? undefined}
+                                />
+                            ))
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
             {/* Legal info */}
-            <div className="text-xs text-muted-foreground space-y-1 px-1">
-                <p>{t('legalNote')}</p>
+            <div className="text-xs text-muted-foreground px-1 pt-2">
                 <p>
                     {t('supportNote')}{' '}
                     <Link href="/support" className="underline hover:text-foreground">
                         {t('supportLink')}
                     </Link>
+                    .
                 </p>
             </div>
         </div>
