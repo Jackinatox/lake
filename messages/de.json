@@ -382,7 +382,56 @@
     "gameConfig": {
       "title": "{game}-Konfiguration",
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
-      "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
+      "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
+      "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "valheim": {
+        "mode": {
+          "label": "Mods aktivieren (BepInEx)",
+          "description": "Wechsle zwischen Vanilla- und Modded-Server mit BepInEx-Mod-Unterstützung"
+        },
+        "modpack": {
+          "label": "ModPack (Thunderstore)",
+          "description": "Optionaler Abhängigkeits-String für ein Thunderstore-ModPack (eine Änderung erfordert eine Server-Neuinstallation)"
+        },
+        "password": {
+          "label": "Server-Passwort",
+          "description": "Passwort zum Beitreten erforderlich (5–20 Zeichen)"
+        },
+        "worldName": {
+          "label": "Weltname",
+          "description": "Name des zu ladenden Welt-Speicherstands (max. 20 Zeichen)"
+        },
+        "publicServer": {
+          "label": "Öffentlicher Server",
+          "description": "Diesen Server im öffentlichen Server-Browser anzeigen"
+        },
+        "serverName": {
+          "label": "Servername",
+          "description": "Im öffentlichen Server-Browser angezeigter Name (4–20 Buchstaben, keine Leer- oder Sonderzeichen)",
+          "error": "Verwende 4–20 Buchstaben (keine Leer- oder Sonderzeichen)."
+        },
+        "crossplay": {
+          "label": "Crossplay aktivieren",
+          "description": "Spielern von anderen Plattformen den Beitritt erlauben"
+        },
+        "advanced": "Erweitert",
+        "maxPlayers": {
+          "label": "Maximale Spielerzahl",
+          "description": "Maximale Anzahl gleichzeitiger Spieler"
+        },
+        "autoUpdate": {
+          "label": "Automatische Updates",
+          "description": "Server automatisch aktualisieren, wenn eine neue Version verfügbar ist"
+        },
+        "backupInterval": {
+          "label": "Backup-Intervall (Sekunden)",
+          "description": "Wie oft die Welt automatisch gespeichert wird (Standard: 1800 = 30 Min.)"
+        },
+        "backupCount": {
+          "label": "Anzahl Backups",
+          "description": "Anzahl der aufzubewahrenden automatischen Backups"
+        }
+      }
     }
   },
   "extendServer": {

@@ -1,34 +1,39 @@
 'use client';
 
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { generateUsername } from 'unique-username-generator';
+import { cn } from '@/lib/utils';
 import type { GameConfig } from '@/models/config';
 import { ValheimConfig, ValheimModdedConfig } from '@/models/gameSpecificConfig/ValheimConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
+import { AnimatedReveal } from '../shared/animated-reveal';
 import { GameConfigProps } from './minecraft-config';
 
 export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent(
     { game, onSubmit, initialConfig }: GameConfigProps,
     ref,
 ) {
+    const t = useTranslations('buyGameServer.gameConfig');
+    const tv = useTranslations('buyGameServer.gameConfig.valheim');
     const [config, setConfig] = useState<ValheimConfig>(() => ({
         mode: 'vanilla',
         password: generateUsername('_', 0, 20),
         world_name: 'Dedicated',
         max_players: 10,
-        public_server: true,
+        public_server: false,
         enable_crossplay: false,
         backup_count: 4,
         backup_interval: 1800,
         auto_update: true,
         backup_longtime: 43200,
         backup_shorttime: 7200,
-        server_name: 'Valheim Server',
+        server_name: 'ValheimServer',
     }));
 
     useEffect(() => {
@@ -41,15 +46,19 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
         setConfig((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleModeToggle = (modded: boolean) => {
-        if (modded) {
-            const { mode: _, ...shared } = config;
-            setConfig({ mode: 'modded', ...shared });
-        } else {
-            const { mode: _, modpack: __, ...shared } = config as ValheimModdedConfig;
-            setConfig({ mode: 'vanilla', ...shared });
-        }
-    };
+    // TODO: Modded (BepInEx) access is not supported yet — re-enable when ready.
+    // const handleModeToggle = (modded: boolean) => {
+    //     if (modded) {
+    //         const { mode: _, ...shared } = config;
+    //         setConfig({ mode: 'modded', ...shared });
+    //     } else {
+    //         const { mode: _, modpack: __, ...shared } = config as ValheimModdedConfig;
+    //         setConfig({ mode: 'vanilla', ...shared });
+    //     }
+    // };
+
+    const serverNameError =
+        config.server_name.length < 4 ? tv('serverName.error') : null;
 
     useImperativeHandle(ref, () => ({
         submit: () => {
@@ -70,11 +79,11 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
 
     return (
         <ConfigContainer>
-            {/* Modded / Vanilla toggle */}
+            {/* Modded (BepInEx) access is not supported yet — re-enable when ready.
             <ConfigSettingItem
                 id="valheimMode"
-                label="Enable Modded (BepInEx)"
-                description="Switch between vanilla and modded server with BepInEx mod support"
+                label={tv('mode.label')}
+                description={tv('mode.description')}
             >
                 <Switch
                     id="valheimMode"
@@ -83,11 +92,11 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                 />
             </ConfigSettingItem>
 
-            {config.mode === 'modded' && (
+            <AnimatedReveal show={config.mode === 'modded'}>
                 <ConfigSettingItem
                     id="modpack"
-                    label="ModPack (Thunderstore)"
-                    description="Optional dependency string for a Thunderstore modpack (changing this requires a server reinstall)"
+                    label={tv('modpack.label')}
+                    description={tv('modpack.description')}
                 >
                     <Input
                         id="modpack"
@@ -100,13 +109,14 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                         className="w-48 md:w-64"
                     />
                 </ConfigSettingItem>
-            )}
+            </AnimatedReveal>
+            */}
 
             {/* Password */}
             <ConfigSettingItem
                 id="password"
-                label="Server Password"
-                description="Password required to join (5–20 characters)"
+                label={tv('password.label')}
+                description={tv('password.description')}
             >
                 <Input
                     id="password"
@@ -122,8 +132,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
             {/* World Name */}
             <ConfigSettingItem
                 id="worldName"
-                label="World Name"
-                description="Name of the world save to load (max 20 characters)"
+                label={tv('worldName.label')}
+                description={tv('worldName.description')}
             >
                 <Input
                     id="worldName"
@@ -138,8 +148,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
             {/* Public Server */}
             <ConfigSettingItem
                 id="publicServer"
-                label="Public Server"
-                description="List this server in the public server browser"
+                label={tv('publicServer.label')}
+                description={tv('publicServer.description')}
             >
                 <Switch
                     id="publicServer"
@@ -148,11 +158,45 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                 />
             </ConfigSettingItem>
 
+            {/* Server Name — only relevant when listed publicly */}
+            <AnimatedReveal show={config.public_server}>
+                <ConfigSettingItem
+                    id="serverName"
+                    label={tv('serverName.label')}
+                    description={tv('serverName.description')}
+                    alignStart
+                >
+                    <div className="flex flex-col items-end gap-1">
+                        <Input
+                            id="serverName"
+                            type="text"
+                            maxLength={20}
+                            value={config.server_name}
+                            onChange={(e) =>
+                                handleChange(
+                                    'server_name',
+                                    e.target.value.replace(/[^A-Za-z]/g, ''),
+                                )
+                            }
+                            aria-invalid={serverNameError ? true : undefined}
+                            className={cn(
+                                'w-48 md:w-64',
+                                serverNameError &&
+                                    'border-destructive focus-visible:ring-destructive',
+                            )}
+                        />
+                        {serverNameError && (
+                            <p className="text-xs text-destructive">{serverNameError}</p>
+                        )}
+                    </div>
+                </ConfigSettingItem>
+            </AnimatedReveal>
+
             {/* Crossplay */}
             <ConfigSettingItem
                 id="crossplay"
-                label="Enable Crossplay"
-                description="Allow players from other platforms to join"
+                label={tv('crossplay.label')}
+                description={tv('crossplay.description')}
             >
                 <Switch
                     id="crossplay"
@@ -165,13 +209,13 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
             <Collapsible>
                 <CollapsibleTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors [&[data-state=open]>svg]:rotate-180">
                     <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-                    Advanced
+                    {tv('advanced')}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-4 space-y-4 md:space-y-6">
                     <ConfigSettingItem
                         id="maxPlayers"
-                        label="Max Players"
-                        description="Maximum number of concurrent players"
+                        label={tv('maxPlayers.label')}
+                        description={tv('maxPlayers.description')}
                     >
                         <Input
                             id="maxPlayers"
@@ -190,8 +234,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                     </ConfigSettingItem>
                     <ConfigSettingItem
                         id="autoUpdate"
-                        label="Auto Update"
-                        description="Automatically update the server when a new version is available"
+                        label={tv('autoUpdate.label')}
+                        description={tv('autoUpdate.description')}
                     >
                         <Switch
                             id="autoUpdate"
@@ -201,8 +245,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                     </ConfigSettingItem>
                     <ConfigSettingItem
                         id="backupInterval"
-                        label="Backup Interval (seconds)"
-                        description="How often the world saves automatically (default: 1800 = 30 min)"
+                        label={tv('backupInterval.label')}
+                        description={tv('backupInterval.description')}
                     >
                         <Input
                             id="backupInterval"
@@ -222,8 +266,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                     </ConfigSettingItem>
                     <ConfigSettingItem
                         id="backupCount"
-                        label="Backup Count"
-                        description="Number of automatic backups to keep"
+                        label={tv('backupCount.label')}
+                        description={tv('backupCount.description')}
                     >
                         <Input
                             id="backupCount"
@@ -242,6 +286,8 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                     </ConfigSettingItem>
                 </CollapsibleContent>
             </Collapsible>
+
+            <p className="text-sm text-muted-foreground">{t('changeableLater')}</p>
         </ConfigContainer>
     );
 });

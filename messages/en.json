@@ -370,7 +370,56 @@
     "gameConfig": {
       "title": "{game} Configuration",
       "description": "Select your preferred game settings",
-      "noSpecific": "No specific configuration options available for this game."
+      "noSpecific": "No specific configuration options available for this game.",
+      "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "valheim": {
+        "mode": {
+          "label": "Enable Modded (BepInEx)",
+          "description": "Switch between vanilla and modded server with BepInEx mod support"
+        },
+        "modpack": {
+          "label": "ModPack (Thunderstore)",
+          "description": "Optional dependency string for a Thunderstore modpack (changing this requires a server reinstall)"
+        },
+        "password": {
+          "label": "Server Password",
+          "description": "Password required to join (5–20 characters)"
+        },
+        "worldName": {
+          "label": "World Name",
+          "description": "Name of the world save to load (max 20 characters)"
+        },
+        "publicServer": {
+          "label": "Public Server",
+          "description": "List this server in the public server browser"
+        },
+        "serverName": {
+          "label": "Server Name",
+          "description": "Name shown in the public server browser (4–20 letters, no spaces or special characters)",
+          "error": "Use 4–20 letters (no spaces or special characters)."
+        },
+        "crossplay": {
+          "label": "Enable Crossplay",
+          "description": "Allow players from other platforms to join"
+        },
+        "advanced": "Advanced",
+        "maxPlayers": {
+          "label": "Max Players",
+          "description": "Maximum number of concurrent players"
+        },
+        "autoUpdate": {
+          "label": "Auto Update",
+          "description": "Automatically update the server when a new version is available"
+        },
+        "backupInterval": {
+          "label": "Backup Interval (seconds)",
+          "description": "How often the world saves automatically (default: 1800 = 30 min)"
+        },
+        "backupCount": {
+          "label": "Backup Count",
+          "description": "Number of automatic backups to keep"
+        }
+      }
     }
   },
   "extendServer": {
