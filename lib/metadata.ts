@@ -84,6 +84,7 @@ const metadataCopy = {
             'Wir betreiben diese kostenlosen Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist als moderne Systeme. Die Ressourcen sind im Vergleich zu unseren bezahlten Plänen begrenzt — perfekt für kleine Gameserver, Freunde-Runden oder zum Ausprobieren, bevor Du upgradest.',
         freePageSpecsLabel: 'Server-Specs',
         freePageSelectGame: 'Wähle Dein Spiel',
+        freePageFaqHeading: 'Häufige Fragen',
     },
     en: {
         orderIndexTitle: 'Game Server Hosting',
@@ -154,6 +155,7 @@ const metadataCopy = {
             'We run these free servers on older enterprise hardware that is significantly cheaper to operate than modern infrastructure. Resources are limited compared to our paid plans — perfect for small game servers, playing with friends, or trying things out before upgrading.',
         freePageSpecsLabel: 'Server Specs',
         freePageSelectGame: 'Select Your Game',
+        freePageFaqHeading: 'Frequently Asked Questions',
     },
 } satisfies Record<
     SupportedLocale,
@@ -202,6 +204,7 @@ const metadataCopy = {
         freePageWhyFreeAnswerLong: string;
         freePageSpecsLabel: string;
         freePageSelectGame: string;
+        freePageFaqHeading: string;
     }
 >;
 

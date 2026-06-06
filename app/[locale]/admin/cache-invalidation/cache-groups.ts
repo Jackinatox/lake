@@ -14,6 +14,10 @@ export const CACHE_GROUPS = {
         name: 'Users',
         keys: ['users', 'user'],
     },
+    faq: {
+        name: 'FAQ',
+        keys: ['faq'],
+    },
 } as const;
 
 export type CacheGroupKey = keyof typeof CACHE_GROUPS;

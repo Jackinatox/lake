@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
+import { revalidateTag } from 'next/cache';
 
 export default async function editFAQ(
     id: number,
@@ -30,6 +31,8 @@ export default async function editFAQ(
             sorting,
         },
     });
+
+    revalidateTag('faq', 'max');
 
     logger.info('Updated Faq', 'SYSTEM', { userId: session.user.id, details: { updatedFAQ } });
 

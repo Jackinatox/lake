@@ -5,6 +5,7 @@ import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { Gift, CheckCircle2 } from 'lucide-react';
 import type { Metadata } from 'next';
 import { Card, CardContent } from '@/components/ui/card';
+import { FaqSection } from '@/components/faq/FaqSection';
 import {
     Accordion,
     AccordionContent,
@@ -195,6 +196,11 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                         />
                     ))}
                 </div>
+            </section>
+
+            {/* FAQ */}
+            <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-10 md:pb-14">
+                <FaqSection categories={['free_servers']} heading={copy.freePageFaqHeading} />
             </section>
         </div>
     );
