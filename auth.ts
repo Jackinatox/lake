@@ -13,10 +13,8 @@ import { captureServerEvent } from './lib/posthog';
 import prisma from './lib/prisma';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
-import {
-    AUTH_USERNAME_MAX_LENGTH,
-    AUTH_USERNAME_MIN_LENGTH,
-} from './lib/validation/auth';
+import { AUTH_USERNAME_MAX_LENGTH, AUTH_USERNAME_MIN_LENGTH } from './lib/validation/auth';
+import { sendInfoNotification } from './lib/Notifications/telegram';
 
 function extractIp(request?: Request | null): string | undefined {
     if (!request) return undefined;
@@ -282,6 +280,16 @@ export const auth = betterAuth({
                         });
                         throw new Error('Failed to create user');
                     }
+                },
+                after: async (user, context) => {
+                    await sendInfoNotification({
+                        title: 'Neuer user registriert',
+                        message: `Email: ${user.email}`,
+                    }).catch((error) => {
+                        logger.error('Failed to send Telegram notification:', 'TELEGRAM', {
+                            details: { error },
+                        });
+                    });
                 },
             },
         },
