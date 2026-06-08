@@ -316,7 +316,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                     <div className="flex items-center justify-between">
                                         <Label htmlFor="password">{t('fields.password')}</Label>
                                         <Link
-                                            href="/forgot-password"
+                                            href={
+                                                identifier.includes('@')
+                                                    ? `/forgot-password?email=${encodeURIComponent(identifier.trim())}`
+                                                    : '/forgot-password'
+                                            }
                                             className="text-sm text-muted-foreground underline-offset-4 hover:underline"
                                         >
                                             {t('fields.forgot')}
