@@ -93,81 +93,75 @@ export function ResetPasswordForm({
     );
 
     return (
-        <div className="flex justify-center">
-            <div className={cn('flex flex-col gap-6', className)} {...props}>
-                <Card>
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-xl">{t('title')}</CardTitle>
-                        <CardDescription>{t('subtitle')}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit}>
-                            <div className="grid gap-6">
-                                <div className="grid gap-3">
-                                    <Label htmlFor="newPassword">{fieldsT('newPassword')}</Label>
-                                    <Input
-                                        id="newPassword"
-                                        type="password"
-                                        placeholder={fieldsT('newPasswordPlaceholder')}
-                                        required
-                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
-                                        value={newPassword}
-                                        onChange={(event) => setNewPassword(event.target.value)}
-                                        autoComplete="new-password"
-                                    />
-                                </div>
-                                <div className="grid gap-3">
-                                    <Label htmlFor="confirmPassword">
-                                        {fieldsT('confirmPassword')}
-                                    </Label>
-                                    <Input
-                                        id="confirmPassword"
-                                        type="password"
-                                        placeholder={fieldsT('confirmPasswordPlaceholder')}
-                                        required
-                                        maxLength={AUTH_PASSWORD_MAX_LENGTH}
-                                        value={confirmPassword}
-                                        onChange={(event) => setConfirmPassword(event.target.value)}
-                                        autoComplete="new-password"
-                                    />
-                                </div>
-                                {passwordTooShort && (
-                                    <div className="text-red-500 text-xs text-center">
-                                        {validationT('passwordMin', {
-                                            min: AUTH_PASSWORD_MIN_LENGTH,
-                                        })}
-                                    </div>
-                                )}
-                                {!passwordTooShort &&
-                                    !passwordsMatch &&
-                                    confirmPassword.length > 0 && (
-                                        <div className="text-red-500 text-xs text-center">
-                                            {validationT('passwordsDontMatch')}
-                                        </div>
-                                    )}
-                                {error && (
-                                    <div className="text-red-500 text-sm text-center mt-2">
-                                        {error}
-                                    </div>
-                                )}
-                                {success && (
-                                    <div className="text-green-600 text-sm text-center mt-2">
-                                        {success}
-                                    </div>
-                                )}
-                                <Button type="submit" className="w-full" disabled={loading}>
-                                    {loading ? t('button.resetting') : t('button.reset')}
-                                </Button>
-                                <div className="text-center text-sm">
-                                    <Link href="/login" className="underline underline-offset-4">
-                                        {t('backToLogin')}
-                                    </Link>
-                                </div>
+        <div className={cn('flex flex-col gap-6 w-full', className)} {...props}>
+            <Card>
+                <CardHeader className="text-center">
+                    <CardTitle className="text-xl">{t('title')}</CardTitle>
+                    <CardDescription>{t('subtitle')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit}>
+                        <div className="grid gap-6">
+                            <div className="grid gap-3">
+                                <Label htmlFor="newPassword">{fieldsT('newPassword')}</Label>
+                                <Input
+                                    id="newPassword"
+                                    type="password"
+                                    placeholder={fieldsT('newPasswordPlaceholder')}
+                                    required
+                                    maxLength={AUTH_PASSWORD_MAX_LENGTH}
+                                    value={newPassword}
+                                    onChange={(event) => setNewPassword(event.target.value)}
+                                    autoComplete="new-password"
+                                />
                             </div>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="confirmPassword">
+                                    {fieldsT('confirmPassword')}
+                                </Label>
+                                <Input
+                                    id="confirmPassword"
+                                    type="password"
+                                    placeholder={fieldsT('confirmPasswordPlaceholder')}
+                                    required
+                                    maxLength={AUTH_PASSWORD_MAX_LENGTH}
+                                    value={confirmPassword}
+                                    onChange={(event) => setConfirmPassword(event.target.value)}
+                                    autoComplete="new-password"
+                                />
+                            </div>
+                            {passwordTooShort && (
+                                <div className="text-red-500 text-xs text-center">
+                                    {validationT('passwordMin', {
+                                        min: AUTH_PASSWORD_MIN_LENGTH,
+                                    })}
+                                </div>
+                            )}
+                            {!passwordTooShort && !passwordsMatch && confirmPassword.length > 0 && (
+                                <div className="text-red-500 text-xs text-center">
+                                    {validationT('passwordsDontMatch')}
+                                </div>
+                            )}
+                            {error && (
+                                <div className="text-red-500 text-sm text-center mt-2">{error}</div>
+                            )}
+                            {success && (
+                                <div className="text-green-600 text-sm text-center mt-2">
+                                    {success}
+                                </div>
+                            )}
+                            <Button type="submit" className="w-full" disabled={loading}>
+                                {loading ? t('button.resetting') : t('button.reset')}
+                            </Button>
+                            <div className="text-center text-sm">
+                                <Link href="/login" className="underline underline-offset-4">
+                                    {t('backToLogin')}
+                                </Link>
+                            </div>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 }
