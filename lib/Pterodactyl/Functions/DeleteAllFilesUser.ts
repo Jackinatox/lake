@@ -1,10 +1,9 @@
-import { env } from 'next-runtime-env';
 import PTUserServerPowerAction from './StopPTUserServer';
 
 export default async function DeleteAllFilesUserServer(server: string, apiKey: string) {
     await PTUserServerPowerAction(server, apiKey, 'kill');
     await new Promise((resolve) => setTimeout(resolve, 200));
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,

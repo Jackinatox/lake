@@ -38,7 +38,10 @@ export async function adminRefund(
 
     const order = await prisma.gameServerOrder.findUniqueOrThrow({
         where: { id: orderId },
-        include: { refunds: true, user: { select: { email: true, name: true, id: true } } },
+        include: {
+            refunds: true,
+            user: { select: { email: true, name: true, username: true, id: true } },
+        },
     });
 
     if (!order.stripePaymentIntent && !order.stripeChargeId) {
@@ -106,12 +109,12 @@ export async function adminRefund(
             idempotencyKey: `admin-refund-${order.id}-${refundRecord.id}`,
         });
 
-        // Update the refund record with Stripe refund ID
+        // Only persist the Stripe refund ID. Status stays PENDING until the
+        // webhook confirms it — the webhook is what runs undoRefundedOrder.
         await prisma.refund.update({
             where: { id: refundRecord.id },
             data: {
                 stripeRefundId: stripeRefund.id,
-                status: stripeRefund.status === 'succeeded' ? 'SUCCEEDED' : 'PENDING',
             },
         });
 
@@ -130,6 +133,7 @@ export async function adminRefund(
 
         logger.info(`Admin ${typeLabel} created`, 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 refundId: refundRecord.id,
@@ -150,6 +154,7 @@ export async function adminRefund(
     } catch (error) {
         logger.error(`Failed to create admin ${typeLabel}`, 'PAYMENT', {
             userId: session.user.id,
+            gameServerId: order.gameServerId ?? undefined,
             details: { orderId: order.id, amountCents, type, serverAction, error },
         });
 
@@ -218,7 +223,7 @@ export async function getRefundableOrders(page: number = 1, pageSize: number = 2
                 stripePaymentIntent: { not: null },
             },
             include: {
-                user: { select: { id: true, email: true, name: true } },
+                user: { select: { id: true, email: true, name: true, username: true } },
                 refunds: { orderBy: { createdAt: 'desc' } },
                 gameServer: { select: { ptServerId: true, name: true, status: true } },
                 creationGameData: { select: { name: true } },
@@ -256,7 +261,7 @@ export async function getRefundHistory(page: number = 1, pageSize: number = 20) 
             include: {
                 order: {
                     include: {
-                        user: { select: { id: true, email: true, name: true } },
+                        user: { select: { id: true, email: true, name: true, username: true } },
                         creationGameData: { select: { name: true } },
                     },
                 },

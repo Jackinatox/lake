@@ -8,7 +8,7 @@ export default function ChangeInfoBox() {
 
     return (
         <div
-            className={`flex items-start gap-3 rounded-lg border p-4 shadow-sm border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/20`}
+            className={`flex items-start gap-3 rounded-lg border p-3 shadow-sm border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/20`}
         >
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
 

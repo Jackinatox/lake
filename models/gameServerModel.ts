@@ -27,6 +27,7 @@ export type GameServer = {
         oom_disabled: boolean;
     };
     invocation: string;
+    defaultStartCommand: string;
     docker_image: string;
     egg_features: string[];
     feature_limits: {
@@ -38,8 +39,7 @@ export type GameServer = {
     is_suspended: boolean;
     is_installing: boolean;
     is_transferring: boolean;
-    gameDataId: number;
-    gameData: GameConfig; // To access current game specific conf
+    gameConfig: GameConfig; // To access current game specific conf
     expires: Date;
     relationships: {
         allocations: {

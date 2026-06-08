@@ -10,5 +10,6 @@ export type FileEntry = {
     modifiedAt: string;
 };
 
+export type CreateEntryType = 'file' | 'folder';
 export type SortColumn = 'name' | 'size' | 'modifiedAt' | 'createdAt';
 export type SortDirection = 'asc' | 'desc';

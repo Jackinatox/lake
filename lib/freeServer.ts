@@ -1,6 +1,5 @@
 import prisma from '@/lib/prisma';
 
-import { env } from 'next-runtime-env';
 import { sendFreeServerCreatedEmail } from './email/sendEmailEmailsFromLake';
 import { logger } from './logger';
 
@@ -17,7 +16,7 @@ export async function notifyFreeServerCreated(orderId: string) {
         });
 
         if (updatedOrder.gameServer && updatedOrder.creationGameData) {
-            const appUrl = env('NEXT_PUBLIC_APP_URL');
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL;
             const gameName = updatedOrder.creationGameData.name;
             const gameImageUrl = `${appUrl}/images/light/games/icons/${gameName.toLowerCase()}.webp`;
             const serverUrl = `${appUrl}/gameserver/${updatedOrder.gameServer.ptServerId}`;

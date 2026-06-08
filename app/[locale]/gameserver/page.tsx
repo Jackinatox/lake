@@ -3,13 +3,28 @@ import React, { Suspense } from 'react';
 import { auth } from '@/auth';
 import GameServersPage from './ServerTable';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { headers } from 'next/headers';
-import { env } from 'next-runtime-env';
+import type { Metadata } from 'next';
 import { Skeleton } from '@/components/ui/skeleton';
 
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPrivateMetadata({
+        title: copy.gameserversTitle,
+        description: copy.gameserversDescription,
+    });
+}
+
 async function UserServer() {
-    const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const apiKey = env('PTERODACTYL_API_KEY');
+    const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const apiKey = process.env.PTERODACTYL_API_KEY;
 
     if (!baseUrl || !apiKey) {
         throw new Error('PTERODACTYL_URL and PTERODACTYL_API_KEY must be defined');

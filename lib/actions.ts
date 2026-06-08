@@ -21,10 +21,10 @@ export async function fetchPerformanceGroups() {
     return data;
 }
 
-export async function fetchGames(gameId: number): Promise<Game | null> {
+export async function fetchGames(gameSlug: string): Promise<Game | null> {
     const game = await prisma.gameData.findUnique({
         where: {
-            id: gameId,
+            slug: gameSlug,
             enabled: true,
         },
         select: {

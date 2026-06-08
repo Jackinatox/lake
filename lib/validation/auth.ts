@@ -1,7 +1,8 @@
 import { optionalStringSchema, requiredStringSchema, z } from './common';
 
 export const AUTH_NAME_MAX_LENGTH = 80;
-export const AUTH_USERNAME_MAX_LENGTH = 30;
+export const AUTH_USERNAME_MIN_LENGTH = 4;
+export const AUTH_USERNAME_MAX_LENGTH = 20;
 export const AUTH_EMAIL_MAX_LENGTH = 254;
 export const AUTH_PASSWORD_MIN_LENGTH = 8;
 export const AUTH_PASSWORD_MAX_LENGTH = 128;
@@ -28,12 +29,15 @@ export const authPasswordSchema = z
 export const authUsernameSchema = z
     .string({ error: 'Username is required' })
     .trim()
-    .min(3, 'Username must be at least 3 characters')
+    .min(
+        AUTH_USERNAME_MIN_LENGTH,
+        `Username must be at least ${AUTH_USERNAME_MIN_LENGTH} characters`,
+    )
     .max(
         AUTH_USERNAME_MAX_LENGTH,
         `Username must be at most ${AUTH_USERNAME_MAX_LENGTH} characters`,
     )
-    .regex(/^[A-Za-z0-9._-]+$/, 'Username may only contain letters, numbers, ., _, and -')
+    .regex(/^[A-Za-z0-9._]+$/, 'Username may only contain letters, numbers, ., and _')
     .refine((value) => !value.includes('@'), 'Username must not contain @');
 
 export const authDisplayNameSchema = requiredStringSchema('Name', AUTH_NAME_MAX_LENGTH);
@@ -44,7 +48,6 @@ export const authOtpSchema = z
 
 export const registerFormSchema = z
     .object({
-        name: authDisplayNameSchema,
         username: authUsernameSchema,
         email: authEmailSchema,
         password: authPasswordSchema,

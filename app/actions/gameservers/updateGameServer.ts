@@ -4,7 +4,6 @@ import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
-import { env } from 'next-runtime-env';
 import { headers } from 'next/headers';
 
 export interface UpdateGameServerInput {
@@ -70,8 +69,8 @@ export async function updateGameServer(input: UpdateGameServerInput) {
             };
         }
 
-        const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-        const ptApiKey = env('PTERODACTYL_API_KEY');
+        const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+        const ptApiKey = process.env.PTERODACTYL_API_KEY;
         const pt = createPtClient();
 
         const ptServer = await pt.getServer(gameServer.ptAdminId.toString());

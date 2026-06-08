@@ -1,10 +1,53 @@
+import { getOwnedGameServerSummary } from '@/app/data-access-layer/gameServer/getOwnedGameServerSummary';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import prisma from '@/lib/prisma';
-
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string; server_id: string }>;
+}): Promise<Metadata> {
+    const { locale, server_id } = await params;
+    const copy = getMetadataCopy(locale);
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user) {
+        return createPrivateMetadata({
+            title: copy.gameserverUpgradeTitle(copy.gameserverFallbackTitle),
+            description: copy.gameserverUpgradeDescription(copy.gameserverFallbackTitle),
+        });
+    }
+
+    const server = await getOwnedGameServerSummary(session.user.id, server_id);
+
+    if (!server) {
+        return createPrivateMetadata({
+            title: copy.gameserverUpgradeTitle(copy.gameserverFallbackTitle),
+            description: copy.gameserverUpgradeDescription(copy.gameserverFallbackTitle),
+        });
+    }
+
+    const title =
+        server.type === 'FREE'
+            ? copy.freeGameserverUpgradeTitle(server.name)
+            : copy.gameserverUpgradeTitle(server.name);
+    const description =
+        server.type === 'FREE'
+            ? copy.freeGameserverUpgradeDescription(server.name)
+            : copy.gameserverUpgradeDescription(server.name);
+
+    return createPrivateMetadata({
+        title,
+        description,
+    });
+}
 
 async function UpgradePage({
     params,
@@ -31,12 +74,7 @@ async function UpgradePage({
         return <NotLoggedIn />;
     }
 
-    const server = await prisma.gameServer.findFirst({
-        where: {
-            ptServerId: server_id,
-            userId: session.user.id,
-        },
-    });
+    const server = await getOwnedGameServerSummary(session.user.id, server_id);
 
     if (!server) {
         return <NotAllowedMessage />;

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { env } from 'next-runtime-env';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 type ReadyState = 'CONNECTING' | 'AUTHENTICATING' | 'OPEN' | 'CLOSING' | 'CLOSED';
@@ -346,7 +345,7 @@ export function useWebSocket(
 }
 
 async function webSocketCreds(serverId: string, apiKey: string): Promise<WsCreds> {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const response = await fetch(`${ptUrl}/api/client/servers/${serverId}/websocket`, {
         method: 'GET',
         headers: {

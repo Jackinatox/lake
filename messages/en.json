@@ -63,6 +63,12 @@
     "extendServer": "Extend Server",
     "home": "Go to Home"
   },
+  "GameserverError": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or contact support if the problem persists.",
+    "tryAgain": "Try Again",
+    "contactSupport": "Contact Support"
+  },
   "ServerCreationFailed": {
     "title": "Server creation failed",
     "description": "We're sorry — creating your server failed. Our team has been notified and will resolve this as soon as possible. If you'd like immediate help, please contact support.",
@@ -99,7 +105,7 @@
     "ctaHeader": "Ready to host?",
     "ctaDesc": "Choose a game and get your server online in minutes.",
     "ctaButton": "Get Started",
-    "getFreeServer": "Create a free server"
+    "getFreeServer": "Free Server"
   },
   "notAdmin": "You are not an admin.",
   "notAdminDescription": "You do not have admin rights to view this page.",
@@ -249,6 +255,7 @@
       "title": "Performance Configuration",
       "description": "Customize your server hardware.",
       "performance-tier": "Performance Tier",
+      "resource-tier": "Resource Tier",
       "extend-title": "Extend Server",
       "duration": {
         "none": "None",
@@ -271,7 +278,8 @@
       "description": "Summary of your configuration.",
       "headers": {
         "vcpu": "vCPU",
-        "ram": "RAM"
+        "ram": "RAM",
+        "tier": "Tier"
       },
       "rows": {
         "upgrade-for-days": "Upgrade for {days} days",
@@ -362,7 +370,56 @@
     "gameConfig": {
       "title": "{game} Configuration",
       "description": "Select your preferred game settings",
-      "noSpecific": "No specific configuration options available for this game."
+      "noSpecific": "No specific configuration options available for this game.",
+      "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "valheim": {
+        "mode": {
+          "label": "Enable Modded (BepInEx)",
+          "description": "Switch between vanilla and modded server with BepInEx mod support"
+        },
+        "modpack": {
+          "label": "ModPack (Thunderstore)",
+          "description": "Optional dependency string for a Thunderstore modpack (changing this requires a server reinstall)"
+        },
+        "password": {
+          "label": "Server Password",
+          "description": "Password required to join (5–20 characters)"
+        },
+        "worldName": {
+          "label": "World Name",
+          "description": "Name of the world save to load (max 20 characters)"
+        },
+        "publicServer": {
+          "label": "Public Server",
+          "description": "List this server in the public server browser"
+        },
+        "serverName": {
+          "label": "Server Name",
+          "description": "Name shown in the public server browser (4–20 letters, no spaces or special characters)",
+          "error": "Use 4–20 letters (no spaces or special characters)."
+        },
+        "crossplay": {
+          "label": "Enable Crossplay",
+          "description": "Allow players from other platforms to join"
+        },
+        "advanced": "Advanced",
+        "maxPlayers": {
+          "label": "Max Players",
+          "description": "Maximum number of concurrent players"
+        },
+        "autoUpdate": {
+          "label": "Auto Update",
+          "description": "Automatically update the server when a new version is available"
+        },
+        "backupInterval": {
+          "label": "Backup Interval (seconds)",
+          "description": "How often the world saves automatically (default: 1800 = 30 min)"
+        },
+        "backupCount": {
+          "label": "Backup Count",
+          "description": "Number of automatic backups to keep"
+        }
+      }
     }
   },
   "extendServer": {
@@ -684,13 +741,14 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "username": "Username",
+      "addUsername": "Add Username",
       "editUsername": "Edit username",
       "saveUsername": "Save",
       "cancelEdit": "Cancel",
       "usernameAvailable": "Username is available",
       "usernameTaken": "Username is already taken",
       "usernameNoAt": "Username cannot contain @",
-      "usernameMinLength": "Must be at least 3 characters",
+      "usernameMinLength": "Must be at least 4 characters",
       "usernameSaveError": "Failed to update username"
     },
     "twoFactor": {
@@ -804,7 +862,6 @@
     "about": "About Us (Coming Soon)",
     "blog": "Blog",
     "company": "Company",
-    "sourcecode": "Source Code",
     "contactUs": "Contact",
     "withdrawal": "Withdrawal contracts",
     "payments": "Payment terms",
@@ -814,6 +871,7 @@
     "freeServer": "Free Server",
     "creationFailed": "Creation Failed",
     "creationFailedMessage": "Our team will resolve this soon",
+    "willBeDeleted": "will be deleted on {date}",
     "loading": "Loading Server...",
     "loadingSteps": {
       "fetchingData": "Fetching server data",
@@ -874,7 +932,7 @@
       "header": {
         "upgrade": "Upgrade/Extend"
       },
-      "noAllocation": "No Allocation found",
+      "noAllocation": "No Port found",
       "copyIPPort": "Copy",
       "uptime": "Uptime:",
       "serverControls": "Server Controls",
@@ -891,7 +949,23 @@
         "start": "Start",
         "restart": "Restart",
         "stop": "Stop",
-        "kill": "Kill"
+        "kill": "Kill",
+        "killConfirm": {
+          "title": "Kill server?",
+          "description": "This will instantly terminate the server process. Any unsaved data may be lost.",
+          "cancel": "Cancel",
+          "confirm": "Kill server"
+        }
+      },
+      "address": {
+        "address": "Address",
+        "serverAddress": "Server address",
+        "port": "Port",
+        "connect": "Connect",
+        "connectionDetails": "Connection details",
+        "copyFull": "Copy IP & port",
+        "copyAddress": "Copy address",
+        "copyPort": "Copy port"
       }
     },
     "fileManager": {
@@ -900,6 +974,9 @@
       "toolbar": {
         "filterPlaceholder": "Filter files",
         "refreshButton": "Refresh",
+        "createButton": "New",
+        "newFileButton": "New file",
+        "newFolderButton": "New folder",
         "uploadButton": "Upload"
       },
       "breadcrumb": {
@@ -921,6 +998,17 @@
           "rename": "Rename",
           "delete": "Delete"
         }
+      },
+      "dropZone": {
+        "title": "Drop files here",
+        "description": "Upload one or more files to the current directory. Folders are not accepted here.",
+        "filesOnlyBadge": "Files only",
+        "rejectTitle": "Folders are not supported here",
+        "rejectDescription": "Use FTP/SFTP access for folder uploads.",
+        "overlayTitle": "Release to add files",
+        "overlayDescription": "The upload dialog will open so you can review the selected files.",
+        "overlayRejectTitle": "Folder upload needs FTP/SFTP",
+        "overlayRejectDescription": "Drop individual files here, or use the FTP/SFTP access details above for complete folders."
       },
       "ftpAccess": {
         "title": "FTP access details",
@@ -965,8 +1053,26 @@
         "selectFilesText": "Select from your device.",
         "chooseFilesButton": "Choose files",
         "selectedFilesLabel": "Selected files:",
+        "totalLabel": "Total: {size}",
+        "selectionLimitedMessage": "Only the first {maxFiles} files were selected. {omittedCount} file(s) were ignored.",
         "cancelButton": "Cancel",
+        "abortButton": "Abort upload",
+        "uploadingButton": "Uploading…",
         "uploadButton": "Upload"
+      },
+      "create": {
+        "dialogTitleFile": "Create file",
+        "dialogTitleFolder": "Create folder",
+        "dialogDescriptionFile": "Create a new empty file in {directory}.",
+        "dialogDescriptionFolder": "Create a new folder in {directory}.",
+        "nameLabel": "Name",
+        "inputPlaceholderFile": "e.g. server.properties",
+        "inputPlaceholderFolder": "e.g. plugins",
+        "cancelButton": "Cancel",
+        "createButtonFile": "Create file",
+        "createButtonFolder": "Create folder",
+        "creatingButtonFile": "Creating file…",
+        "creatingButtonFolder": "Creating folder…"
       },
       "editor": {
         "dialogTitle": "File",
@@ -1007,48 +1113,66 @@
         "unableToDownload": "Unable to download",
         "nameRequired": "Name is required",
         "nameRequiredDescription": "Please enter a new name before saving.",
+        "createNameRequired": "Name is required",
+        "createNameRequiredDescription": "Please enter a file or folder name.",
+        "invalidEntryName": "Invalid name",
+        "invalidEntryNameDescription": "The name must not be empty, contain slashes, or be just . or ..",
+        "entryAlreadyExists": "Entry already exists",
+        "entryAlreadyExistsDescription": "{name} already exists in this directory.",
         "entryRenamed": "Entry renamed",
         "entryRenamedDescription": "{oldName} is now {newName}.",
         "unableToRename": "Unable to rename",
         "entryDeleted": "Entry deleted",
         "entryDeletedDescription": "{name} has been removed.",
         "unableToDelete": "Unable to delete",
+        "fileCreated": "File created",
+        "fileCreatedDescription": "{name} was created.",
+        "folderCreated": "Folder created",
+        "folderCreatedDescription": "{name} was created.",
+        "unableToCreateFile": "Unable to create file",
+        "unableToCreateFolder": "Unable to create folder",
         "noFilesSelected": "No files selected",
         "noFilesSelectedDescription": "Choose one or more files before uploading.",
+        "uploadSelectionLimited": "File selection limited",
+        "uploadSelectionLimitedDescription": "Only the first {maxFiles} files were selected. {omittedCount} file(s) were ignored.",
         "uploadComplete": "Upload complete",
         "uploadCompleteDescription": "{count} file(s) uploaded successfully.",
+        "uploadCancelled": "Upload aborted",
+        "uploadCancelledDescription": "The active upload was stopped.",
         "uploadFailed": "Upload failed",
-        "unableToUpload": "Unable to upload"
+        "unableToUpload": "Unable to upload",
+        "folderDropRejected": "Folder upload needs FTP/SFTP",
+        "folderDropRejectedDescription": "The browser file manager only accepts individual files. Use the FTP/SFTP access details for complete folders."
       }
     },
     "networkManager": {
       "title": "Network",
-      "description": "Manage IP allocations and ports assigned to your server.",
+      "description": "Manage the ports assigned to your server.",
       "primary": "Primary",
       "noteLabel": "Note",
       "emptyNoteHint": "No note set — click Edit Note to add one.",
       "editNote": "Edit Note",
       "setPrimary": "Set Primary",
       "remove": "Remove",
-      "addAllocation": "Add Allocation",
+      "addAllocation": "Add Port",
       "addingAllocation": "Adding...",
-      "noAllocations": "No network allocations found.",
-      "allocationCount": "{current} / {max} allocations used",
-      "primaryUpdated": "Primary allocation updated",
-      "primaryFailed": "Failed to update primary allocation",
-      "allocationRemoved": "Allocation removed",
-      "removeFailed": "Failed to remove allocation",
-      "allocationAdded": "New allocation assigned",
-      "addFailed": "Failed to add allocation",
+      "noAllocations": "No ports found.",
+      "allocationCount": "{current} / {max} ports used",
+      "primaryUpdated": "Primary port updated",
+      "primaryFailed": "Failed to update primary port",
+      "allocationRemoved": "Port removed",
+      "removeFailed": "Failed to remove port",
+      "allocationAdded": "New port assigned",
+      "addFailed": "Failed to add port",
       "notesUpdated": "Note updated",
       "notesFailed": "Failed to update note",
-      "notesDialogTitle": "Edit Allocation Note",
+      "notesDialogTitle": "Edit Port Note",
       "notesDialogDescription": "Add a label or description for {address}.",
       "notesPlaceholder": "e.g. Main game port, RCON, Web panel...",
-      "deleteDialogTitle": "Remove Allocation?",
+      "deleteDialogTitle": "Remove Port?",
       "deleteDialogDescription": "Are you sure you want to remove {address}?",
-      "deleteDialogWarning": "This action cannot be undone. The allocation will be returned to the pool.",
-      "deleteConfirm": "Remove Allocation",
+      "deleteDialogWarning": "This action cannot be undone. The port will be returned to the pool.",
+      "deleteConfirm": "Remove Port",
       "deleting": "Removing...",
       "cancel": "Cancel",
       "save": "Save",
@@ -1084,7 +1208,15 @@
       },
       "startupCommand": {
         "label": "Startup Command",
-        "description": "This command is automatically generated and cannot be modified."
+        "description": "Customize the startup command used when starting your server.",
+        "save": "Save",
+        "saving": "Saving...",
+        "saveFailed": "Failed to save startup command",
+        "reset": "Reset",
+        "required": "Startup command is required",
+        "showDefault": "Show default command",
+        "hideDefault": "Hide default command",
+        "useDefault": "Use default"
       }
     },
     "statusIndicator": {
@@ -1200,9 +1332,9 @@
         "none": "No server changes"
       }
     },
-    "legalNote": "Under EU consumer protection law (§355 BGB), you have the right to withdraw from any contract within 14 days of purchase. The refund is calculated pro-rata based on your unused service time.",
     "supportNote": "If you need help or have questions about a refund, contact our",
-    "supportLink": "Support Team"
+    "supportLink": "Support Team",
+    "faqHeading": "Frequently Asked Questions"
   },
   "CookieBanner": {
     "title": "Cookie Notice",
@@ -1218,9 +1350,11 @@
     "refresh": "Refresh",
     "newBackup": "New backup",
     "slotsUsed": "Using {used}/{limit} backup slots · Total size {size}",
-    "slotsUnlimited": "Unlimited backup slots · Total size {size}",
+    "slotsDisabled": "Backups are not available on this plan.",
     "limitReachedTitle": "Backup limit reached",
     "limitReachedDescription": "Delete an existing backup to free up space before creating a new one.",
+    "backupsDisabledTitle": "Backups not available",
+    "backupsDisabledDescription": "Your current plan does not include any backup slots. Upgrade your plan to create backups.",
     "configRequiredTitle": "Configuration required",
     "configRequiredDescription": "Please set NEXT_PUBLIC_PTERODACTYL_URL to enable backup management.",
     "unableToLoad": "Unable to load backups",
@@ -1343,12 +1477,16 @@
     }
   },
   "order": {
-    "storageTier": "Storage Tier",
+    "storageTier": "Resource Tier",
     "resourceTier": {
       "free": "Free",
       "disk": "Disk",
       "backups": "Backups",
-      "ports": "Ports"
+      "ports": "Ports",
+      "unavailable": "No longer available for new changes",
+      "diskUsageExceeded": "Unavailable: current usage is {usedGiB} GiB",
+      "legacySelected": "Current",
+      "legacyDescription": "This tier is no longer offered, but your existing server can stay on it."
     },
     "package": {
       "recommended": "Recommended",
@@ -1369,7 +1507,132 @@
   "menu": {
     "games": "Games",
     "dashboard": "Dashboard",
-    "support": "Support"
+    "support": "Support",
+    "pricing": "Pricing"
+  },
+  "pricing": {
+    "meta": {
+      "title": "Pricing",
+      "description": "Transparent, fair pricing. Configure your gameserver and pay only for what you actually need."
+    },
+    "hero": {
+      "badge": "Pricing",
+      "title": "Fair, transparent pricing",
+      "subtitle": "You choose a performance group, which determines the base performance so the server runs smoothly. Then you select CPU and RAM based on your game requirements. Finally, add resources like storage space, backups and ports."
+    },
+    "highlights": {
+      "noSubscription": "No subscription",
+      "noSubscriptionDesc": "One-time payment for the duration you choose.",
+      "transparent": "Transparent",
+      "transparentDesc": "Every cent for CPU, RAM and resources is visible.",
+      "flexible": "Flexible",
+      "flexibleDesc": "Scale up or extend whenever you need to."
+    },
+    "howItWorks": {
+      "title": "How pricing works",
+      "subtitle": "Three simple steps — combine exactly what you need.",
+      "step1": {
+        "title": "Pick a performance group",
+        "description": "Choose the hardware family that matches your needs. Each group has its own CPU and RAM pricing."
+      },
+      "step2": {
+        "title": "Choose CPU and memory",
+        "description": "Use the sliders to dial in exactly how many vCores and GiB of RAM your game needs."
+      },
+      "step3": {
+        "title": "Pick a resource package",
+        "description": "Add disk space, backup slots and ports in a single click — pick the package that fits your project."
+      }
+    },
+    "performance": {
+      "title": "Performance groups",
+      "subtitle": "Each group has its own CPU and memory pricing.",
+      "cpuLabel": "CPU",
+      "ramLabel": "RAM",
+      "perVCore": "€ / vCore / month",
+      "perGiB": "€ / GiB / month",
+      "vCoreRange": "{min}–{max} vCores",
+      "ramRange": "{min}–{max} GiB"
+    },
+    "resourceTiers": {
+      "title": "Resource packages",
+      "subtitle": "Disk, backup and port packages — pick whatever your server needs.",
+      "diskLabel": "Disk",
+      "backupsLabel": "Backups",
+      "portsLabel": "Ports",
+      "perMonth": "/ month",
+      "free": "Free"
+    },
+    "discounts": {
+      "title": "Duration discounts",
+      "subtitle": "Pay longer, pay less.",
+      "weekLabel": "1 week",
+      "weekModifier": "+15% short-term surcharge",
+      "monthLabel": "1 month",
+      "monthModifier": "Base price",
+      "threeMonthsLabel": "3 months",
+      "threeMonthsModifier": "−10% discount",
+      "sixMonthsLabel": "6 months",
+      "sixMonthsModifier": "−15% discount"
+    },
+    "configurator": {
+      "continueLabel": "Choose a Game"
+    },
+    "table": {
+      "performanceGroup": "Performance group",
+      "headers": {
+        "item": "Item",
+        "selection": "Selection",
+        "unit": "Unit price",
+        "subtotal": "Subtotal"
+      },
+      "cpu": "CPU",
+      "ram": "RAM",
+      "resources": "Resources",
+      "duration": "Duration",
+      "gib": "GiB",
+      "perVCore": "€/vCore/mo",
+      "perGiB": "€/GiB/mo",
+      "perMonth": "€/mo",
+      "free": "Free",
+      "tierSummary": "{disk} GiB · {backups} backups · {ports} ports",
+      "durations": {
+        "week": "1 week",
+        "month": "1 month",
+        "threeMonths": "3 months",
+        "sixMonths": "6 months"
+      },
+      "daysValue": "{days} days",
+      "baseLabel": "Base",
+      "discount": "Discount (−{percent}%)",
+      "surcharge": "Short-term surcharge (+{percent}%)",
+      "total": "Total",
+      "totalSub": "One-time payment for {days} days",
+      "minOrderHint": "Minimum order value is 1.00 €"
+    },
+    "faq": {
+      "title": "Common questions",
+      "items": {
+        "billing": {
+          "question": "How is billing handled?",
+          "answer": "It's a one-time payment for the duration you choose. No subscriptions, no auto-renewals — your server stops when the time you paid for runs out."
+        },
+        "upgrade": {
+          "question": "Can I upgrade later?",
+          "answer": "Yes. You can upgrade or extend your server at any time and only pay the difference, prorated for the remaining time."
+        },
+        "refund": {
+          "question": "What about refunds?",
+          "answer": "Under EU consumer protection law you can withdraw within 14 days and receive a pro-rata refund for any unused service time."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to spin up your server?",
+      "subtitle": "Configure your hardware and pick your game in under a minute.",
+      "primary": "Configure now",
+      "secondary": "Try the free tier"
+    }
   },
   "blog": {
     "title": "Back to overview",

@@ -4,20 +4,18 @@ import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
-import { env } from 'next-runtime-env';
 import { after, NextRequest } from 'next/server';
 import Stripe from 'stripe';
-import handleCheckoutSessionCompleted from './handleCheckoutSessionCompleted';
+import { recordCheckoutSession, provisionCheckoutSession } from './handleCheckoutSessionCompleted';
 import {
     handleRefundUpdated,
-    handleChargeRefunded,
     handleChargeDisputeCreated,
     handlePaymentSucceded,
 } from './handleRefundWebhooks';
 
 export async function POST(req: NextRequest) {
     const body = await req.text();
-    const endpointSecret = env('webhookSecret')!;
+    const endpointSecret = process.env.webhookSecret!;
     let event: Stripe.Event;
 
     const signature = req.headers.get('stripe-signature');
@@ -26,21 +24,18 @@ export async function POST(req: NextRequest) {
         throw new Error('Missing signature header');
     }
 
-    logger.info('Webhook request received', 'PAYMENT_LOG', {
-        details: {
-            bodyLength: body.length,
-            hasSignature: !!signature,
-        },
-    });
-
     try {
         event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
-        logger.info(`Webhook event: ${event}`, 'PAYMENT_LOG', { details: { event: event } });
+        logger.info(`Webhook event`, 'PAYMENT_LOG', {
+            details: { eventType: event.type, event: event },
+        });
     } catch (error) {
         logger.error('Webhook signature failed: ', 'PAYMENT_LOG', {
             details: {
                 error: error,
-                secretType: endpointSecret.startsWith('whsec_') ? 'webhook' : 'unknown',
+                secretType: endpointSecret.startsWith('whsec_')
+                    ? 'webhook'
+                    : 'probably wrong secret',
             },
         });
         return new Response('Webhook signature verification failed', {
@@ -48,7 +43,6 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    logger.info('Received Stripe webhook', 'PAYMENT_LOG', { details: { eventType: event.type } });
     switch (event.type) {
         case 'payment_intent.succeeded':
             // TODO: For Sepa this can fire up to 14 days later, handle accordingly, maybe block server
@@ -63,9 +57,14 @@ export async function POST(req: NextRequest) {
             logger.info('Handling checkout.session.completed', 'PAYMENT_LOG', {
                 details: { sessionId: checkoutSession.id },
             });
-            after(async () => {
-                await handleCheckoutSessionCompleted(checkoutSession);
-            });
+            // Persist Stripe IDs synchronously so invoice.payment_succeeded
+            // (which can arrive before this response returns) can find the order.
+            const orderIdToProvision = await recordCheckoutSession(checkoutSession);
+            if (orderIdToProvision) {
+                after(async () => {
+                    await provisionCheckoutSession(checkoutSession, orderIdToProvision);
+                });
+            }
             break;
 
         case 'checkout.session.expired':
@@ -129,28 +128,17 @@ export async function POST(req: NextRequest) {
             }
             break;
 
-        case 'charge.refunded':
-            const charge = event.data.object as Stripe.Charge;
-            logger.info('Charge refunded webhook received', 'PAYMENT_LOG', {
-                details: { chargeId: charge.id },
-            });
-            await handleChargeRefunded(charge);
-            break;
-
+        // This account's API version delivers the legacy event name
+        // `charge.refund.updated` (with a Refund payload) instead of the
+        // newer `refund.created` / `refund.updated`. Match both schemes.
+        case 'refund.created':
         case 'refund.updated':
-            const refundUpdated = event.data.object as Stripe.Refund;
-            logger.info('Refund updated webhook received', 'PAYMENT_LOG', {
-                details: { refundId: refundUpdated.id, status: refundUpdated.status },
+        case 'charge.refund.updated' as Stripe.Event.Type:
+            const refundEvent = event.data.object as Stripe.Refund;
+            logger.info(`${event.type} webhook received`, 'PAYMENT_LOG', {
+                details: { refundId: refundEvent.id, status: refundEvent.status },
             });
-            await handleRefundUpdated(refundUpdated);
-            break;
-
-        case 'refund.failed':
-            const refundFailed = event.data.object as Stripe.Refund;
-            logger.error('Refund failed webhook received', 'PAYMENT_LOG', {
-                details: { refundId: refundFailed.id, failureReason: refundFailed.failure_reason },
-            });
-            await handleRefundUpdated(refundFailed);
+            await handleRefundUpdated(refundEvent);
             break;
 
         case 'charge.dispute.created':

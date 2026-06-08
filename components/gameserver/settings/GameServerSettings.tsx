@@ -7,7 +7,7 @@ import { Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 import ReinstallDialog from './ReinstallDialog';
 import DeleteFreeServerModal from './DeleteFreeServerModal';
-import MinecraftSettings from './gameSpecific/settings/MinecraftSettings';
+import GameSpecificSettings from './gameSpecific/settings/GameSpecificSettings';
 import ActionItem from './ActionItem';
 import { useTranslations } from 'next-intl';
 import { GeneralServerSettings } from './generalSettings/GeneralServerSettings';
@@ -18,8 +18,6 @@ interface GameServerSettingsProps {
 }
 
 export default function GameServerSettings({ server, apiKey }: GameServerSettingsProps) {
-    const isMinecraftServer = server.gameSlug === 'minecraft';
-
     const t = useTranslations('gameserverSettings');
 
     return (
@@ -28,20 +26,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
                 {/* Server Settings Card */}
                 <GeneralServerSettings server={server} />
 
-                {/* Game-Specific Settings */}
-                {isMinecraftServer && (
-                    <Card className="border-0 shadow-sm">
-                        <CardHeader className="pb-0 p-3">
-                            <CardTitle className="flex items-center gap-2 text-base">
-                                <Gamepad2 className="h-5 w-5" />
-                                Game-Specific Settings
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-3 pt-2">
-                            <MinecraftSettings server={server} apiKey={apiKey} />
-                        </CardContent>
-                    </Card>
-                )}
+                <GameSpecificSettings server={server} apiKey={apiKey} />
 
                 {/* Server Management Section */}
                 <Card className="border-0 shadow-sm">

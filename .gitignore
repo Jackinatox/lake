@@ -52,3 +52,6 @@ prismaTesting.ts
 knip.json
 .worker.env
 .codex
+graphify-out/
+.graphify*
+.idea/

@@ -1,6 +1,5 @@
 import prisma from '@/lib/prisma';
 
-import { env } from 'next-runtime-env';
 import { logger } from '@/lib/logger';
 
 /**
@@ -13,8 +12,8 @@ export default async function toggleSuspendGameServer(
     gameServerId: string,
     action: 'suspend' | 'unsuspend',
 ) {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptApiKey = env('PTERODACTYL_API_KEY');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
         where: { id: gameServerId, ptAdminId: { not: null } },

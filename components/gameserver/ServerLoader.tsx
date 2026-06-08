@@ -11,18 +11,19 @@ import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
+import { GameConfig } from '@/models/config';
 
-interface ServerLoaderProps {
+export interface ServerLoaderProps {
     serverId: string;
     ptApiKey: string;
     baseUrl: string;
     initialServer: {
         egg_id: number;
         gameSlug: string;
-        gameDataId: number;
-        gameData: any;
+        gameConfig: GameConfig;
         type: GameServerType;
         expires: Date;
+        defaultStartCommand: string;
     };
     features: EggFeature[];
 }
@@ -64,15 +65,17 @@ export default function ServerLoader({
             const data = await response.json();
             const serverData = data.attributes;
 
+            console.log(serverData)
+
             // Merge with initial server data
             const updatedServer: GameServer = {
                 ...serverData,
                 egg_id: initialServer.egg_id,
                 gameSlug: initialServer.gameSlug,
-                gameDataId: initialServer.gameDataId,
-                gameData: initialServer.gameData,
+                gameConfig: initialServer.gameConfig,
                 type: initialServer.type,
                 expires: initialServer.expires,
+                defaultStartCommand: initialServer.defaultStartCommand,
             };
 
             setServer(updatedServer);
@@ -89,8 +92,7 @@ export default function ServerLoader({
         baseUrl,
         initialServer.egg_id,
         initialServer.expires,
-        initialServer.gameData,
-        initialServer.gameDataId,
+        initialServer.gameConfig,
         initialServer.gameSlug,
         initialServer.type,
         ptApiKey,

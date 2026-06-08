@@ -2,7 +2,6 @@ import { apiKey } from '@better-auth/api-key';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
-import { env } from 'next-runtime-env';
 import generateUniqueUserName from './lib/auth/generateUniqueUserName';
 import {
     sendConfirmEmail,
@@ -14,6 +13,8 @@ import { captureServerEvent } from './lib/posthog';
 import prisma from './lib/prisma';
 import { createPtClient } from './lib/Pterodactyl/ptAdminClient';
 import createUserApiKey from './lib/Pterodactyl/userApiKey';
+import { AUTH_USERNAME_MAX_LENGTH, AUTH_USERNAME_MIN_LENGTH } from './lib/validation/auth';
+import { sendInfoNotification } from './lib/Notifications/telegram';
 
 function extractIp(request?: Request | null): string | undefined {
     if (!request) return undefined;
@@ -94,12 +95,12 @@ export const auth = betterAuth({
     },
     socialProviders: {
         discord: {
-            clientId: env('DISCORD_CLIENT_ID')!,
-            clientSecret: env('DISCORD_CLIENT_SECRET')!,
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!,
         },
         google: {
-            clientId: env('GOOGLE_CLIENT_ID')!,
-            clientSecret: env('GOOGLE_CLIENT_SECRET')!,
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             prompt: 'select_account',
         },
     },
@@ -123,7 +124,7 @@ export const auth = betterAuth({
                 );
                 await sendPasswordResetSuccessEmail(
                     user.email,
-                    `${env('NEXT_PUBLIC_APP_URL')}/profile`,
+                    `${process.env.NEXT_PUBLIC_APP_URL}/profile`,
                     user.name || '',
                     'change',
                 );
@@ -135,7 +136,7 @@ export const auth = betterAuth({
                 );
                 await sendPasswordResetSuccessEmail(
                     user.email,
-                    `${env('NEXT_PUBLIC_APP_URL')}/login`,
+                    `${process.env.NEXT_PUBLIC_APP_URL}/login`,
                     user.name || '',
                     'reset',
                 );
@@ -156,7 +157,10 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true,
     },
     plugins: [
-        username({}),
+        username({
+            minUsernameLength: AUTH_USERNAME_MIN_LENGTH,
+            maxUsernameLength: AUTH_USERNAME_MAX_LENGTH,
+        }),
         apiKey({
             enableSessionForAPIKeys: true,
             enableMetadata: true,
@@ -176,7 +180,7 @@ export const auth = betterAuth({
         admin(),
         captcha({
             provider: 'cloudflare-turnstile',
-            secretKey: env('CF_TURNSTILE_SECRET_KEY')!,
+            secretKey: process.env.CF_TURNSTILE_SECRET_KEY!,
         }),
     ],
     databaseHooks: {
@@ -276,6 +280,16 @@ export const auth = betterAuth({
                         });
                         throw new Error('Failed to create user');
                     }
+                },
+                after: async (user, context) => {
+                    await sendInfoNotification({
+                        title: 'Neuer user registriert',
+                        message: `Email: ${user.email}`,
+                    }).catch((error) => {
+                        logger.error('Failed to send Telegram notification:', 'TELEGRAM', {
+                            details: { error },
+                        });
+                    });
                 },
             },
         },

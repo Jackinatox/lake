@@ -1,3 +1,4 @@
+import { initServerConfig } from './serverConfig';
 import {
     LEGAL_IMPRESSUM_DE,
     LEGAL_IMPRESSUM_EN,
@@ -20,7 +21,6 @@ import {
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
 } from '@/app/GlobalConstants';
 import prisma from './prisma';
-import { env } from 'next-runtime-env';
 
 /**
  * List of all required KeyValue constants that must exist in the database
@@ -72,7 +72,6 @@ const ENV_VARS_REQUIRED = [
     'SUPPORT_SMTP_PORT',
     'SUPPORT_SMTP_USER',
     'SUPPORT_SMTP_PASS',
-    'NEXT_PUBLIC_SUPPORT_MAIL',
     'TELEGRAM_CHAT_ID',
     'TELEGRAM_BOT_TOKEN',
     'NEXT_PUBLIC_POSTHOG_KEY',
@@ -87,6 +86,7 @@ const ENV_VARS_REQUIRED = [
 export async function performVerification(): Promise<void> {
     await verifyDatabaseConst();
     await verifyEnvVars();
+    await initServerConfig();
 }
 
 /**
@@ -196,7 +196,7 @@ ${missingResources.map((res) => `║   • ${res.padEnd(56)} ║`).join('\n')}
 async function verifyEnvVars(): Promise<void> {
     const missingVars: string[] = [];
     for (const varName of ENV_VARS_REQUIRED) {
-        if (!env(varName)) {
+        if (!process.env[varName]) {
             missingVars.push(varName);
         }
     }

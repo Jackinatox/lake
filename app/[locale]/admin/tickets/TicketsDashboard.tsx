@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,7 @@ export type AdminTicket = {
     updatedAt: string;
     user: {
         id: string;
-        name: string | null;
+        username?: string | null;
         email: string;
     };
 };
@@ -126,7 +127,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
             return (
                 normalise(ticket.message).includes(search) ||
                 normalise(ticket.user.email).includes(search) ||
-                normalise(ticket.user.name ?? '').includes(search) ||
+                normalise(ticket.user.username ?? '').includes(search) ||
                 normalise(ticket.title ?? '').includes(search)
             );
         });
@@ -269,7 +270,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                         <Input
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
-                            placeholder="Search by email, name, or text"
+                            placeholder="Search by email, username, or text"
                             className="h-9 w-full min-w-0 sm:w-56"
                         />
                         <Select
@@ -354,7 +355,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                             <MailIcon className="h-4 w-4" />
                                             {ticket.user.email}
                                         </span>
-                                        {ticket.user.name && <span>· {ticket.user.name}</span>}
+                                        <span>· {getUserDisplayName(ticket.user)}</span>
                                     </div>
                                 </div>
                                 <div className="flex w-full flex-col gap-3 sm:w-52">

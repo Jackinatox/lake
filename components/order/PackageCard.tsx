@@ -1,9 +1,9 @@
 'use client';
 
+import { ThemeImage } from '@/components/ui/theme-image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
@@ -36,17 +36,11 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
             <div className="relative h-full rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:shadow-xl hover:border-muted-foreground/20 overflow-hidden">
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
-                    <Image
-                        src={`/images/light/packages/${pkg.imageName}`}
+                    <ThemeImage
+                        src={`/images/packages/${pkg.imageName}`}
                         alt={pkg.name}
                         fill
-                        className="object-cover dark:hidden blur-[1.5px]"
-                    />
-                    <Image
-                        src={`/images/dark/packages/${pkg.imageName}`}
-                        alt={pkg.name}
-                        fill
-                        className="object-cover hidden dark:block blur-[1.5px]"
+                        className="object-cover blur-[1.5px]"
                     />
                     <div className="absolute inset-0 bg-background/40" />
                 </div>

@@ -1,12 +1,13 @@
 'use server';
 
+import type { TicketStatus } from '@/app/client/generated/enums';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { ticketStatusUpdateSchema } from '@/lib/validation/adminContent';
 
 import { headers } from 'next/headers';
 
-export async function updateTicketStatusAction(params: { ticketId: number; status: string }) {
+export async function updateTicketStatusAction(params: { ticketId: number; status: TicketStatus }) {
     const { ticketId, status } = ticketStatusUpdateSchema.parse(params);
 
     const session = await auth.api.getSession({

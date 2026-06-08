@@ -50,7 +50,7 @@ export const HytaleConfigComponent = forwardRef(function HytaleConfigComponent(
     useImperativeHandle(ref, () => ({
         submit: () => {
             const completeConfig: GameConfig = {
-                gameSlug: game.slug,
+                gameSlug: game.slug as 'hytale',
                 eggId: game.data.eggId,
                 version: 'unused',
                 dockerImage: game.data.docker_image,

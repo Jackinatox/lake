@@ -6,6 +6,7 @@ import { LogLevel, LogType } from '@/app/client/generated/enums';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import { useTranslations } from 'next-intl';
 
 type LogEntryProps = {
@@ -20,7 +21,7 @@ type LogEntryProps = {
         userAgent: string | null;
         ipAddress: string | null;
         createdAt: Date;
-        user: { id: string; name: string; email: string } | null;
+        user: { id: string; name: string; username?: string | null; email: string } | null;
         gameServer: { id: string; name: string } | null;
     };
 };
@@ -94,7 +95,9 @@ export default function LogEntry({ log }: LogEntryProps) {
                                 <span className="font-medium">{log.method}</span> {log.path}
                             </span>
                         )}
-                        {log.user && <span>{t('user', { name: log.user.name })}</span>}
+                        {log.user && (
+                            <span>{t('user', { name: getUserDisplayName(log.user) })}</span>
+                        )}
                         {log.gameServer && (
                             <span>{t('server', { name: log.gameServer.name })}</span>
                         )}

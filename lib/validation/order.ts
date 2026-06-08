@@ -6,18 +6,25 @@ import {
     UPGRADE_DURATIONS,
     integerRangeSchema,
     localeSchema,
+    optionalStringSchema,
     orderIdSchema,
     requiredStringSchema,
     serverIdentifierSchema,
     z,
 } from './common';
 
-const configuredDurationSchema = z
-    .enum(ORDER_DURATIONS.map(String) as [string, ...string[]])
-    .transform(Number);
-const upgradeDurationSchema = z
-    .enum(UPGRADE_DURATIONS.map(String) as [string, ...string[]])
-    .transform(Number);
+const configuredDurationSchema = z.union(
+    ORDER_DURATIONS.map((v) => z.literal(v)) as [
+        z.ZodLiteral<(typeof ORDER_DURATIONS)[number]>,
+        ...z.ZodLiteral<(typeof ORDER_DURATIONS)[number]>[],
+    ],
+);
+const upgradeDurationSchema = z.union(
+    UPGRADE_DURATIONS.map((v) => z.literal(v)) as [
+        z.ZodLiteral<(typeof UPGRADE_DURATIONS)[number]>,
+        ...z.ZodLiteral<(typeof UPGRADE_DURATIONS)[number]>[],
+    ],
+);
 
 const baseHardwareConfigSchema = z.object({
     pfGroupId: integerRangeSchema('Performance group', 1, 10_000),
@@ -82,6 +89,22 @@ export const satisfactoryGameSpecificSchema = z.object({
     autosave_interval: integerRangeSchema('Autosave interval', 60, 3_600),
 });
 
+export const valheimGameSpecificSchema = z.object({
+    mode: z.enum(['vanilla', 'modded']),
+    server_name: requiredStringSchema('Server name', 64),
+    password: z.string().trim().min(5, 'Password must be at least 5 characters').max(20, 'Password must be at most 20 characters'),
+    world_name: requiredStringSchema('World name', 20),
+    max_players: integerRangeSchema('Max players', 1, 64),
+    public_server: z.boolean(),
+    enable_crossplay: z.boolean(),
+    auto_update: z.boolean(),
+    backup_interval: integerRangeSchema('Backup interval', 0, 86_400),
+    backup_count: integerRangeSchema('Backup count', 0, 100),
+    backup_shorttime: integerRangeSchema('Backup short time', 0, 86_400),
+    backup_longtime: integerRangeSchema('Backup long time', 0, 604_800),
+    modpack: z.string().trim().max(255, 'Modpack string is too long').optional(),
+});
+
 export const hytaleGameSpecificSchema = z.object({
     auth_mode: z.enum(['authenticated', 'offline']),
     patchline: z.enum(['release', 'pre-release']),
@@ -99,7 +122,7 @@ const baseGameConfigShape = {
     dockerImage: requiredStringSchema('Docker image', 255),
 } as const;
 
-export const gameConfigSchema: z.ZodType<GameConfig> = z.union([
+export const gameConfigSchema = z.discriminatedUnion('gameSlug', [
     z.object({
         ...baseGameConfigShape,
         gameSlug: z.literal('minecraft'),
@@ -120,6 +143,11 @@ export const gameConfigSchema: z.ZodType<GameConfig> = z.union([
         gameSlug: z.literal('hytale'),
         gameSpecificConfig: hytaleGameSpecificSchema,
     }),
+    z.object({
+        ...baseGameConfigShape,
+        gameSlug: z.literal('valheim'),
+        gameSpecificConfig: valheimGameSpecificSchema,
+    }),
 ]);
 
 export const checkoutConfiguredParamsSchema = z.object({
@@ -136,6 +164,7 @@ export const checkoutUpgradeParamsSchema = z.object({
     type: z.literal('UPGRADE'),
     locale: localeSchema,
     ptServerId: serverIdentifierSchema,
+    resourceTierId: integerRangeSchema('Resource tier', 1, 10_000),
     upgradeConfig: upgradeHardwareConfigSchema,
 });
 
@@ -195,7 +224,7 @@ export const adminRefundSchema = z.object({
 });
 
 export const supportTicketSchema = z.object({
-    subject: z.string().trim().max(120, 'Subject is too long').optional(),
+    subject: optionalStringSchema(120),
     description: requiredStringSchema('Message', 2_000),
     category: z.nativeEnum(TicketCategory).optional(),
 });

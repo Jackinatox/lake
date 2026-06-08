@@ -1,7 +1,6 @@
 'use server';
 
 import { auth } from '@/auth';
-import { env } from 'next-runtime-env';
 import prisma from '@/lib/prisma';
 
 import { GameServerStatus } from '@/types/gameData';
@@ -10,7 +9,7 @@ import { headers } from 'next/headers';
 export default async function checkIfServerReady(
     stripeSession: string,
 ): Promise<{ status: GameServerStatus; serverId?: string | null }> {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const session = await auth.api.getSession({
         headers: await headers(),
     });

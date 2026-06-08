@@ -96,7 +96,8 @@ export function formatMB(mb: number): string {
     if (mb < 1024) {
         return `${mb} MiB`;
     }
-    return formatMBToGiB(mb, mb >= 10240 ? 0 : 1);
+    const gib = mb / 1024;
+    return `${Number.isInteger(gib) ? gib : gib.toFixed(1)} GiB`;
 }
 
 /**

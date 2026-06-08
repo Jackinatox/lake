@@ -15,8 +15,9 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { UploadCloud } from 'lucide-react';
 import { formatFileSize } from '@/lib/Pterodactyl/file-utils';
-import { ChangeEvent, ReactNode, memo, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, ReactNode, memo, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { limitFileList, MAX_UPLOAD_FILES } from '../uploadLimits';
 
 interface FileUploadDialogProps {
     children?: ReactNode;
@@ -27,21 +28,12 @@ interface FileUploadDialogProps {
     files: FileList | null;
     onOpenChange: (open: boolean) => void;
     onFileSelect: (files: FileList | null) => void;
+    onAbort: () => void;
     onUpload: () => void;
 }
 
 function formatDirectory(directory: string) {
     return directory || '/';
-}
-
-const MAX_FILES = 200;
-
-function limitFileList(files: FileList, limit: number): FileList {
-    const transfer = new DataTransfer();
-    for (const file of Array.from(files).slice(0, limit)) {
-        transfer.items.add(file);
-    }
-    return transfer.files;
 }
 
 function getTotalBytes(files: FileList | null): number {
@@ -58,6 +50,7 @@ const FileUploadDialogComponent = ({
     files,
     onOpenChange,
     onFileSelect,
+    onAbort,
     onUpload,
 }: FileUploadDialogProps) => {
     const t = useTranslations('gameserver.fileManager.upload');
@@ -69,10 +62,6 @@ const FileUploadDialogComponent = ({
 
     const totalBytes = useMemo(() => getTotalBytes(files), [files]);
 
-    useEffect(() => {
-        if (!open) setOmittedCount(0);
-    }, [open]);
-
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selected = event.target.files;
         if (!selected || selected.length === 0) {
@@ -81,9 +70,9 @@ const FileUploadDialogComponent = ({
             return;
         }
 
-        if (selected.length > MAX_FILES) {
-            setOmittedCount(selected.length - MAX_FILES);
-            onFileSelect(limitFileList(selected, MAX_FILES));
+        if (selected.length > MAX_UPLOAD_FILES) {
+            setOmittedCount(selected.length - MAX_UPLOAD_FILES);
+            onFileSelect(limitFileList(selected));
         } else {
             setOmittedCount(0);
             onFileSelect(selected);
@@ -129,18 +118,20 @@ const FileUploadDialogComponent = ({
                                 <p className="font-medium">
                                     {t('selectedFilesLabel')}{' '}
                                     <span className="text-muted-foreground">
-                                        ({files.length}/{MAX_FILES})
+                                        ({files.length}/{MAX_UPLOAD_FILES})
                                     </span>
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    Total: {formatFileSize(totalBytes)}
+                                    {t('totalLabel', { size: formatFileSize(totalBytes) })}
                                 </p>
                             </div>
 
                             {omittedCount > 0 && (
                                 <p className="mt-2 text-xs text-destructive">
-                                    Only the first {MAX_FILES} files were selected. {omittedCount}{' '}
-                                    file(s) were ignored.
+                                    {t('selectionLimitedMessage', {
+                                        maxFiles: MAX_UPLOAD_FILES,
+                                        omittedCount,
+                                    })}
                                 </p>
                             )}
 
@@ -176,17 +167,16 @@ const FileUploadDialogComponent = ({
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => onOpenChange(false)}
-                        disabled={isUploading}
+                        onClick={() => (isUploading ? onAbort() : onOpenChange(false))}
                     >
-                        {t('cancelButton')}
+                        {isUploading ? t('abortButton') : t('cancelButton')}
                     </Button>
                     <Button
                         type="button"
                         onClick={onUpload}
                         disabled={isUploading || !files || files.length === 0}
                     >
-                        {t('uploadButton')}
+                        {isUploading ? t('uploadingButton') : t('uploadButton')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

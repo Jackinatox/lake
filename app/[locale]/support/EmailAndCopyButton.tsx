@@ -3,12 +3,15 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { serverConfig } from '@/lib/serverConfig';
 import { Copy, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { env } from 'next-runtime-env';
 
-export default function EmailAndCopyButton() {
-    const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_MAIL')!;
+interface EmailAndCopyButtonProps {
+    SUPPORT_EMAIL: string;
+}
+
+export default function EmailAndCopyButton({ SUPPORT_EMAIL }: EmailAndCopyButtonProps) {
     const t = useTranslations('getHelp');
     const { toast } = useToast();
 

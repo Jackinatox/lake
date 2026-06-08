@@ -1,62 +1,22 @@
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { sendRefundEmail, sendWithdrawalEmail } from '@/lib/email/sendEmailEmailsFromLake';
+import {
+    sendInvoiceEmail,
+    sendRefundEmail,
+    sendWithdrawalEmail,
+} from '@/lib/email/sendEmailEmailsFromLake';
 import { undoRefundedOrder } from '@/lib/refund/undoRefundedOrder';
 import Stripe from 'stripe';
 
 /**
- * Handle charge.refunded webhook.
- * This fires when any refund (full or partial) is created on a charge.
- * We use this as a fallback — the primary state machine is driven by refund.updated.
- */
-export async function handleChargeRefunded(charge: Stripe.Charge) {
-    try {
-        const order = await prisma.gameServerOrder.findFirst({
-            where: { stripeChargeId: charge.id },
-            include: { refunds: true },
-        });
-
-        if (!order) {
-            logger.warn('charge.refunded: No order found for charge', 'PAYMENT_LOG', {
-                details: { chargeId: charge.id },
-            });
-            return;
-        }
-
-        // Calculate total refunded from Stripe charge object (source of truth)
-        const totalRefundedCents = charge.amount_refunded;
-        const priceCents = Math.round(order.price);
-        const isFullRefund = totalRefundedCents >= priceCents;
-
-        await prisma.gameServerOrder.update({
-            where: { id: order.id },
-            data: {
-                refundStatus: isFullRefund ? 'FULL' : 'PARTIAL',
-                status: isFullRefund ? 'REFUNDED' : 'PARTIALLY_REFUNDED',
-            },
-        });
-
-        logger.info('charge.refunded processed', 'PAYMENT_LOG', {
-            userId: order.userId,
-            gameServerId: order.gameServerId ?? undefined,
-            details: {
-                orderId: order.id,
-                chargeId: charge.id,
-                totalRefundedCents,
-                isFullRefund,
-            },
-        });
-    } catch (error) {
-        logger.error('Error handling charge.refunded', 'PAYMENT_LOG', {
-            details: { chargeId: charge.id, error },
-        });
-    }
-}
-
-/**
- * Handle refund.updated and refund.failed webhooks.
+ * Handle refund.created and refund.updated webhooks.
  * This is the primary handler for updating refund state in the DB.
  * Never trust the API response — only update from this webhook.
+ *
+ * Both events route here because card refunds often arrive already SUCCEEDED
+ * on refund.created and never fire refund.updated (no status transition).
+ * The undo + email side effects are gated on a real status transition
+ * (prev !== SUCCEEDED → SUCCEEDED) so replays are idempotent.
  */
 export async function handleRefundUpdated(refund: Stripe.Refund) {
     try {
@@ -88,6 +48,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
         };
 
         const newStatus = statusMap[refund.status ?? ''] ?? 'PENDING';
+        const prevStatus = refundRecord.status;
+        const transitionedToSucceeded = prevStatus !== 'SUCCEEDED' && newStatus === 'SUCCEEDED';
 
         await prisma.refund.update({
             where: { id: refundRecord.id },
@@ -157,9 +119,10 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             });
         }
 
-        // If refund succeeded, execute server action (suspend/revert/nothing)
-        // and send a confirmation email to the user
-        if (newStatus === 'SUCCEEDED') {
+        // Only run undo + email on the transition into SUCCEEDED so repeated
+        // webhooks (refund.created + refund.updated, or retries) don't re-suspend
+        // the server or re-send the email.
+        if (transitionedToSucceeded) {
             try {
                 await undoRefundedOrder(refundRecord.orderId, refundRecord.serverAction);
             } catch (undoError) {
@@ -381,34 +344,111 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
 export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
     try {
         if (!invoice.invoice_pdf) {
-            logger.info('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
+            logger.error('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
                 details: { invoiceId: invoice.id },
             });
             return;
         }
 
-        const order = await prisma.gameServerOrder.findFirst({
-            where: { stripeInvoiceId: invoice.id },
-            select: { id: true, userId: true, gameServerId: true },
-        });
+        // checkout.session.completed and invoice.payment_succeeded are delivered
+        // in parallel by Stripe. Retry briefly in case the checkout handler
+        // hasn't persisted stripeInvoiceId yet.
+        const findOrder = () =>
+            prisma.gameServerOrder.findFirst({
+                where: { stripeInvoiceId: invoice.id },
+                include: {
+                    user: { select: { email: true, name: true } },
+                    creationGameData: { select: { name: true } },
+                    creationLocation: { select: { name: true } },
+                },
+            });
+
+        const LOOKUP_RETRIES = 5;
+        const LOOKUP_DELAY_MS = 1000;
+        let order = await findOrder();
+        for (let attempt = 1; attempt < LOOKUP_RETRIES && !order; attempt++) {
+            await new Promise((r) => setTimeout(r, LOOKUP_DELAY_MS));
+            order = await findOrder();
+        }
 
         if (!order) {
-            logger.warn('invoice.payment_succeeded: No order found for invoice', 'PAYMENT_LOG', {
-                details: { invoiceId: invoice.id },
-            });
+            logger.error(
+                'invoice.payment_succeeded: No order found for invoice after retries',
+                'PAYMENT_LOG',
+                { details: { invoiceId: invoice.id, retries: LOOKUP_RETRIES } },
+            );
             return;
         }
 
-        await prisma.gameServerOrder.update({
+        // Download the PDF from Stripe and persist it in our DB so we are not
+        // dependent on Stripe's hosted URL. invoicePdfUrl points at our own
+        // /api/invoice/{orderId} route — when we migrate to S3 later we just
+        // re-point that URL and drop the InvoicePdf table.
+        let ownInvoiceUrl: string | null = null;
+        try {
+            const pdfRes = await fetch(invoice.invoice_pdf);
+            if (!pdfRes.ok) {
+                throw new Error(`Stripe PDF fetch failed: ${pdfRes.status} ${pdfRes.statusText}`);
+            }
+            const pdfBytes = Buffer.from(await pdfRes.arrayBuffer());
+            await prisma.invoicePdf.upsert({
+                where: { orderId: order.id },
+                create: { orderId: order.id, data: pdfBytes },
+                update: { data: pdfBytes },
+            });
+            ownInvoiceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invoice/${order.id}`;
+        } catch (downloadError) {
+            logger.error('Failed to download/store Stripe invoice PDF', 'PAYMENT_LOG', {
+                userId: order.userId,
+                gameServerId: order.gameServerId ?? undefined,
+                details: { orderId: order.id, invoiceId: invoice.id, error: downloadError },
+            });
+        }
+
+        const latest = await prisma.gameServerOrder.update({
             where: { id: order.id },
-            data: { invoicePdfUrl: invoice.invoice_pdf },
+            data: {
+                invoicePdfUrl: ownInvoiceUrl ?? invoice.invoice_pdf,
+                stripeInvoiceNumber: invoice.number ?? undefined,
+            },
         });
 
         logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT_LOG', {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
-            details: { orderId: order.id, invoiceId: invoice.id },
+            details: {
+                orderId: order.id,
+                invoiceId: invoice.id,
+                stored: ownInvoiceUrl !== null,
+            },
         });
+
+        try {
+            const gameName = order.creationGameData.name;
+            await sendInvoiceEmail({
+                userName: order.user.name || 'Spieler',
+                userEmail: order.user.email,
+                stripeInvoiceId: `${latest.stripeInvoiceNumber || 'Stripe invoice war null'}`,
+                invoiceDate: latest.paidAt ?? new Date(),
+                gameName,
+                gameImageUrl: `${process.env.NEXT_PUBLIC_APP_URL}/images/light/games/icons/${gameName.toLowerCase()}.webp`,
+                serverName: 'Gameserver',
+                orderType: order.type,
+                ramMB: order.ramMB,
+                cpuPercent: order.cpuPercent,
+                diskMB: order.diskMB,
+                location: order.creationLocation.name || 'Unknown',
+                price: order.price,
+                expiresAt: order.expiresAt,
+                invoicePdfUrl: latest.invoicePdfUrl ?? invoice.invoice_pdf,
+            });
+        } catch (emailError) {
+            logger.error('Failed to send invoice email', 'EMAIL', {
+                userId: order.userId,
+                gameServerId: order.gameServerId ?? undefined,
+                details: { orderId: order.id, invoiceId: invoice.id, error: emailError },
+            });
+        }
     } catch (error) {
         logger.error('Error handling invoice.payment_succeeded', 'PAYMENT_LOG', {
             details: { invoiceId: invoice.id, error },

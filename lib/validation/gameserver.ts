@@ -16,18 +16,24 @@ export const serverStartupSchema = z.object({
     dockerImage: requiredStringSchema('Docker image', 255),
 });
 
+export const updateStartupCommandSchema = z.object({
+    ptServerId: serverIdentifierSchema,
+    startupCommand: requiredStringSchema('Startup command', 200),
+});
+
 export const changeGameRequestSchema = z
     .object({
         ptServerId: serverIdentifierSchema,
-        gameId: positiveIntSchema,
         gameConfig: gameConfigSchema,
+        gameEggId: positiveIntSchema,
         deleteFiles: z.boolean().default(true),
+        gameSlug: requiredStringSchema('Game slug', 100),
     })
     .superRefine((value, ctx) => {
-        if (value.gameConfig.gameId != null && value.gameConfig.gameId !== value.gameId) {
+        if (value.gameConfig.eggId != null && value.gameConfig.eggId !== value.gameEggId) {
             ctx.addIssue({
                 code: 'custom',
-                path: ['gameConfig', 'gameId'],
+                path: ['gameConfig', 'eggId'],
                 message: 'Game configuration does not match the selected game',
             });
         }

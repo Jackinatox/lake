@@ -15,6 +15,7 @@ import type { JobRunStatus, LogLevel, WorkerLog } from '@/types/jobs';
 import { formatDistanceToNow, format } from 'date-fns';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 
 interface JobRunDetailsModalProps {
     runId: string | null;
@@ -65,7 +66,7 @@ function LogEntry({ log }: { log: WorkerLog }) {
 
             {log.user && (
                 <p className="text-xs text-muted-foreground mb-1">
-                    User: {log.user.name} ({log.user.email})
+                    User: {getUserDisplayName(log.user)} ({log.user.email})
                 </p>
             )}
 

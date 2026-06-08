@@ -1,30 +1,41 @@
 import { EmailType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
-import { env } from 'next-runtime-env';
 import nodemailer from 'nodemailer';
 import { logger } from '../logger';
 
 const noReplyMailer = nodemailer.createTransport({
-    host: env('SMTP_HOST'),
+    host: process.env.SMTP_HOST,
     port: 465,
     secure: true,
     auth: {
-        user: env('SMTP_USER'),
-        pass: env('SMTP_PASS'),
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
     },
 });
 
 const supportMailer = nodemailer.createTransport({
-    host: env('SUPPORT_SMTP_HOST'),
-    port: Number(env('SUPPORT_SMTP_PORT')),
+    host: process.env.SUPPORT_SMTP_HOST,
+    port: Number(process.env.SUPPORT_SMTP_PORT),
     secure: true,
     auth: {
-        user: env('SUPPORT_SMTP_USER'),
-        pass: env('SUPPORT_SMTP_PASS'),
+        user: process.env.SUPPORT_SMTP_USER,
+        pass: process.env.SUPPORT_SMTP_PASS,
     },
 });
 
-export async function sendMail(to: string, subject: string, html: string, type: EmailType) {
+export interface EmailAttachment {
+    filename: string;
+    data: Buffer;
+    contentType: string;
+}
+
+export async function sendMail(
+    to: string,
+    subject: string,
+    html: string,
+    type: EmailType,
+    attachments?: EmailAttachment[],
+) {
     const email = await prisma.email.create({
         data: {
             recipient: to,
@@ -32,6 +43,15 @@ export async function sendMail(to: string, subject: string, html: string, type: 
             html: html,
             type: type,
             status: 'SENT',
+            attachments: attachments
+                ? {
+                      create: attachments.map((a) => ({
+                          filename: a.filename,
+                          contentType: a.contentType,
+                          data: a.data as Buffer<ArrayBuffer>,
+                      })),
+                  }
+                : undefined,
         },
     });
 
@@ -41,10 +61,15 @@ export async function sendMail(to: string, subject: string, html: string, type: 
 
     try {
         const res = await mailer.sendMail({
-            from: `"Scyed" <${env('SMTP_USER')}>`,
+            from: `"Scyed" <${process.env.SMTP_USER}>`,
             to,
             subject: subject,
             html: html,
+            attachments: attachments?.map((a) => ({
+                filename: a.filename,
+                content: a.data,
+                contentType: a.contentType,
+            })),
         });
 
         // save everything for now - Debugging purposes

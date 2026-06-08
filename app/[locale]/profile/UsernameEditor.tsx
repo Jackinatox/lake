@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Pencil, X } from 'lucide-react';
 import {
     AUTH_USERNAME_MAX_LENGTH,
+    AUTH_USERNAME_MIN_LENGTH,
     authUsernameSchema,
     usernameUpdateSchema,
 } from '@/lib/validation/auth';
@@ -16,8 +17,15 @@ import { ButtonGroup } from '@/components/ui/button-group';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'unchanged';
 
-export default function UsernameEditor({ currentUsername }: { currentUsername: string }) {
+export default function UsernameEditor({
+    currentUsername,
+    displayName,
+}: {
+    currentUsername: string;
+    displayName: string;
+}) {
     const t = useTranslations('profile');
+    const hasUsername = currentUsername.trim().length > 0;
 
     const [editing, setEditing] = useState(false);
     const [input, setInput] = useState('');
@@ -48,7 +56,7 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
             setStatus('idle');
             return;
         }
-        if (input.length < 3) {
+        if (input.length < AUTH_USERNAME_MIN_LENGTH) {
             setStatus('idle');
             return;
         }
@@ -101,17 +109,27 @@ export default function UsernameEditor({ currentUsername }: { currentUsername: s
     // Both view and edit modes are contained in h-8 — no layout shift in normal use.
     // Error text only appends below when there's actually an error, growing the card downward.
     return (
-        <div>
-            <div className="h-8 flex items-center w-full">
+        <div className="min-w-0">
+            <div className="min-h-8 flex items-center w-full">
                 {!editing ? (
                     <button
                         type="button"
                         onClick={startEditing}
-                        className="group flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        aria-label={t('account.editUsername')}
+                        className="group flex items-center gap-1.5 max-w-full text-left transition-colors cursor-pointer"
+                        aria-label={
+                            hasUsername ? t('account.editUsername') : t('account.addUsername')
+                        }
                     >
-                        <span>{currentUsername}</span>
-                        <Pencil className="h-3 w-3 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
+                        <span
+                            className={
+                                hasUsername
+                                    ? 'font-semibold text-base leading-tight truncate'
+                                    : 'font-semibold text-base leading-tight truncate text-muted-foreground'
+                            }
+                        >
+                            {hasUsername ? displayName : t('account.addUsername')}
+                        </span>
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
                     </button>
                 ) : (
                     <ButtonGroup className="w-full">

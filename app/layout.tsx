@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { Metadata } from 'next';
 import { NextIntlClientProvider, useLocale } from 'next-intl';
 import { getLocale } from 'next-intl/server';
-import { PublicEnvScript, env } from 'next-runtime-env';
 import { ThemeProvider } from 'next-themes';
 import { Geist, Inter } from 'next/font/google';
 import './globals.css';
@@ -15,10 +14,14 @@ import { cn } from '@/lib/utils';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export async function generateMetadata(): Promise<Metadata> {
-    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     return {
         metadataBase: appUrl ? new URL(appUrl) : undefined,
-        title: 'Scyed Hosting',
+        applicationName: 'Scyed Hosting',
+        title: {
+            default: 'Scyed Hosting',
+            template: '%s | Scyed Hosting',
+        },
         description: 'A little above average Gameserver hosting platform',
     };
 }
@@ -50,7 +53,6 @@ export default async function RootLayout({
             suppressHydrationWarning
         >
             <head>
-                <PublicEnvScript />
             </head>
             <NextIntlClientProvider locale={locale} messages={messages}>
                 <body className="bg-background text-foreground flex flex-col min-h-screen">
@@ -65,7 +67,7 @@ export default async function RootLayout({
                             <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4 flex-1">
                                 {children}
                                 <Toaster />
-                                {env('NODE_ENV') !== 'production' && <DevSessionInfo />}
+                                {process.env.NODE_ENV !== 'production' && <DevSessionInfo />}
                             </div>
                             <Footer />
                         </main>

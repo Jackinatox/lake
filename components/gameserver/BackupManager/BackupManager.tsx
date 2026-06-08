@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { GameServer } from '@/models/gameServerModel';
 import { Loader2, Plus, RefreshCw } from 'lucide-react';
-import { env } from 'next-runtime-env';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BackupCard } from './BackupCard';
 import { CreateBackupDialog } from './CreateBackupDialog';
@@ -44,7 +43,7 @@ function mapBackup(raw: any): Backup {
 }
 
 function BackupManager({ apiKey, server }: BackupManagerProps) {
-    const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const { toast } = useToast();
     const t = useTranslations('backupManager');
     const [backups, setBackups] = useState<Backup[]>([]);
@@ -408,7 +407,8 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
         () => backups.reduce((sum, backup) => sum + (backup.bytes ?? 0), 0),
         [backups],
     );
-    const limitReached = backupLimit > 0 && backups.length >= backupLimit;
+    const backupsDisabled = backupLimit === 0;
+    const limitReached = backupsDisabled || backups.length >= backupLimit;
 
     return (
         <Card className="border-0 shadow-sm p-3 min-h-72 w-full min-w-0">
@@ -447,7 +447,11 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                     </div>
                 </div>
 
-                {backupLimit > 0 ? (
+                {backupsDisabled ? (
+                    <p className="text-xs text-muted-foreground">
+                        {t('slotsDisabled')}
+                    </p>
+                ) : (
                     <p className="text-xs text-muted-foreground">
                         {t('slotsUsed', {
                             used: backups.length,
@@ -455,16 +459,20 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                             size: formatBytes(totalSize),
                         })}
                     </p>
-                ) : (
-                    <p className="text-xs text-muted-foreground">
-                        {t('slotsUnlimited', { size: formatBytes(totalSize) })}
-                    </p>
                 )}
 
                 {limitReached && (
                     <Alert>
-                        <AlertTitle>{t('limitReachedTitle')}</AlertTitle>
-                        <AlertDescription>{t('limitReachedDescription')}</AlertDescription>
+                        <AlertTitle>
+                            {backupsDisabled
+                                ? t('backupsDisabledTitle')
+                                : t('limitReachedTitle')}
+                        </AlertTitle>
+                        <AlertDescription>
+                            {backupsDisabled
+                                ? t('backupsDisabledDescription')
+                                : t('limitReachedDescription')}
+                        </AlertDescription>
                     </Alert>
                 )}
 
@@ -492,9 +500,11 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
                         ))}
                     </div>
                 ) : backups.length === 0 ? (
-                    <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                        {t('noBackups')}
-                    </div>
+                    backupsDisabled ? null : (
+                        <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                            {t('noBackups')}
+                        </div>
+                    )
                 ) : (
                     <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
                         {backups.map((backup) => (

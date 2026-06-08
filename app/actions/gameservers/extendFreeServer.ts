@@ -58,7 +58,6 @@ export async function extendFreeServer(
 
                 logger.info('Free server extension blocked - cooldown active', 'GAME_SERVER', {
                     details: {
-                        serverId: server.id,
                         lastExtended: server.lastExtended,
                         canExtendAt,
                         hoursRemaining,
@@ -90,7 +89,6 @@ export async function extendFreeServer(
 
         logger.info('Free server extended successfully', 'FREE_SERVER_EXTEND', {
             details: {
-                serverId: server.id,
                 serverName: server.name,
                 oldExpiry: server.expires,
                 newExpiry: newExpiry,

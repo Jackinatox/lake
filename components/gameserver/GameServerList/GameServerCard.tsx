@@ -1,9 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { ClientServer } from '@/models/prisma';
 import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
 import { useTranslations } from 'next-intl';
@@ -15,10 +15,7 @@ type ExpirationUrgency = 'ok' | 'warn' | 'urgent' | 'expired';
 
 function getExpiration(date: Date): { text: string; urgency: ExpirationUrgency } {
     const diffDays = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    const text =
-        date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
-        ' ' +
-        date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const text = formatDate(date, true);
 
     if (diffDays < 0) return { text: 'Expired', urgency: 'expired' };
     if (diffDays <= 7) return { text, urgency: 'urgent' };
@@ -61,26 +58,14 @@ function ServerCard({
             <div className="flex gap-3">
                 {/* Game icon */}
                 <div className="shrink-0">
-                    <span className="block dark:hidden">
-                        <Image
-                            src={`/images/light/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                            alt={server.gameData.name}
-                            width={48}
-                            height={48}
-                            className="w-11 h-11 rounded-lg object-cover"
-                            priority
-                        />
-                    </span>
-                    <span className="hidden dark:block">
-                        <Image
-                            src={`/images/dark/games/icons/${server.gameData.name.toLowerCase()}.webp`}
-                            alt={server.gameData.name}
-                            width={48}
-                            height={48}
-                            className="w-11 h-11 rounded-lg object-cover"
-                            priority
-                        />
-                    </span>
+                    <ThemeImage
+                        src={`/images/games/icons/${server.gameData.name.toLowerCase()}.webp`}
+                        alt={server.gameData.name}
+                        width={48}
+                        height={48}
+                        className="w-11 h-11 rounded-lg object-cover"
+                        priority
+                    />
                 </div>
 
                 {/* Content */}
@@ -130,7 +115,7 @@ function ServerCard({
                             </span>
                             {deletionDateFormatted && (
                                 <span className="text-slate-400 dark:text-slate-500 truncate">
-                                    &nbsp;· deleted {deletionDateFormatted}
+                                    &nbsp;· {t('willBeDeleted', { date: deletionDateFormatted })}
                                 </span>
                             )}
                         </div>

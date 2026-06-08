@@ -1,5 +1,4 @@
 import { Heading, Hr, Img, Section, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
@@ -179,7 +178,7 @@ export default function FreeServerCreatedTemplate({
             <Text style={{ ...textStyle, marginTop: 16 }}>
                 Dein kostenloser Server ist jetzt aktiv. Bei Fragen erreichst du unser{' '}
                 <a
-                    href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/support`}
                     style={{ color: '#0f172a', textDecoration: 'underline' }}
                 >
                     Support-Team

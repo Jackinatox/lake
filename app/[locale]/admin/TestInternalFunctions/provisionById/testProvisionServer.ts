@@ -25,6 +25,7 @@ export async function testProvisionServer(orderId: string) {
         const id = await provisionServerWithWorker(order);
         await logger.info(`Manual Provisioned server with job ID: ${id}`, 'SYSTEM', {
             userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: {
                 orderId: order.id,
                 jobId: id,

@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Check, Loader2, AlertCircle, Info, Save } from 'lucide-react';
+import { Loader2, AlertCircle, Save } from 'lucide-react';
 import type { GameFlavor, GameVersion } from '@/types/gameData';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Button } from '@/components/ui/button';
@@ -27,9 +27,52 @@ interface MinecraftSettingsProps {
 }
 
 function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
+    return (
+        <div className="space-y-4">
+            <StartupCommand
+                command={server.invocation}
+                ptServerId={server.identifier}
+                defaultCommand={server.defaultStartCommand}
+            />
+
+            <MinecraftVersionSelector
+                gameSlug={server.gameSlug}
+                eggId={server.gameConfig.eggId}
+                serverIdentifier={server.identifier}
+                apiKey={apiKey}
+            />
+
+            <DockerImageSelector
+                serverIdentifier={server.identifier}
+                apiKey={apiKey}
+                title="Java Version"
+                ptSelectedDockerImage={server.docker_image}
+                hint="Du kannst die Java-Version ändern, wenn du willst, aber die ausgewählte sollte funktionieren."
+            />
+
+            <div className="flex items-start gap-2">
+                <MinecraftFlavorDialog server={server} />
+            </div>
+        </div>
+    );
+}
+
+interface MinecraftVersionSelectorProps {
+    gameSlug: string;
+    eggId: number;
+    serverIdentifier: string;
+    apiKey: string;
+}
+
+function MinecraftVersionSelector({
+    gameSlug,
+    eggId,
+    serverIdentifier,
+    apiKey,
+}: MinecraftVersionSelectorProps) {
     const { value, error, loading, setValue } = usePTEnv(
         'MINECRAFT_VERSION',
-        server.identifier,
+        serverIdentifier,
         apiKey,
     );
 
@@ -37,7 +80,6 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     const [versionsLoading, setVersionsLoading] = useState(false);
     const [selectedVersion, setSelectedVersion] = useState<string>('');
     const [isUpdating, setIsUpdating] = useState(false);
-    const [initialVersion, setInitialVersion] = useState<string>('');
     const [lastSavedVersion, setLastSavedVersion] = useState<string>('');
     const [updateError, setUpdateError] = useState<string>('');
 
@@ -45,16 +87,13 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
         const fetchVersions = async () => {
             try {
                 setVersionsLoading(true);
-                const data = await fetchGames(server.gameDataId);
+                const data = await fetchGames(gameSlug);
                 const raw = data?.data || null;
                 const flavors: GameFlavor[] = raw?.flavors ?? [];
 
-                // Find the current flavor to get its versions
-                const currentFlavor = flavors.find(
-                    (flavor) => flavor.egg_id === server.gameData.eggId,
-                );
+                const currentFlavor = flavors.find((flavor) => flavor.egg_id === eggId);
                 if (currentFlavor) {
-                    setAvailableVersions(currentFlavor.versions.reverse());
+                    setAvailableVersions(currentFlavor.versions);
                 }
             } catch (error) {
                 console.error('Error fetching versions:', error);
@@ -63,26 +102,18 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
             }
         };
         fetchVersions();
-    }, [server.gameDataId, server.gameData.eggId]);
+    }, [gameSlug, eggId]);
 
     useEffect(() => {
         if (value && !loading) {
             setSelectedVersion(value);
             setLastSavedVersion(value);
-            // Set initial version only once when first loaded
-            if (!initialVersion) {
-                setInitialVersion(value);
-            }
         }
-    }, [value, loading, initialVersion]);
+    }, [value, loading]);
 
-    const handleVersionChange = async (version: string) => {
-        setSelectedVersion(version);
-    };
-
-    const handleRemoteVersionChange = async (version: string) => {
+    const handleSave = async (version: string) => {
         setIsUpdating(true);
-        setUpdateError(''); // Clear any previous errors
+        setUpdateError('');
 
         try {
             await setValue(version);
@@ -90,7 +121,6 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
         } catch (error) {
             console.error('Error updating version:', error);
             setUpdateError('Failed to update version');
-            // Revert to last saved version
             setSelectedVersion(lastSavedVersion);
         } finally {
             setIsUpdating(false);
@@ -98,78 +128,58 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     };
 
     return (
-        <div className="space-y-4">
-            <div className="">
-                <StartupCommand command={server.invocation} />
-                <div className="flex items-center gap-2 pt-4">
-                    <Label className="text-sm font-medium">Minecraft Version</Label>
-                    <span className="text-xs text-muted-foreground italic">
-                        (Reinstall required)
-                    </span>
-
-                    {isUpdating && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
-                    {!isUpdating && updateError && (
-                        <div className="flex items-center gap-1 text-red-600">
-                            <AlertCircle className="h-4 w-4" />
-                            <span className="text-xs font-medium">Failed</span>
-                        </div>
-                    )}
-                </div>
-                <ButtonGroup className="w-full">
-                    <Select
-                        value={selectedVersion}
-                        onValueChange={handleVersionChange}
-                        disabled={
-                            loading ||
-                            versionsLoading ||
-                            availableVersions.length === 0 ||
-                            isUpdating
-                        }
-                    >
-                        <SelectTrigger className="flex-1 min-w-0 h-9">
-                            <SelectValue placeholder="Select a version" />
-                        </SelectTrigger>
-                        <SelectContent className="w-full">
-                            <SelectGroup>
-                                {availableVersions.map((version) => (
-                                    <SelectItem key={version.version} value={version.version}>
-                                        {version.version} {version.version === value && '(Current)'}
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
-                    <Button
-                        variant="outline"
-                        disabled={
-                            selectedVersion === lastSavedVersion || !selectedVersion || isUpdating
-                        }
-                        onClick={() => handleRemoteVersionChange(selectedVersion)}
-                        className="flex shrink-0 items-center gap-2"
-                    >
-                        <Save className="h-4 w-4" />
-                        <span>Save</span>
-                    </Button>
-                </ButtonGroup>
-                {error && <p className="text-sm text-red-500">Error: {JSON.stringify(error)}</p>}
-                {updateError && <p className="text-sm text-red-500">{updateError}</p>}
+        <div className="space-y-1">
+            <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium">Minecraft Version</Label>
+                <span className="text-xs text-muted-foreground italic">
+                    (Reinstall required)
+                </span>
+                {isUpdating && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
+                {!isUpdating && updateError && (
+                    <div className="flex items-center gap-1 text-red-600">
+                        <AlertCircle className="h-4 w-4" />
+                        <span className="text-xs font-medium">Failed</span>
+                    </div>
+                )}
             </div>
-
-            <DockerImageSelector
-                serverIdentifier={server.identifier}
-                apiKey={apiKey}
-                disabled={versionsLoading}
-                title="Java Version"
-                ptSelectedDockerImage={server.docker_image}
-            />
-            <span className="text-muted-foreground text-xs">
-                Du kannst die Java-Version ändern, wenn du willst, aber die ausgewählte sollte
-                funktionieren.
-            </span>
-
-            <div className="flex items-start gap-2">
-                <MinecraftFlavorDialog server={server} />
-            </div>
+            <ButtonGroup className="w-full">
+                <Select
+                    value={selectedVersion}
+                    onValueChange={setSelectedVersion}
+                    disabled={
+                        loading ||
+                        versionsLoading ||
+                        availableVersions.length === 0 ||
+                        isUpdating
+                    }
+                >
+                    <SelectTrigger className="flex-1 min-w-0 h-9">
+                        <SelectValue placeholder="Select a version" />
+                    </SelectTrigger>
+                    <SelectContent className="w-full">
+                        <SelectGroup>
+                            {availableVersions.map((version) => (
+                                <SelectItem key={version.version} value={version.version}>
+                                    {version.version} {version.version === value && '(Current)'}
+                                </SelectItem>
+                            ))}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+                <Button
+                    variant="outline"
+                    disabled={
+                        selectedVersion === lastSavedVersion || !selectedVersion || isUpdating
+                    }
+                    onClick={() => handleSave(selectedVersion)}
+                    className="shrink-0 gap-2"
+                >
+                    <Save className="h-4 w-4" />
+                    <span>Save</span>
+                </Button>
+            </ButtonGroup>
+            {error && <p className="text-sm text-red-500">Error: {JSON.stringify(error)}</p>}
+            {updateError && <p className="text-sm text-red-500">{updateError}</p>}
         </div>
     );
 }

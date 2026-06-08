@@ -1,9 +1,8 @@
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
 
 export default async function deleteServerAdmin(ptAdminId: number) {
-    const apiKey = env('PTERODACTYL_API_KEY');
-    const baseUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+    const apiKey = process.env.PTERODACTYL_API_KEY;
+    const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     if (!apiKey || !baseUrl) {
         throw new Error('Pterodactyl configuration is missing');

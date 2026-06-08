@@ -1,5 +1,4 @@
 import { Heading, Img, Section, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
@@ -14,9 +13,9 @@ import {
     textStyle,
 } from '../components';
 
-interface InvoiceTemplateProps {
+export interface InvoiceTemplateProps {
     userName: string;
-    invoiceNumber: string;
+    stripeInvoiceId: string;
     invoiceDate: Date;
     gameName: string;
     gameImageUrl: string;
@@ -40,7 +39,7 @@ const formatPrice = (cents: number) => {
 
 export default function InvoiceTemplate({
     userName,
-    invoiceNumber,
+    stripeInvoiceId,
     invoiceDate,
     gameName,
     gameImageUrl,
@@ -62,7 +61,7 @@ export default function InvoiceTemplate({
         >
             <Heading style={headingStyle}>Rechnungsübersicht</Heading>
             <Text style={{ ...mutedTextStyle, marginTop: 6 }}>
-                Rechnungsnummer: {invoiceNumber}
+                Rechnungsnummer: {stripeInvoiceId}
             </Text>
 
             <Text style={textStyle}>Hallo {userName},</Text>
@@ -186,7 +185,7 @@ export default function InvoiceTemplate({
                 <Text
                     style={{ ...mutedTextStyle, fontSize: '12px', marginTop: 8, marginBottom: 0 }}
                 >
-                    Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung).
+                    Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer gemäß §19 UStG.
                 </Text>
             </EmailCard>
 
@@ -208,7 +207,7 @@ export default function InvoiceTemplate({
             <Text style={{ ...textStyle, marginTop: 16 }}>
                 Bei Fragen zu dieser Rechnung{' '}
                 <a
-                    href={`${env('NEXT_PUBLIC_APP_URL')}/support`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/support`}
                     style={{ color: '#0f172a', textDecoration: 'underline' }}
                 >
                     kontaktiere uns gerne

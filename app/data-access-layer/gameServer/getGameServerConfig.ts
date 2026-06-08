@@ -2,13 +2,13 @@ import 'server-only';
 
 import prisma from '@/lib/prisma';
 
-import { HardwareConfig } from '@/models/config';
+import { UpgradeBaseConfig } from '@/models/config';
 
 // Helper funcion that fetches the current hardware conf of a gameserver - used to calc upgrade prioce or show current hardware
 export async function getGameServerConfig(
     server_id: string,
     userId: string,
-): Promise<HardwareConfig | null> {
+): Promise<UpgradeBaseConfig | null> {
     const server = await prisma.gameServer.findFirst({
         where: {
             userId: userId,
@@ -19,6 +19,17 @@ export async function getGameServerConfig(
         },
         include: {
             gameData: true,
+            resourceTier: {
+                select: {
+                    id: true,
+                    name: true,
+                    diskMB: true,
+                    backups: true,
+                    ports: true,
+                    priceCents: true,
+                    enabled: true,
+                },
+            },
         },
     });
 
@@ -37,5 +48,8 @@ export async function getGameServerConfig(
         allocations: server.allocations,
         durationsDays,
         pfGroupId: server.locationId,
+        resourceTierId: server.resourceTierId,
+        currentDiskUsageMb: 0,
+        resourceTier: server.resourceTier,
     };
 }

@@ -1,5 +1,4 @@
 import { Heading, Hr, Section, Text } from '@react-email/components';
-import { env } from 'next-runtime-env';
 import { formatDate } from '../../formatDate';
 import { OrderType, RefundServerAction } from '@/app/client/generated/enums';
 import {
@@ -63,7 +62,7 @@ export default function RefundTemplate({
     reason,
     serverAction,
 }: RefundTemplateProps) {
-    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const paymentsUrl = appUrl ? `${appUrl}/profile` : '#'; // TODO Link to more specific page when available
 
     return (

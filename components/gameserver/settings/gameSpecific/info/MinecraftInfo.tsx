@@ -20,7 +20,7 @@ function MinecraftInfo({ server, apiKey }: MinecraftInfoProps) {
     }
 
     return (
-        <div>{(server.gameData.gameSpecificConfig as MinecraftConfig).flavor + ' ' + value}</div>
+        <div>{(server.gameConfig.gameSpecificConfig as MinecraftConfig).flavor + ' ' + value}</div>
     );
 }
 

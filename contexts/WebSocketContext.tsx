@@ -9,7 +9,6 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { env } from 'next-runtime-env';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
 // ============================================================================
@@ -443,7 +442,7 @@ class ServerConnectionManager {
     }
 
     private async fetchCredentials(): Promise<WsCreds> {
-        const ptUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
+        const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
         const response = await fetch(`${ptUrl}/api/client/servers/${this.serverId}/websocket`, {
             method: 'GET',
             headers: {

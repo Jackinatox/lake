@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { calculateNew, NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
+import { ORDER_DURATIONS } from '@/lib/validation/common';
 import { hardwareConfiguratorQuerySchema } from '@/lib/validation/order';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -26,7 +27,9 @@ const BACKUP_STOPS = Array.from({ length: 10 }, (_, i) => (i + 1) * 2); // 2..20
 const ALLOCATION_STOPS = [2, 3, 4];
 
 // ── Duration config ──────────────────────────────────────────────────────
-const DURATIONS: readonly { value: number; labelKey: string; discount?: number }[] = [
+type OrderDuration = (typeof ORDER_DURATIONS)[number];
+
+const DURATIONS: readonly { value: OrderDuration; labelKey: string; discount?: number }[] = [
     { value: 7, labelKey: 'durations.week' },
     { value: 30, labelKey: 'durations.month' },
     { value: 90, labelKey: 'durations.threeMonths', discount: 10 },

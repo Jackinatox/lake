@@ -8,6 +8,7 @@ import { FactorioConfigComponent } from './GameInstallConfig/FactorioConfig';
 import { MinecraftConfigComponent } from './GameInstallConfig/minecraft-config';
 import { SatisfactoryConfigComponent } from './GameInstallConfig/satisfactory-config';
 import { HytaleConfigComponent } from './GameInstallConfig/HytaleConfig';
+import { ValheimConfigComponent } from './GameInstallConfig/valheim-config';
 import { useToast } from '@/hooks/use-toast';
 import { gameConfigSchema } from '@/lib/validation/order';
 import { getValidationMessage } from '@/lib/validation/common';
@@ -17,10 +18,11 @@ interface GameConfigProps {
     onSubmit: (config: GameConfig) => void;
     fullWidth?: boolean;
     initialConfig?: GameConfig | null;
+    eggId?: number; // Optional eggId for flavor changes
 }
 
 export const GameConfigComponent = forwardRef(function GameConfigComponent(
-    { game, onSubmit, fullWidth = false, initialConfig }: GameConfigProps,
+    { game, onSubmit, fullWidth = false, initialConfig, eggId }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -60,6 +62,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 onSubmit={handleValidatedSubmit}
                                 game={game}
                                 initialConfig={initialConfig}
+                                eggId={eggId}
                             />
                         );
                     case 'satisfactory':
@@ -83,6 +86,15 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                     case 'hytale':
                         return (
                             <HytaleConfigComponent
+                                ref={configRef}
+                                onSubmit={handleValidatedSubmit}
+                                game={game}
+                                initialConfig={initialConfig}
+                            />
+                        );
+                    case 'valheim':
+                        return (
+                            <ValheimConfigComponent
                                 ref={configRef}
                                 onSubmit={handleValidatedSubmit}
                                 game={game}

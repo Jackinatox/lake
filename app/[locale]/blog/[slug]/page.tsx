@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
-import { env } from 'next-runtime-env';
 import { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -15,7 +14,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
     searchParams: Promise<{ from?: string }>;
 }): Promise<Metadata> {
-    const appUrl = env('NEXT_PUBLIC_APP_URL');
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const [{ slug }, { from }] = await Promise.all([params, searchParams]);
     const post = await getBlogPostBySlug(slug);
     if (!post) {

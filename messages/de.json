@@ -63,6 +63,12 @@
     "extendServer": "Server verlängern",
     "home": "Zur Startseite"
   },
+  "GameserverError": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem weiterhin besteht.",
+    "tryAgain": "Erneut versuchen",
+    "contactSupport": "Support kontaktieren"
+  },
   "ServerCreationFailed": {
     "title": "Servererstellung fehlgeschlagen",
     "description": "Es tut uns leid — die Erstellung Deines Servers ist fehlgeschlagen. Unser Team wurde benachrichtigt und kümmert sich so schnell wie möglich darum. Wenn Du sofort Hilfe möchtest, wende Dich bitte an den Support.",
@@ -74,6 +80,8 @@
     "header1": "Gameserver-Hosting",
     "header2": "leicht gemacht",
     "heroSubtitle": "Starte deinen Gameserver in Sekunden — zuverlässige Hardware und ein übersichtliches Control Panel.",
+    "highlightUptime": "99% Verfügbarkeit",
+    "highlightSetup": "Server in unter 60 Sekunden bereit",
     "statUptime": "99,0%",
     "statUptimeLabel": "Verfügbarkeit",
     "statSupport": "Hilfsbereit",
@@ -109,10 +117,10 @@
     "ctaHeader": "Bereit zum Hosten?",
     "ctaDesc": "Wähle ein Spiel und bringe Deinen Server in wenigen Minuten online.",
     "ctaButton": "Loslegen",
-    "getFreeServer": "Kostenlosen Server erstellen"
+    "getFreeServer": "Kostenloser Server"
   },
   "freeServer": {
-    "buttonText": "Gratis Server",
+    "buttonText": "Kostenloser Server",
     "buttonDescription": "Erstelle einen kostenlosen Gameserver mit begrenzter Hardware",
     "pageTitle": "Kostenloser Server",
     "featuresTitle": "Free-Tier Funktionen",
@@ -259,6 +267,7 @@
       "title": "Performance-Konfiguration",
       "description": "Passe die Hardware Deines Servers an.",
       "performance-tier": "Performance-Stufe",
+      "resource-tier": "Resource-Tier",
       "extend-title": "Server verlängern",
       "duration": {
         "none": "Keine",
@@ -281,13 +290,14 @@
       "description": "Zusammenfassung Deiner Konfiguration.",
       "headers": {
         "vcpu": "vCPU",
-        "ram": "RAM"
+        "ram": "RAM",
+        "tier": "Tier"
       },
       "rows": {
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
       },
-      "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+      "discount-with-amount": "(-{amount} € Rabatt)"
     },
     "footer": {
       "total": "Gesamt",
@@ -372,7 +382,56 @@
     "gameConfig": {
       "title": "{game}-Konfiguration",
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
-      "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar."
+      "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
+      "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "valheim": {
+        "mode": {
+          "label": "Mods aktivieren (BepInEx)",
+          "description": "Wechsle zwischen Vanilla- und Modded-Server mit BepInEx-Mod-Unterstützung"
+        },
+        "modpack": {
+          "label": "ModPack (Thunderstore)",
+          "description": "Optionaler Abhängigkeits-String für ein Thunderstore-ModPack (eine Änderung erfordert eine Server-Neuinstallation)"
+        },
+        "password": {
+          "label": "Server-Passwort",
+          "description": "Passwort zum Beitreten erforderlich (5–20 Zeichen)"
+        },
+        "worldName": {
+          "label": "Weltname",
+          "description": "Name des zu ladenden Welt-Speicherstands (max. 20 Zeichen)"
+        },
+        "publicServer": {
+          "label": "Öffentlicher Server",
+          "description": "Diesen Server im öffentlichen Server-Browser anzeigen"
+        },
+        "serverName": {
+          "label": "Servername",
+          "description": "Im öffentlichen Server-Browser angezeigter Name (4–20 Buchstaben, keine Leer- oder Sonderzeichen)",
+          "error": "Verwende 4–20 Buchstaben (keine Leer- oder Sonderzeichen)."
+        },
+        "crossplay": {
+          "label": "Crossplay aktivieren",
+          "description": "Spielern von anderen Plattformen den Beitritt erlauben"
+        },
+        "advanced": "Erweitert",
+        "maxPlayers": {
+          "label": "Maximale Spielerzahl",
+          "description": "Maximale Anzahl gleichzeitiger Spieler"
+        },
+        "autoUpdate": {
+          "label": "Automatische Updates",
+          "description": "Server automatisch aktualisieren, wenn eine neue Version verfügbar ist"
+        },
+        "backupInterval": {
+          "label": "Backup-Intervall (Sekunden)",
+          "description": "Wie oft die Welt automatisch gespeichert wird (Standard: 1800 = 30 Min.)"
+        },
+        "backupCount": {
+          "label": "Anzahl Backups",
+          "description": "Anzahl der aufzubewahrenden automatischen Backups"
+        }
+      }
     }
   },
   "extendServer": {
@@ -694,13 +753,14 @@
       "confirm": "Bestätigen",
       "cancel": "Abbrechen",
       "username": "Benutzername",
+      "addUsername": "Benutzernamen hinzufügen",
       "editUsername": "Benutzername bearbeiten",
       "saveUsername": "Speichern",
       "cancelEdit": "Abbrechen",
       "usernameAvailable": "Benutzername ist verfügbar",
       "usernameTaken": "Benutzername ist bereits vergeben",
       "usernameNoAt": "Benutzername darf kein @ enthalten",
-      "usernameMinLength": "Mindestens 3 Zeichen erforderlich",
+      "usernameMinLength": "Mindestens 4 Zeichen erforderlich",
       "usernameSaveError": "Benutzername konnte nicht aktualisiert werden"
     },
     "twoFactor": {
@@ -814,7 +874,6 @@
     "about": "Über uns (Bald verfügbar)",
     "blog": "Blog",
     "company": "Unternehmen",
-    "sourcecode": "Quellcode",
     "contactUs": "Kontakt",
     "withdrawal": "Verträge widerrufen",
     "payments": "Zahlungsbedingungen",
@@ -824,6 +883,7 @@
     "freeServer": "Kostenloser Server",
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",
+    "willBeDeleted": "wird gelöscht am {date}",
     "loading": "Server wird geladen...",
     "loadingSteps": {
       "fetchingData": "Serverdaten werden abgerufen",
@@ -884,7 +944,7 @@
       "header": {
         "upgrade": "Upgrade/Verlängern"
       },
-      "noAllocation": "Keine Zuweisung gefunden",
+      "noAllocation": "Keine Ports gefunden",
       "copyIPPort": "Kopieren",
       "uptime": "Betriebszeit:",
       "serverControls": "Server-Steuerung",
@@ -901,7 +961,23 @@
         "start": "Starten",
         "restart": "Neustart",
         "stop": "Stoppen",
-        "kill": "Beenden"
+        "kill": "Beenden",
+        "killConfirm": {
+          "title": "Server beenden?",
+          "description": "Der Serverprozess wird sofort beendet. Nicht gespeicherte Daten können verloren gehen.",
+          "cancel": "Abbrechen",
+          "confirm": "Server beenden"
+        }
+      },
+      "address": {
+        "address": "Adresse",
+        "serverAddress": "Serveradresse",
+        "port": "Port",
+        "connect": "Verbinden",
+        "connectionDetails": "Verbindungsdetails",
+        "copyFull": "IP & Port kopieren",
+        "copyAddress": "Adresse kopieren",
+        "copyPort": "Port kopieren"
       }
     },
     "fileManager": {
@@ -910,6 +986,9 @@
       "toolbar": {
         "filterPlaceholder": "Dateien filtern",
         "refreshButton": "Aktualisieren",
+        "createButton": "Neu",
+        "newFileButton": "Neue Datei",
+        "newFolderButton": "Neuer Ordner",
         "uploadButton": "Hochladen"
       },
       "breadcrumb": {
@@ -931,6 +1010,17 @@
           "rename": "Umbenennen",
           "delete": "Löschen"
         }
+      },
+      "dropZone": {
+        "title": "Dateien hier ablegen",
+        "description": "Lade eine oder mehrere Dateien in das aktuelle Verzeichnis hoch. Ordner werden hier nicht angenommen.",
+        "filesOnlyBadge": "Nur Dateien",
+        "rejectTitle": "Ordner werden hier nicht unterstützt",
+        "rejectDescription": "Nutze FTP/SFTP für Ordner-Uploads.",
+        "overlayTitle": "Loslassen, um Dateien hinzuzufügen",
+        "overlayDescription": "Der Upload-Dialog öffnet sich, damit Du die ausgewählten Dateien prüfen kannst.",
+        "overlayRejectTitle": "Ordner-Uploads brauchen FTP/SFTP",
+        "overlayRejectDescription": "Lege hier einzelne Dateien ab oder nutze die FTP/SFTP-Zugangsdaten oben für ganze Ordner."
       },
       "ftpAccess": {
         "title": "FTP-Zugangsdaten",
@@ -975,8 +1065,26 @@
         "selectFilesText": "Wähle von Deinem Gerät aus.",
         "chooseFilesButton": "Dateien auswählen",
         "selectedFilesLabel": "Ausgewählte Dateien:",
+        "totalLabel": "Gesamt: {size}",
+        "selectionLimitedMessage": "Nur die ersten {maxFiles} Dateien wurden ausgewählt. {omittedCount} Datei(en) wurden ignoriert.",
         "cancelButton": "Abbrechen",
+        "abortButton": "Upload abbrechen",
+        "uploadingButton": "Wird hochgeladen…",
         "uploadButton": "Hochladen"
+      },
+      "create": {
+        "dialogTitleFile": "Datei erstellen",
+        "dialogTitleFolder": "Ordner erstellen",
+        "dialogDescriptionFile": "Erstelle eine neue leere Datei in {directory}.",
+        "dialogDescriptionFolder": "Erstelle einen neuen Ordner in {directory}.",
+        "nameLabel": "Name",
+        "inputPlaceholderFile": "z.B. server.properties",
+        "inputPlaceholderFolder": "z.B. plugins",
+        "cancelButton": "Abbrechen",
+        "createButtonFile": "Datei erstellen",
+        "createButtonFolder": "Ordner erstellen",
+        "creatingButtonFile": "Datei wird erstellt…",
+        "creatingButtonFolder": "Ordner wird erstellt…"
       },
       "editor": {
         "dialogTitle": "Datei",
@@ -1017,23 +1125,41 @@
         "unableToDownload": "Download nicht möglich",
         "nameRequired": "Name erforderlich",
         "nameRequiredDescription": "Bitte gib einen neuen Namen ein, bevor Du speicherst.",
+        "createNameRequired": "Name erforderlich",
+        "createNameRequiredDescription": "Bitte gib einen Dateinamen oder Ordnernamen ein.",
+        "invalidEntryName": "Ungültiger Name",
+        "invalidEntryNameDescription": "Der Name darf nicht leer sein, keine Schrägstriche enthalten und nicht nur . oder .. sein.",
+        "entryAlreadyExists": "Eintrag existiert bereits",
+        "entryAlreadyExistsDescription": "{name} ist in diesem Verzeichnis bereits vorhanden.",
         "entryRenamed": "Eintrag umbenannt",
         "entryRenamedDescription": "{oldName} heißt jetzt {newName}.",
         "unableToRename": "Umbenennen nicht möglich",
         "entryDeleted": "Eintrag gelöscht",
         "entryDeletedDescription": "{name} wurde entfernt.",
         "unableToDelete": "Löschen nicht möglich",
+        "fileCreated": "Datei erstellt",
+        "fileCreatedDescription": "{name} wurde angelegt.",
+        "folderCreated": "Ordner erstellt",
+        "folderCreatedDescription": "{name} wurde angelegt.",
+        "unableToCreateFile": "Datei konnte nicht erstellt werden",
+        "unableToCreateFolder": "Ordner konnte nicht erstellt werden",
         "noFilesSelected": "Keine Dateien ausgewählt",
         "noFilesSelectedDescription": "Wähle eine oder mehrere Dateien aus, bevor Du hochlädst.",
+        "uploadSelectionLimited": "Dateiauswahl begrenzt",
+        "uploadSelectionLimitedDescription": "Nur die ersten {maxFiles} Dateien wurden ausgewählt. {omittedCount} Datei(en) wurden ignoriert.",
         "uploadComplete": "Upload abgeschlossen",
         "uploadCompleteDescription": "{count} Datei(en) erfolgreich hochgeladen.",
+        "uploadCancelled": "Upload abgebrochen",
+        "uploadCancelledDescription": "Der laufende Upload wurde gestoppt.",
         "uploadFailed": "Upload fehlgeschlagen",
-        "unableToUpload": "Hochladen nicht möglich"
+        "unableToUpload": "Hochladen nicht möglich",
+        "folderDropRejected": "Ordner-Upload braucht FTP/SFTP",
+        "folderDropRejectedDescription": "Der Datei-Manager im Browser akzeptiert nur einzelne Dateien. Nutze die FTP/SFTP-Zugangsdaten für ganze Ordner."
       }
     },
     "networkManager": {
       "title": "Netzwerk",
-      "description": "Verwalte IP-Zuweisungen und Ports Deines Servers.",
+      "description": "Verwalte die Ports Deines Servers.",
       "primary": "Primär",
       "noteLabel": "Notiz",
       "notes": "Notizen",
@@ -1041,25 +1167,25 @@
       "editNote": "Notiz bearbeiten",
       "setPrimary": "Als Primär",
       "remove": "Entfernen",
-      "addAllocation": "Zuweisung hinzufügen",
+      "addAllocation": "Port hinzufügen",
       "addingAllocation": "Wird hinzugefügt...",
-      "noAllocations": "Keine Netzwerk-Zuweisungen gefunden.",
-      "allocationCount": "{current} / {max} Zuweisungen verwendet",
-      "primaryUpdated": "Primäre Zuweisung aktualisiert",
-      "primaryFailed": "Primäre Zuweisung konnte nicht geändert werden",
-      "allocationRemoved": "Zuweisung entfernt",
-      "removeFailed": "Zuweisung konnte nicht entfernt werden",
-      "allocationAdded": "Neue Zuweisung zugewiesen",
-      "addFailed": "Zuweisung konnte nicht hinzugefügt werden",
+      "noAllocations": "Keine Ports gefunden.",
+      "allocationCount": "{current} / {max} Ports verwendet",
+      "primaryUpdated": "Primärer Port aktualisiert",
+      "primaryFailed": "Primärer Port konnte nicht geändert werden",
+      "allocationRemoved": "Port entfernt",
+      "removeFailed": "Port konnte nicht entfernt werden",
+      "allocationAdded": "Neuer Port zugewiesen",
+      "addFailed": "Port konnte nicht hinzugefügt werden",
       "notesUpdated": "Notiz aktualisiert",
       "notesFailed": "Notiz konnte nicht aktualisiert werden",
-      "notesDialogTitle": "Zuweisungs-Notiz bearbeiten",
+      "notesDialogTitle": "Port-Notiz bearbeiten",
       "notesDialogDescription": "Beschriftung oder Beschreibung für {address} hinzufügen.",
       "notesPlaceholder": "z.B. Haupt-Spielport, RCON, Web-Panel...",
-      "deleteDialogTitle": "Zuweisung entfernen?",
+      "deleteDialogTitle": "Port entfernen?",
       "deleteDialogDescription": "Möchtest Du {address} wirklich entfernen?",
-      "deleteDialogWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Die Zuweisung wird zum Pool zurückgegeben.",
-      "deleteConfirm": "Zuweisung entfernen",
+      "deleteDialogWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Der Port wird zum Pool zurückgegeben.",
+      "deleteConfirm": "Port entfernen",
       "deleting": "Wird entfernt...",
       "cancel": "Abbrechen",
       "save": "Speichern",
@@ -1094,7 +1220,15 @@
       },
       "startupCommand": {
         "label": "Startbefehl",
-        "description": "Dieser Befehl wird automatisch generiert und kann nicht geändert werden."
+        "description": "Passe den Startbefehl für deinen Server an.",
+        "save": "Speichern",
+        "saving": "Speichert...",
+        "saveFailed": "Startbefehl konnte nicht gespeichert werden",
+        "reset": "Zurücksetzen",
+        "required": "Startbefehl ist erforderlich",
+        "showDefault": "Standardbefehl anzeigen",
+        "hideDefault": "Standardbefehl ausblenden",
+        "useDefault": "Standard verwenden"
       }
     },
     "statusIndicator": {
@@ -1210,9 +1344,9 @@
         "none": "Keine Server-Änderungen"
       }
     },
-    "legalNote": "Nach EU-Verbraucherschutzrecht (§355 BGB) hast Du das Recht, innerhalb von 14 Tagen nach dem Kauf von jedem Vertrag zurückzutreten. Die Erstattung wird anteilig basierend auf der ungenutzten Servicezeit berechnet.",
     "supportNote": "Bei Fragen oder Hilfe zu einer Erstattung kontaktiere unseren",
-    "supportLink": "Support"
+    "supportLink": "Support",
+    "faqHeading": "Häufige Fragen"
   },
   "CookieBanner": {
     "title": "Cookie-Hinweis",
@@ -1228,9 +1362,11 @@
     "refresh": "Aktualisieren",
     "newBackup": "Neues Backup",
     "slotsUsed": "{used}/{limit} Backup-Slots belegt · Gesamtgröße {size}",
-    "slotsUnlimited": "Unbegrenzte Backup-Slots · Gesamtgröße {size}",
+    "slotsDisabled": "Backups sind in diesem Tarif nicht verfügbar.",
     "limitReachedTitle": "Backup-Limit erreicht",
     "limitReachedDescription": "Lösche ein vorhandenes Backup, um Platz für ein neues zu schaffen.",
+    "backupsDisabledTitle": "Backups nicht verfügbar",
+    "backupsDisabledDescription": "Dein aktueller Tarif enthält keine Backup-Slots. Wechsle den Tarif, um Backups zu erstellen.",
     "configRequiredTitle": "Konfiguration erforderlich",
     "configRequiredDescription": "Bitte setze NEXT_PUBLIC_PTERODACTYL_URL, um die Backup-Verwaltung zu aktivieren.",
     "unableToLoad": "Backups konnten nicht geladen werden",
@@ -1353,12 +1489,16 @@
     }
   },
   "order": {
-    "storageTier": "Speicher-Stufe",
+    "storageTier": "Resource-Tier",
     "resourceTier": {
       "free": "Kostenlos",
       "disk": "Speicher",
       "backups": "Backups",
-      "ports": "Ports"
+      "ports": "Ports",
+      "unavailable": "Für neue Änderungen nicht mehr verfügbar",
+      "diskUsageExceeded": "Nicht verfügbar: aktueller Verbrauch liegt bei {usedGiB} GiB",
+      "legacySelected": "Aktuell",
+      "legacyDescription": "Dieser Tier wird nicht mehr neu angeboten, kann für Deinen bestehenden Server aber weiter genutzt werden."
     },
     "package": {
       "recommended": "Empfohlen",
@@ -1379,7 +1519,132 @@
   "menu": {
     "games": "Spiele",
     "dashboard": "Dashboard",
-    "support": "Support"
+    "support": "Support",
+    "pricing": "Preise"
+  },
+  "pricing": {
+    "meta": {
+      "title": "Preise",
+      "description": "Faire, transparente Preise. Konfiguriere Deinen Gameserver und zahle nur für das, was Du wirklich brauchst."
+    },
+    "hero": {
+      "badge": "Preise",
+      "title": "Faire, transparente Preise",
+      "subtitle": "Du wählst eine Performance Gruppe, das bestimmt die Basis Performance, damit läuft der Server flüssiger. Dann wählst du CPU und RAM nach Anforderungen von deinem Spiel. Zum Schluss noch die Ressourcen, wie viel Speicherplatz, Backups und Ports du brauchst."
+    },
+    "highlights": {
+      "noSubscription": "Kein Abo",
+      "noSubscriptionDesc": "Einmalige Zahlung für die gewählte Laufzeit.",
+      "transparent": "Transparent",
+      "transparentDesc": "Jeder Cent für CPU, RAM und Ressourcen ist sichtbar.",
+      "flexible": "Flexibel",
+      "flexibleDesc": "Jederzeit upgraden oder verlängern."
+    },
+    "howItWorks": {
+      "title": "So funktionieren die Preise",
+      "subtitle": "Drei einfache Schritte — kombiniere genau das, was Du brauchst.",
+      "step1": {
+        "title": "Performance-Gruppe wählen",
+        "description": "Wähle die Hardware-Familie, die zu Dir passt. Jede Gruppe hat eigene CPU- und RAM-Preise."
+      },
+      "step2": {
+        "title": "CPU und Speicher festlegen",
+        "description": "Stelle mit den Slidern genau ein, wie viele vCores und GiB RAM Dein Spiel braucht."
+      },
+      "step3": {
+        "title": "Ressourcenpaket wählen",
+        "description": "Füge Speicherplatz, Backup-Slots und Ports mit einem Klick hinzu — wähle das Paket, das zu Deinem Projekt passt."
+      }
+    },
+    "performance": {
+      "title": "Performance-Gruppen",
+      "subtitle": "Jede Gruppe hat eigene CPU- und Speicher-Preise.",
+      "cpuLabel": "CPU",
+      "ramLabel": "RAM",
+      "perVCore": "€ / vCore / Monat",
+      "perGiB": "€ / GiB / Monat",
+      "vCoreRange": "{min}–{max} vCores",
+      "ramRange": "{min}–{max} GiB"
+    },
+    "resourceTiers": {
+      "title": "Ressourcenpakete",
+      "subtitle": "Disk-, Backup- und Port-Pakete — wähle, was Dein Server braucht.",
+      "diskLabel": "Speicher",
+      "backupsLabel": "Backups",
+      "portsLabel": "Ports",
+      "perMonth": "/ Monat",
+      "free": "Kostenlos"
+    },
+    "discounts": {
+      "title": "Laufzeit-Rabatte",
+      "subtitle": "Längere Laufzeit, niedrigerer Preis.",
+      "weekLabel": "1 Woche",
+      "weekModifier": "+15 % Kurzzeit-Aufschlag",
+      "monthLabel": "1 Monat",
+      "monthModifier": "Basispreis",
+      "threeMonthsLabel": "3 Monate",
+      "threeMonthsModifier": "−10 % Rabatt",
+      "sixMonthsLabel": "6 Monate",
+      "sixMonthsModifier": "−15 % Rabatt"
+    },
+    "configurator": {
+      "continueLabel": "Spiel wählen"
+    },
+    "table": {
+      "performanceGroup": "Performance-Gruppe",
+      "headers": {
+        "item": "Position",
+        "selection": "Auswahl",
+        "unit": "Einzelpreis",
+        "subtotal": "Zwischensumme"
+      },
+      "cpu": "CPU",
+      "ram": "RAM",
+      "resources": "Ressourcen",
+      "duration": "Laufzeit",
+      "gib": "GiB",
+      "perVCore": "€/vCore/Mt.",
+      "perGiB": "€/GiB/Mt.",
+      "perMonth": "€/Monat",
+      "free": "Kostenlos",
+      "tierSummary": "{disk} GiB · {backups} Backups · {ports} Ports",
+      "durations": {
+        "week": "1 Woche",
+        "month": "1 Monat",
+        "threeMonths": "3 Monate",
+        "sixMonths": "6 Monate"
+      },
+      "daysValue": "{days} Tage",
+      "baseLabel": "Basis",
+      "discount": "Rabatt (−{percent} %)",
+      "surcharge": "Kurzzeit-Aufschlag (+{percent} %)",
+      "total": "Gesamt",
+      "totalSub": "Einmalige Zahlung für {days} Tage",
+      "minOrderHint": "Mindestbestellwert beträgt 1,00 €"
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "items": {
+        "billing": {
+          "question": "Wie funktioniert die Abrechnung?",
+          "answer": "Du zahlst einmalig für die gewählte Laufzeit. Kein Abo, keine automatische Verlängerung — der Server stoppt, wenn die bezahlte Zeit abgelaufen ist."
+        },
+        "upgrade": {
+          "question": "Kann ich später upgraden?",
+          "answer": "Ja. Du kannst Deinen Server jederzeit upgraden oder verlängern und zahlst nur die Differenz, anteilig für die verbleibende Zeit."
+        },
+        "refund": {
+          "question": "Wie sieht es mit Rückerstattungen aus?",
+          "answer": "Nach EU-Verbraucherschutzrecht (§355 BGB) kannst Du innerhalb von 14 Tagen widerrufen und erhältst eine anteilige Rückerstattung für ungenutzte Zeit."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit, Deinen Server zu starten?",
+      "subtitle": "Konfiguriere Deine Hardware und wähle Dein Spiel — in unter einer Minute.",
+      "primary": "Jetzt konfigurieren",
+      "secondary": "Kostenlose Variante testen"
+    }
   },
   "blog": {
     "title": "Zurück zur Übersicht",

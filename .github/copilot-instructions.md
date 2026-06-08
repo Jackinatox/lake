@@ -2,8 +2,8 @@
 
 ## Architecture
 
-- **App Router** Next.js 15 app directory with locale-aware routing under `app/[locale]`; `middleware.ts` and `i18n/request.ts` enforce `de`/`en` locales and load `messages/*.json`.
-- **Auth** `auth.ts` configures Better Auth with Prisma adapter plus Discord OAuth; user creation hooks provision a Pterodactyl account via `createPtClient()` and `createUserApiKey()`.
+- **App Router** Next.js 16 app directory with locale-aware routing under `app/[locale]`; `proxy.ts` and `i18n/request.ts` enforce `de`/`en` locales and load `messages/*.json`.
+- **Auth** `auth.ts` configures Better Auth with Prisma adapter plus Discord, Google OAuth; user creation hooks provision a Pterodactyl account via `createPtClient()` and `createUserApiKey()`.
 - **Database** Postgres via Prisma (`prisma/schema.prisma`); always import the shared client from `@/prisma` inside server actions, route handlers, and data-access helpers.
 - **Domain Models** Core tables: `GameServer`, `GameServerOrder`, `Location`, `GameData`; enums like `OrderStatus` and `OrderType` drive provisioning state and pricing logic.
 - **UI Stack** Tailwind + shadcn components (`components/ui/*`) with locale-aware pages; global layout loads `Navbar`, `Footer`, theme provider, and `NextIntlClientProvider`.

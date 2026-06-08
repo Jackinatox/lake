@@ -1,6 +1,7 @@
 import { render } from '@react-email/render';
-import { env } from 'next-runtime-env';
+import { readFileSync } from 'fs';
 import { sendMail } from './NodeMailer';
+import path from 'path';
 import ConfirmEmailTemplate from './templates/ConfirmEmailTemplate';
 import FreeServerCreatedTemplate from './templates/FreeServerCreatedTemplate';
 import InvoiceTemplate from './templates/InvoiceTemplate';
@@ -68,7 +69,7 @@ export async function sendTicketCreatedEmail(to: string, ticket: SupportTicket) 
             category: ticket.category,
             message: ticket.message,
             ticketId: ticket.ticketId,
-            ticketUrl: `${env('NEXT_PUBLIC_APP_URL')}/support/tickets/${ticket.ticketId}/notImplementedYet`,
+            ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL}/support/tickets/${ticket.ticketId}/notImplementedYet`,
         }),
     );
 
@@ -158,7 +159,7 @@ export async function sendTwoFactorOtpEmail(
 interface InvoiceEmailData {
     userName: string;
     userEmail: string;
-    invoiceNumber: string;
+    stripeInvoiceId: string;
     invoiceDate: Date;
     gameName: string;
     gameImageUrl: string;
@@ -177,7 +178,7 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
     const html = await render(
         InvoiceTemplate({
             userName: data.userName,
-            invoiceNumber: data.invoiceNumber,
+            stripeInvoiceId: data.stripeInvoiceId,
             invoiceDate: data.invoiceDate,
             gameName: data.gameName,
             gameImageUrl: data.gameImageUrl,
@@ -193,11 +194,28 @@ export async function sendInvoiceEmail(data: InvoiceEmailData) {
         }),
     );
 
+    const returnPolicyPdf = readFileSync(
+        path.join(process.cwd(), 'public/static/pdfs/returnPolicy.pdf'),
+    );
+    const agbPdf = readFileSync(path.join(process.cwd(), 'public/static/pdfs/scyed-agb.pdf'));
+
     await sendMail(
         data.userEmail,
         `Rechnungsübersicht für deinen ${data.gameName} Server`,
         html,
         'INVOICE',
+        [
+            {
+                filename: 'Scyed-Widerrufsbelehrung.pdf',
+                data: returnPolicyPdf,
+                contentType: 'application/pdf',
+            },
+            {
+                filename: 'Scyed-AGB.pdf',
+                data: agbPdf,
+                contentType: 'application/pdf',
+            },
+        ],
     );
 }
 

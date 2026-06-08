@@ -1,7 +1,26 @@
 import prisma from '@/lib/prisma';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/order',
+        title: copy.orderIndexTitle,
+        description: copy.orderIndexDescription,
+        keywords: ['game server hosting', 'gameserver', 'server hosting', 'game hosting'],
+    });
+}
 
 export default async function OrderPage() {
     const games = await prisma.gameData.findMany({
@@ -14,10 +33,7 @@ export default async function OrderPage() {
         const imgName = `${game.name.toLowerCase()}.webp`;
         return {
             ...game,
-            images: {
-                dark: `/images/dark/games/icons/${imgName}`,
-                light: `/images/light/games/icons/${imgName}`,
-            },
+            imageSrc: `/images/games/icons/${imgName}`,
         };
     });
 
@@ -46,7 +62,7 @@ export default async function OrderPage() {
             {/* Game Grid */}
             <section className="relative -mt-20 md:-mt-32 pb-8 z-10">
                 <div className="mx-auto max-w-6xl px-2 md:px-6">
-                    <div className="flex flex-wrap gap-4 justify-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                         {gameCards.map((game) => (
                             <GameCard
                                 key={game.id}
@@ -54,7 +70,7 @@ export default async function OrderPage() {
                                     link: `/order/${game.slug}`,
                                     name: game.name,
                                 }}
-                                images={game.images}
+                                imageSrc={game.imageSrc}
                             />
                         ))}
                     </div>

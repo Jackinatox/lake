@@ -28,6 +28,7 @@ function UpgradeGameServerFromFree({
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
     const [selectedConfig, setSelectedConfig] = React.useState<HardwareConfig | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
+    const [sessionId, setSessionId] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
     const locale = useLakeLocale();
     const t = useTranslations('upgradeCheckout');
@@ -35,6 +36,7 @@ function UpgradeGameServerFromFree({
     const handleBackToConfigure = React.useCallback(() => {
         setSelectedConfig(null);
         setClientSecret(null);
+        setSessionId(null);
         setStep('configure');
     }, []);
 
@@ -57,6 +59,7 @@ function UpgradeGameServerFromFree({
             const secret = await checkoutAction(parsedParams.data);
 
             setClientSecret((secret as { client_secret: string }).client_secret);
+            setSessionId((secret as { sessionId: string }).sessionId);
             setStep('pay');
         } catch (error) {
             console.error('Error during checkout:', error);
@@ -82,7 +85,7 @@ function UpgradeGameServerFromFree({
                 </>
             )}
 
-            {step === 'pay' && clientSecret && (
+            {step === 'pay' && clientSecret && sessionId && (
                 <Card className="w-full max-w-4xl mx-auto space-y-6 p-4 md:p-6">
                     <Button variant="outline" onClick={() => handleBackToConfigure()}>
                         {t('backToConfig')}
@@ -91,6 +94,7 @@ function UpgradeGameServerFromFree({
                         <CustomServerPaymentElements
                             className="w-full"
                             clientSecret={clientSecret}
+                            sessionId={sessionId}
                         />
                     </div>
                 </Card>

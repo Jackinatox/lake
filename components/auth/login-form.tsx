@@ -16,8 +16,23 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { env } from 'next-runtime-env';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+
+type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;
+type SignInEmailData = SignInEmailResult['data'];
+
+function getTwoFactorRedirect(data: SignInEmailData) {
+    return (
+        typeof data === 'object' &&
+        data !== null &&
+        'twoFactorRedirect' in data &&
+        data.twoFactorRedirect === true
+    );
+}
+
+function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : null;
+}
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');
@@ -197,7 +212,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
                                 <Turnstile
                                     ref={turnstileRef}
-                                    siteKey={env('NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY')!}
+                                    siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
                                     onSuccess={setTurnstileToken}
                                     onError={() => setTurnstileToken('')}
                                     onExpire={() => setTurnstileToken('')}

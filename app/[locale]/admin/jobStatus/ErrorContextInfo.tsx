@@ -1,3 +1,5 @@
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
+
 interface ErrorContextInfoProps {
     createdAt: Date;
     gameServer?: {
@@ -8,6 +10,7 @@ interface ErrorContextInfoProps {
     user?: {
         id: string;
         name: string;
+        username?: string | null;
         email: string;
     } | null;
 }
@@ -25,7 +28,7 @@ export function ErrorContextInfo({ createdAt, gameServer, user }: ErrorContextIn
             {user && (
                 <span className="flex items-center gap-1 min-w-0">
                     <span className="text-green-600 dark:text-green-400 flex-shrink-0">User:</span>
-                    <span className="truncate">{user.name || user.email}</span>
+                    <span className="truncate">{getUserDisplayName(user)}</span>
                 </span>
             )}
         </div>

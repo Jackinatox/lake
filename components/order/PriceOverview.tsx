@@ -130,7 +130,9 @@ function Row({
                 <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <span>{label}</span>
             </div>
-            {children && <span className="tabular-nums font-medium text-foreground">{children}</span>}
+            {children && (
+                <span className="tabular-nums font-medium text-foreground">{children}</span>
+            )}
         </div>
     );
 }

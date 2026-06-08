@@ -22,6 +22,8 @@ import {
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
+    CONFIG_DUMMY_NUMBER,
+    CONFIG_KEY_SUPPORT_EMAIL,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -33,6 +35,7 @@ async function main() {
             name: 'Minecraft',
             slug: 'minecraft',
             sorting: 1,
+            nestId: 1,
         },
     });
 
@@ -46,6 +49,7 @@ async function main() {
             name: 'Satisfactory',
             slug: 'satisfactory',
             sorting: 10,
+            nestId: 5,
         },
     });
 
@@ -58,6 +62,7 @@ async function main() {
             ),
             enabled: false,
             sorting: 20,
+            nestId: 5,
         },
     });
 
@@ -70,6 +75,30 @@ async function main() {
             name: 'Hytale',
             slug: 'hytale',
             enabled: false,
+            nestId: 5,
+            sorting: 25,
+        },
+    });
+
+    await prisma.gameData.create({
+        data: {
+            data: {
+                vanilla: {
+                    eggId: 24,
+                    docker_image: 'ghcr.io/pterodactyl/games:valheim',
+                },
+                modded: {
+                    eggId: 25,
+                    docker_image: 'ghcr.io/pterodactyl/games:valheim-modded',
+                    mod_loader: 'BepInEx',
+                    modpack_source: 'thunderstore',
+                },
+            },
+            name: 'Valheim',
+            slug: 'valheim',
+            enabled: true,
+            nestId: 5,
+            sorting: 30,
         },
     });
 
@@ -177,60 +206,60 @@ async function main() {
         data: [
             {
                 key: LEGAL_IMPRESSUM_DE,
-                type: 'TEXT',
-                string: '# Impressum\n\nBitte fügen Sie hier Ihre Impressum-Informationen ein.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'German Impressum (legal imprint) content',
             },
             {
                 key: LEGAL_IMPRESSUM_EN,
-                type: 'TEXT',
-                string: '# Imprint\n\nPlease add your imprint information here.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'English Imprint (legal imprint) content',
             },
             {
                 key: LEGAL_AGB_DE,
-                type: 'TEXT',
-                string: '# Allgemeine Geschäftsbedingungen\n\nBitte fügen Sie hier Ihre AGB ein.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'German Terms and Conditions (AGB) content',
             },
             {
                 key: LEGAL_AGB_EN,
-                type: 'TEXT',
-                string: '# Terms and Conditions\n\nPlease add your terms and conditions here.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'English Terms and Conditions content',
             },
             {
                 key: LEGAL_DATENSCHUTZ_DE,
-                type: 'TEXT',
-                string: '# Datenschutzerklärung\n\nBitte fügen Sie hier Ihre Datenschutzerklärung ein.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'German Privacy Policy (Datenschutz) content',
             },
             {
                 key: LEGAL_DATENSCHUTZ_EN,
-                type: 'TEXT',
-                string: '# Privacy Policy\n\nPlease add your privacy policy here.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'English Privacy Policy content',
             },
             {
                 key: LEGAL_RETURNS_DE,
-                type: 'TEXT',
-                string: '# Widerrufsbelehrung\n\nBitte fügen Sie hier Ihre Widerrufsbelehrung ein.',
+                type: 'STRING',
+                string: '<div></div>',
             },
             {
                 key: LEGAL_RETURNS_EN,
-                type: 'TEXT',
-                string: '# Returns\n\nPlease add your returns information here.',
+                type: 'STRING',
+                string: '<div></div>',
             },
             {
                 key: LEGAL_PAYMENTS_DE,
-                type: 'TEXT',
-                string: '# Zahlungsmethoden\n\nBitte fügen Sie hier Ihre Zahlungsmethoden ein.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'German Payments content',
             },
             {
                 key: LEGAL_PAYMENTS_EN,
-                type: 'TEXT',
-                string: '# Payment Methods\n\nPlease add your payment methods here.',
+                type: 'STRING',
+                string: '<div></div>',
                 note: 'English Payments content',
             },
             {
@@ -287,6 +316,20 @@ async function main() {
                 number: 90,
                 note: 'Number of days after which suspended tier servers will be deleted',
             },
+            {
+                key: CONFIG_DUMMY_NUMBER,
+                type: 'NUMBER',
+                number: 1,
+                note: 'Dummy number because i cant do typescript',
+                category: 'Global Config'
+            },
+            {
+                key: CONFIG_KEY_SUPPORT_EMAIL,
+                type: 'STRING',
+                string: 'support@scyed.com',
+                note: 'Support email address',
+                category: 'Global Config'
+            }
         ],
         skipDuplicates: true,
     });

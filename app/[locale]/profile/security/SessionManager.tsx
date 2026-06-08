@@ -53,16 +53,6 @@ function parseUserAgent(ua: string | null | undefined): {
     return { browser, os, isMobile };
 }
 
-function maskIp(ip: string | null | undefined): string {
-    if (!ip) return '';
-    const parts = ip.split('.');
-    if (parts.length === 4) return `${parts[0]}.${parts[1]}.x.x`;
-    // IPv6: show first two segments
-    const v6parts = ip.split(':');
-    if (v6parts.length > 2) return `${v6parts[0]}:${v6parts[1]}:…`;
-    return ip;
-}
-
 function formatDate(date: string | Date): string {
     return new Date(date).toLocaleDateString(undefined, {
         year: 'numeric',
@@ -291,7 +281,7 @@ function SessionCard({
     onRevoke?: () => void;
 }) {
     const { browser, os, isMobile } = parseUserAgent(s.userAgent);
-    const maskedIp = maskIp(s.ipAddress);
+    const maskedIp = s.ipAddress ?? '';
     const DeviceIcon = isMobile ? Smartphone : Monitor;
 
     return (

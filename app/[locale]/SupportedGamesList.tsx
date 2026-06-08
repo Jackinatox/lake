@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { ThemeImage } from '@/components/ui/theme-image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -8,10 +8,7 @@ export type Game = {
     id: string;
     name: string;
     slug: string;
-    images: {
-        light: string;
-        dark: string;
-    };
+    imageSrc: string;
 };
 type SupportedGamesListProps = {
     supportedGames: Array<Game>;
@@ -28,17 +25,11 @@ export async function SupportedGamesList({ supportedGames }: SupportedGamesListP
                     <Link href={`/order/${game.slug}`} key={game.id} className="block">
                         <div className="flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded-lg hover:bg-muted transition-all hover:scale-[1.02] border border-transparent hover:border-primary/20">
                             <div className="relative h-14 w-14 md:h-16 md:w-16 rounded-md overflow-hidden border shrink-0">
-                                <Image
-                                    src={game.images.light}
+                                <ThemeImage
+                                    src={game.imageSrc}
                                     alt={`${game.name} Icon`}
                                     fill
-                                    className="object-cover block dark:hidden"
-                                />
-                                <Image
-                                    src={game.images.dark}
-                                    alt={`${game.name} Icon`}
-                                    fill
-                                    className="object-cover hidden dark:block"
+                                    className="object-cover"
                                 />
                             </div>
                             <span className="font-medium text-base md:text-sm flex-1">

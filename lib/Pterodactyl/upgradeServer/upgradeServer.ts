@@ -2,7 +2,6 @@ import prisma from '@/lib/prisma';
 
 import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
-import { env } from 'next-runtime-env';
 import { createPtClient } from '../ptAdminClient';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
 
@@ -14,8 +13,8 @@ import toggleSuspendGameServer from '../suspendServer/suspendServer';
  * is handled before calling this function.
  */
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
-    const panelUrl = env('NEXT_PUBLIC_PTERODACTYL_URL');
-    const ptApiKey = env('PTERODACTYL_API_KEY');
+    const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
+    const ptApiKey = process.env.PTERODACTYL_API_KEY;
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
         where: { id: serverOrder.gameServerId || '', ptAdminId: { not: null } },
         include: { user: true },
@@ -43,7 +42,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                     io: ptServer.limits.io,
                     cpu: serverOrder.cpuPercent,
                     feature_limits: {
-                        allocations: ptServer.featureLimits.allocations,
+                        allocations: serverOrder.allocations,
                         databases: ptServer.featureLimits.databases,
                         backups: serverOrder.backupCount,
                     },
@@ -61,6 +60,8 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                 ramMB: serverOrder.ramMB,
                 diskMB: serverOrder.diskMB,
                 backupCount: serverOrder.backupCount,
+                allocations: serverOrder.allocations,
+                resourceTierId: serverOrder.resourceTierId,
                 expires: serverOrder.expiresAt,
                 status: 'ACTIVE',
                 lastExtended: new Date(),

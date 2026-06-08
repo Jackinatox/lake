@@ -2,7 +2,6 @@
 
 import { OrderType } from '@/app/client/generated/browser';
 import { RefundRequestButton } from '@/components/payments/RefundRequestButton';
-import { Badge } from '@/components/ui/badge';
 import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
 import { Gamepad2, Clock, Undo2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -57,7 +56,7 @@ export function WithdrawableOrderItem({
     };
 
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg gap-3">
+        <div className="flex flex-row items-center justify-between p-3 border rounded-lg gap-3">
             <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                     <Gamepad2 className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -65,14 +64,16 @@ export function WithdrawableOrderItem({
                     {serverName && (
                         <span className="text-xs text-muted-foreground">({serverName})</span>
                     )}
-                    <Badge variant="outline" className="text-[10px]">
+                    <span className="text-[10px] text-muted-foreground before:content-['·'] before:mr-1">
                         {tPayments(`orderType.${orderType}`)}
-                    </Badge>
+                    </span>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                     <span>{formatDate(created)}</span>
-                    <span className="font-medium">{(price / 100).toFixed(2)} €</span>
+                    <span className="font-medium text-foreground">
+                        {(price / 100).toFixed(2)} €
+                    </span>
                     {alreadyRefundedCents > 0 && (
                         <span className="flex items-center gap-0.5">
                             <Undo2 className="h-3 w-3" />
@@ -82,7 +83,7 @@ export function WithdrawableOrderItem({
                 </div>
 
                 <div className="flex items-center gap-1 text-xs">
-                    <Clock className="h-3 w-3" />
+                    <Clock className="h-3 w-3 text-muted-foreground" />
                     <span
                         className={
                             daysRemaining <= 3
@@ -95,7 +96,7 @@ export function WithdrawableOrderItem({
                 </div>
             </div>
 
-            <div className="shrink-0">
+            <div className="shrink-0 self-center">
                 <RefundRequestButton orderId={orderId} orderAmount={price} />
             </div>
         </div>

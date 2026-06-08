@@ -44,6 +44,7 @@ import {
     toggleBanUser,
     getPterodactylUserInfo,
 } from '@/app/actions/users/adminUsers';
+import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 
 type UserWithCount = User & { _count: { GameServer: number } };
 
@@ -136,23 +137,17 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onRefresh }) => {
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
                                             src={user.image || ''}
-                                            alt={user.name || 'User'}
+                                            alt={getUserDisplayName(user)}
                                         />
                                         <AvatarFallback className="text-xs">
-                                            {user.name
-                                                ? user.name
-                                                      .split(' ')
-                                                      .map((n) => n[0])
-                                                      .join('')
-                                                      .toUpperCase()
-                                                : user.email?.[0]?.toUpperCase() || 'U'}
+                                            {getUserInitials(user)}
                                         </AvatarFallback>
                                     </Avatar>
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-1.5">
                                         <span className="text-sm font-medium">
-                                            {user.name || '—'}
+                                            {getUserDisplayName(user)}
                                         </span>
                                         {user.role === 'admin' && (
                                             <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
@@ -224,7 +219,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onRefresh }) => {
                                                     onClick={() =>
                                                         handleViewPtInfo(
                                                             user.ptUserId!,
-                                                            user.name || user.email || 'User',
+                                                            getUserDisplayName(user),
                                                         )
                                                     }
                                                 >

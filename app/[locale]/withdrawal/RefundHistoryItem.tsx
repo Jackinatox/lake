@@ -6,7 +6,6 @@ import {
     RefundStripeStatus,
     RefundType,
 } from '@/app/client/generated/browser';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import formatDate from '@/lib/formatDate';
 import {
@@ -131,12 +130,12 @@ export function RefundHistoryItem({
                     <span className="font-medium text-sm">
                         {isWithdrawal ? t('typeWithdrawal') : t('typeRefund')}
                     </span>
-                    <Badge variant="outline" className={`text-[10px] ${statusConfig.className}`}>
-                        <span className="flex items-center gap-1">
-                            {statusConfig.icon}
-                            {statusConfig.label}
-                        </span>
-                    </Badge>
+                    <span
+                        className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded border font-medium ${statusConfig.className}`}
+                    >
+                        {statusConfig.icon}
+                        {statusConfig.label}
+                    </span>
                 </div>
 
                 {/* Details */}
