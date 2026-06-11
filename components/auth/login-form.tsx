@@ -18,22 +18,6 @@ import Link from 'next/link';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
-type SignInEmailResult = Awaited<ReturnType<typeof authClient.signIn.email>>;
-type SignInEmailData = SignInEmailResult['data'];
-
-function getTwoFactorRedirect(data: SignInEmailData) {
-    return (
-        typeof data === 'object' &&
-        data !== null &&
-        'twoFactorRedirect' in data &&
-        data.twoFactorRedirect === true
-    );
-}
-
-function getErrorMessage(error: unknown) {
-    return error instanceof Error ? error.message : null;
-}
-
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');
     const tr = useTranslations('RegisterLogin');
@@ -89,7 +73,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     );
 
     const handleSocialSignIn = useCallback(async (provider: 'discord' | 'google') => {
-        authClient.signIn.social({ provider, callbackURL: '/verify-2fa' });
+        authClient.signIn.social({ provider, callbackURL: '/gameserver' });
     }, []);
 
     return (

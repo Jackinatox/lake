@@ -786,9 +786,12 @@
       "close": "Close",
       "methodTitle": "Authenticator App",
       "methodDescription": "Time-based one-time password (TOTP)",
-      "reconfigureButton": "Reconfigure",
       "notEnabledMessage": "No authentication method is configured.",
-      "oauthDisclaimer": "2FA currently only applies to email/password logins. OAuth logins (Google, Discord, etc.) will be supported in a future update."
+      "password": "Password",
+      "passwordPlaceholder": "Your current password",
+      "passwordStepDescription": "Confirm your password to start setting up two-factor authentication.",
+      "continueButton": "Continue",
+      "oauthBlockedMessage": "You're signed in via {provider}. Two-factor authentication is only available for email/password accounts — sign in with your email and password to manage it."
     },
     "sessions": {
       "title": "Active Sessions",

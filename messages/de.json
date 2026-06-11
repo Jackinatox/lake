@@ -798,9 +798,12 @@
       "close": "Schließen",
       "methodTitle": "Authenticator-App",
       "methodDescription": "Zeitbasiertes Einmalpasswort (TOTP)",
-      "reconfigureButton": "Neu einrichten",
       "notEnabledMessage": "Es ist keine Authentifizierungsmethode konfiguriert.",
-      "oauthDisclaimer": "2FA gilt derzeit nur für E-Mail/Passwort-Anmeldungen. OAuth-Anmeldungen (Google, Discord, etc.) werden in einem zukünftigen Update unterstützt."
+      "password": "Passwort",
+      "passwordPlaceholder": "Dein aktuelles Passwort",
+      "passwordStepDescription": "Bestätige dein Passwort, um die Einrichtung der Zwei-Faktor-Authentifizierung zu starten.",
+      "continueButton": "Weiter",
+      "oauthBlockedMessage": "Du bist über {provider} angemeldet. Die Zwei-Faktor-Authentifizierung ist nur für E-Mail/Passwort-Konten verfügbar – melde dich mit E-Mail und Passwort an, um sie zu verwalten."
     },
     "sessions": {
       "title": "Aktive Sitzungen",
