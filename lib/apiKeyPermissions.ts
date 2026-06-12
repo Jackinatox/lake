@@ -29,6 +29,21 @@ export type ApiKeyPermission = (typeof ApiKeyPermission)[keyof typeof ApiKeyPerm
 /** All permission values — useful for rendering checkboxes. */
 export const ALL_PERMISSIONS = Object.values(ApiKeyPermission) as ApiKeyPermission[];
 
+/**
+ * Permissions any authenticated (non-admin) user may assign to their own key.
+ * Empty for now — every defined permission exposes admin-only data
+ * (metrics, financials, system status). Add entries here to open them up.
+ */
+export const USER_ASSIGNABLE_PERMISSIONS: ApiKeyPermission[] = [];
+
+/**
+ * Permissions that only an admin may grant. Defined as "everything not
+ * user-assignable" so that newly added permissions default to admin-only.
+ */
+export const ADMIN_ONLY_PERMISSIONS = ALL_PERMISSIONS.filter(
+    (p) => !USER_ASSIGNABLE_PERMISSIONS.includes(p),
+);
+
 // ── Format converters ────────────────────────────────────────────────────────
 
 /** Flat permission strings → better-auth Record format. */

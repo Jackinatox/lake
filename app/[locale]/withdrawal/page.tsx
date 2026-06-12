@@ -1,5 +1,3 @@
-'use server';
-
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';

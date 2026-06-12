@@ -134,7 +134,6 @@ export const createApiKeySchema = z.object({
     name: requiredStringSchema('Name', 80),
     permissions: z
         .array(apiKeyPermissionSchema)
-        .min(1, 'At least one permission is required')
         .max(ALL_PERMISSIONS.length, 'Too many permissions')
         .transform((permissions) => Array.from(new Set(permissions))),
     rateLimitMax: integerRangeSchema('Rate limit max', 1, 100_000),
