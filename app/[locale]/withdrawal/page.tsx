@@ -1,5 +1,3 @@
-'use server';
-
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { headers } from 'next/headers';
@@ -24,7 +22,7 @@ export default async function WithdrawalPage() {
                 <h1 className="md:text-3xl text-2xl font-bold">{t('title')}</h1>
                 <p className="text-muted-foreground text-sm mt-1">{t('subtitle')}</p>
             </div>
-            <WithdrawalContent userId={session.user.id} />
+            <WithdrawalContent />
             <FaqSection categories={['refunds']} heading={t('faqHeading')} className="px-1 pt-10" />
         </div>
     );

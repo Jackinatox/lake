@@ -1,5 +1,3 @@
-'use server';
-
 import { auth } from '@/auth';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';

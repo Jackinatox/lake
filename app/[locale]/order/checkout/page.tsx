@@ -1,5 +1,3 @@
-'use server';
-
 import { auth } from '@/auth';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';

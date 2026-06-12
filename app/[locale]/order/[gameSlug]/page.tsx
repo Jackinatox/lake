@@ -1,5 +1,3 @@
-"use server"
-
 import prisma from '@/lib/prisma';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';

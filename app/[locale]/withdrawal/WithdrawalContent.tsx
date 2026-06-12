@@ -1,5 +1,6 @@
-'use server';
-
+import { auth } from '@/auth';
+import NotLoggedIn from '@/components/auth/NoAuthMessage';
+import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileX2, History } from 'lucide-react';
@@ -10,11 +11,13 @@ import { RefundHistoryItem } from './RefundHistoryItem';
 import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
 import Link from 'next/link';
 
-interface WithdrawalContentProps {
-    userId: string;
-}
+export async function WithdrawalContent() {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        return <NotLoggedIn />;
+    }
+    const userId = session.user.id;
 
-export async function WithdrawalContent({ userId }: WithdrawalContentProps) {
     const t = await getTranslations('withdrawalPage');
 
     // Fetch orders that could potentially be withdrawn (paid within 14 days, not free)

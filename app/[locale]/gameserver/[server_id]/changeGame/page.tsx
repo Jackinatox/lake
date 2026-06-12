@@ -1,5 +1,3 @@
-'use server';
-
 import { getOwnedGameServerSummary } from '@/app/data-access-layer/gameServer/getOwnedGameServerSummary';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';

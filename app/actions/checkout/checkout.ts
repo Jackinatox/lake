@@ -400,7 +400,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     const locationId = await getKeyValueNumber(FREE_SERVERS_LOCATION_ID);
 
     const userAllowed = await checkFreeServerEligibility(dbUser.id, freeServerStats.maxServers);
-    if (!userAllowed) {
+    if (!userAllowed.allowed) {
         throw new Error('Maximale Anzahl kostenloser Server erreicht');
     }
 

@@ -1,4 +1,3 @@
-'use server';
 import React, { Suspense } from 'react';
 import { auth } from '@/auth';
 import GameServersPage from './ServerTable';

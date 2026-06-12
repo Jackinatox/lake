@@ -1,4 +1,3 @@
-'use server';
 import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 import { authEmailSchema } from '@/lib/validation/auth';
 

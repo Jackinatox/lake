@@ -1,5 +1,3 @@
-'use server';
-
 import GameCard from '@/components/order/game/gameCard';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';

@@ -162,17 +162,14 @@ export const auth = betterAuth({
             maxUsernameLength: AUTH_USERNAME_MAX_LENGTH,
         }),
         apiKey({
-            enableSessionForAPIKeys: true,
+            enableSessionForAPIKeys: false,
             enableMetadata: true,
             defaultPrefix: 'scyd_',
             rateLimit: { enabled: true, maxRequests: 5, timeWindow: 1000 * 2 }, // 5 reqs per 2s
+            
         }),
         twoFactor({
-            allowPasswordless: true,
             issuer: 'Scyed',
-            totpOptions: {
-                allowPasswordless: true,
-            },
         }),
         lastLoginMethod({
             storeInDatabase: true,

@@ -2,14 +2,24 @@
 
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import { type ApiKeyPermission, permissionsToRecord } from '@/lib/apiKeyPermissions';
+import {
+    type ApiKeyPermission,
+    ADMIN_ONLY_PERMISSIONS,
+    permissionsToRecord,
+} from '@/lib/apiKeyPermissions';
 import { createApiKeySchema } from '@/lib/validation/adminContent';
 import { getValidationMessage, nonEmptyIdSchema } from '@/lib/validation/common';
 import { headers } from 'next/headers';
 
-async function requireAdmin() {
+async function requireSession() {
     const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user.role !== 'admin') throw new Error('Not authorized');
+    if (!session) throw new Error('Not authenticated');
+    return session;
+}
+
+async function requireAdmin() {
+    const session = await requireSession();
+    if (session.user.role !== 'admin') throw new Error('Not authorized');
     return session;
 }
 
@@ -28,7 +38,9 @@ export interface CreateApiKeyOptions {
 }
 
 export async function createApiKeyAction(opts: CreateApiKeyOptions) {
-    const session = await requireAdmin();
+    // Any authenticated user may create a key, but only an admin may grant
+    // admin-only permissions (prometheus, status, financials, …).
+    const session = await requireSession();
     const parsed = (() => {
         try {
             return createApiKeySchema.parse(opts);
@@ -36,6 +48,13 @@ export async function createApiKeyAction(opts: CreateApiKeyOptions) {
             throw new Error(getValidationMessage(error));
         }
     })();
+
+    if (session.user.role !== 'admin') {
+        const forbidden = parsed.permissions.filter((p) => ADMIN_ONLY_PERMISSIONS.includes(p));
+        if (forbidden.length > 0) {
+            throw new Error('Not authorized to assign these permissions');
+        }
+    }
 
     // permissions and userId are server-only fields — call without headers
     // so better-auth uses the internal (server) code path.

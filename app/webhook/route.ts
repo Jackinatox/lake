@@ -1,5 +1,3 @@
-'use server';
-
 import { logger } from '@/lib/logger';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
