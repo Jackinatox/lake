@@ -1,5 +1,3 @@
-'use server';
-
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 import { requiredStringSchema } from '@/lib/validation/common';
 

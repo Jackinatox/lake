@@ -1,5 +1,3 @@
-'use server';
-
 import React from 'react';
 import AdminPage from './adminPage';
 import { auth } from '@/auth';

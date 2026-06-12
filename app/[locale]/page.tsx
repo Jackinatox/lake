@@ -1,5 +1,3 @@
-'use server';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ThemeImage } from '@/components/ui/theme-image';

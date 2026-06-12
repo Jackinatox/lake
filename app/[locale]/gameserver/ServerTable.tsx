@@ -1,5 +1,3 @@
-'use server';
-
 import { getUserServer } from '@/app/data-access-layer/clientServers/getUsersServer';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
