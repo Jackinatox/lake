@@ -5,14 +5,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
-import { GameFlavor, GameVersion } from '@/types/gameData';
+import { GameFlavor, GameVersion, MinecraftGameData } from '@/types/gameData';
 import { SelectGroup } from '@radix-ui/react-select';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
+import { ModpackPicker, ModpackSelection } from './modpack-picker';
 
 export interface GameConfigProps {
     game: Game;
@@ -32,6 +34,14 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
     const [versionOpen, setVersionOpen] = useState(false);
 
     const flavors = useMemo(() => (game.data.flavors as GameFlavor[]) ?? [], [game]);
+
+    const minecraftData = game.data as MinecraftGameData;
+    const modrinthEggId = minecraftData.modpackPlatforms?.modrinth?.egg_id;
+    const modrinthDockerImages = minecraftData.modpackPlatforms?.modrinth?.dockerImages ?? [];
+    const modpacksAvailable = typeof modrinthEggId === 'number' && modrinthEggId > 0;
+
+    const [installType, setInstallType] = useState<'flavor' | 'modpack'>('flavor');
+    const [modpackSelection, setModpackSelection] = useState<ModpackSelection | null>(null);
 
     useEffect(() => {
         const preselectedMinecraftFlavor = flavors.find((f) => f.egg_id === eggId);
@@ -82,6 +92,9 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
         flavor: 'Vanilla',
     });
 
+    const initialModpack =
+        initialConfig?.gameSlug === 'minecraft' ? (initialConfig.modpack ?? null) : null;
+
     // Restore from initialConfig when returning from checkout
     useEffect(() => {
         if (!initialConfig) return;
@@ -89,23 +102,59 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
         if (saved) {
             setConfig(saved);
         }
+        if (initialModpack) {
+            if (modpacksAvailable) {
+                setInstallType('modpack');
+                setModpackSelection({
+                    ...initialModpack,
+                    gameVersion: initialConfig.version,
+                    dockerImage: initialConfig.dockerImage,
+                });
+            }
+            return;
+        }
         if (initialConfig.eggId) {
             setSelectedFlavorId(initialConfig.eggId);
         }
         // Version will be restored once the flavor's versions are loaded
-    }, [initialConfig]);
+    }, [initialConfig, initialModpack, modpacksAvailable]);
 
     // Restore version when gameVersions are loaded and initialConfig is present
     useEffect(() => {
+        if (initialModpack) return;
         if (!initialConfig?.version || gameVersions.length === 0) return;
         const matchingVersion = gameVersions.find((v) => v.version === initialConfig.version);
         if (matchingVersion) {
             setSelectedVersion(matchingVersion);
         }
-    }, [gameVersions, initialConfig]);
+    }, [gameVersions, initialConfig, initialModpack]);
 
     useImperativeHandle(ref, () => ({
         submit: () => {
+            if (installType === 'modpack') {
+                if (!modpackSelection || !modrinthEggId) {
+                    console.error('Missing required selection');
+                    return;
+                }
+
+                const completeConfig: GameConfig = {
+                    gameSlug: 'minecraft',
+                    eggId: modrinthEggId,
+                    version: modpackSelection.gameVersion,
+                    dockerImage: modpackSelection.dockerImage,
+                    modpack: {
+                        platform: modpackSelection.platform,
+                        projectId: modpackSelection.projectId,
+                        versionId: modpackSelection.versionId,
+                        name: modpackSelection.name,
+                    },
+                    gameSpecificConfig: { ...config, flavor: 'Modpack' },
+                };
+
+                onSubmit(completeConfig);
+                return;
+            }
+
             if (selectedEggId === null || !selectedVersion) {
                 console.error('Missing required selection');
                 return;
@@ -127,8 +176,8 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
         },
     }));
 
-    return (
-        <ConfigContainer>
+    const flavorSettings = (
+        <>
             {/* Game Flavor Selection */}
             <ConfigSettingItem
                 id="flavor"
@@ -188,6 +237,36 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
                     </SelectContent>
                 </Select>
             </ConfigSettingItem>
+        </>
+    );
+
+    return (
+        <ConfigContainer>
+            {modpacksAvailable ? (
+                <Tabs
+                    value={installType}
+                    onValueChange={(value) => setInstallType(value as 'flavor' | 'modpack')}
+                >
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="flavor">Server Software</TabsTrigger>
+                        <TabsTrigger value="modpack">Modpack</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="flavor" className="mt-4 space-y-4 md:space-y-6">
+                        {flavorSettings}
+                    </TabsContent>
+                    <TabsContent value="modpack" className="mt-4">
+                        <ModpackPicker
+                            platform="modrinth"
+                            dockerImages={modrinthDockerImages}
+                            flavors={flavors}
+                            value={modpackSelection}
+                            onChange={setModpackSelection}
+                        />
+                    </TabsContent>
+                </Tabs>
+            ) : (
+                flavorSettings
+            )}
         </ConfigContainer>
     );
 });

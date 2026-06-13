@@ -19,12 +19,20 @@ try {
 
     const json = await newMinecraftVersions.json();
 
+    // Merge instead of replace: keys not in the synced JSON (e.g. modpackPlatforms)
+    // must survive a version sync.
+    const existing = await prisma.gameData.findUniqueOrThrow({
+        where: { slug: 'minecraft' },
+        select: { data: true },
+    });
+    const existingData = (existing.data ?? {}) as Record<string, unknown>;
+
     await prisma.gameData.update({
         where: {
             slug: 'minecraft',
         },
         data: {
-            data: json,
+            data: { ...existingData, ...json },
         },
     });
 

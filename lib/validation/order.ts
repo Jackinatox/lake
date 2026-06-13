@@ -43,6 +43,18 @@ export const upgradeHardwareConfigSchema = baseHardwareConfigSchema.extend({
     durationsDays: upgradeDurationSchema,
 });
 
+// When set, eggId/dockerImage in the gameConfig point to the platform's generic
+// installer egg and the worker passes projectId/versionId as egg variables
+// (Modrinth Generic egg: PROJECT_ID, VERSION_ID). Add 'curseforge' here later.
+export const modpackPlatformSchema = z.enum(['modrinth']);
+
+export const modpackSelectionSchema = z.object({
+    platform: modpackPlatformSchema,
+    projectId: requiredStringSchema('Modpack project ID', 64),
+    versionId: requiredStringSchema('Modpack version ID', 64),
+    name: requiredStringSchema('Modpack name', 120),
+});
+
 export const minecraftGameSpecificSchema = z.object({
     serverName: requiredStringSchema('Server name', 100),
     maxPlayers: integerRangeSchema('Max players', 1, 200),
@@ -92,7 +104,11 @@ export const satisfactoryGameSpecificSchema = z.object({
 export const valheimGameSpecificSchema = z.object({
     mode: z.enum(['vanilla', 'modded']),
     server_name: requiredStringSchema('Server name', 64),
-    password: z.string().trim().min(5, 'Password must be at least 5 characters').max(20, 'Password must be at most 20 characters'),
+    password: z
+        .string()
+        .trim()
+        .min(5, 'Password must be at least 5 characters')
+        .max(20, 'Password must be at most 20 characters'),
     world_name: requiredStringSchema('World name', 20),
     max_players: integerRangeSchema('Max players', 1, 64),
     public_server: z.boolean(),
@@ -127,6 +143,7 @@ export const gameConfigSchema = z.discriminatedUnion('gameSlug', [
         ...baseGameConfigShape,
         gameSlug: z.literal('minecraft'),
         gameSpecificConfig: minecraftGameSpecificSchema,
+        modpack: modpackSelectionSchema.optional(),
     }),
     z.object({
         ...baseGameConfigShape,
