@@ -773,3 +773,25 @@ model FAQ {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model ModpackCache {
+  id           Int    @id @default(autoincrement())
+  searchString String
+  provider     String
+
+  result Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ModpackVersionCache {
+  id        Int    @id @default(autoincrement())
+  projectId String
+  provider  String
+
+  result Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
