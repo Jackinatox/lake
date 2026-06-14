@@ -246,7 +246,10 @@ export function ModpackPicker({
                 onChange={(e) => setQuery(e.target.value)}
             />
 
-            <ScrollArea className="h-72 border rounded-lg">
+            {/* Radix's viewport wraps children in a `display: table` element (for horizontal
+                scrolling) which sizes to intrinsic content width and defeats `truncate`. Force it
+                back to `block` so rows are constrained to the viewport and the text can ellipsize. */}
+            <ScrollArea className="h-72 border rounded-lg [&_[data-radix-scroll-area-viewport]>div]:!block">
                 {searchLoading ? (
                     <div className="space-y-1 p-2">
                         {Array.from({ length: 5 }).map((_, i) => (
@@ -273,7 +276,7 @@ export function ModpackPicker({
                                 type="button"
                                 onClick={() => handleSelectPack(pack)}
                                 className={cn(
-                                    'flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-accent',
+                                    'flex w-full items-start gap-3 rounded-md p-2 text-left transition-colors hover:bg-accent',
                                     pack.projectId === selectedPack?.projectId && 'bg-accent',
                                 )}
                             >
@@ -289,11 +292,18 @@ export function ModpackPicker({
                                 )}
                                 <div className="min-w-0 flex-1">
                                     <p className="text-sm font-medium truncate">{pack.name}</p>
-                                    <p className="text-xs text-muted-foreground truncate">
+                                    {/* Two lines on mobile (more readable when text is long),
+                                        one ellipsized line once there's room beside the icon. */}
+                                    <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-1">
                                         {pack.description}
                                     </p>
+                                    {/* On mobile the count sits under the text instead of
+                                        competing with the name for horizontal space. */}
+                                    <p className="mt-0.5 text-xs text-muted-foreground sm:hidden">
+                                        {downloadsFormat.format(pack.downloads)} downloads
+                                    </p>
                                 </div>
-                                <span className="shrink-0 text-xs text-muted-foreground">
+                                <span className="hidden shrink-0 text-xs text-muted-foreground sm:block">
                                     {downloadsFormat.format(pack.downloads)} downloads
                                 </span>
                             </button>
