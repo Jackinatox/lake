@@ -880,7 +880,8 @@
     "contactUs": "Kontakt",
     "withdrawal": "Verträge widerrufen",
     "payments": "Zahlungsbedingungen",
-    "returns": "Widerrufsrecht"
+    "returns": "Widerrufsrecht",
+    "status": "Status"
   },
   "gameserver": {
     "freeServer": "Kostenloser Server",
