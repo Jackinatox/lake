@@ -8,11 +8,17 @@ import AnsiToHtml from 'ansi-to-html';
 
 interface ConsoleV2Props {
     logs: string[];
+    /**
+     * Total number of lines ever emitted. `logs` is a sliding window whose length
+     * stops growing once capped, so this absolute counter is what tells us how many
+     * new lines have arrived. Falls back to logs.length when not provided.
+     */
+    totalLines?: number;
     handleCommand: (command: string) => void;
     disabled?: boolean;
 }
 
-const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) => {
+const ConsoleV2 = ({ handleCommand, logs, totalLines, disabled = false }: ConsoleV2Props) => {
     const [inputValue, setInputValue] = useState('');
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
@@ -21,7 +27,9 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
 
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const logContainerRef = useRef<HTMLDivElement>(null);
-    const renderedLogsCountRef = useRef(0);
+    // Absolute count of lines we've rendered into the DOM so far. Compared against
+    // the stream's absolute total (not logs.length, which freezes once the window caps).
+    const renderedTotalRef = useRef(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Initialize ANSI to HTML converter
@@ -59,16 +67,16 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
         const container = logContainerRef.current;
         if (!container) return;
 
-        // If logs were cleared/reset, wipe the container
-        if (logs.length < renderedLogsCountRef.current) {
-            container.innerHTML = '';
-            renderedLogsCountRef.current = 0;
-        }
+        // Absolute total of lines ever emitted. When the parent doesn't supply it,
+        // fall back to logs.length (only correct while the window hasn't capped).
+        const total = totalLines ?? logs.length;
+        // Absolute index of logs[0] within the full stream.
+        const windowStart = total - logs.length;
 
-        const newLogs = logs.slice(renderedLogsCountRef.current);
-        if (newLogs.length > 0) {
+        const appendLines = (lines: string[]) => {
+            if (lines.length === 0) return;
             const fragment = document.createDocumentFragment();
-            newLogs.forEach((log) => {
+            lines.forEach((log) => {
                 const div = document.createElement('div');
                 div.className =
                     'text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text';
@@ -76,15 +84,31 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
                 fragment.appendChild(div);
             });
             container.appendChild(fragment);
+        };
+
+        // Reset (e.g. reconnect replaced the buffer) or we fell so far behind that the
+        // lines we still need were already trimmed: rebuild from the current window.
+        if (total < renderedTotalRef.current || renderedTotalRef.current < windowStart) {
+            container.innerHTML = '';
+            appendLines(logs);
+        } else {
+            // Append only the lines newer than what we've already rendered.
+            appendLines(logs.slice(renderedTotalRef.current - windowStart));
         }
-        renderedLogsCountRef.current = logs.length;
+        renderedTotalRef.current = total;
+
+        // Keep the DOM bounded to the same sliding window as `logs` by dropping the
+        // oldest (offscreen) nodes; this also preserves selection on recent lines.
+        while (container.childElementCount > logs.length) {
+            container.removeChild(container.firstChild!);
+        }
 
         // Auto-scroll only when at bottom and no text is selected
         const scrollContainer = scrollAreaRef.current;
         if (isAtBottomRef.current && scrollContainer && !window.getSelection()?.toString()) {
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }
-    }, [logs, ansiConverter]);
+    }, [logs, totalLines, ansiConverter]);
 
     const handleSubmit = useCallback(() => {
         const trimmedCommand = inputValue.trim();

@@ -100,37 +100,45 @@ export interface UseConsoleOutputOptions {
     maxLines?: number;
 }
 
-export function useConsoleOutput(options: UseConsoleOutputOptions = {}): string[] {
+export interface ConsoleOutput {
+    /** Current sliding window of console lines (at most maxLines entries) */
+    logs: string[];
+    totalLines: number;
+}
+
+export function useConsoleOutput(options: UseConsoleOutputOptions = {}): ConsoleOutput {
     const { includeHistory = true, maxLines = 1000 } = options;
     const { manager } = useWebSocketContext();
-    const [logs, setLogs] = useState<string[]>(() =>
-        includeHistory ? [...manager.state.consoleHistory] : [],
-    );
+    const [state, setState] = useState<ConsoleOutput>(() => {
+        const initial = includeHistory ? [...manager.state.consoleHistory] : [];
+        return { logs: initial, totalLines: initial.length };
+    });
 
     useEffect(() => {
         // Reset with history if option enabled
-        if (includeHistory) {
-            setLogs([...manager.state.consoleHistory]);
-        }
+        const initial = includeHistory ? [...manager.state.consoleHistory] : [];
+        setState({ logs: initial, totalLines: initial.length });
 
         const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
-            setLogs((prev) => {
-                // Avoid duplicates
-                if (prev[prev.length - 1] === line) return prev;
+            setState((prev) => {
+                // Avoid duplicates of the immediately preceding line
+                if (prev.logs[prev.logs.length - 1] === line) return prev;
 
-                const newLogs = [...prev, line];
-                // Trim to max lines
-                if (newLogs.length > maxLines) {
-                    return newLogs.slice(-maxLines);
-                }
-                return newLogs;
+                // Append, trimming the oldest line from the front once capped so the
+                // window stays at maxLines.
+                const newLogs =
+                    prev.logs.length >= maxLines
+                        ? [...prev.logs.slice(prev.logs.length - maxLines + 1), line]
+                        : [...prev.logs, line];
+
+                return { logs: newLogs, totalLines: prev.totalLines + 1 };
             });
         });
 
         return unsubscribe;
     }, [manager, includeHistory, maxLines]);
 
-    return logs;
+    return state;
 }
 
 // ============================================================================
@@ -240,6 +248,8 @@ export interface UseServerWebSocketReturn {
 
     // Console
     consoleOutput: string[];
+    /** Total console lines ever emitted (keeps growing past the sliding-window cap) */
+    consoleTotalLines: number;
 
     // Actions
     sendCommand: (command: string) => boolean;
@@ -252,6 +262,7 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
     const stats = useServerStats();
     const consoleOutput = useConsoleOutput();
     const initialContentLoaded = useInitialContentLoaded();
+    const { logs: consoleLogs, totalLines: consoleTotalLines } = consoleOutput;
     const { sendCommand, sendPowerAction } = useSendCommand();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -290,7 +301,8 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
         serverStatus,
         stats,
         initialContentLoaded,
-        consoleOutput,
+        consoleOutput: consoleLogs,
+        consoleTotalLines,
         sendCommand,
         sendPowerAction,
     };

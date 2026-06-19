@@ -64,6 +64,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
         serverStatus,
         stats: serverStats,
         consoleOutput,
+        consoleTotalLines,
         initialContentLoaded,
         sendCommand,
         sendPowerAction,
@@ -292,6 +293,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
             <CardContent className="p-0 md:p-2">
                 <ConsoleV2
                     logs={consoleOutput}
+                    totalLines={consoleTotalLines}
                     handleCommand={handleCommand}
                     disabled={!isConnected}
                 />
