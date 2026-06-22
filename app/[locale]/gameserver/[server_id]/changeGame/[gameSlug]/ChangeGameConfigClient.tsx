@@ -55,7 +55,7 @@ export default function ChangeGameConfigClient({
                 description: 'Your game has been updated and is installing.',
             });
             notifyReinstallStarted(serverId);
-            router.push(`/gameserver/${serverId}`);
+            router.push(`/gameserver/${serverId}?start=true`);
         } catch (error) {
             console.error('Failed to record game change request', error);
             toast({
