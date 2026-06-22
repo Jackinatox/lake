@@ -28,7 +28,7 @@ export default function ConfiguredOrderClient({
     game,
     hardwareRecommendations,
 }: ConfiguredOrderClientProps) {
-    const imgName = `${game.name.toLowerCase()}.webp`;
+    const imgPath = `/images/games/icons/${game.name.toLowerCase()}.webp`;
 
     const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
 
@@ -49,7 +49,7 @@ export default function ConfiguredOrderClient({
                         </Button>
                         <div className="relative w-8 h-8 shrink-0">
                             <ThemeImage
-                                src={`/images/games/icons/${imgName}`}
+                                src={imgPath}
                                 alt={game.name}
                                 fill
                                 className="object-cover rounded-md"

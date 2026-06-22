@@ -2,7 +2,7 @@ import { auth } from '@/auth';
 import GameNotFound from '@/components/booking2/GameNotFound';
 import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
 import { fetchGameBySlug } from '@/lib/actions';
-import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/metadata';
 import { getKeyValueNumber } from '@/lib/keyValue';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
@@ -40,6 +40,7 @@ export async function generateMetadata({
             `${game.name} free hosting`,
             `${game.name} gameserver`,
         ],
+        image: gameIconImage(game.name, `Order a free ${game.name} server with Scyed`),
     });
 }
 

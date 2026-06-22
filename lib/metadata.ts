@@ -3,6 +3,28 @@ import type { Metadata } from 'next';
 
 const SITE_NAME = 'Scyed Hosting';
 
+// Social/link previews (Telegram, Twitter, etc.) size the image from the actual file at
+// og:image, not from the declared width/height. Serving a small optimized version via the
+// Next image optimizer makes platforms render a compact thumbnail instead of a huge banner.
+const OG_IMAGE_WIDTH = 256;
+
+/** Builds an absolute, small, optimized og:image URL from a local public path. */
+function buildOgImageUrl(path: string): string {
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? '';
+    return `${base}/_next/image?url=${encodeURIComponent(path)}&w=${OG_IMAGE_WIDTH}&q=75`;
+}
+
+/** Default og:image used for public pages that don't supply their own. */
+const DEFAULT_OG_IMAGE: MetaImage = {
+    path: '/logo/ScyedLogoBlack.webp',
+    alt: SITE_NAME,
+};
+
+/** og:image for a game page, using the dark game icon convention. */
+export function gameIconImage(gameName: string, alt: string): MetaImage {
+    return { path: `/images/dark/games/icons/${gameName.toLowerCase()}.webp`, alt };
+}
+
 type SupportedLocale = (typeof routing.locales)[number];
 type SearchParamValue = string | string[] | undefined;
 type SearchParamRecord = Record<string, SearchParamValue>;
@@ -36,7 +58,7 @@ const metadataCopy = {
         gameserverFallbackTitle: 'Gameserver',
         gameOrderTitle: (gameName: string) => `${gameName} Gameserver`,
         gameOrderDescription: (gameName: string) =>
-            `Konfiguriere einen ${gameName}-Gameserver mit flexibler CPU, RAM, Speichertiers, Backups und Standorten.`,
+            `Konfiguriere einen ${gameName}-Gameserver mit flexibler CPU, RAM und Backups.`,
         gameSetupTitle: (gameName: string, summary?: string) =>
             summary ? `${gameName} Setup - ${summary}` : `${gameName} Setup`,
         gameSetupDescription: (gameName: string) =>
@@ -108,7 +130,7 @@ const metadataCopy = {
         gameserverFallbackTitle: 'Gameserver',
         gameOrderTitle: (gameName: string) => `${gameName} Server Hosting`,
         gameOrderDescription: (gameName: string) =>
-            `Configure a ${gameName} server with flexible CPU, RAM, storage tiers, backups, and locations.`,
+            `Configure a ${gameName} server with flexible CPU, RAM and backups.`,
         gameSetupTitle: (gameName: string, summary?: string) =>
             summary ? `${gameName} Setup - ${summary}` : `${gameName} Setup`,
         gameSetupDescription: (gameName: string) =>
@@ -289,23 +311,35 @@ export function buildHardwareMetadataSummary(
     return parts.length > 0 ? parts.join(' / ') : null;
 }
 
+type MetaImage = {
+    /** Local public path (e.g. /images/dark/games/icons/minecraft.webp). Served via the
+     *  Next image optimizer at a small size so social previews render a compact thumbnail. */
+    path: string;
+    alt: string;
+};
+
 export function createPublicMetadata({
     locale,
     path,
     title,
     description,
     keywords,
+    image,
 }: {
     locale: string;
     path: string;
     title: string;
     description: string;
     keywords?: string[];
+    image?: MetaImage;
 }): Metadata {
     const normalizedLocale = normalizeLocale(locale);
     const languages = Object.fromEntries(
         routing.locales.map((currentLocale) => [currentLocale, localizedPath(currentLocale, path)]),
     );
+
+    const ogImage = image ?? DEFAULT_OG_IMAGE;
+    const ogImageUrl = buildOgImageUrl(ogImage.path);
 
     return {
         title,
@@ -325,11 +359,18 @@ export function createPublicMetadata({
             description,
             url: localizedPath(normalizedLocale, path),
             locale: ogLocaleByLocale[normalizedLocale],
+            images: {
+                url: ogImageUrl,
+                alt: ogImage.alt,
+                height: OG_IMAGE_WIDTH,
+                width: OG_IMAGE_WIDTH,
+            },
         },
         twitter: {
-            card: 'summary_large_image',
+            card: 'summary',
             title,
             description,
+            images: [ogImageUrl],
         },
     };
 }
