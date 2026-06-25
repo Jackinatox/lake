@@ -90,76 +90,6 @@ export function useServerStats(): StatsPayload {
 }
 
 // ============================================================================
-// useConsoleOutput - Console log stream with history
-// ============================================================================
-
-export interface UseConsoleOutputOptions {
-    /** If true, includes the existing history buffer on mount */
-    includeHistory?: boolean;
-    /** Maximum lines to keep in local state (default: 1000) */
-    maxLines?: number;
-}
-
-export interface ConsoleOutput {
-    /** Current sliding window of console lines (at most maxLines entries) */
-    logs: string[];
-    totalLines: number;
-}
-
-export function useConsoleOutput(options: UseConsoleOutputOptions = {}): ConsoleOutput {
-    const { includeHistory = true, maxLines = 1000 } = options;
-    const { manager } = useWebSocketContext();
-    const [state, setState] = useState<ConsoleOutput>(() => {
-        const initial = includeHistory ? [...manager.state.consoleHistory] : [];
-        return { logs: initial, totalLines: initial.length };
-    });
-
-    useEffect(() => {
-        // Reset with history if option enabled
-        const initial = includeHistory ? [...manager.state.consoleHistory] : [];
-        setState({ logs: initial, totalLines: initial.length });
-
-        const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
-            setState((prev) => {
-                // Avoid duplicates of the immediately preceding line
-                if (prev.logs[prev.logs.length - 1] === line) return prev;
-
-                // Append, trimming the oldest line from the front once capped so the
-                // window stays at maxLines.
-                const newLogs =
-                    prev.logs.length >= maxLines
-                        ? [...prev.logs.slice(prev.logs.length - maxLines + 1), line]
-                        : [...prev.logs, line];
-
-                return { logs: newLogs, totalLines: prev.totalLines + 1 };
-            });
-        });
-
-        return unsubscribe;
-    }, [manager, includeHistory, maxLines]);
-
-    return state;
-}
-
-// ============================================================================
-// useConsoleListener - Subscribe to console output with callback
-// ============================================================================
-
-export function useConsoleListener(callback: (line: string) => void): void {
-    const { manager } = useWebSocketContext();
-    const callbackRef = useRef(callback);
-    callbackRef.current = callback;
-
-    useEffect(() => {
-        const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
-            callbackRef.current(line);
-        });
-
-        return unsubscribe;
-    }, [manager]);
-}
-
-// ============================================================================
 // useCustomEvent - Subscribe to custom events (EULA, Hytale OAuth, etc.)
 // ============================================================================
 
@@ -246,11 +176,6 @@ export interface UseServerWebSocketReturn {
     stats: StatsPayload;
     initialContentLoaded: boolean;
 
-    // Console
-    consoleOutput: string[];
-    /** Total console lines ever emitted (keeps growing past the sliding-window cap) */
-    consoleTotalLines: number;
-
     // Actions
     sendCommand: (command: string) => boolean;
     sendPowerAction: (action: 'start' | 'stop' | 'restart' | 'kill') => boolean;
@@ -260,9 +185,7 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
     const connection = useConnectionState();
     const serverStatus = useServerStatus();
     const stats = useServerStats();
-    const consoleOutput = useConsoleOutput();
     const initialContentLoaded = useInitialContentLoaded();
-    const { logs: consoleLogs, totalLines: consoleTotalLines } = consoleOutput;
     const { sendCommand, sendPowerAction } = useSendCommand();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -301,8 +224,6 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
         serverStatus,
         stats,
         initialContentLoaded,
-        consoleOutput: consoleLogs,
-        consoleTotalLines,
         sendCommand,
         sendPowerAction,
     };
