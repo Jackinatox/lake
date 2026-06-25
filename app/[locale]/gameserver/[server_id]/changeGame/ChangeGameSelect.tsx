@@ -28,9 +28,8 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     }));
 
     return (
-        <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
-            {/* Sticky top bar — sits below the navbar in flow, then sticks on scroll */}
-            <div className="sticky top-0 z-40 -mx-2 md:-mx-8 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="flex flex-col min-h-[calc(100dvh-4rem)]"> 
+            <div className="sticky top-0 z-40 -mx-2 -mt-2 md:-mx-8 md:-mt-4 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
@@ -66,8 +65,8 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
                 </div>
             </div>
 
-            {/* Sticky bottom bar — breaks out of layout's px-2 md:px-8 padding */}
-            <div className="sticky bottom-0 z-40 -mx-2 md:-mx-8 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            {/* Sticky bottom bar — breaks out of layout's vertical and horizontal padding */}
+            <div className="sticky bottom-0 z-40 -mx-2 -mb-2 md:-mx-8 md:-mb-4 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground h-9">
                         <MousePointerClick className="h-4 w-4 shrink-0" />
