@@ -280,14 +280,59 @@ export const auth = betterAuth({
                     }
                 },
                 after: async (user, context) => {
-                    await sendInfoNotification({
-                        title: 'Neuer user registriert',
-                        message: `Email: ${user.email}`,
-                    }).catch((error) => {
-                        logger.error('Failed to send Telegram notification:', 'TELEGRAM', {
-                            details: { error },
+                    try {
+                        const req = context?.request as Request | undefined;
+                        const path = req ? new URL(req.url).pathname : undefined;
+
+                        // Determine signup method from path or by fetching accounts
+                        let method = 'unknown';
+                        if (path?.includes('/sign-up/email')) {
+                            method = 'email';
+                        } else if (path?.includes('/sign-up/discord')) {
+                            method = 'discord';
+                        } else if (path?.includes('/sign-up/google')) {
+                            method = 'google';
+                        } else {
+                            // Fetch from database to determine OAuth provider
+                            const account = await prisma.account.findFirst({
+                                where: { userId: user.id },
+                                select: { providerId: true },
+                            });
+                            if (account) {
+                                method = account.providerId;
+                            }
+                        }
+
+                        await sendInfoNotification({
+                            title: 'Neuer user registriert',
+                            message: `Email: ${user.email} | Method: ${method}`,
+                        }).catch((error) => {
+                            logger.error('Failed to send Telegram notification:', 'TELEGRAM', {
+                                details: { error },
+                            });
                         });
-                    });
+
+                        await logger.info(
+                            `User registered: ${user.email} via ${method}`,
+                            'AUTHENTICATION',
+                            {
+                                userId: user.id,
+                                details: { email: user.email, method },
+                            },
+                        );
+                    } catch (error) {
+                        await logger.error(
+                            `Error in user creation after hook: ${user.email}`,
+                            'AUTHENTICATION',
+                            {
+                                userId: user.id,
+                                details: {
+                                    email: user.email,
+                                    error: error instanceof Error ? error.message : String(error),
+                                },
+                            },
+                        );
+                    }
                 },
             },
         },
