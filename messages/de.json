@@ -478,6 +478,10 @@
   "RegisterLogin": {
     "title": "Willkommen",
     "subtitle": "Registriere Dich mit Deinem Discord- oder Google-Konto.",
+    "security": {
+      "title": "Hinweis zur Email-Registrierung",
+      "description": "Um gegen Spam zu schützen, wurde das anlegen neuer Konten über Email deaktiviert. Der Login mit bestehenden Konten ist weiterhin möglich."
+    },
     "oauth": {
       "discord": "Mit Discord registrieren",
       "google": "Mit Google registrieren"
