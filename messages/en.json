@@ -1219,7 +1219,13 @@
         "required": "Startup command is required",
         "showDefault": "Show default command",
         "hideDefault": "Hide default command",
-        "useDefault": "Use default"
+        "useDefault": "Use default",
+        "variablesHint": {
+          "label": "How variables work",
+          "title": "Startup command variables",
+          "description": "Parts written as '{{VARIABLE}}' are variables. They will be replaced with real values (like memory or the server jar) right before your server starts, so the command stays portable instead of hardcoding those values. Keep them if you change the command. you cant get more meory that way :)",
+          "filledLabel": "Currently resolves to"
+        }
       }
     },
     "statusIndicator": {

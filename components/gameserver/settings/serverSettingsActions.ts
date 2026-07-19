@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma';
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import {
+    MAXSTARTUP_COMMAND_LENGTH,
     reinstallServerSchema,
     renameServerSchema,
     serverStartupSchema,
@@ -178,15 +179,36 @@ export async function updateStartupCommand(
 ): Promise<boolean> {
     const parsedResult = updateStartupCommandSchema.safeParse({ ptServerId, startupCommand });
     if (!parsedResult.success) {
+        console.error('Invalid startup command update request', parsedResult.error);
         return false;
     }
     const parsed = parsedResult.data;
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session?.user?.ptKey) {
+        logger.warn(
+            `Startup command update attempt without authentication for server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            { details: { ptServerId: parsed.ptServerId } },
+        );
         return false;
     }
 
-    const server = await prisma.gameServer.findFirst({
+    if (parsed.startupCommand.length > MAXSTARTUP_COMMAND_LENGTH) {
+        logger.warn(
+            `Startup command update attempt with too long command for server ${parsed.ptServerId}`,
+            'GAME_SERVER',
+            {
+                userId: session.user.id,
+                details: {
+                    ptServerId: parsed.ptServerId,
+                    length: parsed.startupCommand.length,
+                },
+            },
+        );
+        return false;
+    }
+
+    const server = await prisma.gameServer.findFirstOrThrow({
         where: { ptServerId: parsed.ptServerId, userId: session.user.id },
         select: { id: true, ptAdminId: true },
     });
@@ -203,17 +225,41 @@ export async function updateStartupCommand(
     const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const ptAdminKey = process.env.PTERODACTYL_API_KEY;
 
+    logger.info(
+        `Updating startup command for server ${parsed.ptServerId} to "${parsed.startupCommand}"`,
+        'GAME_SERVER',
+        { userId: session.user.id },
+    );
+
     try {
-        const adminServer = await fetch(`${ptUrl}/api/application/servers/${server.ptAdminId}`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${ptAdminKey}`,
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+        const adminServerResponse = await fetch(
+            `${ptUrl}/api/application/servers/${server.ptAdminId}`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${ptAdminKey}`,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
             },
-        })
-            .then((r) => r.json())
-            .then((s) => s.attributes);
+        );
+
+        if (!adminServerResponse.ok) {
+            logger.error(
+                `Failed to fetch server details for ${parsed.ptServerId}`,
+                'GAME_SERVER',
+                {
+                    userId: session.user.id,
+                    details: {
+                        ptServerId: parsed.ptServerId,
+                        adminServerResponse: await adminServerResponse.text(),
+                    },
+                },
+            );
+            return false;
+        }
+
+        const adminServer = await adminServerResponse.json().then((s) => s.attributes);
 
         const response = await fetch(
             `${ptUrl}/api/application/servers/${server.ptAdminId}/startup`,
@@ -242,7 +288,7 @@ export async function updateStartupCommand(
                     userId: session.user.id,
                     details: {
                         ptServerId: parsed.ptServerId,
-                        status: response.status,
+                        updatesResponse: await response.text(),
                     },
                 },
             );

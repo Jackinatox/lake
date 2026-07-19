@@ -30,9 +30,10 @@ function MinecraftSettings({ server, apiKey }: MinecraftSettingsProps) {
     return (
         <div className="space-y-4">
             <StartupCommand
-                command={server.invocation}
+                command={server.startupCommand}
                 ptServerId={server.identifier}
                 defaultCommand={server.defaultStartCommand}
+                filledCommand={server.invocation}
             />
 
             <MinecraftVersionSelector

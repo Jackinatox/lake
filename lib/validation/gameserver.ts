@@ -1,6 +1,8 @@
 import { gameConfigSchema } from './order';
 import { positiveIntSchema, requiredStringSchema, serverIdentifierSchema, z } from './common';
 
+export const MAXSTARTUP_COMMAND_LENGTH = 400;
+
 export const renameServerSchema = z.object({
     ptServerId: serverIdentifierSchema,
     newName: requiredStringSchema('Server name', 200),
@@ -18,7 +20,7 @@ export const serverStartupSchema = z.object({
 
 export const updateStartupCommandSchema = z.object({
     ptServerId: serverIdentifierSchema,
-    startupCommand: requiredStringSchema('Startup command', 200),
+    startupCommand: requiredStringSchema('Startup command', MAXSTARTUP_COMMAND_LENGTH),
 });
 
 export const changeGameRequestSchema = z

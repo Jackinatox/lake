@@ -24,6 +24,7 @@ export interface ServerLoaderProps {
         type: GameServerType;
         expires: Date;
         defaultStartCommand: string;
+        startupCommand: string;
     };
     features: EggFeature[];
 }
@@ -76,6 +77,7 @@ export default function ServerLoader({
                 type: initialServer.type,
                 expires: initialServer.expires,
                 defaultStartCommand: initialServer.defaultStartCommand,
+                startupCommand: initialServer.startupCommand,
             };
 
             setServer(updatedServer);
@@ -95,6 +97,7 @@ export default function ServerLoader({
         initialServer.gameConfig,
         initialServer.gameSlug,
         initialServer.type,
+        initialServer.startupCommand,
         ptApiKey,
         serverId,
         t,

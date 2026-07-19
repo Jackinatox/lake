@@ -5,20 +5,29 @@ import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { updateStartupCommand } from './serverSettingsActions';
-import { Loader2, Save, RotateCcw, ChevronDown, Undo2 } from 'lucide-react';
+import { Loader2, Save, RotateCcw, ChevronDown, Undo2, Info } from 'lucide-react';
+import { MAXSTARTUP_COMMAND_LENGTH } from '@/lib/validation/gameserver';
 
-const MAX_LENGTH = 200;
+const VARIABLE_PATTERN = /\{\{[^{}]+\}\}/;
 
 interface StartupCommandProps {
     command: string;
     ptServerId: string;
     defaultCommand?: string;
+    /** The command with `{{VARIABLE}}` placeholders resolved to their current values. */
+    filledCommand?: string;
 }
 
-function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandProps) {
+function StartupCommand({
+    command,
+    ptServerId,
+    defaultCommand,
+    filledCommand,
+}: StartupCommandProps) {
     const t = useTranslations('gameserver.settings.startupCommand');
     const editable = ptServerId !== undefined;
     const [value, setValue] = useState(command);
@@ -29,10 +38,11 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
 
     const hasDefault = !!defaultCommand && defaultCommand.trim() !== '';
     const canUseDefault = hasDefault && defaultCommand !== value;
+    const hasVariables = VARIABLE_PATTERN.test(command);
 
     const isDirty = value !== saved;
     const isEmpty = value.trim() === '';
-    const tooLong = value.length > MAX_LENGTH;
+    const tooLong = value.length > MAXSTARTUP_COMMAND_LENGTH;
     const canSave = isDirty && !isEmpty && !tooLong && !isSaving;
 
     const persist = async (next: string) => {
@@ -67,14 +77,46 @@ function StartupCommand({ command, ptServerId, defaultCommand }: StartupCommandP
 
     return (
         <div className="space-y-1">
-            <Label htmlFor="startup-command">{t('label')}</Label>
+            <div className="flex items-center gap-1">
+                <Label htmlFor="startup-command">{t('label')}</Label>
+                {hasVariables && (
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <button
+                                type="button"
+                                aria-label={t('variablesHint.label')}
+                                title={t('variablesHint.label')}
+                                className="inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+                            >
+                                <Info className="h-3.5 w-3.5" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 space-y-2 text-sm" align="start">
+                            <p className="font-medium">{t('variablesHint.title')}</p>
+                            <p className="text-xs text-muted-foreground">
+                                {t('variablesHint.description')}
+                            </p>
+                            {filledCommand && filledCommand !== command && (
+                                <div className="space-y-1">
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        {t('variablesHint.filledLabel')}
+                                    </p>
+                                    <p className="rounded-md bg-muted/50 px-2 py-2 font-mono text-xs whitespace-pre-wrap break-all">
+                                        {filledCommand}
+                                    </p>
+                                </div>
+                            )}
+                        </PopoverContent>
+                    </Popover>
+                )}
+            </div>
             <div className="flex items-end justify-between gap-2 mt-1!">
                 <p className="text-xs text-muted-foreground flex-1 min-w-0">{t('description')}</p>
                 {editable && (
                     <span
                         className={`text-xs shrink-0 ${tooLong ? 'text-destructive font-medium' : 'text-muted-foreground'}`}
                     >
-                        {value.length}/{MAX_LENGTH}
+                        {value.length}/{MAXSTARTUP_COMMAND_LENGTH}
                     </span>
                 )}
             </div>

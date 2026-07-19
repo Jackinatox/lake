@@ -108,6 +108,7 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             type: isServerValid.type,
             expires: isServerValid.expires,
             defaultStartCommand: eegg.startup,
+            startupCommand: adminServer.container.startupCommand,
         };
 
         return (

@@ -1231,7 +1231,13 @@
         "required": "Startbefehl ist erforderlich",
         "showDefault": "Standardbefehl anzeigen",
         "hideDefault": "Standardbefehl ausblenden",
-        "useDefault": "Standard verwenden"
+        "useDefault": "Standard verwenden",
+        "variablesHint": {
+          "label": "Wie Variablen funktionieren",
+          "title": "Variablen im Startbefehl",
+          "description": "Abschnitte in der Form '{{VARIABLE}}' sind Variablen. Sie werden kurz vor dem Serverstart durch die echten Werte ersetzt (z. B. Arbeitsspeicher oder die Server-Jar), sodass der Befehl portabel bleibt, statt diese Werte fest einzutragen. Lass die Variabeln so, du kannst nicht mehr RAM bekommen wenn du es dort änderst :)",
+          "filledLabel": "Löst aktuell auf zu"
+        }
       }
     },
     "statusIndicator": {

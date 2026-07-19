@@ -27,6 +27,7 @@ export type GameServer = {
         oom_disabled: boolean;
     };
     invocation: string;
+    startupCommand: string;
     defaultStartCommand: string;
     docker_image: string;
     egg_features: string[];
