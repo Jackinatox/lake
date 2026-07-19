@@ -90,68 +90,6 @@ export function useServerStats(): StatsPayload {
 }
 
 // ============================================================================
-// useConsoleOutput - Console log stream with history
-// ============================================================================
-
-export interface UseConsoleOutputOptions {
-    /** If true, includes the existing history buffer on mount */
-    includeHistory?: boolean;
-    /** Maximum lines to keep in local state (default: 1000) */
-    maxLines?: number;
-}
-
-export function useConsoleOutput(options: UseConsoleOutputOptions = {}): string[] {
-    const { includeHistory = true, maxLines = 1000 } = options;
-    const { manager } = useWebSocketContext();
-    const [logs, setLogs] = useState<string[]>(() =>
-        includeHistory ? [...manager.state.consoleHistory] : [],
-    );
-
-    useEffect(() => {
-        // Reset with history if option enabled
-        if (includeHistory) {
-            setLogs([...manager.state.consoleHistory]);
-        }
-
-        const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
-            setLogs((prev) => {
-                // Avoid duplicates
-                if (prev[prev.length - 1] === line) return prev;
-
-                const newLogs = [...prev, line];
-                // Trim to max lines
-                if (newLogs.length > maxLines) {
-                    return newLogs.slice(-maxLines);
-                }
-                return newLogs;
-            });
-        });
-
-        return unsubscribe;
-    }, [manager, includeHistory, maxLines]);
-
-    return logs;
-}
-
-// ============================================================================
-// useConsoleListener - Subscribe to console output with callback
-// ============================================================================
-
-export function useConsoleListener(callback: (line: string) => void): void {
-    const { manager } = useWebSocketContext();
-    const callbackRef = useRef(callback);
-    callbackRef.current = callback;
-
-    useEffect(() => {
-        const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
-            callbackRef.current(line);
-        });
-
-        return unsubscribe;
-    }, [manager]);
-}
-
-// ============================================================================
 // useCustomEvent - Subscribe to custom events (EULA, Hytale OAuth, etc.)
 // ============================================================================
 
@@ -238,9 +176,6 @@ export interface UseServerWebSocketReturn {
     stats: StatsPayload;
     initialContentLoaded: boolean;
 
-    // Console
-    consoleOutput: string[];
-
     // Actions
     sendCommand: (command: string) => boolean;
     sendPowerAction: (action: 'start' | 'stop' | 'restart' | 'kill') => boolean;
@@ -250,7 +185,6 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
     const connection = useConnectionState();
     const serverStatus = useServerStatus();
     const stats = useServerStats();
-    const consoleOutput = useConsoleOutput();
     const initialContentLoaded = useInitialContentLoaded();
     const { sendCommand, sendPowerAction } = useSendCommand();
     const searchParams = useSearchParams();
@@ -290,7 +224,6 @@ export function useServerWebSocket(): UseServerWebSocketReturn {
         serverStatus,
         stats,
         initialContentLoaded,
-        consoleOutput,
         sendCommand,
         sendPowerAction,
     };

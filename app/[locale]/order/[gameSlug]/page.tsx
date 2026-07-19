@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import { fetchPerformanceGroups } from '@/lib/actions';
-import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ConfiguredOrderClient from './ConfiguredOrderClient';
@@ -78,6 +78,7 @@ export async function generateMetadata({
             `${game.name} gameserver`,
             'game server hosting',
         ],
+        image: gameIconImage(game.name, `Order a ${game.name} server with Scyed`),
     });
 }
 

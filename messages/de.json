@@ -880,7 +880,8 @@
     "contactUs": "Kontakt",
     "withdrawal": "Verträge widerrufen",
     "payments": "Zahlungsbedingungen",
-    "returns": "Widerrufsrecht"
+    "returns": "Widerrufsrecht",
+    "status": "Status"
   },
   "gameserver": {
     "freeServer": "Kostenloser Server",
@@ -1698,5 +1699,9 @@
     "noBlogPost": "Keiner",
     "saveSuccess": "Eintrag gespeichert.",
     "deleteSuccess": "Eintrag gelöscht."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Hast du eine Frage, einen Vorschlag oder möchtest uns einfach erreichen? Schreib uns eine E-Mail und wir melden uns bei dir."
   }
 }

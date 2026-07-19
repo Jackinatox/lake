@@ -63,15 +63,12 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
         isConnected,
         serverStatus,
         stats: serverStats,
-        consoleOutput,
         initialContentLoaded,
-        sendCommand,
         sendPowerAction,
     } = useServerWebSocket();
     const t = useTranslations();
 
-    // Wrapper functions for power actions
-    const handleCommand = (command: string) => sendCommand(command);
+    // Wrapper function for power actions
     const handlePowerAction = (action: 'start' | 'stop' | 'restart' | 'kill') =>
         sendPowerAction(action);
 
@@ -290,11 +287,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     const ConsoleComponent = (
         <Card className="border-0 shadow-sm min-h-72 w-full min-w-0 p-0">
             <CardContent className="p-0 md:p-2">
-                <ConsoleV2
-                    logs={consoleOutput}
-                    handleCommand={handleCommand}
-                    disabled={!isConnected}
-                />
+                <ConsoleV2 />
             </CardContent>
         </Card>
     );

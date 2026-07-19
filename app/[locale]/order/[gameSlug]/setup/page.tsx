@@ -2,6 +2,7 @@ import { fetchGameBySlug, fetchPerformanceGroups } from '@/lib/actions';
 import {
     buildHardwareMetadataSummary,
     createPublicMetadata,
+    gameIconImage,
     getMetadataCopy,
 } from '@/lib/metadata';
 import prisma from '@/lib/prisma';
@@ -53,6 +54,7 @@ export async function generateMetadata({
         title: copy.gameSetupTitle(game.name, summary ?? undefined),
         description: copy.gameSetupDescription(game.name),
         keywords: [`${game.name} setup`, `${game.name} server config`, `${game.name} hosting`],
+        image: gameIconImage(game.name, `Set up your ${game.name} server with Scyed`),
     });
 }
 

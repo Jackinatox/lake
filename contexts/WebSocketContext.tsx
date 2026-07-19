@@ -118,7 +118,10 @@ interface ConnectionState {
     initialContentLoaded: boolean;
 }
 
-const MAX_CONSOLE_HISTORY = 1000;
+export const MAX_CONSOLE_HISTORY = 1000;
+// Let the history buffer overshoot the cap by this many lines before a bulk trim, so
+// the per-line hot path is an O(1) push instead of copying the whole array each time.
+const HISTORY_SLACK = 200;
 
 class ServerConnectionManager {
     private ws: WebSocket | null = null;
@@ -271,22 +274,24 @@ class ServerConnectionManager {
                 }
                 break;
 
-            case 'console output':
+            case 'console output': {
                 const line: string = data.args[0];
 
-                // Add to history with circular buffer
-                const newHistory = [...this.state.consoleHistory, line];
-                if (newHistory.length > MAX_CONSOLE_HISTORY) {
-                    newHistory.shift();
+                // Append to the bounded history buffer in place; bulk-trim only once the
+                // slack margin is exceeded so the common path stays O(1) per line.
+                const history = this.state.consoleHistory;
+                history.push(line);
+                if (history.length > MAX_CONSOLE_HISTORY + HISTORY_SLACK) {
+                    history.splice(0, history.length - MAX_CONSOLE_HISTORY);
                 }
-                this.state.consoleHistory = newHistory;
 
-                // Emit event
+                // Emit to live subscribers
                 this.emitter.emit('CONSOLE_OUTPUT', line);
 
                 // Check for custom events
                 this.detectCustomEvents(line);
                 break;
+            }
 
             case 'stats':
                 const stats = this.parseStatsPayload(JSON.parse(data.args[0]));

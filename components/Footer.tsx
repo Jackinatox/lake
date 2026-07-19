@@ -40,6 +40,14 @@ export default function Footer() {
                             >
                                 {t('withdrawal')}
                             </Link>
+                            <a
+                                href={'https://status.scyed.com'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('status')}
+                            </a>
                         </nav>
                     </div>
 

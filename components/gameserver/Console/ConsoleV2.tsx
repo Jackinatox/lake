@@ -5,24 +5,30 @@ import { Send, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import AnsiToHtml from 'ansi-to-html';
+import { MAX_CONSOLE_HISTORY, useWebSocketContext } from '@/contexts/WebSocketContext';
+import { useConnectionState, useSendCommand } from '@/hooks/useServerWebSocket';
 
-interface ConsoleV2Props {
-    logs: string[];
-    handleCommand: (command: string) => void;
-    disabled?: boolean;
-}
+// Class applied to every rendered log line. Kept as a module constant so a batch can
+// be built as one HTML string and parsed in a single pass.
+const LOG_LINE_CLASS =
+    'text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text';
 
-const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) => {
+const ConsoleV2 = () => {
+    const { manager } = useWebSocketContext();
+    const { isConnected } = useConnectionState();
+    const { sendCommand } = useSendCommand();
+    const disabled = !isConnected;
+
     const [inputValue, setInputValue] = useState('');
     const [commandHistory, setCommandHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
-    const [tempInput, setTempInput] = useState(''); // Store current input when navigating history
-    const isAtBottomRef = useRef(true);
+    const [tempInput, setTempInput] = useState(''); // Current input stashed while browsing history
+    // Drives the "No output yet" placeholder. Flipped at most once per mount, never per line.
+    const [hasOutput, setHasOutput] = useState(() => manager.state.consoleHistory.length > 0);
 
+    const isAtBottomRef = useRef(true);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const logContainerRef = useRef<HTMLDivElement>(null);
-    const renderedLogsCountRef = useRef(0);
-    const inputRef = useRef<HTMLInputElement>(null);
 
     // Initialize ANSI to HTML converter
     const ansiConverter = useMemo(
@@ -43,9 +49,7 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
         if (!container) return true;
 
         const threshold = 50; // px tolerance
-        const isBottom =
-            container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
-        return isBottom;
+        return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
     }, []);
 
     // Handle scroll events to track if user is at bottom
@@ -53,44 +57,94 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
         isAtBottomRef.current = checkIfAtBottom();
     }, [checkIfAtBottom]);
 
-    // Imperatively append only new log lines so existing DOM nodes are never touched,
-    // which preserves any active text selection.
+    // ------------------------------------------------------------------
+    // Console rendering — fully imperative and decoupled from React state.
+    //
+    // Console lines can arrive in bursts of hundreds per second. Routing each line
+    // through React state would re-render the whole dashboard once per line, which is
+    // what made the page sluggish and made logs land in stuttery chunks. Instead we
+    // subscribe straight to the connection manager's stream, buffer incoming lines,
+    // and flush them to the DOM a single time per animation frame. A burst of N lines
+    // collapses into one DOM write and zero React renders.
+    // ------------------------------------------------------------------
     useEffect(() => {
         const container = logContainerRef.current;
-        if (!container) return;
-
-        // If logs were cleared/reset, wipe the container
-        if (logs.length < renderedLogsCountRef.current) {
-            container.innerHTML = '';
-            renderedLogsCountRef.current = 0;
-        }
-
-        const newLogs = logs.slice(renderedLogsCountRef.current);
-        if (newLogs.length > 0) {
-            const fragment = document.createDocumentFragment();
-            newLogs.forEach((log) => {
-                const div = document.createElement('div');
-                div.className =
-                    'text-zinc-300 whitespace-pre-wrap break-all hover:bg-zinc-900/50 px-1 -mx-1 rounded select-text';
-                div.innerHTML = ansiConverter.toHtml(log);
-                fragment.appendChild(div);
-            });
-            container.appendChild(fragment);
-        }
-        renderedLogsCountRef.current = logs.length;
-
-        // Auto-scroll only when at bottom and no text is selected
         const scrollContainer = scrollAreaRef.current;
-        if (isAtBottomRef.current && scrollContainer && !window.getSelection()?.toString()) {
+        if (!container || !scrollContainer) return;
+
+        const linesToHtml = (lines: string[]) =>
+            lines
+                .map((line) => `<div class="${LOG_LINE_CLASS}">${ansiConverter.toHtml(line)}</div>`)
+                .join('');
+
+        // Keep the DOM bounded to the same window as the history buffer by dropping the
+        // oldest (offscreen) nodes.
+        const trimToWindow = () => {
+            let excess = container.childElementCount - MAX_CONSOLE_HISTORY;
+            while (excess-- > 0 && container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+        };
+
+        // Seed from existing history (first mount, or remount after a tab switch).
+        const history = manager.state.consoleHistory;
+        container.innerHTML = linesToHtml(history);
+        trimToWindow();
+        let lastLine = history[history.length - 1];
+        let rendered = history.length > 0;
+        if (rendered) {
+            setHasOutput(true);
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            isAtBottomRef.current = true;
         }
-    }, [logs, ansiConverter]);
+
+        // Live stream → buffer → flush once per frame.
+        const buffer: string[] = [];
+        let frame: number | null = null;
+
+        const flush = () => {
+            frame = null;
+            if (buffer.length === 0) return;
+
+            const batch = buffer.splice(0, buffer.length);
+            container.insertAdjacentHTML('beforeend', linesToHtml(batch));
+            trimToWindow();
+
+            // Auto-scroll only when pinned to bottom and no text is selected
+            if (isAtBottomRef.current && !window.getSelection()?.toString()) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            }
+            if (!rendered) {
+                rendered = true;
+                setHasOutput(true);
+            }
+        };
+
+        const unsubscribe = manager.emitter.addListener('CONSOLE_OUTPUT', (line: string) => {
+            // Drop a line identical to the one immediately before it (occasional double-emit)
+            if (line === lastLine) return;
+            lastLine = line;
+
+            buffer.push(line);
+            // Never hold more backlog than the visible window can show — relevant while the
+            // tab is hidden and rAF is paused, so the buffer can't grow without bound.
+            if (buffer.length > MAX_CONSOLE_HISTORY * 2) {
+                buffer.splice(0, buffer.length - MAX_CONSOLE_HISTORY);
+            }
+            if (frame === null) frame = requestAnimationFrame(flush);
+        });
+
+        return () => {
+            unsubscribe();
+            if (frame !== null) cancelAnimationFrame(frame);
+        };
+    }, [manager, ansiConverter]);
 
     const handleSubmit = useCallback(() => {
         const trimmedCommand = inputValue.trim();
         if (!trimmedCommand || disabled) return;
 
-        handleCommand(trimmedCommand);
+        sendCommand(trimmedCommand);
 
         // Add to history (avoid duplicates of the last command)
         setCommandHistory((prev) => {
@@ -101,7 +155,7 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
         setInputValue('');
         setHistoryIndex(-1);
         setTempInput('');
-    }, [inputValue, handleCommand, disabled]);
+    }, [inputValue, sendCommand, disabled]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         // Don't intercept Ctrl+C - let the browser handle copy
@@ -171,7 +225,7 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
                 onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text min-h-50 max-h-75 md:max-h-100"
             >
-                {logs.length === 0 && <div className="text-zinc-600 italic">No output yet...</div>}
+                {!hasOutput && <div className="text-zinc-600 italic">No output yet...</div>}
                 <div ref={logContainerRef} />
             </div>
 
@@ -179,7 +233,6 @@ const ConsoleV2 = ({ handleCommand, logs, disabled = false }: ConsoleV2Props) =>
             <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/50 border-t border-zinc-800">
                 <span className="text-emerald-500 font-mono text-sm select-none">&gt;</span>
                 <input
-                    ref={inputRef}
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
