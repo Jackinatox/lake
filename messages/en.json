@@ -466,6 +466,10 @@
   "RegisterLogin": {
     "title": "Welcome",
     "subtitle": "Register with your Discord or Google account.",
+    "security": {
+      "title": "Email Registration Notice",
+      "description": "To protect against spam, creating new accounts via email has been disabled. Login with existing accounts remains possible."
+    },
     "oauth": {
       "discord": "Register with Discord",
       "google": "Register with Google"
