@@ -91,7 +91,11 @@ function StartupCommand({
                                 <Info className="h-3.5 w-3.5" />
                             </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-80 space-y-2 text-sm" align="start">
+                        <PopoverContent
+                            className="w-80 max-w-(--radix-popper-available-width) space-y-2 text-sm"
+                            align="start"
+                            collisionPadding={16}
+                        >
                             <p className="font-medium">{t('variablesHint.title')}</p>
                             <p className="text-xs text-muted-foreground">
                                 {t('variablesHint.description')}
