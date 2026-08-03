@@ -384,6 +384,13 @@
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
       "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "minecraft": {
+        "modpackTab": "Modpack (Beta)",
+        "modpackBeta": {
+          "title": "Modpack-Unterstützung befindet sich in der Beta-Phase",
+          "description": "Die Installation eines Modpacks ist noch ein experimentelles Feature. Manche Modpacks lassen sich möglicherweise nicht korrekt installieren oder verhalten sich unerwartet. Bitte melde uns auftretende Probleme."
+        }
+      },
       "valheim": {
         "mode": {
           "label": "Mods aktivieren (BepInEx)",
@@ -888,6 +895,34 @@
     "status": "Status"
   },
   "gameserver": {
+    "feedback": {
+      "title": "Modpack Beta – Feedback",
+      "hint": "Erzähl uns, wie Dein Modpack funktioniert hat",
+      "outcomeQuestion": "Wurde Dein Modpack installiert und lief es?",
+      "outcome": {
+        "worked": "Es hat funktioniert",
+        "partial": "Es hat teilweise funktioniert",
+        "failed": "Es hat nicht funktioniert"
+      },
+      "issuesQuestion": "Bist Du auf eines dieser Probleme gestoßen?",
+      "issues": {
+        "install_failed": "Installation fehlgeschlagen",
+        "wrong_java_version": "Falsche Java-Version vorausgewählt",
+        "wont_start": "Server startet nicht",
+        "crashes": "Server stürzt ab",
+        "wrong_mod_versions": "Falsche Mod-Versionen",
+        "performance": "Schlechte Performance",
+        "confusing_ui": "Verwirrende Oberfläche"
+      },
+      "ratingLabel": "Gesamteindruck",
+      "messagePlaceholder": "Möchtest Du uns noch etwas mitteilen? (optional)",
+      "submit": "Feedback senden",
+      "submitting": "Wird gesendet...",
+      "success": "Danke für Dein Feedback!",
+      "error": "Feedback konnte nicht gesendet werden. Bitte versuche es erneut.",
+      "previousTitle": "Dein bisheriges Feedback",
+      "previousEmpty": "Du hast noch kein Feedback gesendet."
+    },
     "freeServer": "Kostenloser Server",
     "creationFailed": "Erstellung fehlgeschlagen",
     "creationFailedMessage": "Unser Team kümmert sich bald darum",

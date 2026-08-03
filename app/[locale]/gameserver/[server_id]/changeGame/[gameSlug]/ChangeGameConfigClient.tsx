@@ -23,6 +23,7 @@ interface ChangeGameConfigClientProps {
     currentGameName: string;
     currentGameEggId: number;
     defaultDeleteFiles: boolean;
+    modpacksEnabled?: boolean;
 }
 
 export default function ChangeGameConfigClient({
@@ -31,6 +32,7 @@ export default function ChangeGameConfigClient({
     currentGameName,
     currentGameEggId,
     defaultDeleteFiles = true,
+    modpacksEnabled,
 }: ChangeGameConfigClientProps) {
     const { toast } = useToast();
     const router = useRouter();
@@ -152,6 +154,7 @@ export default function ChangeGameConfigClient({
                             fullWidth
                             onSubmit={handleSubmit}
                             eggId={currentGameEggId}
+                            modpacksEnabled={modpacksEnabled}
                         />
                     </CardContent>
                 </Card>

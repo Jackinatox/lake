@@ -1,4 +1,5 @@
 import { fetchGameBySlug, fetchPerformanceGroups } from '@/lib/actions';
+import { getKeyValueBoolean } from '@/lib/keyValue';
 import {
     buildHardwareMetadataSummary,
     createPublicMetadata,
@@ -65,7 +66,10 @@ export default async function SetupPage({
 }) {
     const { gameSlug } = await params;
 
-    const [game, performanceGroups, resourceTiers] = await getSetupPageData(gameSlug);
+    const [[game, performanceGroups, resourceTiers], modpacksEnabled] = await Promise.all([
+        getSetupPageData(gameSlug),
+        getKeyValueBoolean('minecraft_modpacks_enabled', false),
+    ]);
 
     if (!game) {
         notFound();
@@ -78,6 +82,7 @@ export default async function SetupPage({
                 gameSlug={gameSlug}
                 performanceGroups={performanceGroups}
                 resourceTiers={resourceTiers}
+                modpacksEnabled={modpacksEnabled}
             />
         </Suspense>
     );

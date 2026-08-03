@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import ChangeGameConfigClient from './ChangeGameConfigClient';
+import { getKeyValueBoolean } from '@/lib/keyValue';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import prisma from '@/lib/prisma';
 import { z } from '@/lib/validation/common';
@@ -82,7 +83,7 @@ async function Page({
         return <NotLoggedIn />;
     }
 
-    const [gameServer, game] = await Promise.all([
+    const [gameServer, game, modpacksEnabled] = await Promise.all([
         getOwnedGameServerSummary(session.user.id, serverId),
         prisma.gameData.findFirst({
             where: {
@@ -95,6 +96,7 @@ async function Page({
                 data: true,
             },
         }),
+        getKeyValueBoolean('minecraft_modpacks_enabled', false),
     ]);
 
     if (!gameServer || gameServer.status === 'CREATION_FAILED' || gameServer.status === 'DELETED') {
@@ -126,6 +128,7 @@ async function Page({
                 currentGameName={gameServer.gameData?.name.toLowerCase() ?? null}
                 currentGameEggId={(gameServer.gameConfig as unknown as GameConfig).eggId}
                 defaultDeleteFiles={deleteFiles}
+                modpacksEnabled={modpacksEnabled}
             />
         </div>
     );

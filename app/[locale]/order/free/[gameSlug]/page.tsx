@@ -3,7 +3,7 @@ import GameNotFound from '@/components/booking2/GameNotFound';
 import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
 import { fetchGameBySlug } from '@/lib/actions';
 import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/metadata';
-import { getKeyValueNumber } from '@/lib/keyValue';
+import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
@@ -51,10 +51,11 @@ export default async function FreeGameServerBySlugPage({
 }) {
     const { gameSlug } = await params;
 
-    const [session, game, maxFreeServers] = await Promise.all([
+    const [session, game, maxFreeServers, modpacksEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         getFreeGamePageGame(gameSlug),
         getKeyValueNumber(FREE_TIER_MAX_SERVERS),
+        getKeyValueBoolean('minecraft_modpacks_enabled', false),
     ]);
 
     if (!game) {
@@ -85,7 +86,12 @@ export default async function FreeGameServerBySlugPage({
 
     return (
         <div className="w-full max-w-5xl mx-auto">
-            <FreeGameServerBooking game={game} stats={stats} gameSlug={gameSlug} />
+            <FreeGameServerBooking
+                game={game}
+                stats={stats}
+                gameSlug={gameSlug}
+                modpacksEnabled={modpacksEnabled}
+            />
         </div>
     );
 }

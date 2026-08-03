@@ -25,12 +25,14 @@ interface FreeGameServerBookingProps {
     game: Game;
     stats: FreeServerStats;
     gameSlug: string;
+    modpacksEnabled?: boolean;
 }
 
 export default function FreeGameServerBooking({
     game,
     stats,
     gameSlug,
+    modpacksEnabled,
 }: FreeGameServerBookingProps) {
     const { toast } = useToast();
     const router = useRouter();
@@ -131,7 +133,12 @@ export default function FreeGameServerBooking({
 
                 {/* Game Configuration */}
                 <Card className="p-2 md:p-6">
-                    <GameConfigComponent ref={gameConfigRef} game={game} onSubmit={onSubmit} />
+                    <GameConfigComponent
+                        ref={gameConfigRef}
+                        game={game}
+                        onSubmit={onSubmit}
+                        modpacksEnabled={modpacksEnabled}
+                    />
                 </Card>
             </div>
 

@@ -300,6 +300,27 @@ model SupportTicket {
   @@index([ticketId])
 }
 
+enum FeedbackType {
+  MODPACK_BETA
+  GENERAL
+}
+
+model Feedback {
+  id           Int          @id @default(autoincrement())
+  type         FeedbackType
+  title        String?
+  message      String?      @db.Text
+  data         Json         @default("{}")
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameServerId String?
+  createdAt    DateTime     @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([gameServerId])
+}
+
 model Verification {
   id         String   @id
   // Better Auth stores short-lived 2FA challenge and trusted-device records here.
@@ -326,6 +347,7 @@ model User {
   accounts        Account[]
   GameServerOrder GameServerOrder[]
   SupportTicket   SupportTicket[]
+  Feedback        Feedback[]
   GameServer      GameServer[]
   WorkerLogs      WorkerLog[]
 

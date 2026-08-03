@@ -372,6 +372,13 @@
       "description": "Select your preferred game settings",
       "noSpecific": "No specific configuration options available for this game.",
       "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "minecraft": {
+        "modpackTab": "Modpack (Beta)",
+        "modpackBeta": {
+          "title": "Modpack support is in beta",
+          "description": "Installing a modpack is still an experimental feature. Some modpacks may fail to install correctly or behave unexpectedly. Please report any issues you run into."
+        }
+      },
       "valheim": {
         "mode": {
           "label": "Enable Modded (BepInEx)",
@@ -876,6 +883,34 @@
     "status": "Status"
   },
   "gameserver": {
+    "feedback": {
+      "title": "Modpack Beta – Feedback",
+      "hint": "Tell us how your modpack worked",
+      "outcomeQuestion": "Did your modpack install and run?",
+      "outcome": {
+        "worked": "It worked",
+        "partial": "It partially worked",
+        "failed": "It failed"
+      },
+      "issuesQuestion": "Did you run into any of these issues?",
+      "issues": {
+        "install_failed": "Installation failed",
+        "wrong_java_version": "Wrong Java version preselected",
+        "wont_start": "Server won't start",
+        "crashes": "Server crashes",
+        "wrong_mod_versions": "Wrong mod versions",
+        "performance": "Poor performance",
+        "confusing_ui": "Confusing interface"
+      },
+      "ratingLabel": "Overall experience",
+      "messagePlaceholder": "Anything else you want to tell us? (optional)",
+      "submit": "Send feedback",
+      "submitting": "Sending...",
+      "success": "Thanks for your feedback!",
+      "error": "Failed to send feedback. Please try again.",
+      "previousTitle": "Your previous feedback",
+      "previousEmpty": "You haven't sent any feedback yet."
+    },
     "freeServer": "Free Server",
     "creationFailed": "Creation Failed",
     "creationFailedMessage": "Our team will resolve this soon",

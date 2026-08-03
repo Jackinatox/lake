@@ -5,11 +5,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { Game, GameConfig } from '@/models/config';
 import { MinecraftConfig } from '@/models/gameSpecificConfig/MinecraftConfig';
 import { GameFlavor, GameVersion, MinecraftGameData } from '@/types/gameData';
 import { SelectGroup } from '@radix-ui/react-select';
+import { AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { ConfigContainer } from '../shared/config-container';
@@ -21,10 +23,11 @@ export interface GameConfigProps {
     onSubmit: (config: GameConfig) => void;
     initialConfig?: GameConfig | null;
     eggId?: number; // Optional eggId for flavor changes
+    modpacksEnabled?: boolean; // Kill switch (KeyValue: minecraft_modpacks_enabled)
 }
 
 export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
-    { game, onSubmit, initialConfig, eggId }: GameConfigProps,
+    { game, onSubmit, initialConfig, eggId, modpacksEnabled = false }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -38,7 +41,8 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
     const minecraftData = game.data as MinecraftGameData;
     const modrinthEggId = minecraftData.modpackPlatforms?.modrinth?.egg_id;
     const modrinthDockerImages = minecraftData.modpackPlatforms?.modrinth?.dockerImages ?? [];
-    const modpacksAvailable = typeof modrinthEggId === 'number' && modrinthEggId > 0;
+    const modpacksAvailable =
+        modpacksEnabled && typeof modrinthEggId === 'number' && modrinthEggId > 0;
 
     const [installType, setInstallType] = useState<'flavor' | 'modpack'>('flavor');
     const [modpackSelection, setModpackSelection] = useState<ModpackSelection | null>(null);
@@ -249,12 +253,19 @@ export const MinecraftConfigComponent = forwardRef(function MinecraftConfig(
                 >
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="flavor">Server Software</TabsTrigger>
-                        <TabsTrigger value="modpack">Modpack</TabsTrigger>
+                        <TabsTrigger value="modpack">{t('minecraft.modpackTab')}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="flavor" className="mt-4 space-y-4 md:space-y-6">
                         {flavorSettings}
                     </TabsContent>
-                    <TabsContent value="modpack" className="mt-4">
+                    <TabsContent value="modpack" className="mt-4 space-y-4">
+                        <Alert className="border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-100">
+                            <AlertTriangle className="h-4 w-4 text-yellow-600! dark:text-yellow-400!" />
+                            <AlertTitle>{t('minecraft.modpackBeta.title')}</AlertTitle>
+                            <AlertDescription>
+                                {t('minecraft.modpackBeta.description')}
+                            </AlertDescription>
+                        </Alert>
                         <ModpackPicker
                             platform="modrinth"
                             dockerImages={modrinthDockerImages}

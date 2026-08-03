@@ -19,10 +19,11 @@ interface GameConfigProps {
     fullWidth?: boolean;
     initialConfig?: GameConfig | null;
     eggId?: number; // Optional eggId for flavor changes
+    modpacksEnabled?: boolean; // Minecraft only: modpack kill switch
 }
 
 export const GameConfigComponent = forwardRef(function GameConfigComponent(
-    { game, onSubmit, fullWidth = false, initialConfig, eggId }: GameConfigProps,
+    { game, onSubmit, fullWidth = false, initialConfig, eggId, modpacksEnabled }: GameConfigProps,
     ref,
 ) {
     const t = useTranslations('buyGameServer.gameConfig');
@@ -63,6 +64,7 @@ export const GameConfigComponent = forwardRef(function GameConfigComponent(
                                 game={game}
                                 initialConfig={initialConfig}
                                 eggId={eggId}
+                                modpacksEnabled={modpacksEnabled}
                             />
                         );
                     case 'satisfactory':

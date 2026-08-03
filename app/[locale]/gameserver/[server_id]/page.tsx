@@ -6,6 +6,7 @@ import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader, { ServerLoaderProps } from '@/components/gameserver/ServerLoader';
+import ModpackFeedbackCard from '@/components/gameserver/feedback/ModpackFeedbackCard';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import prisma from '@/lib/prisma';
@@ -47,8 +48,8 @@ export async function generateMetadata({
     });
 }
 
-async function serverCrap({ params }: { params: Promise<{ server_id: string }> }) {
-    const serverId = (await params).server_id;
+async function serverCrap({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
+    const { locale, server_id: serverId } = await params;
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -111,6 +112,27 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
             startupCommand: adminServer.container.startupCommand,
         };
 
+        const isMinecraft = isServerValid.gameData.slug === 'minecraft';
+        const modpack =
+            initialServer.gameConfig.gameSlug === 'minecraft'
+                ? initialServer.gameConfig.modpack
+                : undefined;
+        const previousFeedback = isMinecraft
+            ? await prisma.feedback.findMany({
+                  where: { userId: session.user.id, gameServerId: serverId },
+                  select: {
+                      id: true,
+                      type: true,
+                      title: true,
+                      message: true,
+                      data: true,
+                      createdAt: true,
+                  },
+                  orderBy: { createdAt: 'desc' },
+                  take: 20,
+              })
+            : [];
+
         return (
             <div className="">
                 <ServerLoader
@@ -120,6 +142,17 @@ async function serverCrap({ params }: { params: Promise<{ server_id: string }> }
                     initialServer={initialServer}
                     features={features}
                 />
+                {isMinecraft && (
+                    <div className="mx-auto mt-6 max-w-screen-2xl">
+                        <ModpackFeedbackCard
+                            gameServerId={serverId}
+                            initialFeedback={previousFeedback}
+                            modpackId={modpack?.projectId}
+                            modpackVersion={modpack?.versionId}
+                            locale={locale}
+                        />
+                    </div>
+                )}
             </div>
         );
     } catch (error) {

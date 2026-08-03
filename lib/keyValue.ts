@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 
 import { cache } from 'react';
+import { logger } from './logger';
 
 /**
  * Fetches a single key-value string from the database
@@ -16,7 +17,7 @@ export const getKeyValueString = cache(async (key: string): Promise<string | nul
         });
         return keyValue?.string || null;
     } catch (error) {
-        console.error(`Failed to fetch key-value for key: ${key}`, error);
+        logger.error(`Failed to fetch key-value for key: ${key}`, 'SYSTEM');
         return null;
     }
 });
@@ -28,7 +29,21 @@ export const getKeyValueNumber = cache(async (key: string): Promise<number> => {
         });
         return keyValue?.number || 0;
     } catch (error) {
-        console.error(`Failed to fetch key-value for key: ${key}`, error);
+        logger.error(`Failed to fetch key-value for key: ${key}`, 'SYSTEM');
         return 0;
     }
 });
+
+export const getKeyValueBoolean = cache(
+    async (key: string, defaultValue: boolean): Promise<boolean> => {
+        try {
+            const keyValue = await prisma.keyValue.findUnique({
+                where: { key },
+            });
+            return keyValue?.boolean ?? defaultValue;
+        } catch (error) {
+            logger.error(`Failed to fetch key-value for key: ${key}`, 'SYSTEM');
+            return defaultValue;
+        }
+    },
+);

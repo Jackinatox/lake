@@ -26,6 +26,7 @@ interface SetupPageClientProps {
     gameSlug: string;
     performanceGroups: PerformanceGroup[];
     resourceTiers: ResourceTierDisplay[];
+    modpacksEnabled?: boolean;
 }
 
 export default function SetupPageClient({
@@ -33,6 +34,7 @@ export default function SetupPageClient({
     gameSlug,
     performanceGroups,
     resourceTiers,
+    modpacksEnabled,
 }: SetupPageClientProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -270,6 +272,7 @@ export default function SetupPageClient({
                         game={game}
                         onSubmit={handleGameConfigSubmit}
                         initialConfig={initialGameConfig}
+                        modpacksEnabled={modpacksEnabled}
                     />
                 </Card>
             </div>
