@@ -1,6 +1,7 @@
+import { GameServer } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
 
-export default async function deleteServerAdmin(ptAdminId: number) {
+export default async function deleteServerAdmin(gameServer: GameServer, userId: string): Promise<boolean> {
     const apiKey = process.env.PTERODACTYL_API_KEY;
     const baseUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
@@ -8,9 +9,13 @@ export default async function deleteServerAdmin(ptAdminId: number) {
         throw new Error('Pterodactyl configuration is missing');
     }
 
-    logger.info(`Deleting server with Pterodactyl Admin ID: ${ptAdminId}`, 'GAME_SERVER');
+    logger.info(
+        `Deleting server with Pterodactyl Admin ID: ${gameServer.ptAdminId}`,
+        'GAME_SERVER',
+        { gameServerId: gameServer.id, userId: userId },
+    );
 
-    const response = await fetch(`${baseUrl}/api/application/servers/${ptAdminId}`, {
+    const response = await fetch(`${baseUrl}/api/application/servers/${gameServer.ptAdminId}`, {
         method: 'DELETE',
         headers: {
             Authorization: `Bearer ${apiKey}`,

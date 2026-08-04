@@ -69,13 +69,17 @@ export async function renameClientServer(ptServerId: string, newName: string): P
             },
         );
 
+        
         if (!response.ok) {
+            const responseText = await response.text().catch(() => 'Failed to read response text');
             logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
                 userId: session.user.id,
+                gameServerId: parsed.ptServerId,
                 details: {
-                    ptServerId: parsed.ptServerId,
                     status: response.status,
                     statusText: response.statusText,
+                    newName: parsed.newName,
+                    responseText: responseText,
                 },
             });
             return false;
@@ -92,7 +96,8 @@ export async function renameClientServer(ptServerId: string, newName: string): P
     } catch (error) {
         logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
-            details: { ptServerId: parsed.ptServerId, error },
+            gameServerId: parsed.ptServerId,
+            details: { newName: parsed.newName, error },
         });
         return false;
     }
@@ -245,17 +250,13 @@ export async function updateStartupCommand(
         );
 
         if (!adminServerResponse.ok) {
-            logger.error(
-                `Failed to fetch server details for ${parsed.ptServerId}`,
-                'GAME_SERVER',
-                {
-                    userId: session.user.id,
-                    details: {
-                        ptServerId: parsed.ptServerId,
-                        adminServerResponse: await adminServerResponse.text(),
-                    },
+            logger.error(`Failed to fetch server details for ${parsed.ptServerId}`, 'GAME_SERVER', {
+                userId: session.user.id,
+                details: {
+                    ptServerId: parsed.ptServerId,
+                    adminServerResponse: await adminServerResponse.text(),
                 },
-            );
+            });
             return false;
         }
 
@@ -519,7 +520,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
     }
 
     try {
-        await deleteServerAdmin(server.ptAdminId);
+        await deleteServerAdmin(server, server.userId);
         await prisma.gameServer.update({
             where: { id: server.id },
             data: { status: 'DELETED' },
