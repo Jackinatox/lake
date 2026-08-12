@@ -53,7 +53,7 @@ function StarRow({ rating }: { rating: number }) {
     );
 }
 
-function ModpackFeedbackCard({
+export default function ModpackFeedbackCard({
     gameServerId,
     initialFeedback,
     modpackId,
@@ -286,5 +286,3 @@ function ModpackFeedbackCard({
         </Card>
     );
 }
-
-export default ModpackFeedbackCard;

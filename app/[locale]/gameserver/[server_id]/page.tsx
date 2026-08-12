@@ -112,12 +112,11 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
             startupCommand: adminServer.container.startupCommand,
         };
 
-        const isMinecraft = isServerValid.gameData.slug === 'minecraft';
         const modpack =
             initialServer.gameConfig.gameSlug === 'minecraft'
                 ? initialServer.gameConfig.modpack
                 : undefined;
-        const previousFeedback = isMinecraft
+        const previousFeedback = modpack
             ? await prisma.feedback.findMany({
                   where: { userId: session.user.id, gameServerId: serverId },
                   select: {
@@ -142,13 +141,13 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
                     initialServer={initialServer}
                     features={features}
                 />
-                {isMinecraft && (
+                {modpack && (
                     <div className="mx-auto mt-6 max-w-screen-2xl">
                         <ModpackFeedbackCard
                             gameServerId={serverId}
                             initialFeedback={previousFeedback}
-                            modpackId={modpack?.projectId}
-                            modpackVersion={modpack?.versionId}
+                            modpackId={modpack.projectId}
+                            modpackVersion={modpack.versionId}
                             locale={locale}
                         />
                     </div>

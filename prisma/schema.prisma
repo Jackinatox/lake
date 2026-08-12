@@ -286,8 +286,8 @@ enum TicketStatus {
 model SupportTicket {
   id       Int            @id @default(autoincrement())
   ticketId String         @unique @default(cuid())
-  userId   String
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String?
+  user     User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   title    String?
   message  String
   category TicketCategory @default(GENERAL)
@@ -311,8 +311,8 @@ model Feedback {
   title        String?
   message      String?      @db.Text
   data         Json         @default("{}")
-  userId       String
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   gameServerId String?
   createdAt    DateTime     @default(now())
 
@@ -478,7 +478,7 @@ model WorkerLog {
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   // Relation to JobRun
   jobRunId     String?
@@ -520,7 +520,7 @@ model ApplicationLog {
 
   // User context (optional)
   userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   gameServerId String?
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)

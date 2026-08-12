@@ -78,11 +78,12 @@ There is no admin UI for reading feedback yet — query the table directly.
 `components/gameserver/feedback/ModpackFeedbackCard.tsx` (`'use client'`):
 
 - Mounted in `app/[locale]/gameserver/[server_id]/page.tsx` below
-  `<ServerLoader />`, **only when `gameData.slug === 'minecraft'`**. The page
-  fetches the user's previous feedback server-side (direct
-  `prisma.feedback.findMany`, same shape as `getMyFeedbackAction`) and passes
-  it as `initialFeedback`, plus `modpackId`/`modpackVersion` extracted from
-  the parsed `gameConfig.modpack` (`projectId`/`versionId`) and the locale.
+  `<ServerLoader />`, **only when the server is minecraft AND has a modpack
+  installed** (the parsed `gameConfig.modpack` is set). The page fetches the
+  user's previous feedback server-side (direct `prisma.feedback.findMany`,
+  same shape as `getMyFeedbackAction`) and passes it as `initialFeedback`,
+  plus `modpackId`/`modpackVersion` from `gameConfig.modpack`
+  (`projectId`/`versionId`) and the locale.
 - Collapsed by default to a single slim row (shadcn `Collapsible`). Expanded:
   outcome radio, six issue checkboxes (`install_failed`, `wont_start`,
   `crashes`, `wrong_mod_versions`, `performance`, `confusing_ui`), 1–5 star

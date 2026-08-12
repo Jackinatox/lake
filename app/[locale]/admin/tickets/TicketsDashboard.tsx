@@ -30,7 +30,7 @@ export type AdminTicket = {
         id: string;
         username?: string | null;
         email: string;
-    };
+    } | null;
 };
 
 const TICKET_STATUSES: TicketStatus[] = ['OPEN', 'PENDING', 'RESOLVED', 'CLOSED'];
@@ -126,8 +126,8 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
             const search = normalise(query);
             return (
                 normalise(ticket.message).includes(search) ||
-                normalise(ticket.user.email).includes(search) ||
-                normalise(ticket.user.username ?? '').includes(search) ||
+                normalise(ticket.user?.email ?? "").includes(search) ||
+                normalise(ticket.user?.username ?? '').includes(search) ||
                 normalise(ticket.title ?? '').includes(search)
             );
         });
@@ -353,7 +353,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <MailIcon className="h-4 w-4" />
-                                            {ticket.user.email}
+                                            {ticket.user?.email ?? "Unknown email"}
                                         </span>
                                         <span>· {getUserDisplayName(ticket.user)}</span>
                                     </div>
@@ -362,7 +362,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => handleCopyEmail(ticket.user.email)}
+                                        onClick={() => handleCopyEmail(ticket.user?.email ?? '')}
                                         className="justify-start"
                                     >
                                         <ClipboardCopyIcon className="mr-2 h-4 w-4" /> Copy email

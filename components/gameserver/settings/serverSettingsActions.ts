@@ -69,7 +69,6 @@ export async function renameClientServer(ptServerId: string, newName: string): P
             },
         );
 
-        
         if (!response.ok) {
             const responseText = await response.text().catch(() => 'Failed to read response text');
             logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
@@ -215,10 +214,10 @@ export async function updateStartupCommand(
 
     const server = await prisma.gameServer.findFirstOrThrow({
         where: { ptServerId: parsed.ptServerId, userId: session.user.id },
-        select: { id: true, ptAdminId: true },
+        select: { id: true, ptAdminId: true, ptServerId: true },
     });
 
-    if (!server?.ptAdminId) {
+    if (!server?.ptAdminId || !server.ptServerId) {
         logger.warn(
             `Startup command update attempt for unknown or unowned server ${parsed.ptServerId}`,
             'GAME_SERVER',
@@ -306,7 +305,10 @@ export async function updateStartupCommand(
     logger.info(
         `Updated Startupccommand for ${parsed.ptServerId} to "${parsed.startupCommand}"`,
         'GAME_SERVER',
-        { userId: session.user.id },
+        {
+            userId: session.user.id,
+            gameServerId: server.ptServerId,
+        },
     );
     return true;
 }
