@@ -411,7 +411,7 @@ function BackupManager({ apiKey, server }: BackupManagerProps) {
     const limitReached = backupsDisabled || backups.length >= backupLimit;
 
     return (
-        <Card className="border-0 shadow-sm p-3 min-h-72 w-full min-w-0">
+        <Card className="border-0 shadow-sm p-3 h-full min-h-72 w-full min-w-0">
             <div className="space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>

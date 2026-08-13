@@ -21,7 +21,7 @@ export default function GameServerSettings({ server, apiKey }: GameServerSetting
     const t = useTranslations('gameserverSettings');
 
     return (
-        <div className="min-h-72">
+        <div className="h-full min-h-72">
             <div className="space-y-3">
                 {/* Server Settings Card */}
                 <GeneralServerSettings server={server} />

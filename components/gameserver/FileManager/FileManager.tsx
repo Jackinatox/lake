@@ -734,7 +734,7 @@ const FileManager = ({ server, apiKey }: FileManagerProps) => {
     };
 
     return (
-        <Card className="border-0 shadow-sm min-h-72 w-full min-w-0">
+        <Card className="border-0 shadow-sm h-full min-h-72 w-full min-w-0">
             <CardHeader className="space-y-2 p-3 pb-0">
                 <CardTitle className="flex items-center gap-2 text-base">
                     <FolderTree className="h-5 w-5" />

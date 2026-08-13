@@ -99,7 +99,7 @@ export default function NetworkManager({ server, apiKey }: NetworkManagerProps) 
 
     return (
         <>
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 shadow-sm h-full">
                 <CardHeader className="pb-0 p-3">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <CardTitle className="flex items-center gap-2 text-base">

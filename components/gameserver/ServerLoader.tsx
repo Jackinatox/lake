@@ -12,6 +12,15 @@ import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
 import { GameConfig } from '@/models/config';
+import ModpackFeedbackCard from './feedback/ModpackFeedbackCard';
+import type { MyFeedbackRow } from '@/app/actions/feedback/feedbackActions';
+
+export interface ModpackFeedbackProps {
+    initialFeedback: MyFeedbackRow[];
+    modpackId: string;
+    modpackVersion: string;
+    locale: string;
+}
 
 export interface ServerLoaderProps {
     serverId: string;
@@ -27,6 +36,7 @@ export interface ServerLoaderProps {
         startupCommand: string;
     };
     features: EggFeature[];
+    modpackFeedback?: ModpackFeedbackProps;
 }
 
 export default function ServerLoader({
@@ -35,6 +45,7 @@ export default function ServerLoader({
     baseUrl,
     initialServer,
     features,
+    modpackFeedback,
 }: ServerLoaderProps) {
     const [server, setServer] = useState<GameServer | null>(null);
     const [isInstalling, setIsInstalling] = useState(false);
@@ -252,6 +263,8 @@ export default function ServerLoader({
                 ptApiKey={ptApiKey}
                 features={features}
                 loading={loading}
+                modpackFeedback={modpackFeedback}
+                serverId={serverId}
             />
         </WebSocketProvider>
     );
@@ -266,11 +279,15 @@ function WebSocketGate({
     ptApiKey,
     features,
     loading: dataLoading,
+    modpackFeedback,
+    serverId,
 }: {
     server: GameServer;
     ptApiKey: string;
     features: EggFeature[];
     loading: boolean;
+    modpackFeedback?: ModpackFeedbackProps;
+    serverId: string;
 }) {
     const { isConnected, isLoading: wsLoading } = useConnectionState();
     const [hasConnected, setHasConnected] = useState(false);
@@ -287,6 +304,17 @@ function WebSocketGate({
     return (
         <div className="max-w-screen-2xl mx-auto">
             <GameDashboard server={server} ptApiKey={ptApiKey} features={features} />
+            {modpackFeedback && (
+                <div className="mt-2.5">
+                    <ModpackFeedbackCard
+                        gameServerId={serverId}
+                        initialFeedback={modpackFeedback.initialFeedback}
+                        modpackId={modpackFeedback.modpackId}
+                        modpackVersion={modpackFeedback.modpackVersion}
+                        locale={modpackFeedback.locale}
+                    />
+                </div>
+            )}
         </div>
     );
 }

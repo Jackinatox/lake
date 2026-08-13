@@ -26,8 +26,8 @@ export function TabsComponent({
     const t = useTranslations();
 
     return (
-        <Tabs defaultValue="console" onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-5 min-w-0">
+        <Tabs defaultValue="console" onValueChange={setActiveTab} className="h-full">
+            <TabsList className="grid w-full grid-cols-5 min-w-0 shrink-0">
                 <TabsTrigger value="console" className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
                     <span className="hidden sm:inline">{t('gameserver.tabs.console')}</span>
@@ -78,14 +78,17 @@ export function TabsComponent({
                     <span className="hidden sm:inline">{t('gameserver.tabs.settings')}</span>
                 </TabsTrigger>
             </TabsList>
-            <TabsContent value="console" className="mt-3">
-                <div className="w-full min-w-0">{consoleComponent}</div>
+            {/* The console is absolutely positioned so its log output never feeds back into
+                the grid row height: it stretches to the row (= the sidebar) and scrolls
+                internally. min-h-100 is the floor when nothing else sizes the row. */}
+            <TabsContent value="console" className="mt-3 relative flex-1 min-h-100">
+                <div className="absolute inset-0 w-full min-w-0">{consoleComponent}</div>
             </TabsContent>
             <TabsContent value="files" className="mt-3">
-                <div className="w-full min-w-0">{fileManagerComponent}</div>
+                <div className="w-full min-w-0 h-full">{fileManagerComponent}</div>
             </TabsContent>
             <TabsContent value="network" className="mt-3">
-                <div className="w-full min-w-0">
+                <div className="w-full min-w-0 h-full">
                     {networkControlComponent || (
                         <div className="text-center py-8">
                             {t('gameserver.tabs.networkComingSoon')}
@@ -94,7 +97,7 @@ export function TabsComponent({
                 </div>
             </TabsContent>
             <TabsContent value="backups" className="mt-3">
-                <div className="w-full min-w-0">
+                <div className="w-full min-w-0 h-full">
                     {backupManagerComponent || (
                         <div className="text-center py-8">
                             {t('gameserver.tabs.backupsComingSoon')}
@@ -103,7 +106,7 @@ export function TabsComponent({
                 </div>
             </TabsContent>
             <TabsContent value="settings" className="mt-3">
-                <div className="w-full min-w-0">
+                <div className="w-full min-w-0 h-full">
                     {settingsComponent || (
                         <div className="text-center py-8">
                             {t('gameserver.tabs.settingsComingSoon')}

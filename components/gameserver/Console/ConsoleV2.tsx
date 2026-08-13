@@ -223,7 +223,7 @@ const ConsoleV2 = () => {
             <div
                 ref={scrollAreaRef}
                 onScroll={handleScroll}
-                className="flex-1 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text min-h-50 max-h-75 md:max-h-100"
+                className="flex-1 min-h-0 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text"
             >
                 {!hasOutput && <div className="text-zinc-600 italic">No output yet...</div>}
                 <div ref={logContainerRef} />

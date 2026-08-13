@@ -283,10 +283,9 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
         </>
     );
 
-    // Console component - now full width in tab content
     const ConsoleComponent = (
-        <Card className="border-0 shadow-sm min-h-72 w-full min-w-0 p-0">
-            <CardContent className="p-0 md:p-2">
+        <Card className="border-0 shadow-sm w-full min-w-0 p-0 h-full">
+            <CardContent className="h-full p-0 md:p-0">
                 <ConsoleV2 />
             </CardContent>
         </Card>
@@ -314,7 +313,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-stretch">
                     {/* Main Content Area - Tabs */}
-                    <div className="w-full md:col-span-8 min-w-0">
+                    <div className="w-full md:col-span-8 min-w-0 h-full">
                         <TabsComponent
                             consoleComponent={ConsoleComponent}
                             fileManagerComponent={

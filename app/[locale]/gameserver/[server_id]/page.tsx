@@ -6,7 +6,6 @@ import ServerCreationFailed from '@/components/auth/ServerCreationFailed';
 import ServerDeleted from '@/components/auth/ServerDeleted';
 import ServerExpired from '@/components/auth/ServerExpired';
 import ServerLoader, { ServerLoaderProps } from '@/components/gameserver/ServerLoader';
-import ModpackFeedbackCard from '@/components/gameserver/feedback/ModpackFeedbackCard';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
 import prisma from '@/lib/prisma';
@@ -140,18 +139,17 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
                     baseUrl={baseUrl}
                     initialServer={initialServer}
                     features={features}
+                    modpackFeedback={
+                        modpack
+                            ? {
+                                  initialFeedback: previousFeedback,
+                                  modpackId: modpack.projectId,
+                                  modpackVersion: modpack.versionId,
+                                  locale,
+                              }
+                            : undefined
+                    }
                 />
-                {modpack && (
-                    <div className="mx-auto mt-6 max-w-screen-2xl">
-                        <ModpackFeedbackCard
-                            gameServerId={serverId}
-                            initialFeedback={previousFeedback}
-                            modpackId={modpack.projectId}
-                            modpackVersion={modpack.versionId}
-                            locale={locale}
-                        />
-                    </div>
-                )}
             </div>
         );
     } catch (error) {
