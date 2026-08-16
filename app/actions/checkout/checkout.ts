@@ -7,7 +7,7 @@ import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeServer';
-import { getKeyValueNumber } from '@/lib/keyValue';
+import { getKeyValueBooleanFresh, getKeyValueNumber } from '@/lib/keyValue';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { resolveResourceTier } from '@/lib/resourceTier';
@@ -15,7 +15,11 @@ import { checkoutParamsSchema, gameConfigSchema } from '@/lib/validation/order';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
 import { headers } from 'next/headers';
-import { FREE_SERVERS_LOCATION_ID, LEGAL_GRACE_PERIOD_MS } from '../../GlobalConstants';
+import {
+    FREE_SERVER_CREATION_ENABLED,
+    FREE_SERVERS_LOCATION_ID,
+    LEGAL_GRACE_PERIOD_MS,
+} from '../../GlobalConstants';
 
 type LineItem = {
     name: string;
@@ -394,6 +398,16 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
     if (!session) throw new Error('Not authenticated');
     const user = session.user;
     const validatedGameConfig = gameConfigSchema.parse(gameConfig) as GameConfig;
+
+    // Kill switch read straight from the DB (no cache) so disabling it takes
+    // effect immediately, even while cached pages still offer the form.
+    const creationEnabled = await getKeyValueBooleanFresh(FREE_SERVER_CREATION_ENABLED, true);
+    if (!creationEnabled) {
+        logger.info('Blocked free server creation: creation is disabled', 'GAME_SERVER', {
+            userId: user.id,
+        });
+        throw new Error('Die Erstellung kostenloser Server ist derzeit deaktiviert');
+    }
 
     const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     const freeServerStats = await getFreeTierConfigCached();

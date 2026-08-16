@@ -15,8 +15,9 @@ import {
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { auth } from '@/auth';
-import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
-import { getKeyValueNumber } from '@/lib/keyValue';
+import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
+import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import { headers } from 'next/headers';
 
 export async function generateMetadata({
@@ -40,7 +41,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
-    const [session, games, freeTierConfig, maxFreeServers] = await Promise.all([
+    const [session, games, freeTierConfig, maxFreeServers, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         prisma.gameData.findMany({
             select: { id: true, name: true, slug: true },
@@ -49,7 +50,10 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
         }),
         getFreeTierConfigCached(),
         getKeyValueNumber(FREE_TIER_MAX_SERVERS),
+        getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
+
+    const freeServersUnavailable = !creationEnabled || maxFreeServers === 0;
 
     const currentFreeServers = session?.user
         ? await prisma.gameServer.count({
@@ -110,6 +114,13 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                     </div>
                 </div>
             </section>
+
+            {/* Creation disabled notice */}
+            {freeServersUnavailable && (
+                <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-4">
+                    <FreeCreationDisabledBanner />
+                </section>
+            )}
 
             {/* Server Specs + FAQ */}
             <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-4 md:pb-6">

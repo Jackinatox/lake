@@ -32,6 +32,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   table, dashboard survey card, server actions) and the KeyValue-based
   modpack kill switch. Read when touching feedback, the beta status, or the
   modpack tab's visibility.
+- `free-server-kill-switch.md` — The `free_server_creation_enabled` KeyValue
+  boolean: startup requirement, the banner on the free order pages, and the
+  uncached check in `checkoutFreeGameServer`. Read when touching free server
+  availability or the free order pages.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

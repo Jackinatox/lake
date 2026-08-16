@@ -143,6 +143,10 @@
       "tooMany": "Du hast die maximale Anzahl kostenloser Server erreicht.",
       "notLoggedIn": "Du musst eingeloggt sein, um einen kostenlosen Server zu erstellen.",
       "default": "Die Servererstellung ist derzeit nicht möglich."
+    },
+    "creationDisabled": {
+      "title": "Die Erstellung kostenloser Server pausiert derzeit",
+      "description": "Aktuell vergeben wir keine neuen kostenlosen Server — meistens, weil unsere Free-Tier Kapazität ausgelastet ist oder wir Wartungsarbeiten durchführen. Bestehende kostenlose Server laufen ganz normal weiter. Schau später nochmal vorbei oder wähle einen kostenpflichtigen Tarif, wenn du sofort einen Server brauchst."
     }
   },
   "hardware-config": {

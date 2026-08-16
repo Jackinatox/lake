@@ -11,6 +11,8 @@ import { getValidationMessage } from '@/lib/validation/common';
 import { gameConfigSchema } from '@/lib/validation/order';
 import { Game, GameConfig } from '@/models/config';
 import { ArrowLeft, Gift, Server } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
@@ -18,7 +20,7 @@ import { useRef, useState } from 'react';
 export interface FreeServerStats {
     currentFreeServers: number;
     maxFreeServers: number;
-    creationNotAllowedReason: null | 'TOO_MANY_SERVERS' | 'NOT_LOGGED_IN';
+    creationNotAllowedReason: null | 'TOO_MANY_SERVERS' | 'NOT_LOGGED_IN' | 'CREATION_DISABLED';
 }
 
 interface FreeGameServerBookingProps {
@@ -34,6 +36,7 @@ export default function FreeGameServerBooking({
     gameSlug,
     modpacksEnabled,
 }: FreeGameServerBookingProps) {
+    const t = useTranslations('freeServer');
     const { toast } = useToast();
     const router = useRouter();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
@@ -41,20 +44,23 @@ export default function FreeGameServerBooking({
     const session = authClient.useSession();
 
     const isCreationDisabled = Boolean(stats?.creationNotAllowedReason) || !session.data;
+    const isGloballyDisabled = stats?.creationNotAllowedReason === 'CREATION_DISABLED';
 
     const getDisabledMessage = () => {
         if (stats?.creationNotAllowedReason) {
             switch (stats.creationNotAllowedReason) {
+                case 'CREATION_DISABLED':
+                    return t('creationDisabled.description');
                 case 'TOO_MANY_SERVERS':
-                    return 'You have reached the maximum number of free servers.';
+                    return t('disabledReasons.tooMany');
                 case 'NOT_LOGGED_IN':
-                    return 'You must be logged in to create a free server.';
+                    return t('disabledReasons.notLoggedIn');
                 default:
-                    return 'Server creation is currently not allowed.';
+                    return t('disabledReasons.default');
             }
         }
         if (!session.data) {
-            return 'You must be logged in to create a free server.';
+            return t('disabledReasons.notLoggedIn');
         }
         return '';
     };
@@ -125,10 +131,14 @@ export default function FreeGameServerBooking({
             {/* Main content */}
             <div className="w-full py-2 max-w-7xl mx-auto px-0 md:px-6 flex-1">
                 {/* Disabled notice */}
-                {isCreationDisabled && (
-                    <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-4 text-sm text-muted-foreground">
-                        {getDisabledMessage()}
-                    </div>
+                {isGloballyDisabled ? (
+                    <FreeCreationDisabledBanner className="mb-4" />
+                ) : (
+                    isCreationDisabled && (
+                        <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 mb-4 text-sm text-muted-foreground">
+                            {getDisabledMessage()}
+                        </div>
+                    )
                 )}
 
                 {/* Game Configuration */}
@@ -147,7 +157,9 @@ export default function FreeGameServerBooking({
                 <div className="w-full max-w-5xl mx-auto flex items-center justify-between gap-3">
                     {isCreationDisabled && (
                         <p className="text-xs text-muted-foreground hidden sm:block">
-                            {getDisabledMessage()}
+                            {isGloballyDisabled
+                                ? t('creationDisabled.title')
+                                : getDisabledMessage()}
                         </p>
                     )}
                     <Button

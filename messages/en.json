@@ -133,6 +133,10 @@
       "tooMany": "You have reached the maximum number of free servers.",
       "notLoggedIn": "You must be logged in to create a free server.",
       "default": "Server creation is currently not allowed."
+    },
+    "creationDisabled": {
+      "title": "Free server creation is currently paused",
+      "description": "We are not handing out new free servers at the moment — this is usually because our free tier capacity is full or we are doing maintenance. Existing free servers keep running as normal. Please check back later, or pick a paid plan if you need a server right away."
     }
   },
   "hardware-config": {

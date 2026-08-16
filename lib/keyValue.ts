@@ -47,3 +47,23 @@ export const getKeyValueBoolean = cache(
         }
     },
 );
+
+/**
+ * Reads a boolean key-value straight from the database, bypassing the
+ * per-request `cache()` wrappers above. Use this for kill switches that must
+ * take effect immediately, e.g. right before provisioning a server.
+ */
+export async function getKeyValueBooleanFresh(
+    key: string,
+    defaultValue: boolean,
+): Promise<boolean> {
+    try {
+        const keyValue = await prisma.keyValue.findUnique({
+            where: { key },
+        });
+        return keyValue?.boolean ?? defaultValue;
+    } catch (error) {
+        logger.error(`Failed to fetch key-value for key: ${key}`, 'SYSTEM');
+        return defaultValue;
+    }
+}

@@ -1,6 +1,6 @@
 import { auth } from '@/auth';
 import GameNotFound from '@/components/booking2/GameNotFound';
-import { FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
 import { fetchGameBySlug } from '@/lib/actions';
 import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/metadata';
 import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
@@ -51,11 +51,12 @@ export default async function FreeGameServerBySlugPage({
 }) {
     const { gameSlug } = await params;
 
-    const [session, game, maxFreeServers, modpacksEnabled] = await Promise.all([
+    const [session, game, maxFreeServers, modpacksEnabled, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         getFreeGamePageGame(gameSlug),
         getKeyValueNumber(FREE_TIER_MAX_SERVERS),
         getKeyValueBoolean('minecraft_modpacks_enabled', false),
+        getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
 
     if (!game) {
@@ -74,14 +75,19 @@ export default async function FreeGameServerBySlugPage({
           })
         : 0;
 
+    // Globally off: either the kill switch is off or the limit is configured to 0
+    const freeServersUnavailable = !creationEnabled || maxFreeServers === 0;
+
     const stats: FreeServerStats = {
         currentFreeServers,
         maxFreeServers,
-        creationNotAllowedReason: session?.user
-            ? currentFreeServers >= maxFreeServers
-                ? 'TOO_MANY_SERVERS'
-                : null
-            : 'NOT_LOGGED_IN',
+        creationNotAllowedReason: freeServersUnavailable
+            ? 'CREATION_DISABLED'
+            : session?.user
+              ? currentFreeServers >= maxFreeServers
+                  ? 'TOO_MANY_SERVERS'
+                  : null
+              : 'NOT_LOGGED_IN',
     };
 
     return (

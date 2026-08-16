@@ -17,6 +17,7 @@ import {
     EGG_FEATURE_HYTALE_OAUTH,
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
+    FREE_SERVER_CREATION_ENABLED,
     LEGAL_PAYMENTS_DE,
     LEGAL_PAYMENTS_EN,
     LEGAL_RETURNS_DE,
@@ -314,6 +315,12 @@ async function main() {
                 type: 'NUMBER',
                 number: 2,
                 note: 'Number of allocations allowed for free tier servers',
+            },
+            {
+                key: FREE_SERVER_CREATION_ENABLED,
+                type: 'BOOLEAN',
+                boolean: true,
+                note: 'Kill switch: when false, no new free servers can be created',
             },
             {
                 key: CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
