@@ -1,4 +1,5 @@
 import { fetchGameBySlug, fetchPerformanceGroups } from '@/lib/actions';
+import { MINECRAFT_MODPACKS_ENABLED } from '@/app/GlobalConstants';
 import { getKeyValueBoolean } from '@/lib/keyValue';
 import {
     buildHardwareMetadataSummary,
@@ -68,7 +69,7 @@ export default async function SetupPage({
 
     const [[game, performanceGroups, resourceTiers], modpacksEnabled] = await Promise.all([
         getSetupPageData(gameSlug),
-        getKeyValueBoolean('minecraft_modpacks_enabled', false),
+        getKeyValueBoolean(MINECRAFT_MODPACKS_ENABLED, false),
     ]);
 
     if (!game) {

@@ -18,6 +18,7 @@ import {
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
     FREE_SERVER_CREATION_ENABLED,
+    MINECRAFT_MODPACKS_ENABLED,
     LEGAL_PAYMENTS_DE,
     LEGAL_PAYMENTS_EN,
     LEGAL_RETURNS_DE,
@@ -321,6 +322,12 @@ async function main() {
                 type: 'BOOLEAN',
                 boolean: true,
                 note: 'Kill switch: when false, no new free servers can be created',
+            },
+            {
+                key: MINECRAFT_MODPACKS_ENABLED,
+                type: 'BOOLEAN',
+                boolean: false,
+                note: 'Kill switch: when false, the Minecraft modpack tab is hidden everywhere',
             },
             {
                 key: CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,

@@ -1,6 +1,10 @@
 import { auth } from '@/auth';
 import GameNotFound from '@/components/booking2/GameNotFound';
-import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import {
+    FREE_SERVER_CREATION_ENABLED,
+    FREE_TIER_MAX_SERVERS,
+    MINECRAFT_MODPACKS_ENABLED,
+} from '@/app/GlobalConstants';
 import { fetchGameBySlug } from '@/lib/actions';
 import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/metadata';
 import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
@@ -55,7 +59,7 @@ export default async function FreeGameServerBySlugPage({
         auth.api.getSession({ headers: await headers() }),
         getFreeGamePageGame(gameSlug),
         getKeyValueNumber(FREE_TIER_MAX_SERVERS),
-        getKeyValueBoolean('minecraft_modpacks_enabled', false),
+        getKeyValueBoolean(MINECRAFT_MODPACKS_ENABLED, false),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
 

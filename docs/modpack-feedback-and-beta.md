@@ -12,12 +12,17 @@ One boolean row in the `KeyValue` table controls whether the Minecraft modpack
 tab exists at all:
 
 - **Key:** `minecraft_modpacks_enabled`, type `BOOLEAN`
+- Constant: `MINECRAFT_MODPACKS_ENABLED` in `app/GlobalConstants.ts` — always
+  import it, never inline the string literal.
 - **Off by default**: only an existing row with `true` shows the modpack tab.
   A missing row or `false` → the tab is not rendered anywhere. This is
   deliberate (beta feature; must be safe to enable, try, and disable again) —
   do not flip the default back to `true`.
-- Admins edit it at `/admin/keyvalue`. There is no seed entry; create the row
-  with `true` to launch the beta.
+- The key is listed in `REQUIRED_DB_CONSTANTS` in `lib/startup.ts`, so the app
+  **refuses to boot** if the row does not exist. `prisma/seed.ts` seeds it as
+  `false`; on an already-seeded database create the row manually at
+  `/admin/keyvalue` (BOOLEAN) before deploying.
+- Admins flip it at `/admin/keyvalue`; set it to `true` to launch the beta.
 
 ### Wiring (server → client prop threading)
 

@@ -20,6 +20,7 @@ export const FREE_TIER_MAX_SERVERS = 'free_tier_max_servers';
 export const FREE_TIER_BACKUP_COUNT = 'free_tier_backup_count';
 export const FREE_TIER_ALLOCATIONS = 'free_tier_allocations';
 export const FREE_SERVER_CREATION_ENABLED = 'free_server_creation_enabled';
+export const MINECRAFT_MODPACKS_ENABLED = 'minecraft_modpacks_enabled';
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
 
 // Legal grace period added to every booking duration for compliance (5 minutes)

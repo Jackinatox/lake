@@ -296,7 +296,13 @@ All existing code using the logger will continue to work unchanged.
 
 1. **Always await**: Logger methods are async, always await them
 2. **Use appropriate types**: Choose the correct LogType for better filtering
-3. **Include context**: Pass userId, gameServerId when available
+3. **Include context**: Pass userId, gameServerId when available.
+   `gameServerId` **must be the internal `GameServer.id` (cuid)**, never the
+   Pterodactyl id (`GameServer.ptServerId`). `ApplicationLog.gameServerId` is a
+   foreign key to `GameServer.id`; passing a pt id violates the constraint, and
+   because `log()` swallows write failures the row is silently dropped — while
+   the Telegram notification still fires, so the loss is easy to miss. Put the
+   pt id in `details: { ptServerId }` instead.
 4. **Use details for structured data**: Store complex objects in the details field
 5. **Use logError for exceptions**: Automatically captures stack traces
 6. **Don't log sensitive data**: Avoid logging passwords, API keys, tokens

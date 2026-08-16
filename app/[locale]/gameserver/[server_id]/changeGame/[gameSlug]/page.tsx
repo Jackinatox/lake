@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import ChangeGameConfigClient from './ChangeGameConfigClient';
+import { MINECRAFT_MODPACKS_ENABLED } from '@/app/GlobalConstants';
 import { getKeyValueBoolean } from '@/lib/keyValue';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import prisma from '@/lib/prisma';
@@ -96,7 +97,7 @@ async function Page({
                 data: true,
             },
         }),
-        getKeyValueBoolean('minecraft_modpacks_enabled', false),
+        getKeyValueBoolean(MINECRAFT_MODPACKS_ENABLED, false),
     ]);
 
     if (!gameServer || gameServer.status === 'CREATION_FAILED' || gameServer.status === 'DELETED') {

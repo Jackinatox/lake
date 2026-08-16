@@ -73,7 +73,7 @@ export async function renameClientServer(ptServerId: string, newName: string): P
             const responseText = await response.text().catch(() => 'Failed to read response text');
             logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
                 userId: session.user.id,
-                gameServerId: parsed.ptServerId,
+                gameServerId: server.id,
                 details: {
                     status: response.status,
                     statusText: response.statusText,
@@ -95,7 +95,7 @@ export async function renameClientServer(ptServerId: string, newName: string): P
     } catch (error) {
         logger.error(`Failed to rename server ${parsed.ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
-            gameServerId: parsed.ptServerId,
+            gameServerId: server.id,
             details: { newName: parsed.newName, error },
         });
         return false;
@@ -161,7 +161,7 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
         if (!response.ok) {
             logger.error(`Reinstall failed for server ${parsed.ptServerId}`, 'GAME_SERVER', {
                 userId: session.user.id,
-                gameServerId: parsed.ptServerId,
+                gameServerId: serverRecord.id,
                 details: { ptServerId: parsed.ptServerId, response: JSON.stringify(response) },
             });
             return false;
@@ -307,7 +307,7 @@ export async function updateStartupCommand(
         'GAME_SERVER',
         {
             userId: session.user.id,
-            gameServerId: server.ptServerId,
+            gameServerId: server.id,
         },
     );
     return true;
