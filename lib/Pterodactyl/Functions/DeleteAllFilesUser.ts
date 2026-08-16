@@ -1,3 +1,4 @@
+import { describeResponse, logger } from '@/lib/logger';
 import PTUserServerPowerAction from './StopPTUserServer';
 
 export default async function DeleteAllFilesUserServer(server: string, apiKey: string) {
@@ -16,7 +17,9 @@ export default async function DeleteAllFilesUserServer(server: string, apiKey: s
     });
 
     if (!response.ok) {
-        throw new Error(`Error fetching file list: ${response.statusText}`);
+        throw new Error(
+            `Error fetching file list: ${JSON.stringify(await describeResponse(response))}`,
+        );
     }
 
     console.log(`Deleting all Files for server ${server}`);
@@ -36,6 +39,14 @@ export default async function DeleteAllFilesUserServer(server: string, apiKey: s
             files: toDelete,
         }),
     });
+
+    if (!deleted.ok) {
+        // Not fatal: the caller continues with the reinstall, but a failed wipe is
+        // the most likely reason a reinstall afterwards misbehaves.
+        await logger.warn(`Deleting all files failed for server ${server}`, 'GAME_SERVER', {
+            details: { ptServerId: server, ...(await describeResponse(deleted)) },
+        });
+    }
 
     return deleted;
 }

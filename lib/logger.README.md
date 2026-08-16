@@ -113,6 +113,61 @@ try {
 }
 ```
 
+### Failed HTTP Calls (fetch)
+
+`JSON.stringify(response)` on a fetch `Response` serialises to `{}` — a `Response`
+has no enumerable own properties, so status, url and the error body are all lost.
+Use the HTTP helpers instead:
+
+```typescript
+const startedAt = Date.now();
+
+try {
+    const response = await fetch(url, { method: 'POST', headers });
+
+    if (!response.ok) {
+        await logger.httpError('Reinstall failed', response, 'GAME_SERVER', {
+            userId,
+            gameServerId,
+            durationMs: Date.now() - startedAt,
+            details: { ptServerId },
+        });
+        return false;
+    }
+} catch (error) {
+    // Network failure / timeout / DNS — fetch throws instead of returning a response
+    await logger.httpException('Reinstall threw', error, 'GAME_SERVER', {
+        userId,
+        durationMs: Date.now() - startedAt,
+        details: { ptServerId },
+    });
+}
+```
+
+`httpError` adds `status`, `statusText`, `url`, `contentType`, `durationMs` and the
+body (`body` when it parsed as JSON, `bodyText` for plain text/HTML such as a proxy
+error page, `bodyReadError` if the body could not be read at all). Bodies are
+truncated to 2000 characters. The body is read from a `clone()`, so the caller can
+still consume `response` normally afterwards.
+
+`httpException` adds `errorName`, `errorMessage`, `errorCode` (the undici/Node code,
+e.g. `ECONNREFUSED`, `UND_ERR_CONNECT_TIMEOUT`), `causeMessage`, `timedOut`,
+`aborted`, `durationMs` and the stack — so a timeout is distinguishable from a bug.
+
+Both take the same context as `error()` plus an optional `durationMs`; anything you
+pass in `details` is merged with the HTTP details.
+
+If you only need the structured object (e.g. to build an error message, or to log at
+`warn` level), the underlying helpers are exported too:
+
+```typescript
+import { describeFetchError, describeResponse, logger } from '@/lib/logger';
+
+await logger.warn('Deleting all files failed', 'GAME_SERVER', {
+    details: { ptServerId: server, ...(await describeResponse(deleted)) },
+});
+```
+
 ### Rich Context
 
 ```typescript
@@ -305,8 +360,10 @@ All existing code using the logger will continue to work unchanged.
    pt id in `details: { ptServerId }` instead.
 4. **Use details for structured data**: Store complex objects in the details field
 5. **Use logError for exceptions**: Automatically captures stack traces
-6. **Don't log sensitive data**: Avoid logging passwords, API keys, tokens
-7. **Be descriptive**: Write clear, actionable log messages
+6. **Use httpError/httpException for fetch failures**: never `JSON.stringify` a
+   `Response` — it serialises to `{}`
+7. **Don't log sensitive data**: Avoid logging passwords, API keys, tokens
+8. **Be descriptive**: Write clear, actionable log messages
 
 ## Performance Considerations
 

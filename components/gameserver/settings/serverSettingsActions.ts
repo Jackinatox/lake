@@ -144,6 +144,8 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
         return false;
     }
 
+    const startedAt = Date.now();
+
     try {
         logger.info(`initiating reinstall for server ${parsed.ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
@@ -159,20 +161,36 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
         );
 
         if (!response.ok) {
-            logger.error(`Reinstall failed for server ${parsed.ptServerId}`, 'GAME_SERVER', {
-                userId: session.user.id,
-                gameServerId: serverRecord.id,
-                details: { ptServerId: parsed.ptServerId, response: JSON.stringify(response) },
-            });
+            await logger.httpError(
+                `Reinstall failed for server ${parsed.ptServerId}`,
+                response,
+                'GAME_SERVER',
+                {
+                    userId: session.user.id,
+                    gameServerId: serverRecord.id,
+                    durationMs: Date.now() - startedAt,
+                    details: {
+                        ptServerId: parsed.ptServerId,
+                        deleteAllFiles: parsed.deleteAllFiles,
+                    },
+                },
+            );
             return false;
         }
 
         return true;
     } catch (error) {
-        logger.error(`Exception during server reinstall for ${parsed.ptServerId}`, 'GAME_SERVER', {
-            userId: session.user.id,
-            details: { ptServerId: parsed.ptServerId, error },
-        });
+        await logger.httpException(
+            `Exception during server reinstall for ${parsed.ptServerId}`,
+            error,
+            'GAME_SERVER',
+            {
+                userId: session.user.id,
+                gameServerId: serverRecord.id,
+                durationMs: Date.now() - startedAt,
+                details: { ptServerId: parsed.ptServerId, deleteAllFiles: parsed.deleteAllFiles },
+            },
+        );
         return false;
     }
 }

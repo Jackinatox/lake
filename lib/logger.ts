@@ -40,6 +40,119 @@ export interface LogEntry extends LogContext {
     type: LogType;
 }
 
+/** Response/exception bodies are truncated to this many characters before logging. */
+const MAX_LOGGED_BODY_LENGTH = 2000;
+
+export interface HttpResponseDetails {
+    status: number;
+    statusText: string;
+    url: string;
+    contentType?: string;
+    /** Parsed JSON body when the response was JSON, otherwise absent. */
+    body?: unknown;
+    /** Raw (truncated) body text when it was not valid JSON, otherwise absent. */
+    bodyText?: string;
+    /** Set when the body could not be read at all (already consumed, stream error, ...). */
+    bodyReadError?: string;
+    durationMs?: number;
+}
+
+export interface HttpErrorDetails {
+    errorName: string;
+    errorMessage: string;
+    /** Node/undici error code, e.g. ECONNREFUSED, UND_ERR_CONNECT_TIMEOUT. */
+    errorCode?: string;
+    causeMessage?: string;
+    timedOut: boolean;
+    aborted: boolean;
+    durationMs?: number;
+    stack?: string;
+}
+
+function truncate(value: string): string {
+    return value.length > MAX_LOGGED_BODY_LENGTH
+        ? value.slice(0, MAX_LOGGED_BODY_LENGTH) + '... (truncated)'
+        : value;
+}
+
+/**
+ * Turns a fetch `Response` into loggable details.
+ *
+ * `JSON.stringify(response)` yields `{}` because `Response` has no enumerable own
+ * properties - use this instead so status, url and the actual error body survive.
+ * The body is read from a clone, so the caller can still consume `response` itself.
+ */
+export async function describeResponse(
+    response: Response,
+    options?: { durationMs?: number },
+): Promise<HttpResponseDetails> {
+    const details: HttpResponseDetails = {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        ...(response.headers.get('content-type') && {
+            contentType: response.headers.get('content-type')!,
+        }),
+        ...(options?.durationMs !== undefined && { durationMs: Math.round(options.durationMs) }),
+    };
+
+    try {
+        // Clone so the caller keeps an unread body; falls back to the original if
+        // cloning is not possible (body already disturbed).
+        const text = await (response.bodyUsed ? response : response.clone()).text();
+        if (text.length === 0) {
+            details.bodyText = '';
+            return details;
+        }
+        try {
+            details.body = JSON.parse(text);
+        } catch {
+            details.bodyText = truncate(text);
+        }
+    } catch (error) {
+        details.bodyReadError = error instanceof Error ? error.message : String(error);
+    }
+
+    return details;
+}
+
+/**
+ * Turns a thrown fetch error into loggable details, including the undici `cause`
+ * chain so connection refusals and timeouts are distinguishable from bugs.
+ */
+export function describeFetchError(
+    error: unknown,
+    options?: { durationMs?: number },
+): HttpErrorDetails {
+    const cause = error instanceof Error ? (error.cause as any) : undefined;
+    const errorName = error instanceof Error ? error.name : typeof error;
+    const errorCode =
+        typeof (error as any)?.code === 'string'
+            ? (error as any).code
+            : typeof cause?.code === 'string'
+              ? cause.code
+              : undefined;
+
+    const timeoutCodes = [
+        'ETIMEDOUT',
+        'UND_ERR_CONNECT_TIMEOUT',
+        'UND_ERR_HEADERS_TIMEOUT',
+        'UND_ERR_BODY_TIMEOUT',
+    ];
+
+    return {
+        errorName,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        ...(errorCode && { errorCode }),
+        ...(cause?.message && { causeMessage: String(cause.message) }),
+        timedOut:
+            errorName === 'TimeoutError' || (errorCode ? timeoutCodes.includes(errorCode) : false),
+        aborted: errorName === 'AbortError' || errorName === 'TimeoutError',
+        ...(options?.durationMs !== undefined && { durationMs: Math.round(options.durationMs) }),
+        ...(error instanceof Error && error.stack && { stack: error.stack }),
+    };
+}
+
 class Logger {
     private instanceId = process.env.INSTANCE_ID || 'unknown-instance';
     private prisma: PrismaClient;
@@ -328,6 +441,44 @@ class Logger {
                 stack: errorStack,
                 errorType: error instanceof Error ? error.constructor.name : typeof error,
             },
+        });
+    }
+
+    /**
+     * Log a failed HTTP response (`!response.ok`) with status, url and the response
+     * body included in `details`. Prefer this over hand-rolling `JSON.stringify(response)`,
+     * which serialises a `Response` to `{}`.
+     */
+    async httpError(
+        message: string,
+        response: Response,
+        type: LogType = 'SYSTEM',
+        context?: LogContext & { durationMs?: number },
+    ): Promise<void> {
+        const { durationMs, details, ...rest } = context ?? {};
+        const responseDetails = await describeResponse(response, { durationMs });
+
+        await this.error(message, type, {
+            ...rest,
+            details: { ...details, ...responseDetails },
+        });
+    }
+
+    /**
+     * Log an exception thrown by `fetch` (network failure, timeout, DNS, ...) with the
+     * undici error code and cause attached, so timeouts are distinguishable from bugs.
+     */
+    async httpException(
+        message: string,
+        error: unknown,
+        type: LogType = 'SYSTEM',
+        context?: LogContext & { durationMs?: number },
+    ): Promise<void> {
+        const { durationMs, details, ...rest } = context ?? {};
+
+        await this.error(message, type, {
+            ...rest,
+            details: { ...details, ...describeFetchError(error, { durationMs }) },
         });
     }
 

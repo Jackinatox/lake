@@ -1,4 +1,4 @@
-import { logger } from '../logger';
+import { describeResponse, logger } from '../logger';
 
 async function createUserApiKey(userId: number): Promise<any> {
     const pturl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -22,7 +22,7 @@ async function createUserApiKey(userId: number): Promise<any> {
 
         if (!response.ok) {
             throw new Error(
-                `HTTP error! status: ${response.status}, url: ${url}, body: ${JSON.stringify(response.body)}`,
+                `HTTP error! url: ${url}, ${JSON.stringify(await describeResponse(response))}`,
             );
         }
 
