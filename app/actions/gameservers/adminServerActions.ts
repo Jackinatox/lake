@@ -1,16 +1,9 @@
 'use server';
-import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
-import { headers } from 'next/headers';
-
-async function requireAdmin() {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user.role !== 'admin') throw new Error('Unauthorized');
-    return session;
-}
+import { requireAdmin } from '@/lib/auth/requireAdmin';
 
 export async function expireGameServer(id: string) {
     await requireAdmin();
@@ -40,7 +33,11 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
         logger.warn(`Deleting server by admin ${session.user.name}`, 'SYSTEM', {
             userId: gameServer.userId,
             gameServerId: id,
-            details: { adminUserId: session.user.id, deleteOrders, serverOwnerId: gameServer.userId },
+            details: {
+                adminUserId: session.user.id,
+                deleteOrders,
+                serverOwnerId: gameServer.userId,
+            },
         });
 
         if (gameServer.ptAdminId) {

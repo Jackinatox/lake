@@ -26,6 +26,7 @@ import { EditServerDialog } from './EditServerDialog';
 import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { GameServerAdmin } from '@/models/prisma';
+import { getActiveSuspension } from '@/lib/gameserver/suspension';
 
 interface GameserversTableProps {
     servers: GameServerAdmin[];
@@ -39,6 +40,7 @@ interface GameserversTableProps {
         type?: GameServerType;
         locationId?: string;
         status?: GameServerStatus;
+        suspended?: boolean;
     };
 }
 
@@ -99,7 +101,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
     return (
         <div className="space-y-4">
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
                 <div>
                     <label className="text-sm font-medium mb-2 block">User</label>
                     <Select
@@ -174,6 +176,22 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                             <SelectItem value="EXPIRED">Expired</SelectItem>
                             <SelectItem value="DELETED">Deleted</SelectItem>
                             <SelectItem value="CREATION_FAILED">Creation Failed</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
+                    <label className="text-sm font-medium mb-2 block">Suspension</label>
+                    <Select
+                        value={filters.suspended ? 'true' : 'all'}
+                        onValueChange={(value) => updateFilter('suspended', value)}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="All servers" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All servers</SelectItem>
+                            <SelectItem value="true">Suspended only</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -292,6 +310,22 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                                     >
                                         {gameserver.status}
                                     </span>
+                                    {(() => {
+                                        const suspension = getActiveSuspension(gameserver);
+                                        if (!suspension) return null;
+                                        return (
+                                            <div
+                                                className="mt-1 max-w-40 text-xs font-medium text-red-600 dark:text-red-400"
+                                                title={suspension.reason}
+                                            >
+                                                Suspended until{' '}
+                                                {formatDate(suspension.expiresAt, true)}
+                                                {suspension.deleteAfterExpiry
+                                                    ? ' · then deleted'
+                                                    : ''}
+                                            </div>
+                                        );
+                                    })()}
                                 </TableCell>
                                 <TableCell className="whitespace-nowrap">
                                     {formatDate(gameserver.expires)}

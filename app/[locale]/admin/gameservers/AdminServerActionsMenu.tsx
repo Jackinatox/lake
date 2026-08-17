@@ -33,13 +33,26 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { MoreHorizontal, Pencil, Clock, Trash2, DatabaseBackup } from 'lucide-react';
+import {
+    MoreHorizontal,
+    Pencil,
+    Clock,
+    Trash2,
+    DatabaseBackup,
+    ShieldAlert,
+    ShieldCheck,
+    CalendarClock,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
+import { ExtendSuspensionDialog, LiftSuspensionDialog, SuspendDialog } from './SuspensionDialogs';
+import { getActiveSuspension } from '@/lib/gameserver/suspension';
+import type { ActiveSuspension } from '@/lib/gameserver/suspension';
 
 interface Server {
     id: string;
     name: string;
+    suspensions?: ActiveSuspension[];
 }
 
 interface AdminServerActionsMenuProps {
@@ -48,11 +61,24 @@ interface AdminServerActionsMenuProps {
     onSuccess: () => void;
 }
 
-type DialogState = 'none' | 'expire' | 'delete' | 'hardDelete';
+type DialogState = 'none' | 'expire' | 'delete' | 'hardDelete' | 'suspend' | 'extend' | 'lift';
 
 export function AdminServerActionsMenu({ server, onEdit, onSuccess }: AdminServerActionsMenuProps) {
     const { toast } = useToast();
     const [dialog, setDialog] = useState<DialogState>('none');
+    const suspension = getActiveSuspension(server);
+    const suspensionTarget = {
+        id: server.id,
+        name: server.name,
+        suspension: suspension
+            ? {
+                  id: suspension.id,
+                  reason: suspension.reason,
+                  expiresAt: suspension.expiresAt,
+                  deleteAfterExpiry: suspension.deleteAfterExpiry,
+              }
+            : null,
+    };
     const [deleteOrders, setDeleteOrders] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -116,6 +142,27 @@ export function AdminServerActionsMenu({ server, onEdit, onSuccess }: AdminServe
                         Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    {suspension ? (
+                        <>
+                            <DropdownMenuItem onClick={() => setDialog('extend')}>
+                                <CalendarClock className="mr-2 h-4 w-4" />
+                                Extend Suspension
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setDialog('lift')}>
+                                <ShieldCheck className="mr-2 h-4 w-4" />
+                                Unsuspend Server
+                            </DropdownMenuItem>
+                        </>
+                    ) : (
+                        <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => setDialog('suspend')}
+                        >
+                            <ShieldAlert className="mr-2 h-4 w-4" />
+                            Suspend Server
+                        </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setDialog('expire')}>
                         <Clock className="mr-2 h-4 w-4" />
                         Expire Server
@@ -136,6 +183,25 @@ export function AdminServerActionsMenu({ server, onEdit, onSuccess }: AdminServe
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
+            <SuspendDialog
+                server={suspensionTarget}
+                open={dialog === 'suspend'}
+                onOpenChange={(o) => setDialog(o ? 'suspend' : 'none')}
+                onSuccess={onSuccess}
+            />
+            <ExtendSuspensionDialog
+                server={suspensionTarget}
+                open={dialog === 'extend'}
+                onOpenChange={(o) => setDialog(o ? 'extend' : 'none')}
+                onSuccess={onSuccess}
+            />
+            <LiftSuspensionDialog
+                server={suspensionTarget}
+                open={dialog === 'lift'}
+                onOpenChange={(o) => setDialog(o ? 'lift' : 'none')}
+                onSuccess={onSuccess}
+            />
 
             {/* Expire confirmation */}
             <AlertDialog open={dialog === 'expire'} onOpenChange={(o) => !o && setDialog('none')}>

@@ -21,6 +21,8 @@ export function Status({ state }: InfoProps) {
                 return 'bg-orange-500';
             case 'installing':
                 return 'bg-blue-500';
+            case 'suspended':
+                return 'bg-red-600';
             default:
                 return 'bg-gray-500';
         }

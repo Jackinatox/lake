@@ -34,7 +34,13 @@ export type AdminTicket = {
 };
 
 const TICKET_STATUSES: TicketStatus[] = ['OPEN', 'PENDING', 'RESOLVED', 'CLOSED'];
-const TICKET_CATEGORIES: TicketCategory[] = ['GENERAL', 'TECHNICAL', 'BILLING', 'ACCOUNT'];
+const TICKET_CATEGORIES: TicketCategory[] = [
+    'GENERAL',
+    'TECHNICAL',
+    'BILLING',
+    'ACCOUNT',
+    'SUSPENSION',
+];
 
 const statusStyles: Record<TicketStatus, string> = {
     OPEN: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
@@ -48,6 +54,7 @@ const categoryStyles: Record<TicketCategory, string> = {
     TECHNICAL: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400',
     BILLING: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
     ACCOUNT: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
+    SUSPENSION: 'bg-red-500/15 text-red-600 dark:text-red-400',
 };
 
 const categoryLabels: Record<TicketCategory, string> = {
@@ -55,6 +62,7 @@ const categoryLabels: Record<TicketCategory, string> = {
     TECHNICAL: 'Technical issue',
     BILLING: 'Billing & payments',
     ACCOUNT: 'Account & access',
+    SUSPENSION: 'Server suspension',
 };
 
 function formatRelative(dateIso: string) {
@@ -126,7 +134,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
             const search = normalise(query);
             return (
                 normalise(ticket.message).includes(search) ||
-                normalise(ticket.user?.email ?? "").includes(search) ||
+                normalise(ticket.user?.email ?? '').includes(search) ||
                 normalise(ticket.user?.username ?? '').includes(search) ||
                 normalise(ticket.title ?? '').includes(search)
             );
@@ -353,7 +361,7 @@ export default function TicketsDashboard({ tickets: initialTickets }: { tickets:
                                     <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1">
                                             <MailIcon className="h-4 w-4" />
-                                            {ticket.user?.email ?? "Unknown email"}
+                                            {ticket.user?.email ?? 'Unknown email'}
                                         </span>
                                         <span>· {getUserDisplayName(ticket.user)}</span>
                                     </div>

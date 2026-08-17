@@ -3,6 +3,7 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import prisma from '@/lib/prisma';
+import { activeSuspensionInclude } from '@/lib/gameserver/suspension';
 
 import FreeServerUpgradeClient from './FreeServerUpgradeClient';
 
@@ -17,7 +18,7 @@ export default async function FreeServerUpgrade({ serverId, userId }: FreeServer
         getGameServerConfig(serverId, userId),
         prisma.gameServer.findFirst({
             where: { ptServerId: serverId, userId },
-            include: { gameData: true },
+            include: { gameData: true, ...activeSuspensionInclude() },
         }),
         getFreeTierConfigCached(),
     ]);

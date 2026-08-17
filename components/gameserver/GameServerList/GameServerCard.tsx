@@ -3,13 +3,15 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { ClientServer } from '@/models/prisma';
-import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick } from 'lucide-react';
+import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
 import { useTranslations } from 'next-intl';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import formatDate from '@/lib/formatDate';
+import { Button } from '@/components/ui/button';
+import { getActiveSuspension } from '@/lib/gameserver/suspension';
 
 type ExpirationUrgency = 'ok' | 'warn' | 'urgent' | 'expired';
 
@@ -40,8 +42,16 @@ function ServerCard({
     isFreeServer: boolean;
 }) {
     const t = useTranslations('gameserver');
+    const tSuspended = useTranslations('ServerSuspended');
     const isExpired = server.status === 'EXPIRED';
     const isCreationFailed = server.status === 'CREATION_FAILED';
+    const suspension = getActiveSuspension(server);
+    const suspendedUntil = suspension ? formatDate(suspension.expiresAt, true) : null;
+    const supportHref = suspension
+        ? `/support?category=SUSPENSION&subject=${encodeURIComponent(
+              tSuspended('ticketSubject', { serverName: server.name }),
+          )}`
+        : null;
 
     const expiration = isExpired
         ? { text: 'Expired', urgency: 'expired' as ExpirationUrgency }
@@ -79,6 +89,26 @@ function ServerCard({
                             <GameServerStatus apiKey={apiKey} server={server} />
                         </div>
                     </div>
+
+                    {/* Suspension notice */}
+                    {suspension && suspendedUntil && (
+                        <div className="flex flex-col gap-1 text-xs text-red-600 dark:text-red-400">
+                            <span className="flex items-center gap-1.5">
+                                <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+                                <span>
+                                    {tSuspended('suspendedUntil', { date: suspendedUntil })}
+                                </span>
+                            </span>
+                            <span className="text-slate-600 dark:text-slate-300">
+                                {tSuspended('reasonLabel')}: {suspension.reason}
+                            </span>
+                            {suspension.deleteAfterExpiry && (
+                                <span className="font-medium">
+                                    {tSuspended('deletionWarning', { date: suspendedUntil })}
+                                </span>
+                            )}
+                        </div>
+                    )}
 
                     {/* Creation failed notice */}
                     {isCreationFailed && (
@@ -119,10 +149,21 @@ function ServerCard({
                                 </span>
                             )}
                         </div>
-                        {server.type === 'FREE' && (
-                            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium shrink-0">
-                                {t('freeServer')}
-                            </span>
+                        {suspension && supportHref ? (
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="h-7 shrink-0 text-xs"
+                            >
+                                <Link href={supportHref}>{tSuspended('contactSupport')}</Link>
+                            </Button>
+                        ) : (
+                            server.type === 'FREE' && (
+                                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium shrink-0">
+                                    {t('freeServer')}
+                                </span>
+                            )
                         )}
                     </div>
                 </div>
@@ -133,12 +174,12 @@ function ServerCard({
     return (
         <Card
             className={`group transition-all duration-200 ${
-                isCreationFailed
+                isCreationFailed || suspension
                     ? 'border-red-400/60 dark:border-red-600/60 bg-red-50/50 dark:bg-red-950/20'
                     : 'hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'
             }`}
         >
-            {isCreationFailed ? (
+            {isCreationFailed || suspension ? (
                 inner
             ) : (
                 <Link

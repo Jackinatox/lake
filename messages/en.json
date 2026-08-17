@@ -63,6 +63,17 @@
     "extendServer": "Extend Server",
     "home": "Go to Home"
   },
+  "ServerSuspended": {
+    "title": "Server Suspended",
+    "description": "Your server \"{serverName}\" has been suspended and is currently not accessible. Your data is still there.",
+    "reasonLabel": "Reason",
+    "suspendedUntil": "Suspended until {date}",
+    "deletionWarning": "If the suspension is not lifted, this server and all of its data will be permanently deleted on {date}.",
+    "appealHint": "If you believe this was a mistake, open a support ticket and tell us why we should unblock your server.",
+    "contactSupport": "Contact Support",
+    "home": "Go to Home",
+    "ticketSubject": "Suspension of my server \"{serverName}\""
+  },
   "GameserverError": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Please try again or contact support if the problem persists.",
@@ -189,7 +200,8 @@
       "general": "General question",
       "technical": "Technical issue",
       "billing": "Billing & payments",
-      "account": "Account & access"
+      "account": "Account & access",
+      "suspension": "Server suspension"
     },
     "copyEmail": "Copy email",
     "copyEmailSuccess": "Email copied to clipboard",

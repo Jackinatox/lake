@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/browser';
 import { headers } from 'next/headers';
 import GameserversTable from './GameserversTable';
+import { activeSuspensionInclude, suspendedServerWhere } from '@/lib/gameserver/suspension';
 
 interface SearchParams {
     page?: string;
@@ -13,6 +14,7 @@ interface SearchParams {
     type?: GameServerType;
     locationId?: string;
     status?: GameServerStatus;
+    suspended?: string;
 }
 
 async function Gameservers({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -34,6 +36,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     if (params.type) where.type = params.type;
     if (params.locationId) where.locationId = parseInt(params.locationId);
     if (params.status) where.status = params.status;
+    if (params.suspended === 'true') where.suspensions = suspendedServerWhere();
 
     const [[gameservers, totalCount], [users, locations]] = await Promise.all([
         Promise.all([
@@ -44,6 +47,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 include: {
                     user: { select: { id: true, email: true } },
                     location: { select: { id: true, name: true } },
+                    ...activeSuspensionInclude(),
                 },
                 orderBy: { createdAt: 'desc' },
             }),
@@ -78,6 +82,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                     type: params.type,
                     locationId: params.locationId,
                     status: params.status,
+                    suspended: params.suspended === 'true',
                 }}
             />
         </>

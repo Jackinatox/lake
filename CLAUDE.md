@@ -36,6 +36,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `server-suspension.md` — Admin suspension/quarantine of gameservers: the
+  `GameServerSuspension` table (and why it is not a `GameServerStatus` value),
+  the admin panel actions, the Pterodactyl suspend guard, the two emails, and
+  the layout that blocks `/gameserver/[server_id]/*`. Read when touching
+  suspensions, `GameServerStatus`, or `toggleSuspendGameServer`.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

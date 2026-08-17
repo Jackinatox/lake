@@ -35,6 +35,7 @@ export async function sendMail(
     html: string,
     type: EmailType,
     attachments?: EmailAttachment[],
+    gameServerId?: string | null,
 ) {
     const email = await prisma.email.create({
         data: {
@@ -43,6 +44,7 @@ export async function sendMail(
             html: html,
             type: type,
             status: 'SENT',
+            GameServerId: gameServerId ?? null,
             attachments: attachments
                 ? {
                       create: attachments.map((a) => ({

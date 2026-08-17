@@ -33,18 +33,20 @@ export default function ContactForm() {
     const session = authClient.useSession();
     const { toast } = useToast();
     const t = useTranslations('getHelp');
-    const categories = ['GENERAL', 'TECHNICAL', 'BILLING', 'ACCOUNT'] as const;
+    const categories = ['GENERAL', 'TECHNICAL', 'BILLING', 'ACCOUNT', 'SUSPENSION'] as const;
     const categoryKeyMap = {
         GENERAL: 'categories.general',
         TECHNICAL: 'categories.technical',
         BILLING: 'categories.billing',
         ACCOUNT: 'categories.account',
+        SUSPENSION: 'categories.suspension',
     } as const;
     const searchParams = useSearchParams();
     const categoryPreSelect = searchParams.get('category');
     const defaultCategory = categories.find((cat) => cat === categoryPreSelect) || 'GENERAL'; // Lets me preset the selected cat by providing it as a search param, used to link for a refund
     const [category, setCategory] = useState<(typeof categories)[number]>(defaultCategory);
-    const [subject, setSubject] = useState('');
+    const defaultSubject = searchParams.get('subject')?.slice(0, 120) ?? ''; // e.g. linked from a suspended server
+    const [subject, setSubject] = useState(defaultSubject);
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const maxMessageLength = 2000;
@@ -108,7 +110,7 @@ export default function ContactForm() {
                 description: t('ticketCreatedDescription'),
             });
             setMessage('');
-            setSubject('');
+            setSubject(defaultSubject);
             setCategory(defaultCategory);
         } catch (error) {
             toast({

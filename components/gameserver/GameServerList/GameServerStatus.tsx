@@ -4,13 +4,22 @@ import { Badge } from '@/components/ui/badge';
 import React, { useEffect, useState } from 'react';
 import { Status } from '../Console/status';
 import { ClientServer } from '@/models/prisma';
+import { getActiveSuspension } from '@/lib/gameserver/suspension';
 
 function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: string }) {
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState('Loading');
+    const suspensionId = getActiveSuspension(server)?.id ?? null;
 
     useEffect(() => {
         const fetchStatus = async () => {
+            // A suspended server rejects the client API, so don't even ask.
+            if (suspensionId) {
+                setLoading(false);
+                setStatus('suspended');
+                return;
+            }
+
             // Only fetch data if server  status is not expired
             if (server.status === 'EXPIRED') {
                 setLoading(false);
@@ -47,7 +56,7 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
         fetchStatus();
         const timer = setTimeout(() => setLoading(false), 5000);
         return () => clearTimeout(timer);
-    }, [server.status, server.ptServerId, apiKey]);
+    }, [server.status, server.ptServerId, suspensionId, apiKey]);
 
     return (
         <>

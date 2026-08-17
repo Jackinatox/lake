@@ -1,4 +1,5 @@
 import { Prisma } from '@/app/client/generated/browser';
+import type { ActiveSuspension } from '@/lib/gameserver/suspension';
 
 export type ResourceTier = Prisma.ResourceTierGetPayload<Record<string, never>>;
 export type GameData = Prisma.GameDataGetPayload<Record<string, never>>;
@@ -20,9 +21,10 @@ export type PerformanceGroup = Prisma.LocationGetPayload<{
     include: { cpu: true; ram: true };
 }>;
 
+/** `suspensions` holds at most the one currently active suspension — see `activeSuspensionInclude()`. */
 export type ClientServer = Prisma.GameServerGetPayload<{
     include: { gameData: true };
-}>;
+}> & { suspensions: ActiveSuspension[] };
 
 export type DbSession = Prisma.GameServerOrderGetPayload<{
     include: { user: { select: { email: true } } };
@@ -30,7 +32,7 @@ export type DbSession = Prisma.GameServerOrderGetPayload<{
 
 export type GameServerAdmin = Prisma.GameServerGetPayload<{
     include: { user: { select: { email: true } }; location: { select: { name: true } } };
-}>;
+}> & { suspensions: ActiveSuspension[] };
 
 export type PackageWithCPURAM = Prisma.PackageGetPayload<{
     include: { location: { include: { cpu: true; ram: true } } };

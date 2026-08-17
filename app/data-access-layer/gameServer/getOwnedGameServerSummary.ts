@@ -1,6 +1,7 @@
 import 'server-only';
 
 import prisma from '@/lib/prisma';
+import { activeSuspensionSubSelect } from '@/lib/gameserver/suspension';
 import { cache } from 'react';
 
 export const getOwnedGameServerSummary = cache(async (userId: string, serverId: string) => {
@@ -27,6 +28,7 @@ export const getOwnedGameServerSummary = cache(async (userId: string, serverId: 
                     nestId: true,
                 },
             },
+            suspensions: activeSuspensionSubSelect(),
         },
     });
 });

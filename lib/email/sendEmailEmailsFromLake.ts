@@ -9,6 +9,8 @@ import RefundTemplate from './templates/RefundTemplate';
 import WithdrawalTemplate from './templates/WithdrawalTemplate';
 import PasswordResetSuccessTemplate from './templates/PasswordResetSuccessTemplate';
 import ResetPasswordTemplate from './templates/ResetPassword';
+import ServerSuspendedTemplate from './templates/ServerSuspendedTemplate';
+import ServerUnsuspendedTemplate from './templates/ServerUnsuspendedTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
 import SupportTicketResponseTemplate from './templates/SupportTicketResponseTemplate';
 import TwoFactorCreatedTemplate from './templates/TwoFactorCreatedTemplate';
@@ -332,5 +334,71 @@ export async function sendWithdrawalEmail(data: WithdrawalEmailData) {
         `Widerrufsbestätigung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
         html,
         'WITHDRAWAL',
+    );
+}
+
+interface ServerSuspendedEmailData {
+    userName: string;
+    userEmail: string;
+    gameServerId: string;
+    serverName: string;
+    gameName: string;
+    reason: string;
+    suspendedUntil: Date;
+    deleteAfterExpiry: boolean;
+    supportUrl: string;
+}
+
+export async function sendServerSuspendedEmail(data: ServerSuspendedEmailData) {
+    const html = await render(
+        ServerSuspendedTemplate({
+            userName: data.userName,
+            serverName: data.serverName,
+            gameName: data.gameName,
+            reason: data.reason,
+            suspendedUntil: data.suspendedUntil,
+            deleteAfterExpiry: data.deleteAfterExpiry,
+            supportUrl: data.supportUrl,
+        }),
+    );
+
+    await sendMail(
+        data.userEmail,
+        `Dein Server "${data.serverName}" wurde gesperrt`,
+        html,
+        'GAME_SERVER_SUSPENDED',
+        undefined,
+        data.gameServerId,
+    );
+}
+
+interface ServerUnsuspendedEmailData {
+    userName: string;
+    userEmail: string;
+    gameServerId: string;
+    serverName: string;
+    gameName: string;
+    serverUrl: string;
+    stillExpired: boolean;
+}
+
+export async function sendServerUnsuspendedEmail(data: ServerUnsuspendedEmailData) {
+    const html = await render(
+        ServerUnsuspendedTemplate({
+            userName: data.userName,
+            serverName: data.serverName,
+            gameName: data.gameName,
+            serverUrl: data.serverUrl,
+            stillExpired: data.stillExpired,
+        }),
+    );
+
+    await sendMail(
+        data.userEmail,
+        `Dein Server "${data.serverName}" wurde wieder freigeschaltet`,
+        html,
+        'GAME_SERVER_UNSUSPENDED',
+        undefined,
+        data.gameServerId,
     );
 }

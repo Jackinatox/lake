@@ -1,6 +1,7 @@
 import 'server-only';
 
 import prisma from '@/lib/prisma';
+import { activeSuspensionInclude } from '@/lib/gameserver/suspension';
 
 import { ClientServer } from '@/models/prisma';
 
@@ -16,6 +17,7 @@ export async function getUserServer(userId: string): Promise<ClientServer[]> {
         take: 100,
         include: {
             gameData: true,
+            ...activeSuspensionInclude(),
         },
         orderBy: { createdAt: 'desc' },
     });

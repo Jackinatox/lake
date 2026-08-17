@@ -63,6 +63,17 @@
     "extendServer": "Server verlängern",
     "home": "Zur Startseite"
   },
+  "ServerSuspended": {
+    "title": "Server gesperrt",
+    "description": "Dein Server \"{serverName}\" wurde gesperrt und ist derzeit nicht erreichbar. Deine Daten sind weiterhin vorhanden.",
+    "reasonLabel": "Grund",
+    "suspendedUntil": "Gesperrt bis {date}",
+    "deletionWarning": "Wenn die Sperre nicht aufgehoben wird, werden dieser Server und alle darauf gespeicherten Daten am {date} endgültig gelöscht.",
+    "appealHint": "Wenn du der Meinung bist, dass die Sperre zu Unrecht erfolgt ist, erstelle bitte ein Support-Ticket und erkläre uns, warum wir deinen Server wieder freischalten sollten.",
+    "contactSupport": "Support kontaktieren",
+    "home": "Zur Startseite",
+    "ticketSubject": "Sperrung meines Servers \"{serverName}\""
+  },
   "GameserverError": {
     "title": "Etwas ist schiefgelaufen",
     "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut oder kontaktiere den Support, falls das Problem weiterhin besteht.",
@@ -199,7 +210,8 @@
       "general": "Allgemeine Frage",
       "technical": "Technisches Problem",
       "billing": "Abrechnung & Zahlung",
-      "account": "Account & Zugang"
+      "account": "Account & Zugang",
+      "suspension": "Server-Sperrung"
     },
     "copyEmail": "E-Mail kopieren",
     "copyEmailSuccess": "E-Mail-Adresse kopiert",

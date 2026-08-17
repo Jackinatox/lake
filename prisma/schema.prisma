@@ -109,8 +109,43 @@ model GameServer {
   Email Email[]
 
   ApplicationLog ApplicationLog[]
+  suspensions    GameServerSuspension[]
 
   @@index([resourceTierId])
+}
+
+// A suspension is orthogonal to GameServerStatus: a server can be suspended while it is
+// ACTIVE *or* while it is EXPIRED. Keeping it in its own table means lifting a suspension
+// never has to guess which lifecycle status to restore.
+// A server counts as suspended while a row has `liftedAt = null AND expiresAt > now()`.
+model GameServerSuspension {
+  id String @id @default(cuid())
+
+  gameServerId String
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
+
+  type   SuspensionType @default(QUARANTINE)
+  reason String         @db.Text // shown verbatim to the user in the email and on the dashboard
+
+  expiresAt         DateTime // the suspension runs until here
+  deleteAfterExpiry Boolean  @default(true) // true: the worker deletes the server at expiry, false: it lifts the suspension
+
+  liftedAt       DateTime? // set when an admin unsuspends early, or when the worker processes the expiry
+  liftedByUserId String?
+  liftedByUser   User?     @relation("SuspensionLiftedBy", fields: [liftedByUserId], references: [id], onDelete: SetNull)
+
+  createdByUserId String?
+  createdByUser   User?   @relation("SuspensionCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([gameServerId, liftedAt])
+  @@index([expiresAt]) // worker scan
+}
+
+enum SuspensionType {
+  QUARANTINE
 }
 
 enum GameServerType {
@@ -274,6 +309,7 @@ enum TicketCategory {
   TECHNICAL
   BILLING
   ACCOUNT
+  SUSPENSION // appeals against a suspended gameserver
 }
 
 enum TicketStatus {
@@ -371,6 +407,9 @@ model User {
 
   username        String?
   displayUsername String?
+
+  suspensionsCreated GameServerSuspension[] @relation("SuspensionCreatedBy")
+  suspensionsLifted  GameServerSuspension[] @relation("SuspensionLiftedBy")
 
   @@unique([email])
   @@unique([ptUsername])
@@ -591,6 +630,8 @@ enum EmailType {
   GAME_SERVER_EXPIRING_1_DAY
   GAME_SERVER_DELETION_1_DAY
   GAME_SERVER_DELETION_7_DAYS
+  GAME_SERVER_SUSPENDED
+  GAME_SERVER_UNSUSPENDED
   SERVER_BOOKING_CONFIRMATION
   FREE_SERVER_CREATED
   INVOICE
