@@ -49,11 +49,37 @@ function toDatetimeLocal(date: Date) {
     return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+
 function daysFromNow(days: number) {
-    return toDatetimeLocal(new Date(Date.now() + days * 24 * 60 * 60 * 1000));
+    return toDatetimeLocal(new Date(Date.now() + days * DAY_MS));
 }
 
-function DatePresets({ onPick }: { onPick: (value: string) => void }) {
+/** Adds days on top of what is currently in the input; falls back to now when it is empty/invalid. */
+function addDays(value: string, days: number) {
+    const base = new Date(value);
+    if (!value || Number.isNaN(base.getTime())) return daysFromNow(days);
+    return toDatetimeLocal(new Date(base.getTime() + days * DAY_MS));
+}
+
+/** "7 days", "3 days 5 hours", … between now and the entered end date. */
+function durationFromNow(value: string) {
+    const end = new Date(value);
+    if (!value || Number.isNaN(end.getTime())) return null;
+
+    const hoursTotal = Math.round((end.getTime() - Date.now()) / HOUR_MS);
+    if (hoursTotal <= 0) return 'in the past';
+
+    const days = Math.floor(hoursTotal / 24);
+    const hours = hoursTotal % 24;
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days} ${days === 1 ? 'day' : 'days'}`);
+    if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+    return parts.join(' ');
+}
+
+function DatePresets({ onAdd }: { onAdd: (days: number) => void }) {
     return (
         <div className="flex gap-2">
             {[7, 14, 30].map((days) => (
@@ -62,7 +88,7 @@ function DatePresets({ onPick }: { onPick: (value: string) => void }) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => onPick(daysFromNow(days))}
+                    onClick={() => onAdd(days)}
                 >
                     +{days}d
                 </Button>
@@ -123,10 +149,13 @@ export function SuspendDialog({
     onSuccess: () => void;
 }) {
     const { toast } = useToast();
-    const [reason, setReason] = useState('');
+    const [reason, setReason] = useState(
+        'Wir haben Aktivitäten auf deinem Server entdeckt die gegen unsere Regeln verstoßen.',
+    );
     const [expiresAt, setExpiresAt] = useState(() => daysFromNow(7));
     const [deleteAfterExpiry, setDeleteAfterExpiry] = useState(true);
     const [loading, setLoading] = useState(false);
+    const suspendedFor = durationFromNow(expiresAt);
 
     const reset = useCallback(() => {
         setReason('');
@@ -179,7 +208,7 @@ export function SuspendDialog({
 
                 <div className="space-y-4 py-2">
                     <div className="space-y-2">
-                        <Label htmlFor="suspension-type">Type</Label>
+                        <Label htmlFor="suspension-type">Type (Not yet needed)</Label>
                         <Select value="QUARANTINE" disabled>
                             <SelectTrigger id="suspension-type">
                                 <SelectValue />
@@ -207,14 +236,25 @@ export function SuspendDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="suspension-expires">Suspended until</Label>
+                        <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor="suspension-expires">Suspended until</Label>
+                            <span className="text-xs text-muted-foreground">
+                                {suspendedFor === null
+                                    ? 'Pick a valid end date.'
+                                    : suspendedFor === 'in the past'
+                                      ? 'That end date is in the past.'
+                                      : `for ${suspendedFor}`}
+                            </span>
+                        </div>
                         <Input
                             id="suspension-expires"
                             type="datetime-local"
                             value={expiresAt}
                             onChange={(e) => setExpiresAt(e.target.value)}
                         />
-                        <DatePresets onPick={setExpiresAt} />
+                        <DatePresets
+                            onAdd={(days) => setExpiresAt((current) => addDays(current, days))}
+                        />
                     </div>
 
                     <div className="flex items-start gap-2">
@@ -281,6 +321,8 @@ export function ExtendSuspensionDialog({
 
     if (!suspension) return null;
 
+    const remaining = durationFromNow(expiresAt);
+
     const handleSubmit = async () => {
         setLoading(true);
         const result = await extendGameServerSuspension({
@@ -317,14 +359,25 @@ export function ExtendSuspensionDialog({
 
                 <div className="space-y-4 py-2">
                     <div className="space-y-2">
-                        <Label htmlFor="extend-expires">New end date</Label>
+                        <div className="flex items-center justify-between gap-2">
+                            <Label htmlFor="extend-expires">New end date</Label>
+                            <span className="text-xs text-muted-foreground">
+                                {remaining === null
+                                    ? 'Pick a valid end date.'
+                                    : remaining === 'in the past'
+                                      ? 'That end date is in the past.'
+                                      : `for another ${remaining}`}
+                            </span>
+                        </div>
                         <Input
                             id="extend-expires"
                             type="datetime-local"
                             value={expiresAt}
                             onChange={(e) => setExpiresAt(e.target.value)}
                         />
-                        <DatePresets onPick={setExpiresAt} />
+                        <DatePresets
+                            onAdd={(days) => setExpiresAt((current) => addDays(current, days))}
+                        />
                     </div>
 
                     <div className="space-y-2">

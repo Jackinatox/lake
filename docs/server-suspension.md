@@ -95,7 +95,9 @@ adds a red "Suspended until …" line under the status pill and a *Suspension* f
 (`?suspended=true`).
 
 `components/ui/` has no `calendar.tsx`, so dates use `<Input type="datetime-local">` with
-+7d/+14d/+30d preset buttons.
++7d/+14d/+30d preset buttons that *add* onto the date currently in the field (empty/invalid
+falls back to now + n days), plus a line under it stating how long the suspension runs from
+now.
 
 ## User-facing block
 
