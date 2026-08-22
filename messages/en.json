@@ -1510,10 +1510,19 @@
   "adminLogs": {
     "filters": {
       "search": "Search",
-      "searchPlaceholder": "Search in messages...",
-      "logLevel": "Log Level",
+      "searchPlaceholder": "Message or path...",
+      "logLevel": "Level",
       "category": "Category",
       "timeRange": "Time Range",
+      "user": "User",
+      "server": "Server",
+      "allLevels": "All levels",
+      "allCategories": "All categories",
+      "allUsers": "All users",
+      "allServers": "All servers",
+      "userSearchPlaceholder": "Email, username, ID...",
+      "noUsers": "No users found",
+      "freeServer": "Free",
       "timeRanges": {
         "ALL": "All Time",
         "1m": "Last Minute",
@@ -1529,16 +1538,30 @@
       "showing": "Showing {count} of {total} logs (Page {page} of {totalPages})",
       "previous": "Previous",
       "next": "Next",
-      "pageOf": "Page {page} of {totalPages}"
+      "pageOf": "Page {page} of {totalPages}",
+      "refresh": "Refresh",
+      "clearFilters": "Clear filters",
+      "perPage": "{count} rows",
+      "columnTime": "Time",
+      "columnLevel": "Level",
+      "columnType": "Category",
+      "columnMessage": "Message",
+      "columnUser": "User",
+      "columnServer": "Server"
     },
     "entry": {
-      "showDetails": "Show details",
-      "hideDetails": "Hide details",
-      "ip": "IP:",
-      "userAgent": "User Agent:",
-      "details": "Details:",
-      "user": "User: {name}",
-      "server": "Server: {name}"
+      "time": "Time",
+      "logId": "Log ID",
+      "request": "Request",
+      "instance": "Instance",
+      "ip": "IP",
+      "userAgent": "User agent",
+      "user": "User",
+      "server": "Server",
+      "filterByUser": "Filter logs by this user",
+      "filterByServer": "Filter logs by this server",
+      "openUserInAdmin": "Show this user's servers in the admin panel",
+      "openServerInAdmin": "Show this server in the admin panel"
     }
   },
   "order": {

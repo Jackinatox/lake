@@ -1522,10 +1522,19 @@
   "adminLogs": {
     "filters": {
       "search": "Suche",
-      "searchPlaceholder": "In Nachrichten suchen...",
-      "logLevel": "Log-Level",
+      "searchPlaceholder": "Nachricht oder Pfad...",
+      "logLevel": "Level",
       "category": "Kategorie",
       "timeRange": "Zeitraum",
+      "user": "Benutzer",
+      "server": "Server",
+      "allLevels": "Alle Level",
+      "allCategories": "Alle Kategorien",
+      "allUsers": "Alle Benutzer",
+      "allServers": "Alle Server",
+      "userSearchPlaceholder": "E-Mail, Benutzername, ID...",
+      "noUsers": "Keine Benutzer gefunden",
+      "freeServer": "Free",
       "timeRanges": {
         "ALL": "Gesamte Zeit",
         "1m": "Letzte Minute",
@@ -1541,16 +1550,30 @@
       "showing": "Zeige {count} von {total} Logs (Seite {page} von {totalPages})",
       "previous": "Zurück",
       "next": "Weiter",
-      "pageOf": "Seite {page} von {totalPages}"
+      "pageOf": "Seite {page} von {totalPages}",
+      "refresh": "Aktualisieren",
+      "clearFilters": "Filter zurücksetzen",
+      "perPage": "{count} Zeilen",
+      "columnTime": "Zeit",
+      "columnLevel": "Level",
+      "columnType": "Kategorie",
+      "columnMessage": "Nachricht",
+      "columnUser": "Benutzer",
+      "columnServer": "Server"
     },
     "entry": {
-      "showDetails": "Details anzeigen",
-      "hideDetails": "Details ausblenden",
-      "ip": "IP:",
-      "userAgent": "User Agent:",
-      "details": "Details:",
-      "user": "Benutzer: {name}",
-      "server": "Server: {name}"
+      "time": "Zeit",
+      "logId": "Log-ID",
+      "request": "Request",
+      "instance": "Instanz",
+      "ip": "IP",
+      "userAgent": "User Agent",
+      "user": "Benutzer",
+      "server": "Server",
+      "filterByUser": "Logs nach diesem Benutzer filtern",
+      "filterByServer": "Logs nach diesem Server filtern",
+      "openUserInAdmin": "Server dieses Benutzers im Adminpanel anzeigen",
+      "openServerInAdmin": "Diesen Server im Adminpanel anzeigen"
     }
   },
   "order": {

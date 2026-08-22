@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { Suspense } from 'react';
 import LogViewer from '@/components/admin/logs/LogViewer';
 import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
@@ -14,11 +15,13 @@ export default async function AdminLogsPage() {
     return (
         <div className="container mx-auto p-0 md:p-6">
             <AdminBreadcrumb items={[{ label: 'Application Logs' }]} />
-            <div className="mb-6">
+            <div className="mb-4">
                 <h1 className="text-2xl font-bold md:text-3xl">Application Logs</h1>
-                <p className="mt-2 text-sm text-muted-foreground">View and filter system logs</p>
+                <p className="mt-1 text-sm text-muted-foreground">View and filter system logs</p>
             </div>
-            <LogViewer />
+            <Suspense>
+                <LogViewer />
+            </Suspense>
         </div>
     );
 }

@@ -35,8 +35,10 @@ interface GameserversTableProps {
     totalCount: number;
     users: { id: string; email: string }[];
     locations: { id: number; name: string }[];
+    serverOptions: { id: string; name: string; type: GameServerType }[];
     filters: {
         userId?: string;
+        serverId?: string;
         type?: GameServerType;
         locationId?: string;
         status?: GameServerStatus;
@@ -51,6 +53,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
     totalCount,
     users,
     locations,
+    serverOptions,
     filters,
 }) => {
     const { toast } = useToast();
@@ -88,6 +91,8 @@ const ServersTable: React.FC<GameserversTableProps> = ({
         } else {
             params.delete(key);
         }
+        // The server filter only makes sense together with its owner
+        if (key === 'userId') params.delete('serverId');
         params.set('page', '1'); // Reset to first page on filter change
         router.push(`?${params.toString()}`);
     };
@@ -101,7 +106,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
     return (
         <div className="space-y-4">
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div>
                     <label className="text-sm font-medium mb-2 block">User</label>
                     <Select
@@ -116,6 +121,40 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                             {users.map((user) => (
                                 <SelectItem key={user.id} value={user.id}>
                                     {user.email}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div>
+                    <label className="text-sm font-medium mb-2 block">Server</label>
+                    <Select
+                        value={filters.serverId || 'all'}
+                        onValueChange={(value) => updateFilter('serverId', value)}
+                        disabled={serverOptions.length === 0}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="All Servers" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Servers</SelectItem>
+                            {serverOptions.map((server) => (
+                                <SelectItem key={server.id} value={server.id}>
+                                    <span
+                                        className={
+                                            server.type === 'FREE'
+                                                ? 'font-medium text-emerald-600 dark:text-emerald-400'
+                                                : undefined
+                                        }
+                                    >
+                                        {server.name}
+                                    </span>
+                                    {server.type === 'FREE' && (
+                                        <span className="ml-2 text-[10px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                                            Free
+                                        </span>
+                                    )}
                                 </SelectItem>
                             ))}
                         </SelectContent>

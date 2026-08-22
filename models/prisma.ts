@@ -41,7 +41,7 @@ export type PackageWithCPURAM = Prisma.PackageGetPayload<{
 export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
     include: {
         user: { select: { id: true; name: true; username: true; email: true } };
-        gameServer: { select: { id: true; name: true } };
+        gameServer: { select: { id: true; name: true; userId: true } };
     };
 }>;
 

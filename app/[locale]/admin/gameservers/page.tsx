@@ -11,6 +11,7 @@ interface SearchParams {
     page?: string;
     limit?: string;
     userId?: string;
+    serverId?: string;
     type?: GameServerType;
     locationId?: string;
     status?: GameServerStatus;
@@ -33,6 +34,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
 
     const where: any = {};
     if (params.userId) where.userId = params.userId;
+    if (params.serverId) where.id = params.serverId;
     if (params.type) where.type = params.type;
     if (params.locationId) where.locationId = parseInt(params.locationId);
     if (params.status) where.status = params.status;
@@ -65,6 +67,23 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         ]),
     ]);
 
+    // Options for the server filter: every server of the filtered user (so the
+    // filter can be dropped to see their other servers), plus the selected one.
+    const serverFilterOptions =
+        params.userId || params.serverId
+            ? await prisma.gameServer.findMany({
+                  where: {
+                      OR: [
+                          ...(params.userId ? [{ userId: params.userId }] : []),
+                          ...(params.serverId ? [{ id: params.serverId }] : []),
+                      ],
+                  },
+                  select: { id: true, name: true, type: true },
+                  orderBy: { createdAt: 'desc' },
+                  take: 200,
+              })
+            : [];
+
     const totalPages = Math.ceil(totalCount / limit);
 
     return (
@@ -77,8 +96,10 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 totalCount={totalCount}
                 users={users}
                 locations={locations}
+                serverOptions={serverFilterOptions}
                 filters={{
                     userId: params.userId,
+                    serverId: params.serverId,
                     type: params.type,
                     locationId: params.locationId,
                     status: params.status,

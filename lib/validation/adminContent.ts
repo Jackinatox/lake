@@ -175,8 +175,18 @@ export const logFiltersSchema = z.object({
     level: z.union([z.literal('ALL'), z.nativeEnum(LogLevel)]).optional(),
     type: z.union([z.literal('ALL'), z.nativeEnum(LogType)]).optional(),
     timeRange: z.enum(LOG_TIME_RANGES).optional(),
+    userId: optionalStringSchema(191),
+    gameServerId: optionalStringSchema(191),
     page: integerRangeSchema('Page', 1, 10_000).optional(),
-    limit: integerRangeSchema('Limit', 1, 100).optional(),
+    limit: integerRangeSchema('Limit', 1, 200).optional(),
+});
+
+export const logUserSearchSchema = z.object({
+    query: z.string().trim().max(200, 'Search query is too long'),
+});
+
+export const logUserServersSchema = z.object({
+    userId: nonEmptyIdSchema,
 });
 
 export const ticketStatusUpdateSchema = z.object({

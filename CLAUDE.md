@@ -28,6 +28,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
 
 ## Docs index (`docs/`)
 
+- `admin-log-viewer.md` — The `/admin/logs` viewer: dense log rows, the filter
+  set and its URL params, the links from a log row into the admin gameserver
+  list, and the `serverId` filter on that list. Read when touching the log
+  viewer, `getApplicationLogs`, or the gameserver admin filters.
 - `modpack-feedback-and-beta.md` — Modpack beta feedback feature (Feedback
   table, dashboard survey card, server actions) and the KeyValue-based
   modpack kill switch. Read when touching feedback, the beta status, or the
