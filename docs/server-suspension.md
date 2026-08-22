@@ -99,6 +99,30 @@ adds a red "Suspended until …" line under the status pill and a *Suspension* f
 falls back to now + n days), plus a line under it stating how long the suspension runs from
 now.
 
+All three dialogs stay **mounted while closed** (`AdminServerActionsMenu` renders them
+unconditionally and only flips `open`), so their state must be restored when they are
+*opened*, never when they are closed. `SuspendDialog` does that in one `useEffect` on `open`:
+end date `DEFAULT_SUSPENSION_DAYS` (14) out from *now*, `deleteAfterExpiry` on, and the reason
+re-fetched (see below). `ExtendSuspensionDialog` does the same, keyed on the *value* of
+`suspension.expiresAt` — not the object, which the parent rebuilds on every render and which
+would therefore wipe what an admin is typing.
+
+### Configurable default reason
+
+The prefilled reason is the `suspension_default_reason` KeyValue row (type `TEXT`, so
+`/admin/keyvalue` edits it in Monaco). The row is the **only** place the text lives — there is
+no hardcoded fallback, so a missing row just means the admin writes the reason from scratch.
+
+The admin gameservers `page.tsx` reads it with `getKeyValueString` alongside its other
+queries and passes it down as `suspensionDefaultReason` (`GameserversTable` →
+`AdminServerActionsMenu` → `SuspendDialog`'s `defaultReason`). No client fetch, no loading
+state: the dialog opens with the text already in it.
+
+The row is written by `prisma/seed.ts` for new databases and by
+`prisma/migrations/20260822213938_add_suspension_default_reason` (`ON CONFLICT DO NOTHING`)
+for existing ones. It is deliberately **not** in `REQUIRED_DB_CONSTANTS` (`lib/startup.ts`):
+an empty prefill is not worth refusing to boot over.
+
 ## User-facing block
 
 `app/[locale]/gameserver/[server_id]/layout.tsx` is the single choke point — it covers

@@ -100,7 +100,7 @@ export default function ServerSuspendedTemplate({
             </Text>
 
             <Section style={{ marginTop: 16, textAlign: 'center' }}>
-                <EmailButton href={supportUrl}>Sperrung anfechten</EmailButton>
+                <EmailButton href={supportUrl}>Support kontaktieren</EmailButton>
             </Section>
         </EmailLayout>
     );

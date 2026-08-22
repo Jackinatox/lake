@@ -26,6 +26,7 @@ import {
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
     CONFIG_DUMMY_NUMBER,
     CONFIG_KEY_SUPPORT_EMAIL,
+    SUSPENSION_DEFAULT_REASON,
 } from '../app/GlobalConstants';
 
 async function main() {
@@ -328,6 +329,12 @@ async function main() {
                 type: 'BOOLEAN',
                 boolean: false,
                 note: 'Kill switch: when false, the Minecraft modpack tab is hidden everywhere',
+            },
+            {
+                key: SUSPENSION_DEFAULT_REASON,
+                type: 'TEXT',
+                string: 'Wir haben Aktivitäten auf deinem Server entdeckt die gegen unsere Regeln verstoßen.',
+                note: 'Prefilled reason in the admin suspend dialog. It is emailed to the user verbatim.',
             },
             {
                 key: CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,

@@ -30,7 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { SUSPENSION_REASON_MIN_LENGTH } from '@/lib/validation/suspension';
 import { AlertTriangle } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SuspensionTarget {
     id: string;
@@ -51,6 +51,8 @@ function toDatetimeLocal(date: Date) {
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
+
+const DEFAULT_SUSPENSION_DAYS = 14;
 
 function daysFromNow(days: number) {
     return toDatetimeLocal(new Date(Date.now() + days * DAY_MS));
@@ -139,29 +141,32 @@ function HistoryList({ gameServerId }: { gameServerId: string }) {
 
 export function SuspendDialog({
     server,
+    defaultReason,
     open,
     onOpenChange,
     onSuccess,
 }: {
     server: SuspensionTarget;
+    defaultReason: string;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSuccess: () => void;
 }) {
     const { toast } = useToast();
-    const [reason, setReason] = useState(
-        'Wir haben Aktivitäten auf deinem Server entdeckt die gegen unsere Regeln verstoßen.',
-    );
-    const [expiresAt, setExpiresAt] = useState(() => daysFromNow(7));
+    const [reason, setReason] = useState(defaultReason);
+    const [expiresAt, setExpiresAt] = useState(() => daysFromNow(DEFAULT_SUSPENSION_DAYS));
     const [deleteAfterExpiry, setDeleteAfterExpiry] = useState(true);
     const [loading, setLoading] = useState(false);
     const suspendedFor = durationFromNow(expiresAt);
 
-    const reset = useCallback(() => {
-        setReason('');
-        setExpiresAt(daysFromNow(7));
+    // The dialog stays mounted while closed, so the defaults have to be restored every time it
+    // is opened — that also keeps the end date 14 days from *now* rather than from page load.
+    useEffect(() => {
+        if (!open) return;
+        setReason(defaultReason);
+        setExpiresAt(daysFromNow(DEFAULT_SUSPENSION_DAYS));
         setDeleteAfterExpiry(true);
-    }, []);
+    }, [open, defaultReason]);
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -183,20 +188,13 @@ export function SuspendDialog({
         });
 
         if (result.success) {
-            reset();
             onOpenChange(false);
             onSuccess();
         }
     };
 
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(next) => {
-                if (!next) reset();
-                onOpenChange(next);
-            }}
-        >
+        <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Suspend Server</DialogTitle>
@@ -231,7 +229,9 @@ export function SuspendDialog({
                             rows={4}
                         />
                         <p className="text-xs text-muted-foreground">
-                            At least {SUSPENSION_REASON_MIN_LENGTH} characters.
+                            At least {SUSPENSION_REASON_MIN_LENGTH} characters. The prefilled text
+                            is the <code>suspension_default_reason</code> entry on the KeyValue
+                            page.
                         </p>
                     </div>
 
@@ -312,12 +312,15 @@ export function ExtendSuspensionDialog({
     const [note, setNote] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // `suspension` is rebuilt by the parent on every render, so this deliberately depends on the
+    // end date's value only — depending on the object wiped what was typed on every re-render.
+    const suspendedUntil = suspension ? new Date(suspension.expiresAt).getTime() : null;
+
     useEffect(() => {
-        if (open && suspension) {
-            setExpiresAt(toDatetimeLocal(new Date(suspension.expiresAt)));
-            setNote('');
-        }
-    }, [open, suspension]);
+        if (!open || suspendedUntil === null) return;
+        setExpiresAt(toDatetimeLocal(new Date(suspendedUntil)));
+        setNote('');
+    }, [open, suspendedUntil]);
 
     if (!suspension) return null;
 

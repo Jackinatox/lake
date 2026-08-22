@@ -6,6 +6,8 @@ import { GameServerStatus, GameServerType } from '@/app/client/generated/browser
 import { headers } from 'next/headers';
 import GameserversTable from './GameserversTable';
 import { activeSuspensionInclude, suspendedServerWhere } from '@/lib/gameserver/suspension';
+import { getKeyValueString } from '@/lib/keyValue';
+import { SUSPENSION_DEFAULT_REASON } from '@/app/GlobalConstants';
 
 interface SearchParams {
     page?: string;
@@ -40,32 +42,36 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     if (params.status) where.status = params.status;
     if (params.suspended === 'true') where.suspensions = suspendedServerWhere();
 
-    const [[gameservers, totalCount], [users, locations]] = await Promise.all([
-        Promise.all([
-            prisma.gameServer.findMany({
-                where,
-                skip,
-                take: limit,
-                include: {
-                    user: { select: { id: true, email: true } },
-                    location: { select: { id: true, name: true } },
-                    ...activeSuspensionInclude(),
-                },
-                orderBy: { createdAt: 'desc' },
-            }),
-            prisma.gameServer.count({ where }),
-        ]),
-        Promise.all([
-            prisma.user.findMany({
-                select: { id: true, email: true },
-                orderBy: { email: 'asc' },
-            }),
-            prisma.location.findMany({
-                select: { id: true, name: true },
-                orderBy: { name: 'asc' },
-            }),
-        ]),
-    ]);
+    const [[gameservers, totalCount], [users, locations], suspensionDefaultReason] =
+        await Promise.all([
+            Promise.all([
+                prisma.gameServer.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    include: {
+                        user: { select: { id: true, email: true } },
+                        location: { select: { id: true, name: true } },
+                        ...activeSuspensionInclude(),
+                    },
+                    orderBy: { createdAt: 'desc' },
+                }),
+                prisma.gameServer.count({ where }),
+            ]),
+            Promise.all([
+                prisma.user.findMany({
+                    select: { id: true, email: true },
+                    orderBy: { email: 'asc' },
+                }),
+                prisma.location.findMany({
+                    select: { id: true, name: true },
+                    orderBy: { name: 'asc' },
+                }),
+            ]),
+            // Prefill for the suspend dialog, admin-editable at /admin/keyvalue. A missing row
+            // just means the admin writes the reason from scratch.
+            getKeyValueString(SUSPENSION_DEFAULT_REASON),
+        ]);
 
     // Options for the server filter: every server of the filtered user (so the
     // filter can be dropped to see their other servers), plus the selected one.
@@ -97,6 +103,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 users={users}
                 locations={locations}
                 serverOptions={serverFilterOptions}
+                suspensionDefaultReason={suspensionDefaultReason ?? ''}
                 filters={{
                     userId: params.userId,
                     serverId: params.serverId,

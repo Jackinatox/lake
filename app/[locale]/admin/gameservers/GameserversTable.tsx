@@ -36,6 +36,8 @@ interface GameserversTableProps {
     users: { id: string; email: string }[];
     locations: { id: number; name: string }[];
     serverOptions: { id: string; name: string; type: GameServerType }[];
+    /** Prefilled reason for the suspend dialog, read from KeyValue by the page. */
+    suspensionDefaultReason: string;
     filters: {
         userId?: string;
         serverId?: string;
@@ -54,6 +56,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
     users,
     locations,
     serverOptions,
+    suspensionDefaultReason,
     filters,
 }) => {
     const { toast } = useToast();
@@ -373,6 +376,7 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                                 <TableCell>
                                     <AdminServerActionsMenu
                                         server={gameserver}
+                                        suspensionDefaultReason={suspensionDefaultReason}
                                         onEdit={() => setEditingServer(gameserver)}
                                         onSuccess={() => router.refresh()}
                                     />

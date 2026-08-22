@@ -23,6 +23,9 @@ export const FREE_SERVER_CREATION_ENABLED = 'free_server_creation_enabled';
 export const MINECRAFT_MODPACKS_ENABLED = 'minecraft_modpacks_enabled';
 export const FREE_TIER_EXTEND_COOLDOWN_HOURS = 1;
 
+// Suspension
+export const SUSPENSION_DEFAULT_REASON = 'suspension_default_reason';
+
 // Legal grace period added to every booking duration for compliance (5 minutes)
 export const LEGAL_GRACE_PERIOD_MS = 5 * 60 * 1000;
 

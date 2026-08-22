@@ -75,21 +75,25 @@ export const auth = betterAuth({
                 type: 'number',
                 optional: true,
                 required: false,
+                input: false
             },
             ptKey: {
                 type: 'string',
                 optional: true,
                 required: false,
+                input: false
             },
             stripeUserId: {
                 type: 'string',
                 optional: true,
                 required: false,
+                input: false
             },
             ptUsername: {
                 type: 'string',
                 optional: true,
                 required: false,
+                input: false
             },
         },
     },

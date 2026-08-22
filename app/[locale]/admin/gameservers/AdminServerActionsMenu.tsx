@@ -57,13 +57,20 @@ interface Server {
 
 interface AdminServerActionsMenuProps {
     server: Server;
+    /** Prefilled reason for the suspend dialog, read from KeyValue by the page. */
+    suspensionDefaultReason: string;
     onEdit: () => void;
     onSuccess: () => void;
 }
 
 type DialogState = 'none' | 'expire' | 'delete' | 'hardDelete' | 'suspend' | 'extend' | 'lift';
 
-export function AdminServerActionsMenu({ server, onEdit, onSuccess }: AdminServerActionsMenuProps) {
+export function AdminServerActionsMenu({
+    server,
+    suspensionDefaultReason,
+    onEdit,
+    onSuccess,
+}: AdminServerActionsMenuProps) {
     const { toast } = useToast();
     const [dialog, setDialog] = useState<DialogState>('none');
     const suspension = getActiveSuspension(server);
@@ -186,6 +193,7 @@ export function AdminServerActionsMenu({ server, onEdit, onSuccess }: AdminServe
 
             <SuspendDialog
                 server={suspensionTarget}
+                defaultReason={suspensionDefaultReason}
                 open={dialog === 'suspend'}
                 onOpenChange={(o) => setDialog(o ? 'suspend' : 'none')}
                 onSuccess={onSuccess}
