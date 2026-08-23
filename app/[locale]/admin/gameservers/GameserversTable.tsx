@@ -27,6 +27,16 @@ import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { GameServerAdmin } from '@/models/prisma';
 import { getActiveSuspension } from '@/lib/gameserver/suspension';
+import { Ban, Trash2, Undo2 } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+const statusBadgeStyles: Record<GameServerStatus, string> = {
+    CREATED: 'bg-gray-50 text-gray-700',
+    ACTIVE: 'bg-green-50 text-green-700',
+    EXPIRED: 'bg-orange-50 text-orange-700',
+    DELETED: 'bg-red-50 text-red-700',
+    CREATION_FAILED: 'bg-red-50 text-red-700',
+};
 
 interface GameserversTableProps {
     servers: GameServerAdmin[];
@@ -290,99 +300,114 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {gameservers.map((gameserver) => (
-                            <TableRow key={gameserver.id}>
-                                <TableCell>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedIds.includes(gameserver.id)}
-                                        onChange={(e) =>
-                                            handleCheckboxChange(gameserver.id, e.target.checked)
-                                        }
-                                    />
-                                </TableCell>
-                                <TableCell className="max-w-50 truncate">
-                                    {gameserver.user.email}
-                                </TableCell>
-                                <TableCell className="max-w-37.5 truncate">
-                                    {gameserver.name}
-                                </TableCell>
-                                <TableCell>
-                                    <span
-                                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                            gameserver.type === 'FREE'
-                                                ? 'bg-green-50 text-green-700'
+                        {gameservers.map((gameserver) => {
+                            const suspension = getActiveSuspension(gameserver);
+                            const showStatusBadge = !(gameserver.status === 'ACTIVE' && suspension);
+
+                            return (
+                                <TableRow key={gameserver.id}>
+                                    <TableCell>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds.includes(gameserver.id)}
+                                            onChange={(e) =>
+                                                handleCheckboxChange(
+                                                    gameserver.id,
+                                                    e.target.checked,
+                                                )
+                                            }
+                                        />
+                                    </TableCell>
+                                    <TableCell className="max-w-50 truncate">
+                                        {gameserver.user.email}
+                                    </TableCell>
+                                    <TableCell className="max-w-37.5 truncate">
+                                        {gameserver.name}
+                                    </TableCell>
+                                    <TableCell>
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                                gameserver.type === 'FREE'
+                                                    ? 'bg-green-50 text-green-700'
+                                                    : gameserver.type === 'PACKAGE'
+                                                      ? 'bg-blue-50 text-blue-700'
+                                                      : 'bg-purple-50 text-purple-700'
+                                            }`}
+                                        >
+                                            {gameserver.type === 'FREE'
+                                                ? 'Free'
                                                 : gameserver.type === 'PACKAGE'
-                                                  ? 'bg-blue-50 text-blue-700'
-                                                  : 'bg-purple-50 text-purple-700'
-                                        }`}
-                                    >
+                                                  ? 'Package'
+                                                  : 'Custom'}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
                                         {gameserver.type === 'FREE'
                                             ? 'Free'
-                                            : gameserver.type === 'PACKAGE'
-                                              ? 'Package'
-                                              : 'Custom'}
-                                    </span>
-                                </TableCell>
-                                <TableCell>
-                                    {gameserver.type === 'FREE'
-                                        ? 'Free'
-                                        : gameserver.price != null
-                                          ? `€${(gameserver.price / 100).toFixed(2)}`
-                                          : 'N/A'}
-                                </TableCell>
-                                <TableCell>{gameserver.cpuPercent}%</TableCell>
-                                <TableCell>{formatMBToGiB(gameserver.ramMB, 2)}</TableCell>
-                                <TableCell>{formatMBToGiB(gameserver.diskMB, 2)}</TableCell>
-                                <TableCell>{gameserver.backupCount}</TableCell>
-                                <TableCell>{gameserver.location.name}</TableCell>
-                                <TableCell>
-                                    <span
-                                        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                            gameserver.status === 'ACTIVE'
-                                                ? 'bg-green-50 text-green-700'
-                                                : gameserver.status === 'EXPIRED'
-                                                  ? 'bg-orange-50 text-orange-700'
-                                                  : gameserver.status === 'DELETED'
-                                                    ? 'bg-red-50 text-red-700'
-                                                    : gameserver.status === 'CREATION_FAILED'
-                                                      ? 'bg-red-50 text-red-700'
-                                                      : 'bg-gray-50 text-gray-700'
-                                        }`}
-                                    >
-                                        {gameserver.status}
-                                    </span>
-                                    {(() => {
-                                        const suspension = getActiveSuspension(gameserver);
-                                        if (!suspension) return null;
-                                        return (
-                                            <div
-                                                className="mt-1 max-w-40 text-xs font-medium text-red-600 dark:text-red-400"
-                                                title={suspension.reason}
+                                            : gameserver.price != null
+                                              ? `€${(gameserver.price / 100).toFixed(2)}`
+                                              : 'N/A'}
+                                    </TableCell>
+                                    <TableCell>{gameserver.cpuPercent}%</TableCell>
+                                    <TableCell>{formatMBToGiB(gameserver.ramMB, 2)}</TableCell>
+                                    <TableCell>{formatMBToGiB(gameserver.diskMB, 2)}</TableCell>
+                                    <TableCell>{gameserver.backupCount}</TableCell>
+                                    <TableCell>{gameserver.location.name}</TableCell>
+                                    <TableCell>
+                                        {showStatusBadge && (
+                                            <span
+                                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusBadgeStyles[gameserver.status]}`}
                                             >
-                                                Suspended until{' '}
-                                                {formatDate(suspension.expiresAt, true)}
-                                                {suspension.deleteAfterExpiry
-                                                    ? ' · then deleted'
-                                                    : ''}
-                                            </div>
-                                        );
-                                    })()}
-                                </TableCell>
-                                <TableCell className="whitespace-nowrap">
-                                    {formatDate(gameserver.expires)}
-                                </TableCell>
-                                <TableCell>{gameserver.ptServerId || 'N/A'}</TableCell>
-                                <TableCell>
-                                    <AdminServerActionsMenu
-                                        server={gameserver}
-                                        suspensionDefaultReason={suspensionDefaultReason}
-                                        onEdit={() => setEditingServer(gameserver)}
-                                        onSuccess={() => router.refresh()}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                                                {gameserver.status}
+                                            </span>
+                                        )}
+                                        {suspension && (
+                                            <TooltipProvider>
+                                                <div className="mt-1 flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Ban className="h-3.5 w-3.5 shrink-0" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            {suspension.reason}
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                    <span>
+                                                        {formatDate(suspension.expiresAt, true)}
+                                                    </span>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            {suspension.deleteAfterExpiry ? (
+                                                                <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                                                            ) : (
+                                                                <Undo2 className="h-3.5 w-3.5 shrink-0" />
+                                                            )}
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            {suspension.deleteAfterExpiry
+                                                                ? 'Server will be deleted after expiry'
+                                                                : 'Suspension will be lifted after expiry'}
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </div>
+                                            </TooltipProvider>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="whitespace-nowrap">
+                                        {formatDate(gameserver.expires)}
+                                    </TableCell>
+                                    <TableCell>{gameserver.ptServerId || 'N/A'}</TableCell>
+                                    <TableCell>
+                                        <AdminServerActionsMenu
+                                            server={gameserver}
+                                            suspensionDefaultReason={suspensionDefaultReason}
+                                            onEdit={() => setEditingServer(gameserver)}
+                                            onSuccess={() => router.refresh()}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </div>

@@ -541,9 +541,15 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
 
     try {
         await deleteServerAdmin(server, server.userId);
-        await prisma.gameServer.update({
-            where: { id: server.id },
-            data: { status: 'DELETED' },
+        await prisma.$transaction(async (tx) => {
+            await tx.gameServer.update({
+                where: { id: server.id },
+                data: { status: 'DELETED' },
+            });
+            await tx.gameServerSuspension.updateMany({
+                where: { gameServerId: server.id, liftedAt: null },
+                data: { liftedAt: new Date() },
+            });
         });
     } catch (error) {
         logger.error(`Failed to delete free server ${validatedServerId}`, 'GAME_SERVER', {

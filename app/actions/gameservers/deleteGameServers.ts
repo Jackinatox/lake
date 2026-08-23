@@ -27,7 +27,10 @@ export async function deleteGameServers(ids: string[]) {
                 logger.warn('GameServer Deletion: ', 'SYSTEM', {
                     userId: gameServer.userId,
                     gameServerId: id,
-                    details: { adminUserId: session.user.id, error: `Gameserver with ID ${id} missing ptAdminId` },
+                    details: {
+                        adminUserId: session.user.id,
+                        error: `Gameserver with ID ${id} missing ptAdminId`,
+                    },
                 });
                 deletedIds.push(id);
                 continue;
@@ -53,18 +56,27 @@ export async function deleteGameServers(ids: string[]) {
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    try {
-        for (const id of deletedIds) {
-            await prisma.gameServer.update({
-                where: { id: id },
-                data: { status: 'DELETED' },
+    for (const id of deletedIds) {
+        try {
+            await prisma.$transaction(async (tx) => {
+                await tx.gameServer.update({
+                    where: { id: id },
+                    data: { status: 'DELETED' },
+                });
+                await tx.gameServerSuspension.updateMany({
+                    where: { gameServerId: id, liftedAt: null },
+                    data: { liftedAt: new Date() },
+                });
             });
+        } catch (error) {
+            errors.push(
+                `Failed to update database for server ${id}: ${error instanceof Error ? error.message : String(error)}`,
+            );
         }
-        if (errors.length > 0) {
-            return { success: false, error: errors.join(', ') };
-        }
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
+
+    if (errors.length > 0) {
+        return { success: false, error: errors.join(', ') };
+    }
+    return { success: true };
 }
