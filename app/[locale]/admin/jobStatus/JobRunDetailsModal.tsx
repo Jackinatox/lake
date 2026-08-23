@@ -11,7 +11,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, AlertCircle, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import type { JobRunStatus, LogLevel, WorkerLog } from '@/types/jobs';
+import { JobRunStatus, LogLevel } from '@/app/client/generated/browser';
+import type { JobRunLog } from '@/types/jobs';
 import { formatDistanceToNow, format } from 'date-fns';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -27,21 +28,21 @@ const STATUS_CONFIG: Record<
     JobRunStatus,
     { variant: 'default' | 'destructive' | 'secondary' | 'outline'; icon: any }
 > = {
-    RUNNING: { variant: 'default', icon: Loader2 },
-    COMPLETED: { variant: 'secondary', icon: CheckCircle2 },
-    FAILED: { variant: 'destructive', icon: XCircle },
-    CANCELLED: { variant: 'outline', icon: XCircle },
+    [JobRunStatus.RUNNING]: { variant: 'default', icon: Loader2 },
+    [JobRunStatus.COMPLETED]: { variant: 'secondary', icon: CheckCircle2 },
+    [JobRunStatus.FAILED]: { variant: 'destructive', icon: XCircle },
+    [JobRunStatus.CANCELLED]: { variant: 'outline', icon: XCircle },
 };
 
 const LOG_LEVEL_CONFIG: Record<LogLevel, { color: string; bgColor: string; label: string }> = {
-    TRACE: { color: 'text-gray-600', bgColor: 'bg-gray-100', label: 'TRACE' },
-    INFO: { color: 'text-blue-600', bgColor: 'bg-blue-50', label: 'INFO' },
-    WARN: { color: 'text-yellow-600', bgColor: 'bg-yellow-50', label: 'WARN' },
-    ERROR: { color: 'text-red-600', bgColor: 'bg-red-50', label: 'ERROR' },
-    FATAL: { color: 'text-purple-600', bgColor: 'bg-purple-50', label: 'FATAL' },
+    [LogLevel.TRACE]: { color: 'text-gray-600', bgColor: 'bg-gray-100', label: 'TRACE' },
+    [LogLevel.INFO]: { color: 'text-blue-600', bgColor: 'bg-blue-50', label: 'INFO' },
+    [LogLevel.WARN]: { color: 'text-yellow-600', bgColor: 'bg-yellow-50', label: 'WARN' },
+    [LogLevel.ERROR]: { color: 'text-red-600', bgColor: 'bg-red-50', label: 'ERROR' },
+    [LogLevel.FATAL]: { color: 'text-purple-600', bgColor: 'bg-purple-50', label: 'FATAL' },
 };
 
-function LogEntry({ log }: { log: WorkerLog }) {
+function LogEntry({ log }: { log: JobRunLog }) {
     const [showDetails, setShowDetails] = useState(false);
     const config = LOG_LEVEL_CONFIG[log.level];
 
@@ -213,7 +214,7 @@ export function JobRunDetailsModal({ runId, isOpen, onClose }: JobRunDetailsModa
                         <div>
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-sm font-medium">Logs ({data.logs.length})</h3>
-                                {data.status === 'RUNNING' && (
+                                {data.status === JobRunStatus.RUNNING && (
                                     <Badge variant="outline" className="text-xs">
                                         <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                                         Auto-refreshing

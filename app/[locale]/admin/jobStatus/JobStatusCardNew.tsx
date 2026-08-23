@@ -7,6 +7,7 @@ import { AlertCircle, CheckCircle2, Clock, Play, Loader2, XCircle } from 'lucide
 import { useTriggerJob } from '@/hooks/useJobsApi';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { JobRunStatus } from '@/app/client/generated/browser';
 import type { JobRunSummary } from '@/types/jobs';
 import { useState } from 'react';
 import {
@@ -27,15 +28,6 @@ interface JobStatusCardNewProps {
     onTriggerSuccess?: () => void;
 }
 
-// Map frontend job names to backend job names
-const JOB_NAME_MAP: Record<string, string> = {
-    ExpireServers: 'ExpireServers',
-    DeleteServers: 'DeleteServers',
-    SendEmails: 'SendEmails',
-    GenerateExpiryEmails: 'GenerateExpiryEmails',
-    GenerateDeletionEmails: 'GenerateDeletionEmails',
-};
-
 export function JobStatusCardNew({
     jobName,
     isRunning,
@@ -46,12 +38,12 @@ export function JobStatusCardNew({
     const { toast } = useToast();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    const hasError = lastRun?.status === 'FAILED';
-    const hasWarning = lastRun && lastRun.itemsFailed > 0 && lastRun.status === 'COMPLETED';
+    const hasError = lastRun?.status === JobRunStatus.FAILED;
+    const hasWarning =
+        lastRun && lastRun.itemsFailed > 0 && lastRun.status === JobRunStatus.COMPLETED;
 
     const handleTrigger = async () => {
-        const backendJobName = JOB_NAME_MAP[jobName] || jobName;
-        const result = await triggerJob(backendJobName);
+        const result = await triggerJob(jobName);
 
         if (result?.success) {
             toast({
@@ -94,9 +86,9 @@ export function JobStatusCardNew({
                         <div className="space-y-2 pb-3 border-b border-border">
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-muted-foreground flex items-center gap-1.5">
-                                    {lastRun.status === 'COMPLETED' ? (
+                                    {lastRun.status === JobRunStatus.COMPLETED ? (
                                         <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                    ) : lastRun.status === 'FAILED' ? (
+                                    ) : lastRun.status === JobRunStatus.FAILED ? (
                                         <XCircle className="h-4 w-4 text-destructive" />
                                     ) : (
                                         <Clock className="h-4 w-4" />
@@ -105,7 +97,7 @@ export function JobStatusCardNew({
                                 </span>
                                 <Badge
                                     variant={
-                                        lastRun.status === 'FAILED'
+                                        lastRun.status === JobRunStatus.FAILED
                                             ? 'destructive'
                                             : hasWarning
                                               ? 'outline'

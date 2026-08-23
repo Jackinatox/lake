@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
-
-const VALID_JOB_NAMES = [
-    'ExpireServers',
-    'DeleteServers',
-    'SendEmails',
-    'GenerateExpiryEmails',
-    'GenerateDeletionEmails',
-] as const;
+import { isValidWorkerJobName } from '@/lib/jobs/workerJobs';
 
 export async function POST(request: Request, { params }: { params: Promise<{ jobName: string }> }) {
     // Check admin auth
@@ -23,14 +16,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ job
     try {
         const { jobName } = await params;
 
-        if (!VALID_JOB_NAMES.includes(jobName as any)) {
+        // The worker decides which jobs exist; only reject names that are not a bare identifier
+        // so they cannot escape the trigger path.
+        if (!isValidWorkerJobName(jobName)) {
             return NextResponse.json({ error: 'Invalid job name' }, { status: 400 });
         }
 
         const workerUrl = process.env.WORKER_IP;
-        const response = await fetch(`${workerUrl}/v1/jobs/trigger/${jobName}`, {
-            method: 'POST',
-        });
+        const response = await fetch(
+            `${workerUrl}/v1/jobs/trigger/${encodeURIComponent(jobName)}`,
+            {
+                method: 'POST',
+            },
+        );
 
         const data = await response.json();
 

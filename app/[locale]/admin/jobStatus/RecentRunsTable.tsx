@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, CheckCircle2, XCircle, Loader2, Clock, Eye } from 'lucide-react';
-import type { JobRunSummary, JobRunStatus } from '@/types/jobs';
+import { JobRunStatus } from '@/app/client/generated/browser';
+import type { JobRunSummary } from '@/types/jobs';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RecentRunsTableProps {
@@ -16,10 +17,10 @@ const STATUS_CONFIG: Record<
     JobRunStatus,
     { variant: 'default' | 'destructive' | 'secondary' | 'outline'; icon: any; label: string }
 > = {
-    RUNNING: { variant: 'default', icon: Loader2, label: 'Running' },
-    COMPLETED: { variant: 'secondary', icon: CheckCircle2, label: 'Completed' },
-    FAILED: { variant: 'destructive', icon: XCircle, label: 'Failed' },
-    CANCELLED: { variant: 'outline', icon: XCircle, label: 'Cancelled' },
+    [JobRunStatus.RUNNING]: { variant: 'default', icon: Loader2, label: 'Running' },
+    [JobRunStatus.COMPLETED]: { variant: 'secondary', icon: CheckCircle2, label: 'Completed' },
+    [JobRunStatus.FAILED]: { variant: 'destructive', icon: XCircle, label: 'Failed' },
+    [JobRunStatus.CANCELLED]: { variant: 'outline', icon: XCircle, label: 'Cancelled' },
 };
 
 function RunRow({
@@ -40,7 +41,7 @@ function RunRow({
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                     <Badge variant={statusConfig.variant} className="shrink-0">
-                        {run.status === 'RUNNING' ? (
+                        {run.status === JobRunStatus.RUNNING ? (
                             <Icon className="h-3 w-3 mr-1 animate-spin" />
                         ) : (
                             <Icon className="h-3 w-3 mr-1" />

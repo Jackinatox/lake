@@ -4,17 +4,7 @@ import { useJobStatus, useRecentRuns } from '@/hooks/useJobsApi';
 import { JobStatusCardNew } from './JobStatusCardNew';
 import { AlertCircle } from 'lucide-react';
 import { JobStatusSkeleton } from './Job-Status-Sekelton';
-import type { WorkerJobType } from '@/types/jobs';
-
-// Map frontend job names to backend job types
-const JOB_TYPE_MAP: Record<string, WorkerJobType> = {
-    ExpireServers: 'EXPIRE_SERVERS',
-    DeleteServers: 'DELETE_SERVERS',
-    SendEmails: 'SEND_EMAILS',
-    GenerateExpiryEmails: 'GENERATE_EMAILS',
-    GenerateDeletionEmails: 'GENERATE_DELETION_EMAILS',
-    CheckNewVersions: 'CHECK_NEW_VERSIONS',
-};
+import { workerJobNameToJobType } from '@/lib/jobs/workerJobs';
 
 export function JobStatusGrid() {
     const {
@@ -57,7 +47,7 @@ export function JobStatusGrid() {
         <div className="grid gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
             {Object.entries(statusData.jobs).map(([jobName, jobData]) => {
                 // Find the most recent run for this job
-                const jobType = JOB_TYPE_MAP[jobName];
+                const jobType = workerJobNameToJobType(jobName);
                 const lastRun = runsData?.runs?.find((run) => run.jobType === jobType);
 
                 return (

@@ -1,6 +1,6 @@
 {
     "name": "lake",
-    "version": "1.9.16",
+    "version": "1.9.20",
     "private": true,
     "scripts": {
         "dev": "bun run --bun next dev",

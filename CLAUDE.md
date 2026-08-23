@@ -32,6 +32,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
   set and its URL params, the links from a log row into the admin gameserver
   list, and the `serverId` filter on that list. Read when touching the log
   viewer, `getApplicationLogs`, or the gameserver admin filters.
+- `admin-job-status.md` — The `/admin/jobStatus` dashboard: how the jobs the
+  worker reports are joined with the `JobRun`/`WorkerLog` tables, the
+  Prisma-derived types in `types/jobs.ts`, and the job-name ↔ `WorkerJobType`
+  bridge in `lib/jobs/workerJobs.ts`. Read when adding a worker job or touching
+  the job API routes.
 - `modpack-feedback-and-beta.md` — Modpack beta feedback feature (Feedback
   table, dashboard survey card, server actions) and the KeyValue-based
   modpack kill switch. Read when touching feedback, the beta status, or the

@@ -1,67 +1,43 @@
-// Types matching the API documentation
-export type WorkerJobType =
-    | 'EXPIRE_SERVERS'
-    | 'SEND_EMAILS'
-    | 'GENERATE_EMAILS'
-    | 'DELETE_SERVERS'
-    | 'GENERATE_DELETION_EMAILS'
-    | 'CHECK_NEW_VERSIONS';
+import type { GameServer, JobRun, User, WorkerLog } from '@/app/client/generated/browser';
 
-export type JobRunStatus = 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+/**
+ * Rows reach the client as JSON, so every `Date` column arrives as an ISO string.
+ */
+type Serialized<T> = {
+    [K in keyof T]: [T[K]] extends [Date]
+        ? string
+        : [T[K]] extends [Date | null]
+          ? string | null
+          : T[K];
+};
 
-export type LogLevel = 'TRACE' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
-
+/** `/api/jobs/status` — proxied from the worker, not stored in the DB. */
 export interface JobStatusResponse {
     timestamp: string;
     jobs: Record<string, { isRunning: boolean }>;
 }
 
-export interface JobRunSummary {
-    id: string;
-    jobType: WorkerJobType;
-    status: JobRunStatus;
-    startedAt: string;
-    endedAt: string | null;
-    itemsProcessed: number;
-    itemsTotal: number;
-    itemsFailed: number;
-    errorMessage: string | null;
-}
+/** A `JobRun` row without the columns only the details endpoint returns. */
+export type JobRunSummary = Serialized<Omit<JobRun, 'errorStack' | 'metadata'>>;
 
+/** `/api/jobs/runs` — the latest run per job type. */
 export interface RecentRunsResponse {
     timestamp: string;
     runs: JobRunSummary[];
 }
 
-export interface WorkerLog {
-    id: number;
-    jobType: WorkerJobType;
-    jobRun: string;
-    level: LogLevel;
-    message: string;
-    details: Record<string, unknown> | null;
-    gameServerId: string | null;
-    userId: string | null;
-    createdAt: string;
-    gameServer: {
-        id: string;
-        name: string;
-        status: string;
-    } | null;
-    user: {
-        id: string;
-        name: string;
-        username?: string | null;
-        email: string;
-    } | null;
+/** A `WorkerLog` row with the game server / user context the details endpoint includes. */
+export interface JobRunLog extends Serialized<WorkerLog> {
+    gameServer: Pick<GameServer, 'id' | 'name' | 'status'> | null;
+    user: Pick<User, 'id' | 'name' | 'username' | 'email'> | null;
 }
 
-export interface JobRunDetails extends JobRunSummary {
-    errorStack: string | null;
-    metadata: Record<string, unknown> | null;
-    logs: WorkerLog[];
+/** `/api/jobs/runs/[id]` — the full `JobRun` row plus its logs. */
+export interface JobRunDetails extends Serialized<JobRun> {
+    logs: JobRunLog[];
 }
 
+/** `/api/jobs/trigger/[jobName]` — proxied from the worker. */
 export interface TriggerJobResponse {
     timestamp: string;
     success: boolean;

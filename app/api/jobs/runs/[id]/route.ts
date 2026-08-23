@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
-import type { WorkerJobType, JobRunStatus } from '@/types/jobs';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     // Check admin auth
@@ -50,32 +49,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             return NextResponse.json({ error: 'Job run not found' }, { status: 404 });
         }
 
-        return NextResponse.json({
-            id: jobRun.id,
-            jobType: jobRun.jobType as WorkerJobType,
-            status: jobRun.status as JobRunStatus,
-            startedAt: new Date(jobRun.startedAt).toISOString(),
-            endedAt: jobRun.endedAt ? new Date(jobRun.endedAt).toISOString() : null,
-            itemsProcessed: jobRun.itemsProcessed,
-            itemsTotal: jobRun.itemsTotal,
-            itemsFailed: jobRun.itemsFailed,
-            errorMessage: jobRun.errorMessage,
-            errorStack: jobRun.errorStack,
-            metadata: jobRun.metadata,
-            logs: jobRun.logs.map((log: any) => ({
-                id: log.id,
-                jobType: log.jobType,
-                jobRun: log.jobRun,
-                level: log.level,
-                message: log.message,
-                details: log.details,
-                gameServerId: log.gameServerId,
-                userId: log.userId,
-                createdAt: new Date(log.createdAt).toISOString(),
-                gameServer: log.gameServer,
-                user: log.user,
-            })),
-        });
+        return NextResponse.json(jobRun);
     } catch (error) {
         console.error('Failed to fetch job run details from database:', error);
         return NextResponse.json(

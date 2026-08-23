@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { JobRunStatus } from '@/app/client/generated/browser';
 import type {
     JobStatusResponse,
     RecentRunsResponse,
@@ -110,7 +111,7 @@ export function useJobRunDetails(runId: string | null, enabled: boolean = true) 
 
         // Poll faster if job is running
         const interval = setInterval(() => {
-            if (data?.status === 'RUNNING') {
+            if (data?.status === JobRunStatus.RUNNING) {
                 fetchDetails();
             }
         }, POLLING_INTERVALS.runDetails);
