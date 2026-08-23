@@ -472,6 +472,7 @@ enum WorkerJobType {
   DELETE_SERVERS
   GENERATE_DELETION_EMAILS
   CHECK_NEW_VERSIONS
+  PROCESS_SUSPENSIONS // expired suspensions: delete the server or lift the suspension
 }
 
 enum JobRunStatus {
