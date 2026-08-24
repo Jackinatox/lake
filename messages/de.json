@@ -69,6 +69,8 @@
     "reasonLabel": "Grund",
     "suspendedUntil": "Gesperrt bis {date}",
     "deletionWarning": "Wenn die Sperre nicht aufgehoben wird, werden dieser Server und alle darauf gespeicherten Daten am {date} endgültig gelöscht.",
+    "processing": "Die Sperre ist abgelaufen. Dein Server wird gerade freigeschaltet — das kann ein paar Minuten dauern.",
+    "processingDeletion": "Die Sperre ist abgelaufen. Dieser Server und alle darauf gespeicherten Daten werden gerade gelöscht.",
     "appealHint": "Wenn du der Meinung bist, dass die Sperre zu Unrecht erfolgt ist, erstelle bitte ein Support-Ticket und erkläre uns, warum wir deinen Server wieder freischalten sollten.",
     "contactSupport": "Support kontaktieren",
     "home": "Zur Startseite",

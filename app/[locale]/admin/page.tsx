@@ -13,7 +13,13 @@ async function Admin() {
         return <NoAdmin />;
     }
 
-    return <AdminPage />;
+    return (
+        <AdminPage
+            BUILD_DATE={process.env.BUILD_DATE}
+            GIT_COMMIT={process.env.GIT_COMMIT}
+            GIT_COMMIT_TIME={process.env.GIT_COMMIT_TIME}
+        />
+    );
 }
 
 export default Admin;

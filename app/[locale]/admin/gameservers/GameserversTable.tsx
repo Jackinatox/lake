@@ -26,7 +26,7 @@ import { EditServerDialog } from './EditServerDialog';
 import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { GameServerAdmin } from '@/models/prisma';
-import { getActiveSuspension } from '@/lib/gameserver/suspension';
+import { getActiveSuspension, isSuspensionProcessing } from '@/lib/gameserver/suspension';
 import { Ban, Trash2, Undo2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -375,6 +375,20 @@ const ServersTable: React.FC<GameserversTableProps> = ({
                                                     <span>
                                                         {formatDate(suspension.expiresAt, true)}
                                                     </span>
+                                                    {isSuspensionProcessing(suspension) && (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="text-amber-600 dark:text-amber-400">
+                                                                    · pending
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                Expired — still counted as suspended
+                                                                until the worker processes it (grace
+                                                                window)
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             {suspension.deleteAfterExpiry ? (

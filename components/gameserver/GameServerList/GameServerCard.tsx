@@ -11,7 +11,7 @@ import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogi
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import formatDate from '@/lib/formatDate';
 import { Button } from '@/components/ui/button';
-import { getActiveSuspension } from '@/lib/gameserver/suspension';
+import { getActiveSuspension, isSuspensionProcessing } from '@/lib/gameserver/suspension';
 
 type ExpirationUrgency = 'ok' | 'warn' | 'urgent' | 'expired';
 
@@ -47,6 +47,9 @@ function ServerCard({
     const isCreationFailed = server.status === 'CREATION_FAILED';
     const suspension = getActiveSuspension(server);
     const suspendedUntil = suspension ? formatDate(suspension.expiresAt, true) : null;
+    // Grace window: the suspension has run out but the worker has not released or deleted the
+    // server yet, so the end date is in the past and must not be shown as a deadline.
+    const suspensionProcessing = isSuspensionProcessing(suspension);
     const supportHref = suspension
         ? `/support?category=SUSPENSION&subject=${encodeURIComponent(
               tSuspended('ticketSubject', { serverName: server.name }),
@@ -96,13 +99,19 @@ function ServerCard({
                             <span className="flex items-center gap-1.5">
                                 <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
                                 <span>
-                                    {tSuspended('suspendedUntil', { date: suspendedUntil })}
+                                    {suspensionProcessing
+                                        ? tSuspended(
+                                              suspension.deleteAfterExpiry
+                                                  ? 'processingDeletion'
+                                                  : 'processing',
+                                          )
+                                        : tSuspended('suspendedUntil', { date: suspendedUntil })}
                                 </span>
                             </span>
                             <span className="text-slate-600 dark:text-slate-300">
                                 {tSuspended('reasonLabel')}: {suspension.reason}
                             </span>
-                            {suspension.deleteAfterExpiry && (
+                            {suspension.deleteAfterExpiry && !suspensionProcessing && (
                                 <span className="font-medium">
                                     {tSuspended('deletionWarning', { date: suspendedUntil })}
                                 </span>

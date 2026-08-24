@@ -143,15 +143,15 @@ const sections: AdminSection[] = [
                 Icon: BookOpen,
             },
             {
-            name: 'Neuigkeiten',
-            description: 'Changelog & updates',
-            link: '/admin/changelog',
+                name: 'Neuigkeiten',
+                description: 'Changelog & updates',
+                link: '/admin/changelog',
                 Icon: History,
             },
             {
-            name: 'FAQ',
-            description: 'Frequently asked questions',
-            link: '/admin/faq',
+                name: 'FAQ',
+                description: 'Frequently asked questions',
+                link: '/admin/faq',
                 Icon: TableOfContents,
             },
         ],
@@ -162,7 +162,46 @@ const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || 'unknown';
 const deploymentEnv = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV;
 const instanceId = process.env.NEXT_PUBLIC_INSTANCE_ID;
 
-const AdminPage = () => {
+interface AdminPageProps {
+    BUILD_DATE?: string;
+    GIT_COMMIT?: string;
+    GIT_COMMIT_TIME?: string;
+}
+
+// Gitea mirror of this repo; commit hashes link to <base>/commit/<hash>.
+const GIT_REPO_URL = 'https://tea.scyed.de/jackinatox/lake';
+
+// Fixed time zone so server and client render the same string (no hydration mismatch).
+const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Berlin',
+});
+
+function formatDateTime(value?: string) {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return `${dateTimeFormat.format(date)} Uhr`;
+}
+
+export default function AdminPage({ BUILD_DATE, GIT_COMMIT, GIT_COMMIT_TIME }: AdminPageProps) {
+    const buildInfo: { label: string; value?: string; href?: string }[] = [
+        { label: 'Version', value: appVersion },
+        { label: 'Env', value: deploymentEnv },
+        { label: 'Instance', value: instanceId },
+        { label: 'Build', value: formatDateTime(BUILD_DATE) },
+        {
+            label: 'Commit',
+            value: GIT_COMMIT ?? '—',
+            href: GIT_COMMIT ? `${GIT_REPO_URL}/commit/${GIT_COMMIT}` : undefined,
+        },
+        { label: 'Commit vom', value: formatDateTime(GIT_COMMIT_TIME) },
+    ].filter((entry) => entry.value);
+
     return (
         <div className="w-full py-4 sm:mx-auto sm:px-4 md:py-8 lg:max-w-5xl xl:max-w-6xl">
             {/* Header */}
@@ -212,13 +251,29 @@ const AdminPage = () => {
             </div>
 
             {/* Footer */}
-            <div className="mt-8 py-4 text-center text-[11px] text-muted-foreground/60">
-                <span>Version: {appVersion}</span>
-                {deploymentEnv && <span> &middot; Env: {deploymentEnv}</span>}
-                {instanceId && <span> &middot; Instance: {instanceId}</span>}
-            </div>
+            <footer className="mt-8 border-t border-border/60 pt-4">
+                <dl className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground/60">
+                    {buildInfo.map(({ label, value, href }) => (
+                        <div key={label} className="flex items-center gap-1.5">
+                            <dt className="uppercase tracking-wider">{label}</dt>
+                            <dd className="font-mono text-foreground/70">
+                                {href ? (
+                                    <a
+                                        href={href}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
+                                    >
+                                        {value}
+                                    </a>
+                                ) : (
+                                    value
+                                )}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+            </footer>
         </div>
     );
-};
-
-export default AdminPage;
+}

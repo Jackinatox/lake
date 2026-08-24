@@ -8,6 +8,7 @@ import {
 } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import { suspensionActiveCutoff } from '@/lib/gameserver/suspension';
 import { setPtSuspension } from '@/lib/Pterodactyl/suspendServer/suspendServer';
 import { getValidationMessage } from '@/lib/validation/common';
 import {
@@ -67,8 +68,10 @@ export async function suspendGameServer(input: SuspendGameServerInput): Promise<
         if (gameServer.status === 'DELETED')
             return { success: false, error: 'This server is already deleted' };
 
+        // Same cutoff the UI uses, so an admin can never suspend a server that still shows as
+        // suspended — including one whose suspension lapsed but is still waiting for the worker.
         const existing = await prisma.gameServerSuspension.findFirst({
-            where: { gameServerId, liftedAt: null, expiresAt: { gt: new Date() } },
+            where: { gameServerId, liftedAt: null, expiresAt: { gt: suspensionActiveCutoff() } },
             select: { id: true },
         });
         if (existing) return { success: false, error: 'This server is already suspended' };

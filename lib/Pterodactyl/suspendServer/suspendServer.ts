@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 
+import { suspensionActiveCutoff } from '@/lib/gameserver/suspension';
 import { logger } from '@/lib/logger';
 
 /**
@@ -58,10 +59,11 @@ export default async function toggleSuspendGameServer(
 
     // A renewal, upgrade or reverted refund must never quietly release a quarantined server.
     // Guarding here covers every caller (upgradeServer, upgradeFromFree, undoRefundedOrder)
-    // in one place.
+    // in one place. The grace window is part of the check: a suspension that has lapsed but
+    // not been processed yet may still be on its way to deleting the server.
     if (action === 'unsuspend' && !options.force) {
         const activeSuspension = await prisma.gameServerSuspension.findFirst({
-            where: { gameServerId, liftedAt: null, expiresAt: { gt: new Date() } },
+            where: { gameServerId, liftedAt: null, expiresAt: { gt: suspensionActiveCutoff() } },
             select: { id: true, expiresAt: true },
         });
 

@@ -69,6 +69,8 @@
     "reasonLabel": "Reason",
     "suspendedUntil": "Suspended until {date}",
     "deletionWarning": "If the suspension is not lifted, this server and all of its data will be permanently deleted on {date}.",
+    "processing": "The suspension has ended. Your server is being unlocked — this can take a few minutes.",
+    "processingDeletion": "The suspension has ended. This server and all of its data are being deleted.",
     "appealHint": "If you believe this was a mistake, open a support ticket and tell us why we should unblock your server.",
     "contactSupport": "Contact Support",
     "home": "Go to Home",

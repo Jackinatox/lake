@@ -14,7 +14,8 @@ Folding a `SUSPENDED` value into the enum would overwrite the lifecycle state, l
 nothing to restore when the suspension is lifted, and any job that writes `status` would
 silently erase the marker.
 
-A server is suspended while a row satisfies `liftedAt IS NULL AND expiresAt > now()`.
+A server is suspended while a row satisfies
+`liftedAt IS NULL AND expiresAt > now() - SUSPENSION_GRACE_MINUTES` — see the grace window below.
 
 ## Schema (`prisma/schema.prisma`)
 
@@ -30,14 +31,40 @@ There is **no** DB-level uniqueness constraint: a partial unique index on `lifte
 would wrongly block re-suspending a server whose previous suspension lapsed naturally.
 `suspendGameServer` rejects a second *active* suspension in application code instead.
 
+## The grace window (`SUSPENSION_GRACE_MINUTES = 10`)
+
+`expiresAt` is only the moment a suspension *may* be processed. The worker's
+`PROCESS_SUSPENSIONS` job is what actually PT-unsuspends or deletes the server and it runs on
+an interval (5 minutes). Between the two, lake would otherwise show a released server whose
+dashboard Pterodactyl still refuses — or a "free again" server that is about to be deleted.
+
+So a lapsed suspension keeps counting as active for another `SUSPENSION_GRACE_MINUTES`
+(`lib/gameserver/suspension.ts`). The cushion must cover the worst case — the job firing just
+*before* a suspension lapses, so the next run is a full interval away — hence 10 > 5.
+**If the job interval changes, this constant has to move with it.**
+
+The window costs nothing when the worker is healthy: processing sets `liftedAt`, and every
+predicate also requires `liftedAt IS NULL`, so the extra minutes are only ever spent waiting
+for work that has not happened. The trade is deliberate and one-directional — a server can
+stay suspended in lake a few minutes too long, but never appear free while it is not.
+
+`isSuspensionProcessing(suspension)` marks that window for the UI: inside it the end date is
+already in the past, so `ServerSuspended`, `GameServerCard` and the admin table stop naming it
+as a deadline (`ServerSuspended.processing` / `.processingDeletion` in `messages/{en,de}.json`,
+a `· pending` marker for admins) and say the suspension is being processed instead.
+
 ## Reading the suspension
 
 `lib/gameserver/suspension.ts` is the single place that knows the shape:
 
+- `suspensionActiveCutoff()` — `now() - SUSPENSION_GRACE_MINUTES`. **Every** query or guard
+  asking "is this suspended?" compares against this, never against `new Date()`, or the UI,
+  the admin filter and the unsuspend guard drift apart.
 - `activeSuspensionInclude()` / `activeSuspensionSubSelect()` — Prisma fragments pulling the
   one active suspension onto a `GameServer` query. They are **functions**, not consts: a
   module-level `new Date()` would freeze at import time.
 - `getActiveSuspension(server)` — narrows the `take: 1` array to one row or `null`.
+- `isSuspensionProcessing(suspension)` — lapsed but not yet processed, see above.
 - `suspendedServerWhere()` — `where` fragment for "currently suspended", used by the admin filter.
 
 Callers that already include it: `getUserServer`, `getOwnedGameServerSummary`, the admin
@@ -58,9 +85,9 @@ power, file and websocket requests. The dashboard talks to PT directly with the 
   Suspension actions use this so the lifecycle stays untouched.
 - `toggleSuspendGameServer(id, action, { force })` — unchanged behavior for the expire/refund
   callers (still writes `EXPIRED`/`ACTIVE`), plus a guard: **`unsuspend` refuses while an
-  active suspension exists** unless `force: true`. That one check covers `upgradeServer`,
-  `upgradeFromFree` and `undoRefundedOrder`, which would otherwise release a quarantined
-  server when a user renews/upgrades or a refund is reverted.
+  active suspension exists** (grace window included) unless `force: true`. That one check
+  covers `upgradeServer`, `upgradeFromFree` and `undoRefundedOrder`, which would otherwise
+  release a quarantined server when a user renews/upgrades or a refund is reverted.
 
 The Next.js UI blocking below is defense in depth, not security: server actions and the
 client's direct PT calls do not pass through a layout.
@@ -77,6 +104,13 @@ All admin-only via `requireAdmin()` (`lib/auth/requireAdmin.ts`, shared with
 | `liftGameServerSuspension` | unsuspend **only if** status is `ACTIVE`/`CREATED` and `expires > now()` | **yes** — restored (says so if still expired) |
 | `extendGameServerSuspension` | — | **no**, deliberately |
 | `getSuspensionHistory` | — | — |
+
+`suspendGameServer` rejects a second suspension using `suspensionActiveCutoff()`, so a server
+still inside the grace window cannot be re-suspended while the UI shows it as suspended.
+`liftGameServerSuspension` only checks `liftedAt`, which is what lets an admin release a server
+during that window — the rare case the cushion would otherwise strand. Extending works there
+too: `futureDateSchema` forces a date in the future, which pulls the row back out of the
+worker's queue.
 
 ### History
 
@@ -167,6 +201,11 @@ Scan for rows where `liftedAt IS NULL AND expiresAt <= now()`:
   `GameServer.status = 'DELETED'`, set `liftedAt = now()`.
 - `deleteAfterExpiry = false` → PT-unsuspend, but **only** when the server is not otherwise
   expired (`status` is `ACTIVE`/`CREATED` and `expires > now()`); set `liftedAt = now()` either way.
+
+**Writing `liftedAt` is what ends the grace window**, so it must be set in the same run that
+touched Pterodactyl — never skipped, or lake keeps the server suspended for exactly
+`SUSPENSION_GRACE_MINUTES` and then shows it as free while PT still has it frozen. The job
+interval also has to stay well under `SUSPENSION_GRACE_MINUTES` (10); it is 5 minutes today.
 
 Give this its own `WorkerJobType` (`PROCESS_SUSPENSIONS`) rather than overloading
 `EXPIRE_SERVERS` / `DELETE_SERVERS`, so the lifecycle and suspension axes stay independent

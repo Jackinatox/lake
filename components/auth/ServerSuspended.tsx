@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import type { ActiveSuspension } from '@/lib/gameserver/suspension';
+import { isSuspensionProcessing, type ActiveSuspension } from '@/lib/gameserver/suspension';
 import formatDate from '@/lib/formatDate';
 import { ShieldAlert } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
@@ -13,6 +13,9 @@ interface ServerSuspendedProps {
 export default async function ServerSuspended({ serverName, suspension }: ServerSuspendedProps) {
     const t = await getTranslations('ServerSuspended');
     const until = formatDate(suspension.expiresAt, true);
+    // Inside the grace window the end date is already in the past — naming it would read as
+    // "suspended until yesterday". Say what is actually happening instead.
+    const processing = isSuspensionProcessing(suspension);
     const supportHref = `/support?category=SUSPENSION&subject=${encodeURIComponent(
         t('ticketSubject', { serverName }),
     )}`;
@@ -39,14 +42,26 @@ export default async function ServerSuspended({ serverName, suspension }: Server
                         <p className="text-sm whitespace-pre-wrap">{suspension.reason}</p>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">
-                        {t('suspendedUntil', { date: until })}
-                    </p>
+                    {processing ? (
+                        suspension.deleteAfterExpiry ? (
+                            <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                {t('processingDeletion')}
+                            </p>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">{t('processing')}</p>
+                        )
+                    ) : (
+                        <>
+                            <p className="text-sm text-muted-foreground">
+                                {t('suspendedUntil', { date: until })}
+                            </p>
 
-                    {suspension.deleteAfterExpiry && (
-                        <p className="text-sm font-medium text-red-600 dark:text-red-400">
-                            {t('deletionWarning', { date: until })}
-                        </p>
+                            {suspension.deleteAfterExpiry && (
+                                <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                    {t('deletionWarning', { date: until })}
+                                </p>
+                            )}
+                        </>
                     )}
 
                     <p className="text-sm text-muted-foreground">{t('appealHint')}</p>
