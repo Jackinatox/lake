@@ -42,15 +42,21 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
                     },
                 },
             );
+            setLoading(false);
+
             if (response.ok) {
                 const data = await response.json();
-
-                console.log(data);
-                setLoading(false);
                 setStatus(data.attributes.current_state || 'Loading'); // Handle installing state
-            } else if (response.status === 409) {
-                setStatus('installing');
+                return;
             }
+
+            // 409 is PT installing the egg. 403 is PT refusing the client API, which is what a
+            // suspension looks like from out here — including one lake no longer counts as
+            // active because the worker has not processed it yet. Anything else must still
+            // resolve to something, or the badge sits on "Loading" forever.
+            if (response.status === 409) setStatus('installing');
+            else if (response.status === 403) setStatus('suspended');
+            else setStatus('Error');
         };
 
         fetchStatus();

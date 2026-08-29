@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { suspensionActiveCutoff } from '@/lib/gameserver/suspension';
 import { logger } from '@/lib/logger';
 import { ApiKeyPermission } from '@/lib/apiKeyPermissions';
 import { requireApiKeyOrAdmin } from '@/lib/apiRouteAuth';
@@ -72,6 +73,32 @@ const collectors: Metric[] = [
             return rows.map(
                 (r) => `lake_game_servers_by_type_total{type="${r.type}"} ${r._count._all}`,
             );
+        },
+    },
+
+    {
+        name: 'lake_game_servers_suspended_total',
+        help: 'Number of gameservers under an active admin suspension',
+        type: 'gauge',
+        collect: async () => {
+            const count = await prisma.gameServerSuspension.count({
+                where: { liftedAt: null, expiresAt: { gt: suspensionActiveCutoff() } },
+            });
+            return [`lake_game_servers_suspended_total ${count}`];
+        },
+    },
+    {
+        name: 'lake_suspensions_awaiting_processing_total',
+        help: 'Suspensions past their end date that the worker has not lifted or deleted yet',
+        type: 'gauge',
+        collect: async () => {
+            // The one number that proves PROCESS_SUSPENSIONS is alive. Anything still here
+            // after the grace window has run out is a server lake reports as free while
+            // Pterodactyl still has it frozen — alert on it.
+            const count = await prisma.gameServerSuspension.count({
+                where: { liftedAt: null, expiresAt: { lte: new Date() } },
+            });
+            return [`lake_suspensions_awaiting_processing_total ${count}`];
         },
     },
 

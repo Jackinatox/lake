@@ -3,6 +3,7 @@
 import { auth } from '@/auth';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import { refuseIfSuspended, SERVER_SUSPENDED_MESSAGE } from '@/lib/gameserver/requireUnsuspended';
 import { headers } from 'next/headers';
 
 export async function reassignPortsAction(
@@ -25,6 +26,11 @@ export async function reassignPortsAction(
             details: { ptServerId },
         });
         return { success: false, message: 'Server not found' };
+    }
+
+    // Goes to the worker, not the client API, so PT would happily hand out new ports.
+    if (await refuseIfSuspended(server.id, 'reassignPorts', session.user.id)) {
+        return { success: false, message: SERVER_SUSPENDED_MESSAGE };
     }
 
     const workerUrl = process.env.WORKER_IP;

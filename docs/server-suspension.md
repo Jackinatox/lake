@@ -27,20 +27,27 @@ A server is suspended while a row satisfies
 the row survive as an audit record either way. Both user FKs are `onDelete: SetNull` so an
 admin account stays deletable.
 
+A third writer: `deleteGameServers` and `deleteFreeServer` set `liftedAt` (with no
+`liftedByUserId`) when the server itself goes away, so the worker stops owing work on a server
+that no longer exists. `hardDeleteGameServer` does not need to — the row cascades with the
+`GameServer`.
+
 There is **no** DB-level uniqueness constraint: a partial unique index on `liftedAt IS NULL`
 would wrongly block re-suspending a server whose previous suspension lapsed naturally.
 `suspendGameServer` rejects a second *active* suspension in application code instead.
 
-## The grace window (`SUSPENSION_GRACE_MINUTES = 10`)
+## The grace window (`SUSPENSION_GRACE_MINUTES = 15`)
 
 `expiresAt` is only the moment a suspension *may* be processed. The worker's
 `PROCESS_SUSPENSIONS` job is what actually PT-unsuspends or deletes the server and it runs on
-an interval (5 minutes). Between the two, lake would otherwise show a released server whose
+an interval (10 minutes). Between the two, lake would otherwise show a released server whose
 dashboard Pterodactyl still refuses — or a "free again" server that is about to be deleted.
 
 So a lapsed suspension keeps counting as active for another `SUSPENSION_GRACE_MINUTES`
 (`lib/gameserver/suspension.ts`). The cushion must cover the worst case — the job firing just
-*before* a suspension lapses, so the next run is a full interval away — hence 10 > 5.
+*before* a suspension lapses, so the next run is a full interval away — hence 15 > 10.
+Equal to the interval is **not** enough: a suspension lapsing one second after a run would go
+uncovered for the rest of that interval.
 **If the job interval changes, this constant has to move with it.**
 
 The window costs nothing when the worker is healthy: processing sets `liftedAt`, and every
@@ -72,6 +79,22 @@ gameservers page, and `FreeServerUpgrade`. `ClientServer` and `GameServerAdmin` 
 `models/prisma.ts` both carry `suspensions: ActiveSuspension[]`, so a new query that forgets
 the include fails to typecheck.
 
+`lib/gameserver/requireUnsuspended.ts` is the server-side half — see *The guard for server
+actions* below. It is a separate file because `suspension.ts` is imported by client components
+and so must stay free of Prisma.
+
+## Monitoring
+
+`/api/promExport` exposes two gauges (`app/api/promExport/route.ts`):
+
+- `lake_game_servers_suspended_total` — servers currently under a suspension, grace window
+  included.
+- `lake_suspensions_awaiting_processing_total` — `liftedAt IS NULL AND expiresAt <= now()`,
+  i.e. rows the worker owes work on. **This is the one that matters.** A row that stays here
+  longer than the grace window is a server lake reports as free while Pterodactyl still has it
+  frozen, and nothing in the UI shows it — every other predicate uses the cutoff, so a lapsed
+  suspension drops out of the admin filter too. Alert on it.
+
 ## Enforcement
 
 **Pterodactyl suspension is the real boundary.** `POST /api/application/servers/{id}/suspend`
@@ -87,10 +110,36 @@ power, file and websocket requests. The dashboard talks to PT directly with the 
   callers (still writes `EXPIRED`/`ACTIVE`), plus a guard: **`unsuspend` refuses while an
   active suspension exists** (grace window included) unless `force: true`. That one check
   covers `upgradeServer`, `upgradeFromFree` and `undoRefundedOrder`, which would otherwise
-  release a quarantined server when a user renews/upgrades or a refund is reverted.
+  release a quarantined server when a user renews/upgrades or a refund is reverted. It returns
+  `ToggleSuspensionResult`; a refusal is `{ success: false, suspensionBlocked: true }` and
+  **callers must not treat the server as released** — `extendFreeServer` stops, and
+  `upgradeGameServer` logs an error because the order is already paid.
 
 The Next.js UI blocking below is defense in depth, not security: server actions and the
 client's direct PT calls do not pass through a layout.
+
+### The guard for server actions
+
+PT suspension only covers the *client* API. An action that reaches PT with
+`PTERODACTYL_API_KEY` or that hands the job to the worker sails straight past it, and no
+server action runs the `[server_id]` layout. So every user-facing, server-scoped action calls
+`refuseIfSuspended(gameServerId, action, userId)` from `lib/gameserver/requireUnsuspended.ts`,
+which returns `true` when the action must be refused and logs the refusal against the owner.
+
+| Action | File | Would otherwise get through because |
+| --- | --- | --- |
+| `changeGame` | `changeGame/[gameSlug]/changeGameAction.ts` | worker reinstalls the server |
+| `reassignPortsAction` | `settings/NetworkManager/` | worker call |
+| `updateStartupCommand` | `settings/serverSettingsActions.ts` | application API |
+| `changeServerStartup` | same | application API (was only blocked by accident) |
+| `deleteFreeServer` | same | application API — and deleting cleared the way for a new free server |
+| `renameClientServer`, `reinstallServer` | same | already blocked by PT; guarded so the rule has no exceptions |
+| `extendFreeServer` | `app/actions/gameservers/` | wrote `ACTIVE` + a new expiry and burned the cooldown |
+| `checkoutAction` (`UPGRADE`) | `app/actions/checkout/checkout.ts` | took money for a server that stays frozen |
+
+Keep the list total: a new action that touches a specific gameserver on the owner's behalf
+belongs in it. `updateFtpPassword` is the deliberate exception — it changes the panel
+*account* password, not anything server-scoped.
 
 ## Server actions — `app/actions/gameservers/suspensionActions.ts`
 
@@ -171,7 +220,10 @@ namespace `ServerSuspended` in `messages/{en,de}.json`).
 
 The gameservers list (`GameServerCard.tsx`) renders a suspended server red and **not** as a
 link, with the reason, the end date, the deletion warning and a *Contact support* button.
-`GameServerStatus.tsx` short-circuits before the PT fetch and shows `suspended`.
+`GameServerStatus.tsx` short-circuits before the PT fetch and shows `suspended`; when it does
+fetch, a `403` also maps to `suspended` (that is what PT returns for a server lake no longer
+counts as suspended but the worker has not released yet) and any other failure to `Error`, so
+the badge never sits on "Loading" forever.
 
 ## Support appeals
 

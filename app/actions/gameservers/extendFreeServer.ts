@@ -8,6 +8,7 @@ import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { logger } from '@/lib/logger';
 import { FREE_TIER_EXTEND_COOLDOWN_HOURS } from '@/app/GlobalConstants';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
+import { refuseIfSuspended, SERVER_SUSPENDED_MESSAGE } from '@/lib/gameserver/requireUnsuspended';
 import { GameServer } from '@/app/client/generated/browser';
 
 export async function extendFreeServer(
@@ -44,6 +45,12 @@ export async function extendFreeServer(
             return { success: false, error: 'Server not found or not eligible for free extension' };
         }
 
+        // Refuse before the cooldown is consumed: extending a quarantined server buys days the
+        // user cannot use, and the unsuspend below would be refused anyway.
+        if (await refuseIfSuspended(server.id, 'extendFreeServer', session.user.id)) {
+            return { success: false, error: SERVER_SUSPENDED_MESSAGE };
+        }
+
         // Check cooldown period
         const now = new Date();
         if (server.lastExtended) {
@@ -74,7 +81,13 @@ export async function extendFreeServer(
             }
         }
 
-        await resumeIfSuspended(server);
+        if (!(await resumeIfSuspended(server))) {
+            return {
+                success: false,
+                error: 'Server could not be resumed, please contact support',
+            };
+        }
+
         const freeConfig = await getFreeTierConfigCached();
         const newExpiry = new Date(now.getTime() + freeConfig.duration * 24 * 60 * 60 * 1000);
 
@@ -113,8 +126,15 @@ export async function extendFreeServer(
     }
 }
 
-async function resumeIfSuspended(server: GameServer) {
-    if (server.status === 'EXPIRED') {
-        await toggleSuspendGameServer(server.id, 'unsuspend');
-    }
+/**
+ * Lifts the expiry suspension so the extended server actually runs again.
+ *
+ * Returns false when Pterodactyl still has the server frozen, so the caller can stop rather
+ * than write `ACTIVE` and a new expiry over a server the user cannot reach.
+ */
+async function resumeIfSuspended(server: GameServer): Promise<boolean> {
+    if (server.status !== 'EXPIRED') return true;
+
+    const result = await toggleSuspendGameServer(server.id, 'unsuspend');
+    return Boolean(result?.success);
 }

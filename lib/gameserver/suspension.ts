@@ -38,13 +38,14 @@ export const activeSuspensionSelect = {
  *
  * The cushion has to cover the worst case: the job firing right *before* a suspension lapses,
  * so the next run is a full interval away, plus the run itself. Keep it comfortably above the
- * job interval (5 minutes at the time of writing).
+ * job interval (10 minutes at the time of writing) — equal is not enough, or a suspension that
+ * lapses one second after a run shows as free while the next run is still pending.
  *
  * The window closes early on its own: the worker sets `liftedAt` as part of processing, and
  * every predicate here also requires `liftedAt IS NULL`. So the extra minutes are only ever
  * spent waiting for work that has not happened yet — never after it has.
  */
-export const SUSPENSION_GRACE_MINUTES = 10;
+export const SUSPENSION_GRACE_MINUTES = 15;
 
 const SUSPENSION_GRACE_MS = SUSPENSION_GRACE_MINUTES * 60 * 1000;
 

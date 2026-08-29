@@ -13,6 +13,7 @@ import {
     updateStartupCommandSchema,
 } from '@/lib/validation/gameserver';
 import { serverIdentifierSchema } from '@/lib/validation/common';
+import { refuseIfSuspended } from '@/lib/gameserver/requireUnsuspended';
 
 import { headers } from 'next/headers';
 
@@ -50,6 +51,10 @@ export async function renameClientServer(ptServerId: string, newName: string): P
                 details: { ptServerId: parsed.ptServerId },
             },
         );
+        return false;
+    }
+
+    if (await refuseIfSuspended(server.id, 'renameServer', session.user.id)) {
         return false;
     }
 
@@ -141,6 +146,10 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
                 details: { ptServerId: parsed.ptServerId },
             },
         );
+        return false;
+    }
+
+    if (await refuseIfSuspended(serverRecord.id, 'reinstallServer', session.user.id)) {
         return false;
     }
 
@@ -241,6 +250,11 @@ export async function updateStartupCommand(
             'GAME_SERVER',
             { userId: session.user.id, details: { ptServerId: parsed.ptServerId } },
         );
+        return false;
+    }
+
+    // Runs against the *application* API below, which PT serves even for a suspended server.
+    if (await refuseIfSuspended(server.id, 'updateStartupCommand', session.user.id)) {
         return false;
     }
 
@@ -347,6 +361,12 @@ export async function changeServerStartup(server: string, docker_image: string):
 
     if (!ptServer || !ptServer.ptAdminId) {
         throw new Error('Server not found');
+    }
+
+    // Without this the suspension only blocks it by accident: the allowed-image lookup below
+    // uses the client API, so it comes back empty and the change fails as "unsupported image".
+    if (await refuseIfSuspended(ptServer.id, 'changeServerStartup', session.user.id)) {
+        return false;
     }
 
     const allowedDockerImages = await fetchAllowedDockerImages(
@@ -536,6 +556,13 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
                 details: { ptServerId: validatedServerId, ptAdminId: server.ptAdminId },
             },
         );
+        return false;
+    }
+
+    // Deleting is how a quarantine would otherwise be escaped: the free-server limit only
+    // counts servers that are not DELETED, so this would clear the way for a fresh one — and
+    // it would take the suspended server's files with it.
+    if (await refuseIfSuspended(server.id, 'deleteFreeServer', session.user.id)) {
         return false;
     }
 

@@ -24,7 +24,20 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
     const ptServer = await pt.getServer(gameServer.ptAdminId!.toString()); // ! is ok because its checked in the query above
 
     try {
-        await toggleSuspendGameServer(gameServer.id, 'unsuspend');
+        const resumed = await toggleSuspendGameServer(gameServer.id, 'unsuspend');
+
+        // The unsuspend guard refuses while the server is under an admin suspension, which is
+        // correct — but the order is paid, so the upgrade is still recorded below. The status
+        // goes to ACTIVE so that lifting the suspension later releases the server for real;
+        // until then it stays frozen in PT. Loud, because someone has to decide whether the
+        // user gets those days back.
+        if (resumed?.suspensionBlocked) {
+            logger.error('Upgraded a server that stays suspended', 'GAME_SERVER', {
+                gameServerId: gameServer.id,
+                userId: gameServer.userId,
+                details: { orderId: serverOrder.id, expiresAt: serverOrder.expiresAt },
+            });
+        }
 
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,

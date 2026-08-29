@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import type { GameConfig } from '@/models/config';
 import { changeGameRequestSchema } from '@/lib/validation/gameserver';
+import { refuseIfSuspended, SERVER_SUSPENDED_MESSAGE } from '@/lib/gameserver/requireUnsuspended';
 import { headers } from 'next/headers';
 
 interface SubmitGameChangeInput {
@@ -52,6 +53,11 @@ export async function changeGame({
     }
     if (selectedGame.slug !== parsed.gameConfig.gameSlug) {
         throw new Error('Game configuration does not match the selected game');
+    }
+    // The worker reinstalls the server, which would wipe exactly the files a quarantine is
+    // meant to preserve — and it never touches the client API, so PT would not stop it.
+    if (await refuseIfSuspended(server.id, 'changeGame', session.user.id)) {
+        throw new Error(SERVER_SUSPENDED_MESSAGE);
     }
 
     logger.info(

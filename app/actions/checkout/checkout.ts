@@ -8,6 +8,7 @@ import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServer
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
 import { checkFreeServerEligibility, notifyFreeServerCreated } from '@/lib/freeServer';
 import { getKeyValueBooleanFresh, getKeyValueNumber } from '@/lib/keyValue';
+import { refuseIfSuspended, SERVER_SUSPENDED_MESSAGE } from '@/lib/gameserver/requireUnsuspended';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { resolveResourceTier } from '@/lib/resourceTier';
@@ -244,6 +245,12 @@ export async function checkoutAction(
                 throw new Error(
                     `No Server Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id}`,
                 );
+
+            // Never take money for a server the user cannot reach: the unsuspend guard in
+            // `upgradeGameServer` would refuse to release it once the payment lands.
+            if (await refuseIfSuspended(server.id, 'checkoutUpgrade', user.id)) {
+                throw new Error(SERVER_SUSPENDED_MESSAGE);
+            }
 
             const performanceGroup = await prisma.location.findUnique({
                 where: { id: server.locationId },

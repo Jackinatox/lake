@@ -32,7 +32,7 @@ export function JobStatusPageClient() {
                     <p className="text-muted-foreground">
                         Monitor, manage, and trigger background worker jobs in real-time
                         {!versionLoading && versionData && (
-                            <div> · Worker v{versionData.version}</div>
+                            <span> · Worker v{versionData.version}</span>
                         )}
                     </p>
                 </header>

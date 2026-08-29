@@ -34,6 +34,15 @@ export async function setPtSuspension(ptAdminId: number, action: 'suspend' | 'un
     }
 }
 
+export type ToggleSuspensionResult = {
+    success: boolean;
+    gameServerId: string;
+    action: 'suspend' | 'unsuspend';
+    /** Set when an active admin suspension refused the unsuspend — callers must not treat
+     *  the server as released. */
+    suspensionBlocked?: boolean;
+};
+
 /**
  * Suspends or unsuspends a gameserver in Pterodactyl and moves its lifecycle status along
  * with it (suspend -> EXPIRED, unsuspend -> ACTIVE).
@@ -51,7 +60,7 @@ export default async function toggleSuspendGameServer(
     gameServerId: string,
     action: 'suspend' | 'unsuspend',
     options: { force?: boolean } = {},
-) {
+): Promise<ToggleSuspensionResult | undefined> {
     const gameServer = await prisma.gameServer.findUniqueOrThrow({
         where: { id: gameServerId, ptAdminId: { not: null } },
         include: { user: true },
