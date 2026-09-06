@@ -106,8 +106,8 @@ export default function TwoFactorSetup() {
         setLoading(true);
         setError(null);
         try {
-            const { data, error } = await authClient.twoFactor.enable({ password });
-            if (error || !data?.totpURI) {
+            const { data, error } = await authClient.twoFactor.enable({ password, method: 'totp' });
+            if (error || data.method !== 'totp') {
                 setError(t('setupError'));
                 return;
             }

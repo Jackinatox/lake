@@ -140,8 +140,9 @@ model GameServerSuspension {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // worker scan
   @@index([gameServerId, liftedAt])
-  @@index([expiresAt]) // worker scan
+  @@index([expiresAt])
 }
 
 enum SuspensionType {
@@ -721,6 +722,9 @@ model TwoFactor {
 
   verified Boolean? @default(true)
 
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
   @@index([secret])
   @@index([userId])
   @@map("twoFactor")
@@ -804,9 +808,9 @@ model Apikey {
   lastRefillAt        DateTime?
   enabled             Boolean   @default(true)
   rateLimitEnabled    Boolean   @default(true)
-  rateLimitTimeWindow Int       @default(86400000)
-  rateLimitMax        Int       @default(10)
-  requestCount        Int       @default(0)
+  rateLimitTimeWindow Int?      @default(86400000)
+  rateLimitMax        Int?      @default(10)
+  requestCount        Int?      @default(0)
   remaining           Int?
   lastRequest         DateTime?
   expiresAt           DateTime?
