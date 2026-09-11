@@ -110,6 +110,7 @@ model GameServer {
 
   ApplicationLog ApplicationLog[]
   suspensions    GameServerSuspension[]
+  feedbacks      Feedback[]
 
   @@index([resourceTierId])
 }
@@ -351,6 +352,7 @@ model Feedback {
   userId       String?
   user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   gameServerId String?
+  gameServer   GameServer?  @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
   createdAt    DateTime     @default(now())
 
   @@index([userId])
