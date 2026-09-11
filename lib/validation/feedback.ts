@@ -23,7 +23,7 @@ export const feedbackDataSchema = z.object({
 
 export const submitFeedbackSchema = z.object({
     type: z.nativeEnum(FeedbackType),
-    gameServerId: serverIdentifierSchema.optional(),
+    ptGameServerId: serverIdentifierSchema.optional(),
     title: optionalStringSchema(200),
     message: optionalStringSchema(5_000),
     data: feedbackDataSchema,

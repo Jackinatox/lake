@@ -48,7 +48,7 @@ export async function generateMetadata({
 }
 
 async function serverCrap({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
-    const { locale, server_id: serverId } = await params;
+    const { locale, server_id: ptServerId } = await params;
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -58,14 +58,14 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
     }
 
     // actual server data
-    const isServerValid = await getOwnedGameServerSummary(session.user.id, serverId);
+    const isServerValid = await getOwnedGameServerSummary(session.user.id, ptServerId);
 
     if (!isServerValid || !isServerValid.ptAdminId) {
         return <NotAllowedMessage />;
     }
 
     if (isServerValid.status === 'EXPIRED') {
-        return <ServerExpired serverId={serverId} />;
+        return <ServerExpired serverId={ptServerId} />;
     }
 
     if (isServerValid.status === 'DELETED') {
@@ -73,7 +73,7 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
     }
 
     if (isServerValid.status === 'CREATION_FAILED') {
-        return <ServerCreationFailed serverId={serverId} />;
+        return <ServerCreationFailed serverId={ptServerId} />;
     }
 
     const ptApiKey = session.user.ptKey;
@@ -93,7 +93,7 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
             }),
             pt.getServer(isServerValid.ptAdminId.toString()),
         ]);
-        
+
         const eegg = await pt.getEgg(
             isServerValid.gameData.nestId.toString(),
             adminServer.egg.toString(),
@@ -117,7 +117,7 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
                 : undefined;
         const previousFeedback = modpack
             ? await prisma.feedback.findMany({
-                  where: { userId: session.user.id, gameServerId: serverId },
+                  where: { userId: session.user.id, gameServerId: ptServerId },
                   select: {
                       id: true,
                       type: true,
@@ -134,7 +134,7 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
         return (
             <div className="">
                 <ServerLoader
-                    serverId={serverId}
+                    ptServerId={ptServerId}
                     ptApiKey={ptApiKey}
                     baseUrl={baseUrl}
                     initialServer={initialServer}

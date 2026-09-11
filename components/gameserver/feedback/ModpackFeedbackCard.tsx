@@ -29,7 +29,7 @@ const OUTCOME_KEYS = ['worked', 'partial', 'failed'] as const;
 type Outcome = (typeof OUTCOME_KEYS)[number];
 
 interface ModpackFeedbackCardProps {
-    gameServerId: string;
+    ptGameServerId: string;
     initialFeedback: MyFeedbackRow[];
     modpackId?: string;
     modpackVersion?: string;
@@ -54,7 +54,7 @@ function StarRow({ rating }: { rating: number }) {
 }
 
 export default function ModpackFeedbackCard({
-    gameServerId,
+    ptGameServerId,
     initialFeedback,
     modpackId,
     modpackVersion,
@@ -100,7 +100,7 @@ export default function ModpackFeedbackCard({
             try {
                 const result = await submitFeedbackAction({
                     type: 'MODPACK_BETA',
-                    gameServerId,
+                    ptGameServerId,
                     title: outcome,
                     message: trimmedMessage === '' ? undefined : trimmedMessage,
                     data,

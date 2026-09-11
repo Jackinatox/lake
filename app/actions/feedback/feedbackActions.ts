@@ -8,6 +8,7 @@ import prisma from '@/lib/prisma';
 import { getValidationMessage, serverIdentifierSchema } from '@/lib/validation/common';
 import { submitFeedbackSchema, type SubmitFeedbackInput } from '@/lib/validation/feedback';
 import { headers } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 async function requireSession() {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -31,25 +32,43 @@ export async function submitFeedbackAction(input: SubmitFeedbackInput): Promise<
         }
     })();
 
-    if (parsed.gameServerId) {
-        const server = await getOwnedGameServerSummary(session.user.id, parsed.gameServerId);
+    if (parsed.ptGameServerId) {
+        const server = await getOwnedGameServerSummary(session.user.id, parsed.ptGameServerId);
         if (!server) throw new Error('Unauthorized (No Gameserver found)');
-    }
 
-    return prisma.feedback.create({
-        data: {
-            type: parsed.type,
-            title: parsed.title ?? null,
-            message: parsed.message ?? null,
-            data: parsed.data as Prisma.InputJsonValue,
+        await logger.info('submitFeedbackAction called', 'SYSTEM', {
             userId: session.user.id,
-            gameServerId: parsed.gameServerId ?? null,
-        },
-        select: {
-            id: true,
-            createdAt: true,
-        },
-    });
+            gameServerId: server.id,
+            details: {
+                input,
+            }
+        });
+        
+        return prisma.feedback.create({
+            data: {
+                type: parsed.type,
+                title: parsed.title ?? null,
+                message: parsed.message ?? null,
+                data: parsed.data as Prisma.InputJsonValue,
+                userId: session.user.id,
+                gameServerId: server.id
+            },
+            select: {
+                id: true,
+                createdAt: true,
+            },
+        });
+    } else {
+        await logger.error('submitFeedbackAction called without ptGameServerId', 'SYSTEM', {
+            userId: session.user.id,
+            details: {
+                input,
+            }
+        });
+        throw new Error('Unauthorized (No Gameserver found)');
+
+        throw new Error('Unauthorized (No Gameserver found)');
+    }
 }
 
 export type MyFeedbackRow = {
