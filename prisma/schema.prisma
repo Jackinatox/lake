@@ -49,6 +49,7 @@ model Location {
 model CPU {
   id           Int    @id @default(autoincrement())
   name         String
+  shortName    String @default("default short name")
   cores        Int?
   threads      Int?
   maxThreads   Int
