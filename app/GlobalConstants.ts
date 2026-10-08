@@ -12,6 +12,7 @@ export const LEGAL_RETURNS_EN = 'legal_returns_en';
 
 // Free Tier Configuration Keys
 export const FREE_TIER_CPU_PERCENT = 'free_tier_cpu_percent';
+export const FREE_TIER_CPU_NAME = 'free_tier_cpu_name';
 export const FREE_TIER_RAM_MB = 'free_tier_ram_mb';
 export const FREE_TIER_STORAGE_MB = 'free_tier_storage_mb';
 export const FREE_TIER_DURATION_DAYS = 'free_tier_duration_days';

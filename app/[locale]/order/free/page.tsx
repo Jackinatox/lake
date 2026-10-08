@@ -75,7 +75,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
 
     const hardwareSpecs = [
         { label: 'CPU', value: `${formatVCoresFromPercent(freeTierConfig.cpu)}` },
-        { label: 'CPU Model', value: 'Xeon E5-2680v4' },
+        { label: 'CPU Model', value: freeTierConfig.cpuName },
         { label: 'RAM', value: `${formatMB(freeTierConfig.ram)}` },
         { label: 'Disk', value: `${formatMB(freeTierConfig.storage)}` },
         { label: 'Ports', value: `${freeTierConfig.allocations}` },

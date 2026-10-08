@@ -17,6 +17,7 @@ import {
     EGG_FEATURE_HYTALE_OAUTH,
     FREE_TIER_BACKUP_COUNT,
     FREE_TIER_ALLOCATIONS,
+    FREE_TIER_CPU_NAME,
     FREE_SERVER_CREATION_ENABLED,
     MINECRAFT_MODPACKS_ENABLED,
     LEGAL_PAYMENTS_DE,
@@ -317,6 +318,12 @@ async function main() {
                 type: 'NUMBER',
                 number: 2,
                 note: 'Number of allocations allowed for free tier servers',
+            },
+            {
+                key: FREE_TIER_CPU_NAME,
+                type: 'STRING',
+                string: 'Xeon E5-2680v4',
+                note: 'CPU model shown on the free order page',
             },
             {
                 key: FREE_SERVER_CREATION_ENABLED,
