@@ -64,7 +64,7 @@ selects `type` as well.
 
 `app/[locale]/admin/gameservers/page.tsx` accepts `serverId` (mapped to `where.id`).
 It has no control of its own in that filter bar — it is a deep-link target only. To
-widen the view from one server to its owner's whole fleet, the row's owner funnel
+widen the view from one server to all of its owner's servers, the row's owner funnel
 sets `userId` and drops `serverId` in one click; "Clear" removes every filter.
 A `serverId` (or `search`) lookup also lifts that page's default "hide deleted"
 scope, so a log about an already-deleted server still resolves to its row. The

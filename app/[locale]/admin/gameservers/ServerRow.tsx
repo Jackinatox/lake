@@ -26,7 +26,7 @@ import {
     formatCents,
     formatRelative,
     formatThreads,
-} from '@/lib/gameserver/adminFleet';
+} from '@/lib/gameserver/adminServers';
 import {
     panelAdminServerUrl,
     panelAdminUserUrl,

@@ -3,7 +3,7 @@ import { suspendedServerWhere } from './suspension';
 
 /**
  * Shared vocabulary of the admin gameserver panel (`/admin/gameservers`): what counts as the
- * "fleet", which states are worth an admin's attention, and how upcoming renewals are bucketed.
+ * default scope, which states are worth an admin's attention, and how upcoming renewals are bucketed.
  *
  * Everything here is pure data plus `Prisma.GameServerWhereInput` fragments (type-only import,
  * so client components can read the labels without pulling in the Prisma client). The page uses
@@ -21,10 +21,10 @@ export const ERROR_WINDOW_HOURS = 24;
 export const EXPIRY_WARNING_HOURS = 24;
 
 /**
- * The fleet = everything except servers that are already gone. DELETED rows are kept forever
+ * The default scope = everything except servers that are already gone. DELETED rows are kept forever
  * for auditing, so counting them would make every total meaningless over time.
  */
-export function fleetScopeWhere(): Prisma.GameServerWhereInput {
+export function notDeletedWhere(): Prisma.GameServerWhereInput {
     return { status: { not: 'DELETED' } };
 }
 
@@ -99,7 +99,7 @@ export function errorWindowStart(now: Date = new Date()) {
 
 /**
  * Timespan filter — "created in the last …". It filters `createdAt`, not `expires`: the
- * renewal side of the fleet already has its own exclusive buckets (`renewalWhere`), so the
+ * renewal side already has its own exclusive buckets (`renewalWhere`), so the
  * question this one answers is "what came in recently".
  */
 export type CreatedRangeKey = 'ALL' | '1d' | '7d' | '30d' | '90d' | '365d';
@@ -145,7 +145,7 @@ export const RENEWAL_META: Record<RenewalKey, { label: string; hint: string }> =
 };
 
 /**
- * Exclusive buckets, so the five counts add up to the live fleet exactly once. Deliberately not
+ * Exclusive buckets, so the five counts add up to the live servers exactly once. Deliberately not
  * cumulative: "expires in the next 7 days" that also contains the overdue ones hides the only
  * bucket an admin has to act on.
  */

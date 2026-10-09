@@ -18,16 +18,16 @@ import {
     attentionWhere,
     createdRangeWhere,
     errorWindowStart,
-    fleetScopeWhere,
+    notDeletedWhere,
     renewalWhere,
-} from '@/lib/gameserver/adminFleet';
+} from '@/lib/gameserver/adminServers';
 import { GameServerAdminRow } from '@/models/prisma';
 import { hasGameIcon } from '@/lib/gameIcons';
-import FleetSummary from './FleetSummary';
-import FleetDistribution from './FleetDistribution';
+import ServerSummary from './ServerSummary';
+import ServerDistribution from './ServerDistribution';
 import ServerFilters from './ServerFilters';
 import ServerList from './ServerList';
-import type { FleetSlice, FleetStats, ServerFilterState, SortKey, SortState } from './types';
+import type { ServerSlice, ServerStats, ServerFilterState, SortKey, SortState } from './types';
 
 interface SearchParams {
     page?: string;
@@ -145,12 +145,12 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
 
     const parts: { key: FilterKey; where: Prisma.GameServerWhereInput }[] = [];
 
-    // Default view is the live fleet. A pinpoint lookup (a deep link from the log viewer, or a
+    // Default view hides deleted servers. A pinpoint lookup (a deep link from the log viewer, or a
     // search) must still find deleted rows — that is usually exactly why it is used. An
     // explicit non-deleted status keeps the scope too, so the Status facet stays meaningful.
     const pinpoint = Boolean(params.serverId || search);
     const wantsDeleted = status === 'ANY' || status === 'DELETED';
-    if (!wantsDeleted && !pinpoint) parts.push({ key: 'scope', where: fleetScopeWhere() });
+    if (!wantsDeleted && !pinpoint) parts.push({ key: 'scope', where: notDeletedWhere() });
     if (status && status !== 'ANY') parts.push({ key: 'status', where: { status } });
 
     if (search) {
@@ -304,7 +304,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         id: (group: T) => number,
         name: (group: T) => string,
         param: string,
-    ): FleetSlice[] =>
+    ): ServerSlice[] =>
         groups
             .map((group) => ({
                 key: String(id(group)),
@@ -326,7 +326,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         return result;
     };
 
-    const stats: FleetStats = {
+    const stats: ServerStats = {
         total: selectionTotals._count._all,
         byStatus: countBy(statusGroups, (group) => group.status, Object.values(GameServerStatus)),
         byType: countBy(typeGroups, (group) => group.type, Object.values(GameServerType)),
@@ -381,8 +381,8 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 filterCount={filterCount}
             />
 
-            <FleetSummary stats={stats} activeAttention={attention} filterCount={filterCount} />
-            <FleetDistribution stats={stats} filters={filters} />
+            <ServerSummary stats={stats} activeAttention={attention} filterCount={filterCount} />
+            <ServerDistribution stats={stats} filters={filters} />
 
             <ServerList
                 servers={servers as GameServerAdminRow[]}

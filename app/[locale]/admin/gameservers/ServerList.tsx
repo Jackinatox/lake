@@ -28,7 +28,7 @@ import { GameServerAdminRow } from '@/models/prisma';
 import { EditServerDialog } from './EditServerDialog';
 import ServerRow from './ServerRow';
 import type { SortKey, SortState } from './types';
-import { useFleetParams } from './useFleetParams';
+import { useServerParams } from './useServerParams';
 
 type ServerListProps = {
     servers: GameServerAdminRow[];
@@ -68,7 +68,7 @@ export default function ServerList({
 }: ServerListProps) {
     const { toast } = useToast();
     const router = useRouter();
-    const { setParams, pending } = useFleetParams();
+    const { setParams, pending } = useServerParams();
 
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [editingServer, setEditingServer] = useState<GameServerAdminRow | null>(null);

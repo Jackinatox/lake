@@ -1,8 +1,8 @@
 import type { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
-import type { AttentionKey, CreatedRangeKey, RenewalKey } from '@/lib/gameserver/adminFleet';
+import type { AttentionKey, CreatedRangeKey, RenewalKey } from '@/lib/gameserver/adminServers';
 
-/** One bar in the distribution card: a named slice of the fleet plus the filter that isolates it. */
-export type FleetSlice = {
+/** One bar in the distribution card: a named slice of the selection plus the filter that isolates it. */
+export type ServerSlice = {
     key: string;
     label: string;
     count: number;
@@ -18,7 +18,7 @@ export type FleetSlice = {
  * differ: each drops its own filter (see `selection()` in `page.tsx`) so a dimension you have
  * filtered on still shows its alternatives.
  */
-export type FleetStats = {
+export type ServerStats = {
     total: number;
     byStatus: Record<GameServerStatus, number>;
     byType: Record<GameServerType, number>;
@@ -29,8 +29,8 @@ export type FleetStats = {
     renewalValueCents: number;
     attention: Record<AttentionKey, number>;
     renewals: Record<RenewalKey, number>;
-    byLocation: FleetSlice[];
-    byGame: FleetSlice[];
+    byLocation: ServerSlice[];
+    byGame: ServerSlice[];
 };
 
 export type ServerFilterState = {

@@ -10,7 +10,7 @@ export type ParamPatch = Record<string, string | number | undefined | null>;
  * pasted into a ticket. `pending` comes from the transition around `router.push`, which lets
  * the list dim itself while the server component re-renders instead of freezing silently.
  */
-export function useFleetParams() {
+export function useServerParams() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [pending, startTransition] = useTransition();

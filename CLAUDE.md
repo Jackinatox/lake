@@ -32,7 +32,7 @@ markdown files under `docs/`, NOT in this file. How to use it:
   set and its URL params, the links from a log row into the admin gameserver
   list, and the `serverId` filter on that list. Read when touching the log
   viewer, `getApplicationLogs`, or the gameserver admin filters.
-- `admin-gameserver-panel.md` — The `/admin/gameservers` panel: fleet KPIs, the
+- `admin-gameserver-panel.md` — The `/admin/gameservers` panel: the summary tiles, the
   "needs attention" chips, the distribution card, the dense server rows and every
   URL param. Read when touching the gameserver admin screen, its filters, or the
   links between it and the log viewer / Pterodactyl panel.

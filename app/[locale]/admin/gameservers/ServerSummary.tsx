@@ -7,16 +7,16 @@ import {
     AttentionKey,
     cpuPercentToThreads,
     formatCents,
-} from '@/lib/gameserver/adminFleet';
+} from '@/lib/gameserver/adminServers';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { STATUS_META } from './presentation';
-import type { FleetStats } from './types';
-import { useFleetParams } from './useFleetParams';
+import type { ServerStats } from './types';
+import { useServerParams } from './useServerParams';
 
-type FleetSummaryProps = {
-    stats: FleetStats;
+type ServerSummaryProps = {
+    stats: ServerStats;
     activeAttention?: AttentionKey;
-    /** How many filters are active — the tiles describe that selection, not the whole fleet. */
+    /** How many filters are active — the tiles describe that selection, not every server. */
     filterCount: number;
 };
 
@@ -47,13 +47,13 @@ function Tile({
     );
 }
 
-export default function FleetSummary({ stats, activeAttention, filterCount }: FleetSummaryProps) {
-    const { toggleParam, pending } = useFleetParams();
+export default function ServerSummary({ stats, activeAttention, filterCount }: ServerSummaryProps) {
+    const { toggleParam, pending } = useServerParams();
 
     const threads = cpuPercentToThreads(stats.cpuPercent);
     const ramGiB = stats.ramMB / 1024;
     const diskGiB = stats.diskMB / 1024;
-    // TiB only once there is a TiB to show — "0.0 TiB" reads like a bug on a small fleet
+    // TiB only once there is a TiB to show — "0.0 TiB" reads like a bug on a handful of servers
     const disk =
         diskGiB >= 1024 ? `${(diskGiB / 1024).toFixed(1)} TiB` : `${diskGiB.toFixed(0)} GiB`;
     const free = stats.byType.FREE ?? 0;
@@ -64,7 +64,7 @@ export default function FleetSummary({ stats, activeAttention, filterCount }: Fl
         <div className={cn('space-y-2 transition-opacity', pending && 'opacity-60')}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
                 <Tile
-                    label={filterCount > 0 ? 'Selection' : 'Fleet'}
+                    label={filterCount > 0 ? 'Selection' : 'Servers'}
                     value={String(stats.total)}
                     unit="servers"
                     hint={`${stats.byStatus.ACTIVE} active · ${stats.byStatus.CREATED} installing`}

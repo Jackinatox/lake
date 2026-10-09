@@ -14,13 +14,13 @@ import AdminUserPicker from '@/components/admin/AdminUserPicker';
 import type { LogUserOption } from '@/app/actions/logs/getApplicationLogs';
 import { useDebounce } from '@/hooks/use-debounce';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
-import { CREATED_RANGE_KEYS, CREATED_RANGE_META } from '@/lib/gameserver/adminFleet';
+import { CREATED_RANGE_KEYS, CREATED_RANGE_META } from '@/lib/gameserver/adminServers';
 import { Search, X } from 'lucide-react';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { cn } from '@/lib/utils';
 import { STATUS_META, TYPE_META } from './presentation';
 import type { ServerFilterState } from './types';
-import { useFleetParams } from './useFleetParams';
+import { useServerParams } from './useServerParams';
 
 type ServerFiltersProps = {
     filters: ServerFilterState;
@@ -48,7 +48,7 @@ export default function ServerFilters({
     selectedUser,
     filterCount,
 }: ServerFiltersProps) {
-    const { setParams, only, pending } = useFleetParams();
+    const { setParams, only, pending } = useServerParams();
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [search, setSearch] = useState(filters.search ?? '');

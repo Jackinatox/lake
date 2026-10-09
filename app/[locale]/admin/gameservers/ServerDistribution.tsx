@@ -7,12 +7,12 @@ import {
     RENEWAL_META,
     cpuPercentToThreads,
     formatGiB,
-} from '@/lib/gameserver/adminFleet';
+} from '@/lib/gameserver/adminServers';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { STATUS_META, TYPE_META } from './presentation';
-import type { FleetSlice, FleetStats, ServerFilterState } from './types';
-import { useFleetParams } from './useFleetParams';
+import type { ServerSlice, ServerStats, ServerFilterState } from './types';
+import { useServerParams } from './useServerParams';
 
 type Dimension = 'location' | 'game' | 'status' | 'type' | 'renewal';
 
@@ -60,13 +60,13 @@ const RENEWAL_BAR: Record<string, string> = {
     later: 'bg-muted-foreground/40',
 };
 
-type Segment = FleetSlice & { bar: string };
+type Segment = ServerSlice & { bar: string };
 
 /**
  * Hands out palette slots by entity id (ascending), not by the slice's rank in the current
  * view, and folds everything past the eighth entity into one "Other" slice.
  */
-function withCategoricalColors(slices: FleetSlice[]): Segment[] {
+function withCategoricalColors(slices: ServerSlice[]): Segment[] {
     const order = [...slices].sort((a, b) => Number(a.key) - Number(b.key));
     const slot = new Map(order.map((slice, index) => [slice.key, index]));
 
@@ -95,17 +95,17 @@ function withCategoricalColors(slices: FleetSlice[]): Segment[] {
     ];
 }
 
-export default function FleetDistribution({
+export default function ServerDistribution({
     stats,
     filters,
 }: {
-    stats: FleetStats;
+    stats: ServerStats;
     filters: ServerFilterState;
 }) {
     const [dimension, setDimension] = useState<Dimension>('location');
     const [metric, setMetric] = useState<'count' | 'ram'>('count');
     const [hovered, setHovered] = useState<string | null>(null);
-    const { only, pending } = useFleetParams();
+    const { only, pending } = useServerParams();
 
     const segments: Segment[] =
         dimension === 'location'
@@ -145,7 +145,7 @@ export default function FleetDistribution({
                     }));
 
     const showResources = RESOURCE_DIMENSIONS.includes(dimension);
-    const weight = (slice: FleetSlice) =>
+    const weight = (slice: ServerSlice) =>
         showResources && metric === 'ram' ? slice.ramMB : slice.count;
 
     const total = segments.reduce((sum, segment) => sum + weight(segment), 0);
@@ -166,7 +166,7 @@ export default function FleetDistribution({
             `${segment.count} server${segment.count === 1 ? '' : 's'}`,
             showResources && `${formatGiB(segment.ramMB)} GiB RAM`,
             showResources && `${cpuPercentToThreads(segment.cpuPercent).toFixed(1)} threads`,
-            `${share(segment).toFixed(0)}% of the fleet`,
+            `${share(segment).toFixed(0)}% of the selection`,
         ]
             .filter(Boolean)
             .join(' · ');
