@@ -402,6 +402,11 @@
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
       "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "numberField": {
+        "required": "Bitte eine Zahl eingeben",
+        "wholeNumber": "Nur ganze Zahlen",
+        "range": "Muss zwischen {min} und {max} liegen"
+      },
       "minecraft": {
         "modpackTab": "Modpack (Beta)",
         "modpackBeta": {
