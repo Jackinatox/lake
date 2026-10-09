@@ -98,12 +98,9 @@ function withCategoricalColors(slices: FleetSlice[]): Segment[] {
 export default function FleetDistribution({
     stats,
     filters,
-    scopeNote,
 }: {
     stats: FleetStats;
     filters: ServerFilterState;
-    /** What the bar is a distribution *of* — "excl. deleted", or "current filter". */
-    scopeNote: string;
 }) {
     const [dimension, setDimension] = useState<Dimension>('location');
     const [metric, setMetric] = useState<'count' | 'ram'>('count');
@@ -116,17 +113,17 @@ export default function FleetDistribution({
             : dimension === 'game'
               ? withCategoricalColors(stats.byGame)
               : dimension === 'status'
-                ? Object.values(GameServerStatus)
-                      .filter((status) => status !== 'DELETED')
-                      .map((status) => ({
-                          key: status,
-                          label: STATUS_META[status].label,
-                          count: stats.byStatus[status] ?? 0,
-                          ramMB: 0,
-                          cpuPercent: 0,
-                          filter: { status },
-                          bar: STATUS_META[status].bar,
-                      }))
+                ? // Deleted is a status like any other: it reads 0 until the filter above lets
+                  // deleted rows in, and clicking it filters to exactly those.
+                  Object.values(GameServerStatus).map((status) => ({
+                      key: status,
+                      label: STATUS_META[status].label,
+                      count: stats.byStatus[status] ?? 0,
+                      ramMB: 0,
+                      cpuPercent: 0,
+                      filter: { status },
+                      bar: STATUS_META[status].bar,
+                  }))
                 : dimension === 'type'
                   ? Object.values(GameServerType).map((type) => ({
                         key: type,
@@ -223,7 +220,7 @@ export default function FleetDistribution({
                             </div>
                         )}
                         <span className="text-[11px] tabular-nums text-muted-foreground">
-                            {unit} · {scopeNote}
+                            {unit}
                         </span>
                     </div>
                 </div>

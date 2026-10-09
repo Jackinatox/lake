@@ -386,9 +386,6 @@ export default function ServerRow({
                             scattered through the grid. */}
                         <div className="grid gap-x-8 gap-y-1 md:grid-cols-2 xl:grid-cols-3">
                             <div className="space-y-1">
-                                <Detail label="Server id">
-                                    <CopyValue value={server.id} />
-                                </Detail>
                                 <Detail label="Owner">
                                     <span className="inline-flex items-center gap-1.5">
                                         <Link
@@ -402,6 +399,9 @@ export default function ServerRow({
                                             title="Copy email address"
                                         />
                                     </span>
+                                </Detail>
+                                <Detail label="Server id">
+                                    <CopyValue value={server.id} />
                                 </Detail>
                                 <Detail label="PT server">
                                     {server.ptServerId ? (

@@ -382,11 +382,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
             />
 
             <FleetSummary stats={stats} activeAttention={attention} filterCount={filterCount} />
-            <FleetDistribution
-                stats={stats}
-                filters={filters}
-                scopeNote={filterCount > 0 ? 'current filter' : 'excl. deleted'}
-            />
+            <FleetDistribution stats={stats} filters={filters} />
 
             <ServerList
                 servers={servers as GameServerAdminRow[]}

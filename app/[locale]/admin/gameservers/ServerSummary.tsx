@@ -83,7 +83,7 @@ export default function FleetSummary({ stats, activeAttention, filterCount }: Fl
                 />
                 <Tile
                     label="vCPU sold"
-                    value={threads.toFixed(1)}
+                    value={threads.toFixed(2)}
                     unit="threads"
                     hint={
                         stats.total > 0
@@ -91,7 +91,7 @@ export default function FleetSummary({ stats, activeAttention, filterCount }: Fl
                             : undefined
                     }
                 />
-                <Tile label="RAM sold" value={ramGiB.toFixed(0)} unit="GiB" hint={`${disk} disk`} />
+                <Tile label="RAM sold" value={ramGiB.toFixed(2)} unit="GiB" hint={`${disk} disk`} />
                 <Tile
                     label="Renewal value"
                     value={formatCents(stats.renewalValueCents)}
