@@ -184,6 +184,20 @@ export function formatCents(cents: number): string {
     return `€${(cents / 100).toFixed(2)}`;
 }
 
+const SHORT_DATE = new Intl.DateTimeFormat('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+});
+
+/**
+ * "09.10.26" — the booking date has to line up with invoices and tickets, so it stays an
+ * absolute date; the relative distance lives in the cell's tooltip.
+ */
+export function formatShortDate(date: Date): string {
+    return SHORT_DATE.format(new Date(date));
+}
+
 /**
  * Short, sortable-looking relative time: "in 12d", "in 5h", "3d ago". Admins scan this column
  * for outliers, so the unit matters more than the precision.

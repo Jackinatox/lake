@@ -25,6 +25,7 @@ import {
     EXPIRY_WARNING_HOURS,
     formatCents,
     formatRelative,
+    formatShortDate,
     formatThreads,
 } from '@/lib/gameserver/adminServers';
 import {
@@ -317,6 +318,19 @@ export default function ServerRow({
                     <span className={cn('w-14 shrink-0 text-right tabular-nums', type.text)}>
                         {server.type === 'FREE' ? '—' : formatCents(server.price)}
                     </span>
+
+                    {/* Buchungsdatum — absolute, because it is matched against invoices */}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <span className="w-20 shrink-0 text-right tabular-nums text-muted-foreground">
+                                {formatShortDate(server.createdAt)}
+                            </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Booked {formatDate(server.createdAt, true)} (
+                            {formatRelative(server.createdAt)})
+                        </TooltipContent>
+                    </Tooltip>
 
                     <Tooltip>
                         <TooltipTrigger asChild>

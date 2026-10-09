@@ -49,19 +49,19 @@ such a link was followed.
 
 ## URL params
 
-| Param                  | Meaning                                                                            |
-| ---------------------- | ---------------------------------------------------------------------------------- |
-| `search`               | name, lake id, `ptServerId`, numeric `ptAdminId`, owner email/username             |
-| `userId`               | owner; clearing it also clears `serverId`                                          |
-| `serverId`             | single server — no control of its own, a deep-link target only                     |
-| `type`                 | `FREE` / `PACKAGE` / `CUSTOM`                                                      |
-| `locationId`, `gameId` | numeric; a non-numeric value is ignored, not passed to Prisma                      |
-| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted       |
-| `attention`            | one `AttentionKey` (see below)                                                     |
-| `renewal`              | one `RenewalKey` (see below)                                                       |
-| `sort`, `dir`          | `created` (default) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default |
-| `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                           |
-| `suspended=true`       | legacy alias of `attention=suspended`, kept for bookmarked links                   |
+| Param                  | Meaning                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `search`               | name, lake id, `ptServerId`, numeric `ptAdminId`, owner email/username                                        |
+| `userId`               | owner; clearing it also clears `serverId`                                                                     |
+| `serverId`             | single server — no control of its own, a deep-link target only                                                |
+| `type`                 | `FREE` / `PACKAGE` / `CUSTOM`                                                                                 |
+| `locationId`, `gameId` | numeric; a non-numeric value is ignored, not passed to Prisma                                                 |
+| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted                                  |
+| `attention`            | one `AttentionKey` (see below)                                                                                |
+| `renewal`              | one `RenewalKey` (see below)                                                                                  |
+| `sort`, `dir`          | `created` (default, i.e. newest booking first) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default |
+| `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                                                      |
+| `suspended=true`       | legacy alias of `attention=suspended`, kept for bookmarked links                                              |
 
 `useServerParams` is the single writer: `setParams` patches (and resets `page`),
 `toggleParam` clears a param that already holds the clicked value, and `only`
@@ -121,7 +121,9 @@ Colour rules worth keeping:
 
 One 32px line: status dot, name (+ free marker, suspension, missing-PT-link and error
 badges), owner, game, location, `3t · 3G · 16G` compute, `10b · 2p` backups/ports,
-price, relative expiry (red overdue / amber < 24 h), the `ptServerId` (click to copy — it
+price, the booking date (`createdAt`, absolute — it is matched against invoices; the
+tooltip adds the time and the relative distance), relative expiry (red overdue / amber
+< 24 h), the `ptServerId` (click to copy — it
 is the id that goes into the panel or a ticket; `—` when the server was never
 provisioned), a logs link, a PT-admin link and the actions menu. The expanded panel groups into three columns — **identity** (server id, owner, both PT
 ids, all copyable), **setup** (status, game, plan, and one `Resources` line carrying CPU,
