@@ -1536,6 +1536,7 @@
       "allServers": "Alle Server",
       "userSearchPlaceholder": "E-Mail, Benutzername, ID...",
       "noUsers": "Keine Benutzer gefunden",
+      "clearUser": "Benutzerfilter entfernen",
       "freeServer": "Free",
       "timeRanges": {
         "ALL": "Gesamte Zeit",

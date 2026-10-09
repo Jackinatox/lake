@@ -1524,6 +1524,7 @@
       "allServers": "All servers",
       "userSearchPlaceholder": "Email, username, ID...",
       "noUsers": "No users found",
+      "clearUser": "Clear user filter",
       "freeServer": "Free",
       "timeRanges": {
         "ALL": "All Time",
