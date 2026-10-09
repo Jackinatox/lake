@@ -44,12 +44,14 @@ type ServerListProps = {
 
 const COLUMNS: { key: SortKey | null; label: string; className: string }[] = [
     { key: 'name', label: 'Server', className: 'min-w-0 flex-1' },
-    { key: null, label: 'Owner', className: 'hidden w-32 shrink-0 md:block' },
+    { key: null, label: 'Owner', className: 'hidden w-36 shrink-0 md:block' },
     { key: null, label: 'Game', className: 'hidden w-20 shrink-0 xl:block' },
     { key: null, label: 'Loc', className: 'hidden w-16 shrink-0 xl:block' },
-    { key: 'ram', label: 'CPU · RAM · Disk', className: 'hidden w-36 shrink-0 lg:block' },
+    { key: 'ram', label: 'CPU · RAM · Disk', className: 'hidden w-32 shrink-0 truncate lg:block' },
+    { key: null, label: 'Backups · Ports', className: 'hidden w-28 shrink-0 truncate lg:block' },
     { key: 'price', label: 'Price', className: 'w-14 shrink-0 text-right' },
     { key: 'expires', label: 'Expires', className: 'w-16 shrink-0 text-right' },
+    { key: null, label: 'PT ID', className: 'hidden w-20 shrink-0 md:block' },
     { key: null, label: '', className: 'w-12 shrink-0' },
     { key: null, label: '', className: 'w-6 shrink-0' },
 ];

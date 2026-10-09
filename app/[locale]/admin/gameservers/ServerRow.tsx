@@ -47,18 +47,29 @@ type ServerRowProps = {
     suspensionDefaultReason: string;
 };
 
-function CopyValue({ value, className }: { value: string; className?: string }) {
+/** Click-to-copy with a brief check mark, shared by both copy controls below. */
+function useCopy(value: string) {
     const [copied, setCopied] = useState(false);
+
+    const copy = (event: React.MouseEvent) => {
+        // Never let a copy toggle the row it sits in
+        event.stopPropagation();
+        navigator.clipboard.writeText(value);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+    };
+
+    return { copied, copy };
+}
+
+/** The value *is* the button — for bare ids, where there is nothing else to click. */
+function CopyValue({ value, className }: { value: string; className?: string }) {
+    const { copied, copy } = useCopy(value);
 
     return (
         <button
             type="button"
-            onClick={(event) => {
-                event.stopPropagation();
-                navigator.clipboard.writeText(value);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1200);
-            }}
+            onClick={copy}
             title="Copy"
             className={cn(
                 'group/copy flex min-w-0 items-center gap-1 font-mono hover:text-foreground',
@@ -69,8 +80,25 @@ function CopyValue({ value, className }: { value: string; className?: string }) 
             {copied ? (
                 <Check className="h-3 w-3 shrink-0 text-emerald-500" />
             ) : (
-                <Copy className="h-3 w-3 shrink-0 opacity-0 group-hover/copy:opacity-60" />
+                <Copy className="h-3 w-3 shrink-0 opacity-60 group-hover/copy:opacity-100" />
             )}
+        </button>
+    );
+}
+
+/** Icon only — for values that already carry their own action, such as a link. */
+function CopyButton({ value, title }: { value: string; title: string }) {
+    const { copied, copy } = useCopy(value);
+
+    return (
+        <button
+            type="button"
+            onClick={copy}
+            title={title}
+            aria-label={title}
+            className="shrink-0 text-muted-foreground opacity-60 transition-opacity hover:text-foreground hover:opacity-100"
+        >
+            {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
         </button>
     );
 }
@@ -253,7 +281,7 @@ export default function ServerRow({
                     </span>
 
                     {/* Owner: funnel filters this list, the name opens the owner's other servers */}
-                    <span className="hidden w-32 shrink-0 items-center gap-1 md:flex">
+                    <span className="hidden w-36 shrink-0 items-center gap-1 md:flex">
                         <button
                             type="button"
                             title="Filter by this owner"
@@ -268,6 +296,7 @@ export default function ServerRow({
                         <span className="truncate text-muted-foreground" title={server.user.email}>
                             {getUserDisplayName(server.user)}
                         </span>
+                        <CopyButton value={getUserDisplayName(server.user)} title="Copy username" />
                     </span>
 
                     <span className="hidden w-20 shrink-0 truncate text-muted-foreground xl:block">
@@ -277,9 +306,12 @@ export default function ServerRow({
                         {server.location.name}
                     </span>
 
-                    <span className="hidden w-36 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground lg:block">
+                    <span className="hidden w-32 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground lg:block">
                         {formatThreads(server.cpuPercent)} · {(server.ramMB / 1024).toFixed(0)}G ·{' '}
-                        {(server.diskMB / 1024).toFixed(0)}G · {server.backupCount}b
+                        {(server.diskMB / 1024).toFixed(0)}G
+                    </span>
+                    <span className="hidden w-28 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground lg:block">
+                        {server.backupCount}b · {server.allocations}p
                     </span>
 
                     <span className={cn('w-14 shrink-0 text-right tabular-nums', type.text)}>
@@ -299,6 +331,18 @@ export default function ServerRow({
                         </TooltipTrigger>
                         <TooltipContent>Expires {formatDate(server.expires, true)}</TooltipContent>
                     </Tooltip>
+
+                    {/* The id admins paste into the panel or a ticket — one click copies it */}
+                    <span className="hidden w-20 shrink-0 md:block">
+                        {server.ptServerId ? (
+                            <CopyValue
+                                value={server.ptServerId}
+                                className="text-[11px] text-muted-foreground"
+                            />
+                        ) : (
+                            <span className="text-[11px] text-muted-foreground/60">—</span>
+                        )}
+                    </span>
 
                     <span className="flex w-12 shrink-0 items-center justify-end gap-1.5">
                         <Tooltip>
@@ -337,58 +381,92 @@ export default function ServerRow({
 
                 {expanded && (
                     <div className="space-y-2 border-t bg-muted/40 px-3 py-2 text-[11px] md:px-8">
-                        <div className="grid gap-x-8 gap-y-1 md:grid-cols-2">
-                            <Detail label="Server id">
-                                <CopyValue value={server.id} />
-                            </Detail>
-                            <Detail label="Owner">
-                                <Link
-                                    href={`/admin/gameservers?userId=${server.userId}`}
-                                    className="underline underline-offset-2"
-                                >
-                                    {server.user.email}
-                                </Link>
-                            </Detail>
-                            <Detail label="PT server">
-                                {server.ptServerId ? (
-                                    <CopyValue value={server.ptServerId} />
-                                ) : (
-                                    <span className="text-amber-600 dark:text-amber-400">
-                                        not provisioned
+                        {/* Three groups, each its own column: who it is, what it is, when it
+                            happened — so the dates read as a timeline instead of being
+                            scattered through the grid. */}
+                        <div className="grid gap-x-8 gap-y-1 md:grid-cols-2 xl:grid-cols-3">
+                            <div className="space-y-1">
+                                <Detail label="Server id">
+                                    <CopyValue value={server.id} />
+                                </Detail>
+                                <Detail label="Owner">
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Link
+                                            href={`/admin/gameservers?userId=${server.userId}`}
+                                            className="underline underline-offset-2"
+                                        >
+                                            {server.user.email}
+                                        </Link>
+                                        <CopyButton
+                                            value={server.user.email}
+                                            title="Copy email address"
+                                        />
                                     </span>
-                                )}
-                            </Detail>
-                            <Detail label="PT admin id">
-                                {server.ptAdminId ?? (
-                                    <span className="text-amber-600 dark:text-amber-400">—</span>
-                                )}
-                            </Detail>
-                            <Detail label="Game">
-                                {server.gameData.name}{' '}
-                                <span className="text-muted-foreground">
-                                    ({server.gameData.slug})
-                                </span>
-                            </Detail>
-                            <Detail label="Plan">
-                                <span className={type.text}>{type.label}</span>
-                                {server.resourceTier?.name && ` · tier ${server.resourceTier.name}`}
-                                {` · ${server.allocations} port${server.allocations === 1 ? '' : 's'}`}
-                                {` · ${server._count.ServerOrder} order${server._count.ServerOrder === 1 ? '' : 's'}`}
-                            </Detail>
-                            <Detail label="Resources">
-                                <span className="font-mono">
-                                    {server.cpuPercent}% CPU · {server.ramMB} MB RAM ·{' '}
-                                    {server.diskMB} MB disk · {server.backupCount} backups
-                                </span>
-                            </Detail>
-                            <Detail label="Status">
-                                <span className={status.text}>{status.label}</span>
-                                {` · ${formatDate(server.expires, true)}`}
-                            </Detail>
-                            <Detail label="Created">{formatDate(server.createdAt, true)}</Detail>
-                            <Detail label="Last extended">
-                                {formatDate(server.lastExtended, true)}
-                            </Detail>
+                                </Detail>
+                                <Detail label="PT server">
+                                    {server.ptServerId ? (
+                                        <CopyValue value={server.ptServerId} />
+                                    ) : (
+                                        <span className="text-amber-600 dark:text-amber-400">
+                                            not provisioned
+                                        </span>
+                                    )}
+                                </Detail>
+                                <Detail label="PT admin id">
+                                    {server.ptAdminId ? (
+                                        <CopyValue value={String(server.ptAdminId)} />
+                                    ) : (
+                                        <span className="text-amber-600 dark:text-amber-400">
+                                            —
+                                        </span>
+                                    )}
+                                </Detail>
+                            </div>
+
+                            <div className="space-y-1">
+                                <Detail label="Status">
+                                    <span className={status.text}>{status.label}</span>
+                                </Detail>
+                                <Detail label="Game">
+                                    {server.gameData.name}{' '}
+                                    <span className="text-muted-foreground">
+                                        ({server.gameData.slug})
+                                    </span>
+                                </Detail>
+                                <Detail label="Plan">
+                                    <span className={type.text}>{type.label}</span>
+                                </Detail>
+                                {/* Everything that was sold with the server, in one line */}
+                                <Detail label="Resources">
+                                    <span className="font-mono">
+                                        {server.cpuPercent}% CPU · {server.ramMB} MB RAM ·{' '}
+                                        {server.diskMB} MB disk · {server.backupCount} backups ·{' '}
+                                        {server.allocations} port
+                                        {server.allocations === 1 ? '' : 's'}
+                                        {server.resourceTier?.name &&
+                                            ` · tier ${server.resourceTier.name}`}
+                                    </span>
+                                </Detail>
+                            </div>
+
+                            <div className="space-y-1">
+                                <Detail label="Created">
+                                    {formatDate(server.createdAt, true)}
+                                </Detail>
+                                <Detail label="Last extended">
+                                    {formatDate(server.lastExtended, true)}
+                                </Detail>
+                                <Detail label="Expires">
+                                    <span
+                                        className={expiryTone(server.expires, EXPIRY_WARNING_HOURS)}
+                                    >
+                                        {formatDate(server.expires, true)}
+                                    </span>
+                                    <span className="ml-1.5 text-muted-foreground">
+                                        ({formatRelative(server.expires)})
+                                    </span>
+                                </Detail>
+                            </div>
                         </div>
 
                         {server.errorText && (

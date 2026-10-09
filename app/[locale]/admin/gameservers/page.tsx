@@ -22,6 +22,7 @@ import {
     renewalWhere,
 } from '@/lib/gameserver/adminFleet';
 import { GameServerAdminRow } from '@/models/prisma';
+import { hasGameIcon } from '@/lib/gameIcons';
 import FleetSummary from './FleetSummary';
 import FleetDistribution from './FleetDistribution';
 import ServerFilters from './ServerFilters';
@@ -125,9 +126,10 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     };
 
     // ---- the filter, kept in named pieces --------------------------------------------
-    // Summary, chart and list all read the *same* selection. Each facet then drops its own
-    // piece, so filtering by one location still shows the other locations in the bar (with
-    // the active one ringed) instead of collapsing it to a single 100% block.
+    // Summary, chart and list all read the *same* selection — a slice of the bar is always
+    // exactly a slice of the list. The attention chips are the one exception: each counts
+    // without its own filter applied, or selecting one chip would zero out (and disable)
+    // all the others, leaving no way to switch between them.
     type FilterKey =
         | 'scope'
         | 'search'
@@ -182,7 +184,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         parts.push({ key: 'attention', where: { suspensions: suspendedServerWhere() } });
     }
 
-    /** The selection, optionally without the pieces a facet provides itself. */
+    /** The selection, optionally without one of its own pieces (see the attention chips). */
     const selection = (...without: FilterKey[]): Prisma.GameServerWhereInput => {
         const list = parts.filter((part) => !without.includes(part.key)).map((part) => part.where);
         return list.length ? { AND: list } : {};
@@ -218,7 +220,6 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 location: { select: { id: true, name: true } },
                 gameData: { select: { id: true, name: true, slug: true } },
                 resourceTier: { select: { id: true, name: true } },
-                _count: { select: { ServerOrder: true } },
                 ...activeSuspensionInclude(),
             },
             orderBy: [{ [SORT_FIELDS[sort]]: dir }, { id: 'asc' }],
@@ -229,26 +230,18 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
             _count: { _all: true },
             _sum: { ramMB: true, cpuPercent: true, diskMB: true },
         }),
-        // Each facet drops its own filter — see `selection()`
-        prisma.gameServer.groupBy({
-            by: ['status'],
-            where: selection('status'),
-            _count: { _all: true },
-        }),
-        prisma.gameServer.groupBy({
-            by: ['type'],
-            where: selection('type'),
-            _count: { _all: true },
-        }),
+        // The chart is the selection, nothing else: same `where` as the list, every time
+        prisma.gameServer.groupBy({ by: ['status'], where, _count: { _all: true } }),
+        prisma.gameServer.groupBy({ by: ['type'], where, _count: { _all: true } }),
         prisma.gameServer.groupBy({
             by: ['locationId'],
-            where: selection('location'),
+            where,
             _count: { _all: true },
             _sum: { ramMB: true, cpuPercent: true },
         }),
         prisma.gameServer.groupBy({
             by: ['gameDataId'],
-            where: selection('game'),
+            where,
             _count: { _all: true },
             _sum: { ramMB: true, cpuPercent: true },
         }),
@@ -266,12 +259,15 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         Promise.all(
             RENEWAL_KEYS.map((key) =>
                 prisma.gameServer.count({
-                    where: { AND: [selection('renewal'), renewalWhere(key, now)] },
+                    where: { AND: [where, renewalWhere(key, now)] },
                 }),
             ),
         ),
         prisma.location.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }),
-        prisma.gameData.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }),
+        prisma.gameData.findMany({
+            select: { id: true, name: true, slug: true },
+            orderBy: { name: 'asc' },
+        }),
         // Prefill for the suspend dialog, admin-editable at /admin/keyvalue.
         getKeyValueString(SUSPENSION_DEFAULT_REASON),
     ]);
@@ -363,37 +359,24 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     const selectedUser = params.userId
         ? await prisma.user.findUnique({
               where: { id: params.userId },
-              select: { id: true, name: true, username: true, email: true },
+              select: { id: true, name: true, username: true, email: true, image: true },
           })
         : null;
 
-    // Options for the server filter: every server of the filtered user (so the filter can be
-    // dropped to see their other servers), plus the selected one.
-    const serverOptions =
-        params.userId || params.serverId
-            ? await prisma.gameServer.findMany({
-                  where: {
-                      OR: [
-                          ...(params.userId ? [{ userId: params.userId }] : []),
-                          ...(params.serverId ? [{ id: params.serverId }] : []),
-                      ],
-                  },
-                  select: { id: true, name: true, type: true },
-                  orderBy: { createdAt: 'desc' },
-                  take: 200,
-              })
-            : [];
+    // The filter bar shows a themed icon per game where one exists
+    const gameOptions = games.map((game) => ({ ...game, hasIcon: hasGameIcon(game.slug) }));
 
     return (
-        <div className="space-y-4">
+        // Deep bottom padding: the dense list runs right into the site footer otherwise, and
+        // the last row's actions menu needs somewhere to open.
+        <div className="space-y-4 pb-24">
             <AdminBreadcrumb items={[{ label: 'Gameservers' }]} />
 
             {/* Filters first: everything below them describes the selection they define */}
             <ServerFilters
                 filters={filters}
                 locations={locations}
-                games={games}
-                serverOptions={serverOptions}
+                games={gameOptions}
                 selectedUser={selectedUser}
                 filterCount={filterCount}
             />

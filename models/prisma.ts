@@ -36,8 +36,8 @@ export type GameServerAdmin = Prisma.GameServerGetPayload<{
 
 /**
  * One row of the admin gameserver panel. Richer than `GameServerAdmin`: the panel links out to
- * the Pterodactyl user (needs `ptUserId`), groups by game and tier, and shows the order count in
- * the expanded row. Structurally a superset, so the shared admin dialogs still accept it.
+ * the Pterodactyl user (needs `ptUserId`) and groups by game and tier. Structurally a superset,
+ * so the shared admin dialogs still accept it.
  */
 export type GameServerAdminRow = Prisma.GameServerGetPayload<{
     include: {
@@ -45,7 +45,6 @@ export type GameServerAdminRow = Prisma.GameServerGetPayload<{
         location: { select: { id: true; name: true } };
         gameData: { select: { id: true; name: true; slug: true } };
         resourceTier: { select: { id: true; name: true } };
-        _count: { select: { ServerOrder: true } };
     };
 }> & { suspensions: ActiveSuspension[] };
 

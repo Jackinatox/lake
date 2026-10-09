@@ -16,6 +16,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
 import { CREATED_RANGE_KEYS, CREATED_RANGE_META } from '@/lib/gameserver/adminFleet';
 import { Search, X } from 'lucide-react';
+import { ThemeImage } from '@/components/ui/theme-image';
 import { cn } from '@/lib/utils';
 import { STATUS_META, TYPE_META } from './presentation';
 import type { ServerFilterState } from './types';
@@ -24,8 +25,7 @@ import { useFleetParams } from './useFleetParams';
 type ServerFiltersProps = {
     filters: ServerFilterState;
     locations: { id: number; name: string }[];
-    games: { id: number; name: string }[];
-    serverOptions: { id: string; name: string; type: GameServerType }[];
+    games: { id: number; name: string; slug: string; hasIcon: boolean }[];
     /** The user behind `filters.userId`, resolved server-side. */
     selectedUser: LogUserOption | null;
     /** Number of active filters; drives the clear-all button. */
@@ -45,7 +45,6 @@ export default function ServerFilters({
     filters,
     locations,
     games,
-    serverOptions,
     selectedUser,
     filterCount,
 }: ServerFiltersProps) {
@@ -92,7 +91,7 @@ export default function ServerFilters({
         // never removed — a button that appears on the first filter would push the whole
         // page down a line.
         <div className={cn('flex items-end gap-2 transition-opacity', pending && 'opacity-60')}>
-            <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+            <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
                 <Field label="Search">
                     <div className="relative">
                         <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -118,41 +117,6 @@ export default function ServerFilters({
                     />
                 </Field>
 
-                <Field label="Server">
-                    <Select
-                        value={filters.serverId ?? 'all'}
-                        onValueChange={(value) => setParams({ serverId: value })}
-                        disabled={serverOptions.length === 0}
-                    >
-                        <SelectTrigger className="h-8 text-xs">
-                            <SelectValue placeholder="All servers" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all" className="text-xs">
-                                All servers
-                            </SelectItem>
-                            {serverOptions.map((server) => (
-                                <SelectItem key={server.id} value={server.id} className="text-xs">
-                                    <span
-                                        className={cn(
-                                            'truncate',
-                                            server.type === 'FREE' &&
-                                                'font-medium text-emerald-600 dark:text-emerald-400',
-                                        )}
-                                    >
-                                        {server.name}
-                                    </span>
-                                    {server.type === 'FREE' && (
-                                        <span className="ml-2 text-[10px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-                                            Free
-                                        </span>
-                                    )}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </Field>
-
                 <Field label="Game">
                     <Select
                         value={filters.gameId ?? 'all'}
@@ -171,7 +135,20 @@ export default function ServerFilters({
                                     value={String(game.id)}
                                     className="text-xs"
                                 >
-                                    {game.name}
+                                    <span className="flex items-center gap-2">
+                                        {game.hasIcon && (
+                                            // Theme-less path: ThemeImage picks the light or
+                                            // dark file — see docs/game-images.md
+                                            <ThemeImage
+                                                src={`games/icons/${game.slug}.webp`}
+                                                alt=""
+                                                width={16}
+                                                height={16}
+                                                className="h-4 w-4 shrink-0 rounded-[3px] object-contain"
+                                            />
+                                        )}
+                                        {game.name}
+                                    </span>
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -251,11 +228,11 @@ export default function ServerFilters({
                             onValueChange={(value) => setParams({ status: value })}
                         >
                             <SelectTrigger className="h-8 text-xs">
-                                <SelectValue placeholder="Live fleet" />
+                                <SelectValue placeholder="All, excl. deleted" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all" className="text-xs">
-                                    Live fleet
+                                    All, excl. deleted
                                 </SelectItem>
                                 {Object.values(GameServerStatus).map((status) => (
                                     <SelectItem key={status} value={status} className="text-xs">
@@ -263,7 +240,7 @@ export default function ServerFilters({
                                     </SelectItem>
                                 ))}
                                 <SelectItem value="ANY" className="text-xs">
-                                    Any, incl. deleted
+                                    All, incl. deleted
                                 </SelectItem>
                             </SelectContent>
                         </Select>

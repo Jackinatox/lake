@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { searchLogUsers, LogUserOption } from '@/app/actions/logs/getApplicationLogs';
-import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 
@@ -44,6 +45,16 @@ const DEFAULT_LABELS: AdminUserPickerLabels = {
     clear: 'Clear user filter',
     resolving: '…',
 };
+
+/** Avatar with initials as the fallback — users without a picture still get a marker. */
+function UserAvatar({ user, className }: { user: LogUserOption; className?: string }) {
+    return (
+        <Avatar className={cn('shrink-0', className)}>
+            <AvatarImage src={user.image ?? ''} alt="" />
+            <AvatarFallback className="text-[9px]">{getUserInitials(user)}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 /**
  * Admin-only user combobox that searches server-side (`searchLogUsers`), so it works with any
@@ -104,6 +115,7 @@ export default function AdminUserPicker({
                         name: value,
                         username: null,
                         email: '',
+                        image: null,
                     },
                 );
             })
@@ -129,8 +141,11 @@ export default function AdminUserPicker({
                         aria-expanded={open}
                         className="h-8 min-w-0 flex-1 justify-between px-2 text-xs font-normal"
                     >
-                        <span className={cn('truncate', !value && 'text-muted-foreground')}>
-                            {label}
+                        <span className="flex min-w-0 items-center gap-1.5">
+                            {known && <UserAvatar user={known} className="h-4.5 w-4.5" />}
+                            <span className={cn('truncate', !value && 'text-muted-foreground')}>
+                                {label}
+                            </span>
                         </span>
                         <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
                     </Button>
@@ -159,13 +174,8 @@ export default function AdminUserPicker({
                                         }}
                                         className="text-xs"
                                     >
-                                        <Check
-                                            className={cn(
-                                                'mr-2 h-3.5 w-3.5',
-                                                value === user.id ? 'opacity-100' : 'opacity-0',
-                                            )}
-                                        />
-                                        <span className="min-w-0">
+                                        <UserAvatar user={user} className="mr-2 h-6 w-6" />
+                                        <span className="min-w-0 flex-1">
                                             <span className="block truncate">
                                                 {getUserDisplayName(user)}
                                             </span>
@@ -173,6 +183,12 @@ export default function AdminUserPicker({
                                                 {user.email}
                                             </span>
                                         </span>
+                                        <Check
+                                            className={cn(
+                                                'ml-2 h-3.5 w-3.5 shrink-0',
+                                                value === user.id ? 'opacity-100' : 'opacity-0',
+                                            )}
+                                        />
                                     </CommandItem>
                                 ))}
                             </CommandGroup>

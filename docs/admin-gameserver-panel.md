@@ -13,7 +13,8 @@ state in the query string. There is still no per-server page; the expanded row i
 - `app/[locale]/admin/gameservers/page.tsx` — admin guard, param parsing, every query.
 - `app/[locale]/admin/gameservers/FleetSummary.tsx` — KPI tiles + attention chips.
 - `app/[locale]/admin/gameservers/FleetDistribution.tsx` — distribution card (5 dimensions).
-- `app/[locale]/admin/gameservers/ServerFilters.tsx` — filter bar + clear-all button.
+- `app/[locale]/admin/gameservers/ServerFilters.tsx` — filter bar (themed game icons via
+  `ThemeImage`, see `game-images.md`) + clear-all button.
 - `app/[locale]/admin/gameservers/ServerList.tsx` — header, sorting, selection, paging.
 - `app/[locale]/admin/gameservers/ServerRow.tsx` — one server line + expanded detail.
 - `app/[locale]/admin/gameservers/useFleetParams.ts` — the only writer of the query string.
@@ -29,31 +30,22 @@ state in the query string. There is still no per-server page; the expanded row i
 
 The summary tiles, the distribution bar and the list all read the **same** `where` — the
 one the filter bar defines. Only the list is paginated; the aggregates always cover the
-whole selection, so "3 of 412 servers" in the list and "412" in the tiles are the same
-set seen at two resolutions.
+whole selection, so "50 of 412 servers" in the list and "412" in the tiles are the same set
+seen at two resolutions, and a segment of the bar is always exactly a slice of the list.
 
-The filter is built as _named pieces_ (`parts` in `page.tsx`), and `selection(...without)`
-reassembles them. That is what lets each facet drop its own piece:
+That includes the default scope: deleted servers are left out of the chart exactly when
+they are left out of the list, never on a rule of the chart's own.
 
-| Query                  | `where`                                            |
-| ---------------------- | -------------------------------------------------- |
-| list, count, KPI tiles | `selection()` — everything                         |
-| Location bar           | `selection('location')`                            |
-| Game bar               | `selection('game')`                                |
-| Status bar             | `selection('status')`                              |
-| Plan bar               | `selection('type')`                                |
-| Renewals bar           | `selection('renewal')`                             |
-| attention chips        | `selection('attention')` + the chip's own fragment |
-
-Without that, filtering by one location would collapse the Location bar to a single 100%
-block and you could no longer click your way to another location. With it, the bar keeps
-showing the alternatives _within the rest of the filter_, and the active slice is ringed.
+The filter is built as _named pieces_ (`parts` in `page.tsx`) and `selection(...without)`
+reassembles them. Only one caller passes `without`: the **attention chips** count without
+their own filter applied. They are a toggle group, and counting them inside their own
+selection would zero out every chip but the active one — and a chip showing 0 is disabled,
+so there would be no way to switch from one to another.
 
 Default scope is the live fleet (`status != DELETED`, the `scope` piece). It is dropped
 when the status filter explicitly asks for deleted rows (`DELETED` or `ANY`), and when a
 `serverId` or `search` pinpoints a row — finding a deleted server is usually the reason
-such a link was followed. An explicit _non_-deleted status keeps the scope piece, so the
-Status facet (which drops `status`) does not suddenly fill up with deleted servers.
+such a link was followed.
 
 ## URL params
 
@@ -61,10 +53,10 @@ Status facet (which drops `status`) does not suddenly fill up with deleted serve
 | ---------------------- | ---------------------------------------------------------------------------------- |
 | `search`               | name, lake id, `ptServerId`, numeric `ptAdminId`, owner email/username             |
 | `userId`               | owner; clearing it also clears `serverId`                                          |
-| `serverId`             | single server (the log viewer's deep-link target)                                  |
+| `serverId`             | single server — no control of its own, a deep-link target only                     |
 | `type`                 | `FREE` / `PACKAGE` / `CUSTOM`                                                      |
 | `locationId`, `gameId` | numeric; a non-numeric value is ignored, not passed to Prisma                      |
-| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = live fleet            |
+| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted       |
 | `attention`            | one `AttentionKey` (see below)                                                     |
 | `renewal`              | one `RenewalKey` (see below)                                                       |
 | `sort`, `dir`          | `created` (default) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default |
@@ -100,7 +92,9 @@ Renewals) across a single 12px bar, with a legend underneath that doubles as the
 labels and as the filter — clicking a segment or a legend chip applies that slice,
 clicking the active one clears. Hovering either dims the other segments.
 
-Location and Game come from `groupBy` with `_sum` of `ramMB`/`cpuPercent`, so they can be
+Every bar is a `groupBy` over the current selection, so filtering a dimension collapses
+its own bar to a single full-width segment — the dropdown (or Clear) is how you move to
+another slice. Location and Game also carry `_sum` of `ramMB`/`cpuPercent`, so they can be
 weighted **by servers or by RAM** — the RAM view is the capacity picture (which location
 carries the sold GiB), the server view is the headcount. Renewals are five _exclusive_
 buckets (`renewalWhere()`: overdue, ≤24h, 1–7d, 7–30d, 30d+) over live servers only;
@@ -126,10 +120,13 @@ Colour rules worth keeping:
 ## Row
 
 One 32px line: status dot, name (+ free marker, suspension, missing-PT-link and error
-badges), owner, game, location, `3t · 3G · 16G · 10b` resources, price, relative
-expiry (red overdue / amber < 24 h), a logs link, a PT-admin link and the actions
-menu. The expanded panel adds copyable ids, plan/tier/ports/order count, timestamps,
-`errorText`, the full suspension, `gameConfig` JSON and a link row.
+badges), owner, game, location, `3t · 3G · 16G` compute, `10b · 2p` backups/ports,
+price, relative expiry (red overdue / amber < 24 h), the `ptServerId` (click to copy — it
+is the id that goes into the panel or a ticket; `—` when the server was never
+provisioned), a logs link, a PT-admin link and the actions menu. The expanded panel groups into three columns — **identity** (server id, owner, both PT
+ids, all copyable), **setup** (status, game, plan, and one `Resources` line carrying CPU,
+RAM, disk, backups, ports and the tier) and **dates** (created, last extended, expires) —
+followed by `errorText`, the full suspension, `gameConfig` JSON and a link row.
 
 ## Links out — and back in
 
