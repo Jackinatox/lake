@@ -50,6 +50,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
   the layout that blocks `/gameserver/[server_id]/*`. Read when touching
   suspensions, `GameServerStatus`, or `toggleSuspendGameServer`.
+- `support-tickets.md` — The new conversation-based ticket system (`Ticket*`
+  tables, `/support/tickets/*`, `/admin/support`) that coexists with the legacy
+  `SupportTicket`: status flow, internal notes, emails/Telegram, the worker
+  auto-close contract and the switch-over checklist. Read when touching
+  tickets or support pages.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

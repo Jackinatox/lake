@@ -1771,5 +1771,114 @@
   "contact": {
     "title": "Contact Us",
     "description": "Have a question, suggestion, or just want to reach out? Send us an email and we'll get back to you."
+  },
+  "supportTickets": {
+    "landing": {
+      "title": "How can we <highlight>help</highlight> you?",
+      "subtitle": "Pick a topic and open a ticket. You'll chat directly with our team and get an email whenever we reply.",
+      "openTicket": "Open ticket",
+      "yourTickets": "Your tickets",
+      "viewAll": "View all tickets",
+      "noActiveTickets": "You have no open tickets.",
+      "loginHint": "<strong>Sign in</strong> to open a ticket and follow your conversations."
+    },
+    "categories": {
+      "GENERAL": {
+        "title": "General question",
+        "description": "Anything that doesn't fit one of the other topics."
+      },
+      "TECHNICAL": {
+        "title": "Technical issue",
+        "description": "Your server won't start, crashes or behaves strangely."
+      },
+      "BILLING": {
+        "title": "Billing & payments",
+        "description": "Invoices, payments, refunds and withdrawals."
+      },
+      "ACCOUNT": {
+        "title": "Account & access",
+        "description": "Login, email address, two-factor authentication and account settings."
+      },
+      "SUSPENSION": {
+        "title": "Server suspension",
+        "description": "Questions about or an appeal against a suspended server."
+      }
+    },
+    "status": {
+      "OPEN": "Waiting for support",
+      "WAITING_FOR_CUSTOMER": "Awaiting your reply",
+      "ON_HOLD": "In progress",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed"
+    },
+    "list": {
+      "title": "My tickets",
+      "newTicket": "New ticket",
+      "support": "Support",
+      "active": "Open",
+      "closed": "Closed",
+      "empty": "You have no open tickets.",
+      "emptyClosed": "You have no closed tickets.",
+      "you": "You",
+      "team": "Support",
+      "unread": "New reply"
+    },
+    "form": {
+      "title": "Open a ticket",
+      "description": "Describe your issue and we'll answer right here in the ticket. You'll also get an email when we reply.",
+      "back": "Support",
+      "categoryLabel": "Category",
+      "serverLabel": "Affected server",
+      "serverNone": "No specific server",
+      "serverHelper": "Optional, but it helps us find your server faster.",
+      "suspended": "suspended",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Short summary of your issue",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Describe your issue in as much detail as possible…",
+      "length": "{current}/{max}",
+      "submit": "Send ticket",
+      "submitting": "Sending…",
+      "existingTickets": "You already have an open ticket in this category. You can also continue the conversation there:"
+    },
+    "detail": {
+      "back": "My tickets",
+      "openedAt": "Opened {date}",
+      "markSolved": "My issue is solved",
+      "markSolvedTitle": "Close this ticket?",
+      "markSolvedDescription": "A closed ticket can't receive new replies. If something comes up later, simply open a new ticket.",
+      "markSolvedConfirm": "Close ticket",
+      "cancel": "Cancel",
+      "adminBadge": "Admin",
+      "supportTeam": "Support team",
+      "system": "System",
+      "you": "You",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "events": {
+        "resolved": "Support marked this ticket as resolved",
+        "closed": "This ticket was closed",
+        "closedByYou": "You closed this ticket",
+        "reopened": "The ticket was reopened"
+      },
+      "replyPlaceholder": "Write a message…",
+      "send": "Send",
+      "sendHint": "Ctrl + Enter to send",
+      "resolvedHint": "This ticket is resolved. If you reply, it will be reopened.",
+      "closedNotice": "This ticket is closed and can't receive new replies.",
+      "newTicket": "Open a new ticket"
+    },
+    "errors": {
+      "unauthorized": "Please sign in again.",
+      "invalid": "Please check your input.",
+      "notFound": "This ticket could not be found.",
+      "closed": "This ticket is closed.",
+      "serverNotFound": "The selected server could not be found.",
+      "openLimit": "You have too many open tickets. Please wait for a reply or close tickets you no longer need.",
+      "dailyLimit": "You've opened too many tickets today. Please try again tomorrow.",
+      "messageLimit": "You're sending messages too quickly. Please wait a moment and try again.",
+      "conflict": "A new message arrived. Please check it and send again.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }

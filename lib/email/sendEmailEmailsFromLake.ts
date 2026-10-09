@@ -13,12 +13,15 @@ import ServerSuspendedTemplate from './templates/ServerSuspendedTemplate';
 import ServerUnsuspendedTemplate from './templates/ServerUnsuspendedTemplate';
 import SupportTicketCreatedTemplate from './templates/SupportTicketCreatedTemplate';
 import SupportTicketResponseTemplate from './templates/SupportTicketResponseTemplate';
+import TicketCreatedTemplate from './templates/TicketCreatedTemplate';
+import TicketReplyTemplate from './templates/TicketReplyTemplate';
+import TicketResolvedTemplate from './templates/TicketResolvedTemplate';
 import TwoFactorCreatedTemplate from './templates/TwoFactorCreatedTemplate';
 import TwoFactorOtpTemplate from './templates/TwoFactorOtpTemplate';
 import TwoFactorRemovedTemplate from './templates/TwoFactorRemovedTemplate';
 import { percentToVCores } from '../GlobalFunctions/formatVCores';
 import { OrderType, SupportTicket, RefundServerAction } from '@/app/client/generated/browser';
-import { TicketStatus } from '@/app/client/generated/enums';
+import { TicketCategory, TicketStatus } from '@/app/client/generated/enums';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(
@@ -110,6 +113,87 @@ export async function sendSupportTicketResponseEmail(data: SupportTicketResponse
         'Neue Antwort auf dein Support-Ticket',
         html,
         'SUPPORT_TICKET_RESPONSE',
+    );
+}
+
+// New conversation-based ticket system (`Ticket` table), see docs/support-tickets.md.
+
+interface TicketEmailBase {
+    to: string;
+    userName?: string;
+    ticketNumber: number;
+    subject: string;
+    ticketUrl: string;
+    gameServerId?: string | null;
+}
+
+export async function sendTicketOpenedEmail(
+    data: TicketEmailBase & { category: TicketCategory; message: string; createdAt: Date },
+) {
+    const html = await render(
+        TicketCreatedTemplate({
+            ticketNumber: data.ticketNumber,
+            subject: data.subject,
+            category: data.category,
+            message: data.message,
+            createdAt: data.createdAt,
+            ticketUrl: data.ticketUrl,
+            userName: data.userName,
+        }),
+    );
+
+    await sendMail(
+        data.to,
+        `Dein Support-Ticket #${data.ticketNumber} wurde erstellt`,
+        html,
+        'SUPPORT_TICKET_CREATED',
+        undefined,
+        data.gameServerId,
+    );
+}
+
+export async function sendTicketReplyEmail(
+    data: TicketEmailBase & { agentName?: string; responseMessage: string; resolved: boolean },
+) {
+    const html = await render(
+        TicketReplyTemplate({
+            ticketNumber: data.ticketNumber,
+            subject: data.subject,
+            agentName: data.agentName,
+            responseMessage: data.responseMessage,
+            resolved: data.resolved,
+            ticketUrl: data.ticketUrl,
+            userName: data.userName,
+        }),
+    );
+
+    await sendMail(
+        data.to,
+        `Neue Antwort auf dein Support-Ticket #${data.ticketNumber}`,
+        html,
+        'SUPPORT_TICKET_RESPONSE',
+        undefined,
+        data.gameServerId,
+    );
+}
+
+export async function sendTicketResolvedEmail(data: TicketEmailBase) {
+    const html = await render(
+        TicketResolvedTemplate({
+            ticketNumber: data.ticketNumber,
+            subject: data.subject,
+            ticketUrl: data.ticketUrl,
+            userName: data.userName,
+        }),
+    );
+
+    await sendMail(
+        data.to,
+        `Dein Support-Ticket #${data.ticketNumber} wurde gelöst`,
+        html,
+        'SUPPORT_TICKET_RESOLVED',
+        undefined,
+        data.gameServerId,
     );
 }
 

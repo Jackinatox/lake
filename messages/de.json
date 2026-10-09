@@ -1783,5 +1783,114 @@
   "contact": {
     "title": "Kontakt",
     "description": "Hast du eine Frage, einen Vorschlag oder möchtest uns einfach erreichen? Schreib uns eine E-Mail und wir melden uns bei dir."
+  },
+  "supportTickets": {
+    "landing": {
+      "title": "Wie können wir <highlight>Dir helfen</highlight>?",
+      "subtitle": "Wähle ein Thema und eröffne ein Ticket. Du schreibst direkt mit unserem Team und bekommst eine E-Mail, sobald wir antworten.",
+      "openTicket": "Ticket eröffnen",
+      "yourTickets": "Deine Tickets",
+      "viewAll": "Alle Tickets anzeigen",
+      "noActiveTickets": "Du hast keine offenen Tickets.",
+      "loginHint": "<strong>Melde Dich an</strong>, um ein Ticket zu eröffnen und Deine Unterhaltungen zu verfolgen."
+    },
+    "categories": {
+      "GENERAL": {
+        "title": "Allgemeine Frage",
+        "description": "Alles, was zu keinem der anderen Themen passt."
+      },
+      "TECHNICAL": {
+        "title": "Technisches Problem",
+        "description": "Dein Server startet nicht, stürzt ab oder verhält sich seltsam."
+      },
+      "BILLING": {
+        "title": "Abrechnung & Zahlung",
+        "description": "Rechnungen, Zahlungen, Erstattungen und Widerrufe."
+      },
+      "ACCOUNT": {
+        "title": "Account & Zugang",
+        "description": "Login, E-Mail-Adresse, Zwei-Faktor-Authentifizierung und Kontoeinstellungen."
+      },
+      "SUSPENSION": {
+        "title": "Server-Sperrung",
+        "description": "Fragen zu oder Einspruch gegen einen gesperrten Server."
+      }
+    },
+    "status": {
+      "OPEN": "Wartet auf Support",
+      "WAITING_FOR_CUSTOMER": "Wartet auf Deine Antwort",
+      "ON_HOLD": "In Bearbeitung",
+      "RESOLVED": "Gelöst",
+      "CLOSED": "Geschlossen"
+    },
+    "list": {
+      "title": "Meine Tickets",
+      "newTicket": "Neues Ticket",
+      "support": "Support",
+      "active": "Offen",
+      "closed": "Geschlossen",
+      "empty": "Du hast keine offenen Tickets.",
+      "emptyClosed": "Du hast keine geschlossenen Tickets.",
+      "you": "Du",
+      "team": "Support",
+      "unread": "Neue Antwort"
+    },
+    "form": {
+      "title": "Ticket eröffnen",
+      "description": "Beschreibe Dein Anliegen und wir antworten Dir direkt hier im Ticket. Zusätzlich bekommst Du eine E-Mail, sobald wir antworten.",
+      "back": "Support",
+      "categoryLabel": "Kategorie",
+      "serverLabel": "Betroffener Server",
+      "serverNone": "Kein bestimmter Server",
+      "serverHelper": "Optional, hilft uns aber, Deinen Server schneller zu finden.",
+      "suspended": "gesperrt",
+      "subjectLabel": "Betreff",
+      "subjectPlaceholder": "Kurze Zusammenfassung Deines Anliegens",
+      "messageLabel": "Nachricht",
+      "messagePlaceholder": "Beschreibe Dein Anliegen so genau wie möglich…",
+      "length": "{current}/{max}",
+      "submit": "Ticket senden",
+      "submitting": "Wird gesendet…",
+      "existingTickets": "Du hast bereits ein offenes Ticket in dieser Kategorie. Du kannst die Unterhaltung auch dort fortsetzen:"
+    },
+    "detail": {
+      "back": "Meine Tickets",
+      "openedAt": "Eröffnet am {date}",
+      "markSolved": "Mein Problem ist gelöst",
+      "markSolvedTitle": "Ticket schließen?",
+      "markSolvedDescription": "Ein geschlossenes Ticket kann keine neuen Antworten mehr erhalten. Falls später etwas ist, eröffne einfach ein neues Ticket.",
+      "markSolvedConfirm": "Ticket schließen",
+      "cancel": "Abbrechen",
+      "adminBadge": "Admin",
+      "supportTeam": "Support-Team",
+      "system": "System",
+      "you": "Du",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "events": {
+        "resolved": "Der Support hat dieses Ticket als gelöst markiert",
+        "closed": "Dieses Ticket wurde geschlossen",
+        "closedByYou": "Du hast dieses Ticket geschlossen",
+        "reopened": "Das Ticket wurde wieder geöffnet"
+      },
+      "replyPlaceholder": "Nachricht schreiben…",
+      "send": "Senden",
+      "sendHint": "Strg + Enter zum Senden",
+      "resolvedHint": "Dieses Ticket ist gelöst. Wenn Du antwortest, wird es wieder geöffnet.",
+      "closedNotice": "Dieses Ticket ist geschlossen und kann keine neuen Antworten mehr erhalten.",
+      "newTicket": "Neues Ticket eröffnen"
+    },
+    "errors": {
+      "unauthorized": "Bitte melde Dich erneut an.",
+      "invalid": "Bitte überprüfe Deine Eingaben.",
+      "notFound": "Dieses Ticket wurde nicht gefunden.",
+      "closed": "Dieses Ticket ist geschlossen.",
+      "serverNotFound": "Der ausgewählte Server wurde nicht gefunden.",
+      "openLimit": "Du hast zu viele offene Tickets. Bitte warte auf eine Antwort oder schließe Tickets, die Du nicht mehr brauchst.",
+      "dailyLimit": "Du hast heute zu viele Tickets eröffnet. Bitte versuche es morgen erneut.",
+      "messageLimit": "Du sendest zu viele Nachrichten. Bitte warte einen Moment und versuche es erneut.",
+      "conflict": "Es ist eine neue Nachricht eingegangen. Bitte lies sie und sende erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
   }
 }
