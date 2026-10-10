@@ -9,12 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Link } from '@/i18n/navigation';
 import { serverConfig } from '@/lib/serverConfig';
 import { TICKET_CATEGORIES } from '@/lib/tickets/constants';
-import { ticketStateStyles } from '@/lib/tickets/presentation';
 import { ChevronRight, MessagesSquare } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
-import TicketBadge from './TicketBadge';
 import { ticketCategoryIcons } from './TicketCategoryIcon';
+import TicketStatusLabel from './TicketStatusLabel';
 
 /**
  * Landing page of the new ticket system. Lives at `SUPPORT_LANDING_PATH` until it replaces the
@@ -35,7 +34,7 @@ export default async function SupportLanding() {
     const now = new Date();
 
     return (
-        <section className="w-full">
+        <section className="w-full pb-24 md:pb-32">
             <div className="mx-auto max-w-6xl px-0 pt-6 md:px-8 md:pt-10">
                 <div className="space-y-4 text-center">
                     <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">
@@ -125,13 +124,11 @@ export default async function SupportLanding() {
                                                         >
                                                             {ticket.subject}
                                                         </span>
-                                                        <TicketBadge
-                                                            className={
-                                                                ticketStateStyles[ticket.status]
-                                                            }
-                                                        >
-                                                            {t(`status.${ticket.status}`)}
-                                                        </TicketBadge>
+                                                        <TicketStatusLabel
+                                                            status={ticket.status}
+                                                            label={t(`status.${ticket.status}`)}
+                                                            className="max-w-[45%] text-xs text-muted-foreground"
+                                                        />
                                                         <span className="hidden w-20 shrink-0 text-right text-xs text-muted-foreground sm:inline">
                                                             {format.relativeTime(
                                                                 ticket.lastMessageAt,

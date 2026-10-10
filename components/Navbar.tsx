@@ -17,6 +17,7 @@ export default function Navbar({ locale }: { locale: string }) {
         '/order',
         '/changeGame',
         '/upgrade/payedServer',
+        '/support/tickets', // ticket list and chat have their own sticky header
     ];
     const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
     return (

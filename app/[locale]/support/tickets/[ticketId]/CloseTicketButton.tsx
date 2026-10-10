@@ -43,12 +43,14 @@ export default function CloseTicketButton({ ticketId }: { ticketId: string }) {
             <AlertDialogTrigger asChild>
                 <Button
                     variant="outline"
-                    size="sm"
-                    className="shrink-0 gap-1.5"
+                    className="w-9 shrink-0 p-0 sm:w-auto sm:px-3"
                     disabled={isPending}
+                    aria-label={t('detail.markSolved')}
+                    title={t('detail.markSolved')}
                 >
                     <CheckCircle2 className="h-4 w-4" />
-                    {t('detail.markSolved')}
+                    {/* Icon-only on phones so the sticky header keeps room for the subject. */}
+                    <span className="hidden sm:inline">{t('detail.markSolved')}</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

@@ -201,6 +201,7 @@ const adminUserSelect = {
     username: true,
     displayUsername: true,
     name: true,
+    image: true,
 } as const;
 
 export async function getAdminTicket(ticketNumber: number) {

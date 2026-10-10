@@ -7,15 +7,15 @@ import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import LinkifiedText from '@/components/support/LinkifiedText';
 import TicketAutoRefresh from '@/components/support/TicketAutoRefresh';
-import TicketBadge from '@/components/support/TicketBadge';
+import TicketAvatar from '@/components/support/TicketAvatar';
+import TicketStatusLabel from '@/components/support/TicketStatusLabel';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
-import { getUserInitials } from '@/lib/auth/getUserDisplayName';
+import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import {
     formatTicketDateTime,
     formatTicketTime,
     staffDisplayName,
-    ticketStateStyles,
 } from '@/lib/tickets/presentation';
 import { ticketDayLabel, withDaySeparators } from '@/lib/tickets/timeline';
 import { cn } from '@/lib/utils';
@@ -34,6 +34,7 @@ type TimelineEntry =
           body: string;
           authorRole: 'CUSTOMER' | 'STAFF' | 'SYSTEM';
           authorName: string | null;
+          authorImage: string | null;
       }
     | { kind: 'event'; id: number; createdAt: Date; event: CustomerStatusEventKind };
 
@@ -65,6 +66,7 @@ export default async function CustomerTicketPage({
             body: message.body,
             authorRole: message.authorRole,
             authorName: staffDisplayName(message.author),
+            authorImage: message.author?.image ?? null,
         })),
         ...ticket.events.flatMap((event) => {
             const kind = customerVisibleStatusEvent(event, session.user.id);
@@ -85,47 +87,48 @@ export default async function CustomerTicketPage({
     const dayLabels = { today: t('detail.today'), yesterday: t('detail.yesterday') };
 
     return (
-        <div className="mx-auto flex w-full max-w-3xl flex-col md:p-6">
-            <Button asChild variant="ghost" size="sm" className="mb-2 gap-1 self-start px-2">
-                <Link href="/support/tickets">
-                    <ArrowLeft className="h-4 w-4" />
-                    {t('detail.back')}
-                </Link>
-            </Button>
-
-            <header className="flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 space-y-2">
-                    <h1 className="break-words text-xl font-semibold tracking-tight md:text-2xl">
+        <div className="mx-auto flex w-full max-w-3xl flex-col pb-24 md:p-6 md:pb-32">
+            <header className="sticky top-0 z-30 -mx-2 flex items-center gap-2 border-b bg-background/80 px-2 py-2 backdrop-blur-md md:-mx-6 md:px-6">
+                <Button asChild variant="ghost" size="icon" className="shrink-0">
+                    <Link href="/support/tickets" aria-label={t('detail.back')}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <div className="min-w-0 flex-1">
+                    <h1 className="truncate text-base font-semibold leading-tight sm:text-lg">
                         {ticket.subject}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <TicketBadge className={ticketStateStyles[ticket.status]}>
-                            {t(`status.${ticket.status}`)}
-                        </TicketBadge>
-                        <span>#{ticket.number}</span>
-                        <span>·</span>
-                        <span>{t(`categories.${ticket.category}.title`)}</span>
-                        {ticket.gameServer && (
-                            <>
-                                <span>·</span>
-                                <span className="inline-flex items-center gap-1">
-                                    <Server className="h-3 w-3" />
-                                    {ticket.gameServer.name}
-                                </span>
-                            </>
-                        )}
-                        <span>·</span>
-                        <span>
-                            {t('detail.openedAt', {
-                                date: formatTicketDateTime(ticket.createdAt, locale),
-                            })}
-                        </span>
+                    <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+                        <TicketStatusLabel
+                            status={ticket.status}
+                            label={t(`status.${ticket.status}`)}
+                        />
+                        <span className="shrink-0">· #{ticket.number}</span>
                     </div>
                 </div>
                 {ticket.status !== 'CLOSED' && <CloseTicketButton ticketId={ticket.id} />}
             </header>
 
-            <ol className="flex flex-col gap-3 py-6">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-3 text-xs text-muted-foreground">
+                <span>{t(`categories.${ticket.category}.title`)}</span>
+                {ticket.gameServer && (
+                    <>
+                        <span>·</span>
+                        <span className="inline-flex items-center gap-1">
+                            <Server className="h-3 w-3" />
+                            {ticket.gameServer.name}
+                        </span>
+                    </>
+                )}
+                <span>·</span>
+                <span>
+                    {t('detail.openedAt', {
+                        date: formatTicketDateTime(ticket.createdAt, locale),
+                    })}
+                </span>
+            </div>
+
+            <ol className="flex flex-col gap-3 py-4">
                 {timeline.map((row) => {
                     if (row.type === 'day') {
                         return (
@@ -151,22 +154,24 @@ export default async function CustomerTicketPage({
                     }
 
                     const own = entry.authorRole === 'CUSTOMER';
+                    const isSystem = entry.authorRole === 'SYSTEM';
                     const name = own
                         ? t('detail.you')
-                        : entry.authorRole === 'SYSTEM'
+                        : isSystem
                           ? t('detail.system')
                           : (entry.authorName ?? t('detail.supportTeam'));
 
                     return (
                         <li
                             key={`message-${entry.id}`}
-                            className={cn('flex gap-2', own ? 'justify-end' : 'justify-start')}
+                            className={cn('flex items-start gap-2', own && 'flex-row-reverse')}
                         >
-                            {!own && (
-                                <div className="mt-5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary">
-                                    {getUserInitials({ username: name })}
-                                </div>
-                            )}
+                            <TicketAvatar
+                                name={own ? getUserDisplayName(session.user) : name}
+                                image={entry.authorImage}
+                                system={isSystem}
+                                className="mt-5"
+                            />
                             <div
                                 className={cn(
                                     'flex max-w-[85%] flex-col gap-1 sm:max-w-[75%]',
@@ -187,8 +192,8 @@ export default async function CustomerTicketPage({
                                     className={cn(
                                         'whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
                                         own
-                                            ? 'rounded-br-sm bg-primary text-primary-foreground'
-                                            : 'rounded-bl-sm border bg-card',
+                                            ? 'rounded-tr-sm bg-primary text-primary-foreground'
+                                            : 'rounded-tl-sm border bg-card',
                                     )}
                                 >
                                     <LinkifiedText text={entry.body} />

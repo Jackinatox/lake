@@ -8,7 +8,12 @@ import prisma from '@/lib/prisma';
  * responsible for passing the id of the signed-in user.
  */
 
-const authorSelect = { username: true, displayUsername: true, name: true } as const;
+const authorSelect = {
+    username: true,
+    displayUsername: true,
+    name: true,
+    image: true,
+} as const;
 
 export async function listCustomerTickets(userId: string) {
     return prisma.ticket.findMany({

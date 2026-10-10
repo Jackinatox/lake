@@ -67,8 +67,11 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
 - `app/actions/tickets/customerTicketActions.ts` — create, reply, close, `markTicketReadAction`
   (also used by admins).
 - `app/actions/tickets/adminTicketActions.ts` — reply, update fields, delete, note CRUD + pin.
-- `components/support/` — landing page, badges, `LinkifiedText`, `TicketAutoRefresh`.
-- `components/admin/tickets/` — inbox filters, composer, note item, properties panel.
+- `components/support/` — landing page, `TicketStatusLabel` (status as coloured dot + text; the
+  ticket UI deliberately uses no pill badges), `TicketAvatar` (profile picture with initials
+  fallback, used on both sides of the chat), `LinkifiedText`, `TicketAutoRefresh`.
+- `components/admin/tickets/` — inbox filters, composer, note item, the compact sidebar
+  (`SidebarSection`, `TicketPropertiesPanel`) and `TicketHeaderActions` (edit subject, delete).
 - Customer copy: `supportTickets.*` in `messages/{en,de}.json`; every `TicketActionError` code needs
   an `errors.*` key. The admin UI is English-only.
 

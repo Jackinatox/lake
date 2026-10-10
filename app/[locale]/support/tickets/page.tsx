@@ -4,13 +4,12 @@ import {
 } from '@/app/data-access-layer/tickets/customerTickets';
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
-import TicketBadge from '@/components/support/TicketBadge';
 import { ticketCategoryIcons } from '@/components/support/TicketCategoryIcon';
+import TicketStatusLabel from '@/components/support/TicketStatusLabel';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Link } from '@/i18n/navigation';
 import { SUPPORT_LANDING_PATH } from '@/lib/tickets/constants';
-import { ticketStateStyles } from '@/lib/tickets/presentation';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
@@ -58,40 +57,45 @@ export default async function MyTicketsPage({
     ];
 
     return (
-        <div className="mx-auto w-full max-w-3xl md:p-6">
-            <Button asChild variant="ghost" size="sm" className="mb-2 gap-1 px-2">
-                <Link href={SUPPORT_LANDING_PATH}>
-                    <ArrowLeft className="h-4 w-4" />
-                    {t('list.support')}
-                </Link>
-            </Button>
-            <div className="mb-4 flex items-center justify-between gap-3">
-                <h1 className="text-2xl font-semibold tracking-tight">{t('list.title')}</h1>
-                <Button asChild size="sm" className="gap-1">
-                    <Link href="/support/tickets/new">
-                        <Plus className="h-4 w-4" />
-                        {t('list.newTicket')}
-                    </Link>
-                </Button>
-            </div>
+        <div className="mx-auto w-full max-w-3xl pb-24 md:p-6 md:pb-32">
+            <header className="sticky top-0 z-30 -mx-2 mb-3 space-y-2.5 border-b bg-background/80 px-2 py-2.5 backdrop-blur-md md:-mx-6 md:px-6">
+                <div className="flex items-center gap-2">
+                    <Button asChild variant="ghost" size="icon" className="shrink-0">
+                        <Link href={SUPPORT_LANDING_PATH} aria-label={t('list.support')}>
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <h1 className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight sm:text-xl">
+                        {t('list.title')}
+                    </h1>
+                    <Button asChild size="sm" className="shrink-0 gap-1">
+                        <Link href="/support/tickets/new">
+                            <Plus className="h-4 w-4" />
+                            {t('list.newTicket')}
+                        </Link>
+                    </Button>
+                </div>
 
-            <div className="mb-3 inline-flex rounded-lg bg-muted p-1 text-sm">
-                {tabs.map((tab) => (
-                    <Link
-                        key={tab.href}
-                        href={tab.href}
-                        className={cn(
-                            'rounded-md px-3 py-1.5 font-medium transition-colors',
-                            tab.active
-                                ? 'bg-background text-foreground shadow-sm'
-                                : 'text-muted-foreground hover:text-foreground',
-                        )}
-                    >
-                        {tab.label}
-                        <span className="ml-1.5 text-xs text-muted-foreground">{tab.count}</span>
-                    </Link>
-                ))}
-            </div>
+                <div className="flex w-full rounded-lg bg-muted p-1 text-sm sm:inline-flex sm:w-auto">
+                    {tabs.map((tab) => (
+                        <Link
+                            key={tab.href}
+                            href={tab.href}
+                            className={cn(
+                                'flex-1 rounded-md px-3 py-1.5 text-center font-medium transition-colors sm:flex-none',
+                                tab.active
+                                    ? 'bg-background text-foreground shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            )}
+                        >
+                            {tab.label}
+                            <span className="ml-1.5 text-xs text-muted-foreground">
+                                {tab.count}
+                            </span>
+                        </Link>
+                    ))}
+                </div>
+            </header>
 
             <Card className="overflow-hidden">
                 {visible.length === 0 ? (
@@ -152,11 +156,11 @@ export default async function MyTicketsPage({
                                                 </p>
                                             )}
                                             <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                                                <TicketBadge
-                                                    className={ticketStateStyles[ticket.status]}
-                                                >
-                                                    {t(`status.${ticket.status}`)}
-                                                </TicketBadge>
+                                                <TicketStatusLabel
+                                                    status={ticket.status}
+                                                    label={t(`status.${ticket.status}`)}
+                                                />
+                                                <span>·</span>
                                                 <span>#{ticket.number}</span>
                                                 <span>·</span>
                                                 <span>

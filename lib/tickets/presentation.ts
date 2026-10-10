@@ -5,27 +5,21 @@ import type {
     TicketState,
 } from '@/app/client/generated/enums';
 
-export const ticketStateStyles: Record<TicketState, string> = {
-    OPEN: 'bg-blue-500/15 text-blue-600 dark:text-blue-400',
-    WAITING_FOR_CUSTOMER: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-    ON_HOLD: 'bg-violet-500/15 text-violet-600 dark:text-violet-400',
-    RESOLVED: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-    CLOSED: 'bg-slate-500/15 text-slate-600 dark:text-slate-300',
+/** Solid colour per state, for small status dots. */
+export const ticketStateDotStyles: Record<TicketState, string> = {
+    OPEN: 'bg-blue-500',
+    WAITING_FOR_CUSTOMER: 'bg-amber-500',
+    ON_HOLD: 'bg-violet-500',
+    RESOLVED: 'bg-emerald-500',
+    CLOSED: 'bg-slate-400',
 };
 
-export const ticketPriorityStyles: Record<TicketPriority, string> = {
-    LOW: 'bg-slate-500/10 text-slate-500 dark:text-slate-400',
-    NORMAL: 'bg-slate-500/15 text-slate-600 dark:text-slate-300',
-    HIGH: 'bg-orange-500/15 text-orange-600 dark:text-orange-400',
-    URGENT: 'bg-red-500/15 text-red-600 dark:text-red-400',
-};
-
-export const ticketCategoryStyles: Record<TicketCategory, string> = {
-    GENERAL: 'bg-slate-500/15 text-slate-600 dark:text-slate-300',
-    TECHNICAL: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400',
-    BILLING: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-    ACCOUNT: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
-    SUSPENSION: 'bg-red-500/15 text-red-600 dark:text-red-400',
+/** Only elevated priorities stand out; LOW/NORMAL stay muted. */
+export const ticketPriorityTextStyles: Record<TicketPriority, string> = {
+    LOW: 'text-muted-foreground',
+    NORMAL: 'text-muted-foreground',
+    HIGH: 'font-medium text-orange-600 dark:text-orange-400',
+    URGENT: 'font-semibold text-red-600 dark:text-red-400',
 };
 
 // Admin UI is English-only; customer pages use `supportTickets.*` translations instead.

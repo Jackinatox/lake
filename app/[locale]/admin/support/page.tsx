@@ -9,7 +9,7 @@ import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import NoAdmin from '@/components/admin/NoAdminMessage';
 import InboxAutoRefresh from '@/components/admin/tickets/InboxAutoRefresh';
 import TicketInboxFilters from '@/components/admin/tickets/TicketInboxFilters';
-import TicketBadge from '@/components/support/TicketBadge';
+import TicketStatusLabel from '@/components/support/TicketStatusLabel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
@@ -22,9 +22,7 @@ import {
     adminTicketStateLabels,
     formatTicketAge,
     staffDisplayName,
-    ticketCategoryStyles,
-    ticketPriorityStyles,
-    ticketStateStyles,
+    ticketPriorityTextStyles,
 } from '@/lib/tickets/presentation';
 import { cn } from '@/lib/utils';
 import { adminTicketFiltersSchema } from '@/lib/validation/tickets';
@@ -94,7 +92,7 @@ export default async function AdminSupportInboxPage({
     };
 
     return (
-        <div className="flex w-full flex-col gap-4">
+        <div className="flex w-full flex-col gap-4 pb-24 md:pb-32">
             <AdminBreadcrumb items={[{ label: 'Support Inbox' }]} />
             <InboxAutoRefresh />
 
@@ -243,32 +241,22 @@ export default async function AdminSupportInboxPage({
                                                 {` · ${ticket._count.messages} msg`}
                                             </div>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-1.5 lg:contents">
-                                            <span>
-                                                <TicketBadge
-                                                    className={
-                                                        ticketCategoryStyles[ticket.category]
-                                                    }
-                                                >
-                                                    {adminTicketCategoryLabels[ticket.category]}
-                                                </TicketBadge>
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs lg:contents">
+                                            <span className="truncate text-muted-foreground">
+                                                {adminTicketCategoryLabels[ticket.category]}
                                             </span>
-                                            <span>
-                                                <TicketBadge
-                                                    className={
-                                                        ticketPriorityStyles[ticket.priority]
-                                                    }
-                                                >
-                                                    {adminTicketPriorityLabels[ticket.priority]}
-                                                </TicketBadge>
+                                            <span
+                                                className={cn(
+                                                    'truncate',
+                                                    ticketPriorityTextStyles[ticket.priority],
+                                                )}
+                                            >
+                                                {adminTicketPriorityLabels[ticket.priority]}
                                             </span>
-                                            <span>
-                                                <TicketBadge
-                                                    className={ticketStateStyles[ticket.status]}
-                                                >
-                                                    {adminTicketStateLabels[ticket.status]}
-                                                </TicketBadge>
-                                            </span>
+                                            <TicketStatusLabel
+                                                status={ticket.status}
+                                                label={adminTicketStateLabels[ticket.status]}
+                                            />
                                             <span className="truncate text-xs text-muted-foreground">
                                                 {ticket.assignee
                                                     ? (staffDisplayName(ticket.assignee) ?? 'Admin')

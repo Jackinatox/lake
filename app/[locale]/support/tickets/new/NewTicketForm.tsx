@@ -4,7 +4,7 @@ import { createTicketAction } from '@/app/actions/tickets/customerTicketActions'
 import type { TicketCategory } from '@/app/client/generated/enums';
 import { ticketCategoryIcons } from '@/components/support/TicketCategoryIcon';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -96,19 +96,20 @@ export default function NewTicketForm({
     };
 
     return (
-        <div className="mx-auto w-full max-w-3xl md:p-6">
-            <Button asChild variant="ghost" size="sm" className="mb-2 gap-1 px-2">
-                <Link href={SUPPORT_LANDING_PATH}>
-                    <ArrowLeft className="h-4 w-4" />
-                    {t('form.back')}
-                </Link>
-            </Button>
+        <div className="mx-auto w-full max-w-3xl pb-24 md:p-6 md:pb-32">
+            <header className="sticky top-0 z-30 -mx-2 flex items-center gap-2 border-b bg-background/80 px-2 py-2 backdrop-blur-md md:-mx-6 md:px-6">
+                <Button asChild variant="ghost" size="icon" className="shrink-0">
+                    <Link href={SUPPORT_LANDING_PATH} aria-label={t('form.back')}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <h1 className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight sm:text-xl">
+                    {t('form.title')}
+                </h1>
+            </header>
+            <p className="py-3 text-sm text-muted-foreground">{t('form.description')}</p>
             <Card>
-                <CardHeader>
-                    <CardTitle>{t('form.title')}</CardTitle>
-                    <CardDescription>{t('form.description')}</CardDescription>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-3 md:pt-6">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <fieldset className="space-y-2">
                             <legend className="text-sm font-medium leading-none">
