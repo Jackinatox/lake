@@ -23,7 +23,8 @@ export const feedbackDataSchema = z.object({
 
 export const submitFeedbackSchema = z.object({
     type: z.nativeEnum(FeedbackType),
-    ptGameServerId: serverIdentifierSchema.optional(),
+    // Required: every Feedback row is bound to a GameServer via a foreign key.
+    ptGameServerId: serverIdentifierSchema,
     title: optionalStringSchema(200),
     message: optionalStringSchema(5_000),
     data: feedbackDataSchema,

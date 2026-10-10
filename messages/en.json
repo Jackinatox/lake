@@ -390,6 +390,11 @@
       "description": "Select your preferred game settings",
       "noSpecific": "No specific configuration options available for this game.",
       "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "numberField": {
+        "required": "Enter a number",
+        "wholeNumber": "Whole numbers only",
+        "range": "Must be between {min} and {max}"
+      },
       "minecraft": {
         "modpackTab": "Modpack (Beta)",
         "modpackBeta": {
@@ -1524,6 +1529,7 @@
       "allServers": "All servers",
       "userSearchPlaceholder": "Email, username, ID...",
       "noUsers": "No users found",
+      "clearUser": "Clear user filter",
       "freeServer": "Free",
       "timeRanges": {
         "ALL": "All Time",

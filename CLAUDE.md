@@ -32,6 +32,14 @@ markdown files under `docs/`, NOT in this file. How to use it:
   set and its URL params, the links from a log row into the admin gameserver
   list, and the `serverId` filter on that list. Read when touching the log
   viewer, `getApplicationLogs`, or the gameserver admin filters.
+- `admin-gameserver-panel.md` — The `/admin/gameservers` panel: the summary tiles, the
+  "needs attention" chips, the distribution card, the dense server rows and every
+  URL param. Read when touching the gameserver admin screen, its filters, or the
+  links between it and the log viewer / Pterodactyl panel.
+- `game-images.md` — Where per-game icons and banners live
+  (`public/images/{light,dark}/games/icons/<slug>.webp`, `games/banners/<slug>.jpg`), how
+  `ThemeImage` picks the themed one, and `hasGameIcon()` for games without art. Read when
+  showing a game icon anywhere or adding a game.
 - `admin-job-status.md` — The `/admin/jobStatus` dashboard: how the jobs the
   worker reports are joined with the `JobRun`/`WorkerLog` tables, the
   Prisma-derived types in `types/jobs.ts`, and the job-name ↔ `WorkerJobType`

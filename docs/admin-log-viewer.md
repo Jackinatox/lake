@@ -12,7 +12,9 @@ no per-server admin page.
 - `components/admin/logs/LogViewer.tsx` — filter/page state, URL sync, data fetching.
 - `components/admin/logs/LogFilters.tsx` — filter bar (search, level, category,
   time range, user, server) plus the `LogFilterState` type.
-- `components/admin/logs/LogUserPicker.tsx` — server-side-searching user combobox.
+- `components/admin/logs/LogUserPicker.tsx` — translated wrapper around
+  `components/admin/AdminUserPicker.tsx`, the shared server-side-searching user
+  combobox (also used by the gameserver panel).
 - `components/admin/logs/LogList.tsx` — column header, rows, pagination.
 - `components/admin/logs/LogRow.tsx` — one log line + expanded details.
 - `app/actions/logs/getApplicationLogs.ts` — `getApplicationLogs`,
@@ -54,18 +56,20 @@ Each row shows the attached user and gameserver on the right. Both offer:
    comes from `gameServer.userId`, so it is correct even when the log row has no
    `userId` of its own.
 
-Both server selectors (the log filter and the gameserver admin filter) mark
-`FREE` servers with coloured text plus a small "Free" suffix; paid servers render
-plain. `getLogUserServers` and the admin page's `serverOptions` therefore select
-`type` as well.
+The log filter's server selector marks `FREE` servers with coloured text plus a
+small "Free" suffix; paid servers render plain. `getLogUserServers` therefore
+selects `type` as well.
 
 ## Gameserver admin `serverId` filter
 
-`app/[locale]/admin/gameservers/page.tsx` accepts `serverId` (mapped to
-`where.id`) and passes `serverOptions` — all servers of the filtered user plus
-the selected one — to `GameserversTable`, which renders the "Server" select.
-Changing the user filter clears `serverId`. This is what makes "open one server
-from a log, then drop the server filter to see the user's other servers" work.
+`app/[locale]/admin/gameservers/page.tsx` accepts `serverId` (mapped to `where.id`).
+It has no control of its own in that filter bar — it is a deep-link target only. To
+widen the view from one server to all of its owner's servers, the row's owner funnel
+sets `userId` and drops `serverId` in one click; "Clear" removes every filter.
+A `serverId` (or `search`) lookup also lifts that page's default "hide deleted"
+scope, so a log about an already-deleted server still resolves to its row. The
+panel links back: every row has a logs link, and its error badge opens this
+viewer filtered to that server. See `admin-gameserver-panel.md`.
 
 ## Schema notes
 

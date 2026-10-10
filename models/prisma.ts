@@ -34,6 +34,20 @@ export type GameServerAdmin = Prisma.GameServerGetPayload<{
     include: { user: { select: { email: true } }; location: { select: { name: true } } };
 }> & { suspensions: ActiveSuspension[] };
 
+/**
+ * One row of the admin gameserver panel. Richer than `GameServerAdmin`: the panel links out to
+ * the Pterodactyl user (needs `ptUserId`) and groups by game and tier. Structurally a superset,
+ * so the shared admin dialogs still accept it.
+ */
+export type GameServerAdminRow = Prisma.GameServerGetPayload<{
+    include: {
+        user: { select: { id: true; email: true; name: true; username: true; ptUserId: true } };
+        location: { select: { id: true; name: true } };
+        gameData: { select: { id: true; name: true; slug: true } };
+        resourceTier: { select: { id: true; name: true } };
+    };
+}> & { suspensions: ActiveSuspension[] };
+
 export type PackageWithCPURAM = Prisma.PackageGetPayload<{
     include: { location: { include: { cpu: true; ram: true } } };
 }>;
