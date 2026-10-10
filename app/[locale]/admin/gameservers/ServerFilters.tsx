@@ -18,6 +18,9 @@ import {
     CREATED_RANGE_KEYS,
     CREATED_RANGE_META,
     DEFAULT_CREATED_RANGE,
+    DEFAULT_SUSPENSION_FILTER,
+    SUSPENSION_FILTER_KEYS,
+    SUSPENSION_FILTER_META,
 } from '@/lib/gameserver/adminServers';
 import { Search, X } from 'lucide-react';
 import { ThemeImage } from '@/components/ui/theme-image';
@@ -105,8 +108,10 @@ export default function ServerFilters({
         <div className={cn('flex items-end gap-2 transition-opacity', pending && 'opacity-60')}>
             {/* Widths follow the content, not an equal-column grid: only Search and Owner
                 need room, so the whole bar stays on one line well below 1280px. */}
-            <div className="flex min-w-0 flex-1 flex-wrap items-end gap-2">
-                <Field label="Search" className="min-w-[150px] flex-1">
+            {/* One line, grouped identity → what → state → when. Widths follow the
+                content so the whole bar still fits above ~1250px. */}
+            <div className="flex min-w-0 flex-1 flex-wrap items-end gap-x-2 gap-y-2">
+                <Field label="Search" className="min-w-[140px] flex-1">
                     <div className="relative">
                         <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
@@ -120,7 +125,7 @@ export default function ServerFilters({
                     </div>
                 </Field>
 
-                <Field label="Owner" className="w-44 shrink-0">
+                <Field label="Owner" className="w-40 shrink-0">
                     <AdminUserPicker
                         value={filters.userId}
                         selectedUser={selectedUser}
@@ -131,10 +136,12 @@ export default function ServerFilters({
                     />
                 </Field>
 
-                <Field label="Game" className="w-32 shrink-0">
+                <Field label="Game" className="w-36 shrink-0">
                     <Select
                         value={filters.gameId ?? 'all'}
-                        onValueChange={(value) => setParams({ gameId: value })}
+                        onValueChange={(value) =>
+                            setParams({ gameId: value === 'all' ? undefined : value })
+                        }
                     >
                         <SelectTrigger className="h-8 text-xs">
                             <SelectValue placeholder="All games" />
@@ -169,10 +176,12 @@ export default function ServerFilters({
                     </Select>
                 </Field>
 
-                <Field label="Location" className="w-32 shrink-0">
+                <Field label="Location" className="w-28 shrink-0">
                     <Select
                         value={filters.locationId ?? 'all'}
-                        onValueChange={(value) => setParams({ locationId: value })}
+                        onValueChange={(value) =>
+                            setParams({ locationId: value === 'all' ? undefined : value })
+                        }
                     >
                         <SelectTrigger className="h-8 text-xs">
                             <SelectValue placeholder="All locations" />
@@ -194,6 +203,85 @@ export default function ServerFilters({
                     </Select>
                 </Field>
 
+                <Field label="Plan" className="w-24 shrink-0">
+                    <Select
+                        value={filters.type ?? 'all'}
+                        onValueChange={(value) =>
+                            setParams({ type: value === 'all' ? undefined : value })
+                        }
+                    >
+                        <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">
+                                All plans
+                            </SelectItem>
+                            {Object.values(GameServerType).map((type) => (
+                                <SelectItem key={type} value={type} className="text-xs">
+                                    {TYPE_META[type].label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
+
+                <Field label="Status" className="w-36 shrink-0">
+                    <Select
+                        value={filters.status ?? 'all'}
+                        onValueChange={(value) =>
+                            setParams({ status: value === 'all' ? undefined : value })
+                        }
+                    >
+                        <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="All, excl. deleted" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">
+                                All, excl. deleted
+                            </SelectItem>
+                            {Object.values(GameServerStatus).map((status) => (
+                                <SelectItem key={status} value={status} className="text-xs">
+                                    {STATUS_META[status].label}
+                                </SelectItem>
+                            ))}
+                            <SelectItem value="ANY" className="text-xs">
+                                All, incl. deleted
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
+
+                <Field label="Suspension" className="w-40 shrink-0">
+                    <div className="flex h-8 items-stretch gap-0.5 rounded-md border p-0.5">
+                        {SUSPENSION_FILTER_KEYS.map((key) => {
+                            const active =
+                                (filters.suspension ?? DEFAULT_SUSPENSION_FILTER) === key;
+
+                            return (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    title={SUSPENSION_FILTER_META[key].hint}
+                                    aria-pressed={active}
+                                    onClick={() =>
+                                        setParams({
+                                            suspension:
+                                                key === DEFAULT_SUSPENSION_FILTER ? undefined : key,
+                                        })
+                                    }
+                                    className={cn(
+                                        'flex-1 rounded px-1 py-1 text-[11px] transition-colors hover:bg-muted',
+                                        active && 'bg-muted font-medium',
+                                    )}
+                                >
+                                    {SUSPENSION_FILTER_META[key].label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Field>
+
                 <Field label="Created" className="w-32 shrink-0">
                     <Select
                         value={filters.created ?? DEFAULT_CREATED_RANGE}
@@ -212,51 +300,6 @@ export default function ServerFilters({
                                     {CREATED_RANGE_META[key]}
                                 </SelectItem>
                             ))}
-                        </SelectContent>
-                    </Select>
-                </Field>
-
-                <Field label="Plan" className="w-28 shrink-0">
-                    <Select
-                        value={filters.type ?? 'all'}
-                        onValueChange={(value) => setParams({ type: value })}
-                    >
-                        <SelectTrigger className="h-8 text-xs">
-                            <SelectValue placeholder="All" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all" className="text-xs">
-                                All plans
-                            </SelectItem>
-                            {Object.values(GameServerType).map((type) => (
-                                <SelectItem key={type} value={type} className="text-xs">
-                                    {TYPE_META[type].label}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </Field>
-
-                <Field label="Status" className="w-40 shrink-0">
-                    <Select
-                        value={filters.status ?? 'all'}
-                        onValueChange={(value) => setParams({ status: value })}
-                    >
-                        <SelectTrigger className="h-8 text-xs">
-                            <SelectValue placeholder="All, excl. deleted" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all" className="text-xs">
-                                All, excl. deleted
-                            </SelectItem>
-                            {Object.values(GameServerStatus).map((status) => (
-                                <SelectItem key={status} value={status} className="text-xs">
-                                    {STATUS_META[status].label}
-                                </SelectItem>
-                            ))}
-                            <SelectItem value="ANY" className="text-xs">
-                                All, incl. deleted
-                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </Field>

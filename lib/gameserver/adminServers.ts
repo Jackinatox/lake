@@ -28,16 +28,36 @@ export function notDeletedWhere(): Prisma.GameServerWhereInput {
     return { status: { not: 'DELETED' } };
 }
 
-export type AttentionKey = 'failed' | 'stuck' | 'orphaned' | 'overdue' | 'suspended' | 'errors';
+/**
+ * Suspension is a scope of its own, not one of the attention states: an admin almost always
+ * wants the servers that are *not* quarantined, so that is the default and it applies before
+ * anything else. The KPI tile keeps counting suspended servers regardless, which is how you
+ * notice there is something to switch to.
+ */
+export type SuspensionFilter = 'active' | 'suspended' | 'all';
 
-export const ATTENTION_KEYS: AttentionKey[] = [
-    'failed',
-    'stuck',
-    'orphaned',
-    'overdue',
-    'suspended',
-    'errors',
-];
+export const SUSPENSION_FILTER_KEYS: SuspensionFilter[] = ['active', 'suspended', 'all'];
+
+export const SUSPENSION_FILTER_META: Record<SuspensionFilter, { label: string; hint: string }> = {
+    active: { label: 'Active', hint: 'Hide quarantined servers (default)' },
+    suspended: { label: 'Suspended', hint: 'Only servers under an active suspension' },
+    all: { label: 'Both', hint: 'Suspended and unsuspended together' },
+};
+
+export const DEFAULT_SUSPENSION_FILTER: SuspensionFilter = 'active';
+
+/** `undefined` for `all`, so the caller can leave the fragment out entirely. */
+export function suspensionFilterWhere(
+    key: SuspensionFilter,
+): Prisma.GameServerWhereInput | undefined {
+    if (key === 'all') return undefined;
+    const suspended = { suspensions: suspendedServerWhere() };
+    return key === 'suspended' ? suspended : { NOT: suspended };
+}
+
+export type AttentionKey = 'failed' | 'stuck' | 'orphaned' | 'overdue' | 'errors';
+
+export const ATTENTION_KEYS: AttentionKey[] = ['failed', 'stuck', 'orphaned', 'overdue', 'errors'];
 
 /** Label plus the one-line explanation of *why* the state is wrong, shown as a tooltip. */
 export const ATTENTION_META: Record<AttentionKey, { label: string; hint: string }> = {
@@ -57,10 +77,6 @@ export const ATTENTION_META: Record<AttentionKey, { label: string; hint: string 
         label: 'Past expiry',
         hint: 'Still ACTIVE although the expiry date has passed — the worker has not caught up.',
     },
-    suspended: {
-        label: 'Suspended',
-        hint: 'Currently quarantined (or waiting for the worker to process the expiry).',
-    },
     errors: {
         label: 'Recent errors',
         hint: `ERROR or FATAL log entries in the last ${ERROR_WINDOW_HOURS} h.`,
@@ -79,7 +95,6 @@ export function attentionWhere(key: AttentionKey, now: Date = new Date()) {
             OR: [{ ptServerId: null }, { ptAdminId: null }],
         },
         overdue: { status: 'ACTIVE', expires: { lt: now } },
-        suspended: { suspensions: suspendedServerWhere() },
         errors: {
             ApplicationLog: {
                 some: {

@@ -1,5 +1,10 @@
 import type { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
-import type { AttentionKey, CreatedRangeKey, RenewalKey } from '@/lib/gameserver/adminServers';
+import type {
+    AttentionKey,
+    CreatedRangeKey,
+    RenewalKey,
+    SuspensionFilter,
+} from '@/lib/gameserver/adminServers';
 
 /** One bar in the distribution card: a named slice of the selection plus the filter that isolates it. */
 export type ServerSlice = {
@@ -35,6 +40,11 @@ export type ServerStats = {
     renewalValueCents: number;
     attention: Record<AttentionKey, number>;
     renewals: Record<RenewalKey, number>;
+    /**
+     * Suspended servers in the selection, counted *without* the suspension filter — otherwise
+     * the tile would read 0 in the default view and no one would know to switch.
+     */
+    suspendedCount: number;
     byLocation: ServerSlice[];
     byGame: ServerSlice[];
 };
@@ -49,8 +59,10 @@ export type ServerFilterState = {
     status?: GameServerStatus | 'ANY';
     attention?: AttentionKey;
     renewal?: RenewalKey;
-    /** Timespan filter on `createdAt`; `'ALL'` (the default) applies nothing. */
+    /** Timespan filter on `createdAt`; `'ALL'` applies nothing. */
     created?: CreatedRangeKey;
+    /** Quarantine scope; `'active'` (the default) hides suspended servers. */
+    suspension?: SuspensionFilter;
 };
 
 export type SortKey = 'created' | 'expires' | 'name' | 'price' | 'ram' | 'cpu';

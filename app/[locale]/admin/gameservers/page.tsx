@@ -14,6 +14,10 @@ import {
     CREATED_RANGE_KEYS,
     CreatedRangeKey,
     DEFAULT_CREATED_RANGE,
+    DEFAULT_SUSPENSION_FILTER,
+    SUSPENSION_FILTER_KEYS,
+    SuspensionFilter,
+    suspensionFilterWhere,
     RENEWAL_KEYS,
     RenewalKey,
     attentionWhere,
@@ -43,6 +47,7 @@ interface SearchParams {
     attention?: AttentionKey;
     renewal?: RenewalKey;
     created?: CreatedRangeKey;
+    suspension?: SuspensionFilter;
     sort?: SortKey;
     dir?: 'asc' | 'desc';
     /** Legacy: the old table's suspension filter. Kept so bookmarked links keep working. */
@@ -113,6 +118,12 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         ? (params.created as CreatedRangeKey)
         : DEFAULT_CREATED_RANGE;
 
+    const suspension: SuspensionFilter = SUSPENSION_FILTER_KEYS.includes(
+        params.suspension as SuspensionFilter,
+    )
+        ? (params.suspension as SuspensionFilter)
+        : DEFAULT_SUSPENSION_FILTER;
+
     const filters: ServerFilterState = {
         search: search || undefined,
         userId: params.userId,
@@ -124,6 +135,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         attention,
         renewal,
         created,
+        suspension,
     };
 
     // ---- the filter, kept in named pieces --------------------------------------------
@@ -142,7 +154,8 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         | 'status'
         | 'attention'
         | 'renewal'
-        | 'created';
+        | 'created'
+        | 'suspension';
 
     const parts: { key: FilterKey; where: Prisma.GameServerWhereInput }[] = [];
 
@@ -180,10 +193,11 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     if (renewal) parts.push({ key: 'renewal', where: renewalWhere(renewal, now) });
     const createdWhere = createdRangeWhere(created, now);
     if (createdWhere) parts.push({ key: 'created', where: createdWhere });
-    // Legacy param from the previous table
-    if (!attention && params.suspended === 'true') {
-        parts.push({ key: 'attention', where: { suspensions: suspendedServerWhere() } });
-    }
+    // Legacy param from the previous table — now just another way to say suspension=suspended
+    const suspensionWhere = suspensionFilterWhere(
+        params.suspended === 'true' && !params.suspension ? 'suspended' : suspension,
+    );
+    if (suspensionWhere) parts.push({ key: 'suspension', where: suspensionWhere });
 
     /** The selection, optionally without one of its own pieces (see the attention chips). */
     const selection = (...without: FilterKey[]): Prisma.GameServerWhereInput => {
@@ -196,7 +210,9 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     // "Clear" would have nothing to clear.
     const filterCount = parts.filter(
         (part) =>
-            part.key !== 'scope' && !(part.key === 'created' && created === DEFAULT_CREATED_RANGE),
+            part.key !== 'scope' &&
+            !(part.key === 'created' && created === DEFAULT_CREATED_RANGE) &&
+            !(part.key === 'suspension' && suspension === DEFAULT_SUSPENSION_FILTER),
     ).length;
 
     // ---- one round trip for the page, the selection aggregates and the filter options -
@@ -209,6 +225,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         locationGroups,
         gameGroups,
         renewalValue,
+        suspendedCount,
         attentionCounts,
         renewalCounts,
         locations,
@@ -254,6 +271,9 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         prisma.gameServer.aggregate({
             where: { AND: [where, { status: 'ACTIVE', type: { not: 'FREE' } }] },
             _sum: { price: true },
+        }),
+        prisma.gameServer.count({
+            where: { AND: [selection('suspension'), { suspensions: suspendedServerWhere() }] },
         }),
         Promise.all(
             ATTENTION_KEYS.map((key) =>
@@ -351,6 +371,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         cpuPercent: selectionTotals._sum.cpuPercent ?? 0,
         diskMB: selectionTotals._sum.diskMB ?? 0,
         renewalValueCents: renewalValue._sum.price ?? 0,
+        suspendedCount,
         attention: Object.fromEntries(
             ATTENTION_KEYS.map((key, index) => [key, attentionCounts[index]]),
         ) as Record<AttentionKey, number>,

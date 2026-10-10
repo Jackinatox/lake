@@ -9,11 +9,12 @@ export type ParamPatch = Record<string, string | number | undefined | null>;
 const LAYOUT_PARAMS = ['limit', 'sort', 'dir'] as const;
 
 /**
- * What `only` carries over: the layout, plus the timespan. `created` *is* a filter (it has a
- * control and it counts towards the filter badge), but it is a standing one the admin set
- * deliberately — a click in the chart must not revert it behind their back.
+ * What `only` carries over: the layout, plus the timespan and the suspension scope. Both *are*
+ * filters (they have controls and count towards the filter badge), but they are standing ones
+ * the admin set deliberately — a click in the chart must not revert them behind their back and
+ * hide the very servers that slice counted.
  */
-const VIEW_PARAMS = [...LAYOUT_PARAMS, 'created'] as const;
+const VIEW_PARAMS = [...LAYOUT_PARAMS, 'created', 'suspension'] as const;
 
 /**
  * Every control of the panel writes to the URL, so any state an admin is looking at can be
@@ -30,7 +31,10 @@ export function useServerParams() {
         const next = new URLSearchParams(searchParams.toString());
 
         for (const [key, value] of Object.entries(patch)) {
-            if (value === undefined || value === null || value === '' || value === 'all') {
+            // No magic values here: a filter whose own vocabulary contains "all" (the
+            // suspension scope does) would have its real selection swallowed. Callers that
+            // use an "all" option in a <Select> map it to undefined themselves.
+            if (value === undefined || value === null || value === '') {
                 next.delete(key);
             } else {
                 next.set(key, String(value));

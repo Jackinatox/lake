@@ -43,7 +43,13 @@ their own filter applied. They are a toggle group, and counting them inside thei
 selection would zero out every chip but the active one — and a chip showing 0 is disabled,
 so there would be no way to switch from one to another.
 
-Default scope hides deleted servers (`status != DELETED`, the `scope` piece). It is dropped
+Two scopes are on before any filter is touched: deleted servers are hidden
+(`status != DELETED`, the `scope` piece) and so are suspended ones (the `suspension` piece,
+default `active`). Suspension is deliberately **not** an attention chip — it is a scope with
+its own three-way control, because an admin almost always wants the servers that are not
+quarantined. The "Suspended" KPI tile keeps counting them anyway: it is the one query that
+drops the `suspension` piece (`selection('suspension')`), so it reads the real number in the
+default view and tells you there is something to switch to. It is dropped
 when the status filter explicitly asks for deleted rows (`DELETED` or `ANY`), and when a
 `serverId` or `search` pinpoints a row — finding a deleted server is usually the reason
 such a link was followed.
@@ -63,17 +69,18 @@ such a link was followed.
 | `created`              | timespan on `createdAt`: `ALL` / `1d` / `7d` / `30d` / `90d` / `365d`. Absent means `DEFAULT_CREATED_RANGE` (30 d), so it is "Any time" that needs the param |
 | `sort`, `dir`          | `created` (default, i.e. newest booking first) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default                                                |
 | `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                                                                                                     |
-| `suspended=true`       | legacy alias of `attention=suspended`, kept for bookmarked links                                                                                             |
+| `suspension`           | quarantine scope: `active` (default, hides suspended) / `suspended` / `all`. Absent means `active`, so it is the other two that carry the param              |
+| `suspended=true`       | legacy alias of `suspension=suspended`, kept for bookmarked links                                                                                            |
 
 `useServerParams` is the single writer: `setParams` patches (and resets `page`),
 `toggleParam` clears a param that already holds the clicked value, `only` replaces the
 dimension filters — that is what the distribution bars use, so clicking a slice shows
 _that_ slice instead of intersecting it with whatever was already filtered — and
 `clearAll` backs the Clear button. The difference between the last two is what survives:
-`only` carries `VIEW_PARAMS` (`limit`, `sort`, `dir` **and `created`**), because dropping
-the timespan would snap the view back to its 30-day default and could hide the very
-servers whose slice was clicked; `clearAll` keeps only the layout params, so the timespan
-is cleared along with every other filter. All three push inside a transition, and the `pending` flag dims the
+`only` carries `VIEW_PARAMS` (`limit`, `sort`, `dir` **plus `created` and `suspension`**),
+because dropping those would snap the view back to its defaults — the last 30 days, no
+suspended servers — and could hide the very servers whose slice was clicked; `clearAll`
+keeps only the layout params, so both scopes are reset along with every other filter. All three push inside a transition, and the `pending` flag dims the
 affected card while the server component re-renders.
 
 ## Attention chips
@@ -82,14 +89,13 @@ affected card while the server component re-renders.
 count and the filtered list use the _same_ `where` fragment, so a chip that says 3
 always lists exactly those 3 servers.
 
-| Key         | Detects                                                                          |
-| ----------- | -------------------------------------------------------------------------------- |
-| `failed`    | `CREATION_FAILED` — PT rejected the create call                                  |
-| `stuck`     | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
-| `orphaned`  | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
-| `overdue`   | `ACTIVE` past its expiry — the worker has not caught up                          |
-| `suspended` | `suspendedServerWhere()`, i.e. incl. the grace window                            |
-| `errors`    | ERROR/FATAL `ApplicationLog` rows in the last `ERROR_WINDOW_HOURS` (24)          |
+| Key        | Detects                                                                          |
+| ---------- | -------------------------------------------------------------------------------- |
+| `failed`   | `CREATION_FAILED` — PT rejected the create call                                  |
+| `stuck`    | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
+| `orphaned` | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
+| `overdue`  | `ACTIVE` past its expiry — the worker has not caught up                          |
+| `errors`   | ERROR/FATAL `ApplicationLog` rows in the last `ERROR_WINDOW_HOURS` (24)          |
 
 ## Distribution card
 
