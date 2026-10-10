@@ -10,6 +10,12 @@ export type ServerSlice = {
     cpuPercent: number;
     /** Query params that filter the list down to exactly this slice. */
     filter: Record<string, string>;
+    /**
+     * Palette slot for the dimensions without a meaning-colour (location, game). Assigned from
+     * the *complete* list of that entity, never from the slices present in the current view —
+     * otherwise filtering one location out would repaint every other one.
+     */
+    colorIndex?: number;
 };
 
 /**

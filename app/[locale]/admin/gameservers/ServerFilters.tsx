@@ -14,7 +14,11 @@ import AdminUserPicker from '@/components/admin/AdminUserPicker';
 import type { LogUserOption } from '@/app/actions/logs/getApplicationLogs';
 import { useDebounce } from '@/hooks/use-debounce';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
-import { CREATED_RANGE_KEYS, CREATED_RANGE_META } from '@/lib/gameserver/adminServers';
+import {
+    CREATED_RANGE_KEYS,
+    CREATED_RANGE_META,
+    DEFAULT_CREATED_RANGE,
+} from '@/lib/gameserver/adminServers';
 import { Search, X } from 'lucide-react';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { cn } from '@/lib/utils';
@@ -32,9 +36,17 @@ type ServerFiltersProps = {
     filterCount: number;
 };
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+    label,
+    className,
+    children,
+}: {
+    label: string;
+    className?: string;
+    children: React.ReactNode;
+}) {
     return (
-        <div className="space-y-1">
+        <div className={cn('space-y-1', className)}>
             <span className="block text-[11px] font-medium text-muted-foreground">{label}</span>
             {children}
         </div>
@@ -48,7 +60,7 @@ export default function ServerFilters({
     selectedUser,
     filterCount,
 }: ServerFiltersProps) {
-    const { setParams, only, pending } = useServerParams();
+    const { setParams, clearAll, pending } = useServerParams();
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [search, setSearch] = useState(filters.search ?? '');
@@ -91,8 +103,10 @@ export default function ServerFilters({
         // never removed — a button that appears on the first filter would push the whole
         // page down a line.
         <div className={cn('flex items-end gap-2 transition-opacity', pending && 'opacity-60')}>
-            <div className="grid min-w-0 flex-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-                <Field label="Search">
+            {/* Widths follow the content, not an equal-column grid: only Search and Owner
+                need room, so the whole bar stays on one line well below 1280px. */}
+            <div className="flex min-w-0 flex-1 flex-wrap items-end gap-2">
+                <Field label="Search" className="min-w-[150px] flex-1">
                     <div className="relative">
                         <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                         <Input
@@ -106,7 +120,7 @@ export default function ServerFilters({
                     </div>
                 </Field>
 
-                <Field label="Owner">
+                <Field label="Owner" className="w-44 shrink-0">
                     <AdminUserPicker
                         value={filters.userId}
                         selectedUser={selectedUser}
@@ -117,7 +131,7 @@ export default function ServerFilters({
                     />
                 </Field>
 
-                <Field label="Game">
+                <Field label="Game" className="w-32 shrink-0">
                     <Select
                         value={filters.gameId ?? 'all'}
                         onValueChange={(value) => setParams({ gameId: value })}
@@ -155,7 +169,7 @@ export default function ServerFilters({
                     </Select>
                 </Field>
 
-                <Field label="Location">
+                <Field label="Location" className="w-32 shrink-0">
                     <Select
                         value={filters.locationId ?? 'all'}
                         onValueChange={(value) => setParams({ locationId: value })}
@@ -180,11 +194,13 @@ export default function ServerFilters({
                     </Select>
                 </Field>
 
-                <Field label="Created">
+                <Field label="Created" className="w-32 shrink-0">
                     <Select
-                        value={filters.created ?? 'ALL'}
+                        value={filters.created ?? DEFAULT_CREATED_RANGE}
                         onValueChange={(value) =>
-                            setParams({ created: value === 'ALL' ? undefined : value })
+                            setParams({
+                                created: value === DEFAULT_CREATED_RANGE ? undefined : value,
+                            })
                         }
                     >
                         <SelectTrigger className="h-8 text-xs">
@@ -200,52 +216,50 @@ export default function ServerFilters({
                     </Select>
                 </Field>
 
-                <div className="grid grid-cols-2 gap-2">
-                    <Field label="Plan">
-                        <Select
-                            value={filters.type ?? 'all'}
-                            onValueChange={(value) => setParams({ type: value })}
-                        >
-                            <SelectTrigger className="h-8 text-xs">
-                                <SelectValue placeholder="All" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all" className="text-xs">
-                                    All plans
+                <Field label="Plan" className="w-28 shrink-0">
+                    <Select
+                        value={filters.type ?? 'all'}
+                        onValueChange={(value) => setParams({ type: value })}
+                    >
+                        <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">
+                                All plans
+                            </SelectItem>
+                            {Object.values(GameServerType).map((type) => (
+                                <SelectItem key={type} value={type} className="text-xs">
+                                    {TYPE_META[type].label}
                                 </SelectItem>
-                                {Object.values(GameServerType).map((type) => (
-                                    <SelectItem key={type} value={type} className="text-xs">
-                                        {TYPE_META[type].label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </Field>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-                    <Field label="Status">
-                        <Select
-                            value={filters.status ?? 'all'}
-                            onValueChange={(value) => setParams({ status: value })}
-                        >
-                            <SelectTrigger className="h-8 text-xs">
-                                <SelectValue placeholder="All, excl. deleted" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all" className="text-xs">
-                                    All, excl. deleted
+                <Field label="Status" className="w-40 shrink-0">
+                    <Select
+                        value={filters.status ?? 'all'}
+                        onValueChange={(value) => setParams({ status: value })}
+                    >
+                        <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="All, excl. deleted" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all" className="text-xs">
+                                All, excl. deleted
+                            </SelectItem>
+                            {Object.values(GameServerStatus).map((status) => (
+                                <SelectItem key={status} value={status} className="text-xs">
+                                    {STATUS_META[status].label}
                                 </SelectItem>
-                                {Object.values(GameServerStatus).map((status) => (
-                                    <SelectItem key={status} value={status} className="text-xs">
-                                        {STATUS_META[status].label}
-                                    </SelectItem>
-                                ))}
-                                <SelectItem value="ANY" className="text-xs">
-                                    All, incl. deleted
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </Field>
-                </div>
+                            ))}
+                            <SelectItem value="ANY" className="text-xs">
+                                All, incl. deleted
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
             </div>
 
             <Button
@@ -253,11 +267,11 @@ export default function ServerFilters({
                 size="sm"
                 className="h-8 shrink-0 text-xs"
                 disabled={filterCount === 0}
-                onClick={() => only({})}
+                onClick={clearAll}
                 title="Remove every filter"
             >
                 <X className="h-3.5 w-3.5" />
-                Clear{filterCount > 0 && ` (${filterCount})`}
+                Clear
             </Button>
         </div>
     );

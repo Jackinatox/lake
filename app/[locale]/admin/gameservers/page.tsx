@@ -13,6 +13,7 @@ import {
     AttentionKey,
     CREATED_RANGE_KEYS,
     CreatedRangeKey,
+    DEFAULT_CREATED_RANGE,
     RENEWAL_KEYS,
     RenewalKey,
     attentionWhere,
@@ -110,7 +111,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
 
     const created: CreatedRangeKey = CREATED_RANGE_KEYS.includes(params.created as CreatedRangeKey)
         ? (params.created as CreatedRangeKey)
-        : 'ALL';
+        : DEFAULT_CREATED_RANGE;
 
     const filters: ServerFilterState = {
         search: search || undefined,
@@ -191,7 +192,12 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     };
 
     const where = selection();
-    const filterCount = parts.filter((part) => part.key !== 'scope').length;
+    // The scope is not a filter, and neither is the timespan while it sits at its default —
+    // "Clear" would have nothing to clear.
+    const filterCount = parts.filter(
+        (part) =>
+            part.key !== 'scope' && !(part.key === 'created' && created === DEFAULT_CREATED_RANGE),
+    ).length;
 
     // ---- one round trip for the page, the selection aggregates and the filter options -
     const [
@@ -299,11 +305,21 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
         _sum: { ramMB: number | null; cpuPercent: number | null };
     };
 
+    // A location keeps its colour whatever the filter does, because its slot comes from the
+    // full list of locations (loaded for the dropdown, so it never narrows) rather than from
+    // whichever slices survived the filter. It only shifts if a location is added or removed.
+    const colorSlots = (ids: number[]) =>
+        new Map([...ids].sort((a, b) => a - b).map((id, index) => [id, index]));
+
+    const locationColors = colorSlots(locations.map((location) => location.id));
+    const gameColors = colorSlots(games.map((game) => game.id));
+
     const toSlices = <T extends ResourceGroup>(
         groups: T[],
         id: (group: T) => number,
         name: (group: T) => string,
         param: string,
+        colors: Map<number, number>,
     ): ServerSlice[] =>
         groups
             .map((group) => ({
@@ -313,6 +329,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 ramMB: group._sum.ramMB ?? 0,
                 cpuPercent: group._sum.cpuPercent ?? 0,
                 filter: { [param]: String(id(group)) },
+                colorIndex: colors.get(id(group)),
             }))
             .sort((a, b) => b.count - a.count);
 
@@ -345,12 +362,14 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
             (group) => group.locationId,
             (group) => locationNames.get(group.locationId) ?? `Location ${group.locationId}`,
             'locationId',
+            locationColors,
         ),
         byGame: toSlices(
             gameGroups,
             (group) => group.gameDataId,
             (group) => gameNames.get(group.gameDataId) ?? `Game ${group.gameDataId}`,
             'gameId',
+            gameColors,
         ),
     };
 
