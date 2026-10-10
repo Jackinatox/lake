@@ -57,8 +57,8 @@ export default async function MyTicketsPage({
     ];
 
     return (
-        <div className="mx-auto w-full max-w-3xl pb-24 md:p-6 md:pb-32">
-            <header className="sticky top-0 z-30 -mx-2 mb-3 space-y-2.5 border-b bg-background/80 px-2 py-2.5 backdrop-blur-md md:-mx-6 md:px-6">
+        <div className="mx-auto -mt-2 min-h-[calc(100dvh-4rem)] w-full max-w-3xl pb-24 md:-mt-4 md:px-6 md:pb-32">
+            <header className="sticky top-0 z-30 -mx-2 mb-3 space-y-2.5 border-b bg-background px-2 py-2.5 md:-mx-6 md:px-6">
                 <div className="flex items-center gap-2">
                     <Button asChild variant="ghost" size="icon" className="shrink-0">
                         <Link href={SUPPORT_LANDING_PATH} aria-label={t('list.support')}>

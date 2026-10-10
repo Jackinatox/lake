@@ -34,7 +34,7 @@ export default async function SupportLanding() {
     const now = new Date();
 
     return (
-        <section className="w-full pb-24 md:pb-32">
+        <section className="min-h-[calc(100dvh-4rem)] w-full pb-24 md:pb-32">
             <div className="mx-auto max-w-6xl px-0 pt-6 md:px-8 md:pt-10">
                 <div className="space-y-4 text-center">
                     <h1 className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">

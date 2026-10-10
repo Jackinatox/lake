@@ -59,7 +59,7 @@ export default function CustomerReplyComposer({
     return (
         <form
             onSubmit={handleSubmit}
-            className="sticky bottom-0 -mx-2 border-t bg-background/95 px-2 pb-3 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:mx-0 md:px-0"
+            className="sticky bottom-0 -mx-2 border-t bg-background px-2 pb-3 pt-3 md:mx-0 md:px-0"
         >
             {resolved && (
                 <p className="mb-2 text-xs text-emerald-600 dark:text-emerald-400">

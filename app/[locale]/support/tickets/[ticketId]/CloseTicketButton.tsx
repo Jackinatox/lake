@@ -43,7 +43,7 @@ export default function CloseTicketButton({ ticketId }: { ticketId: string }) {
             <AlertDialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="w-9 shrink-0 p-0 sm:w-auto sm:px-3"
+                    className="shrink-0 sm:px-3"
                     disabled={isPending}
                     aria-label={t('detail.markSolved')}
                     title={t('detail.markSolved')}

@@ -94,7 +94,7 @@ export default async function AdminTicketPage({
     const suspension = server ? getActiveSuspension(server) : null;
 
     return (
-        <div className="flex w-full flex-col gap-4 pb-24 md:pb-32">
+        <div className="flex min-h-[calc(100dvh-4rem)] w-full flex-col gap-4 pb-24 md:pb-32">
             <AdminBreadcrumb
                 items={[
                     { label: 'Support Inbox', href: '/admin/support' },
