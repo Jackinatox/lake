@@ -1775,33 +1775,37 @@
   "supportTickets": {
     "landing": {
       "title": "How can we <highlight>help</highlight> you?",
-      "subtitle": "Pick a topic and open a ticket. You'll chat directly with our team and get an email whenever we reply.",
-      "openTicket": "Open ticket",
+      "subtitle": "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
       "yourTickets": "Your tickets",
-      "viewAll": "View all tickets",
-      "noActiveTickets": "You have no open tickets.",
-      "loginHint": "<strong>Sign in</strong> to open a ticket and follow your conversations."
+      "loginHint": "<strong>Sign in</strong> to open a ticket and follow your conversations.",
+      "emailTitle": "Prefer email?",
+      "emailText": "Tickets are the fastest way to reach us and keep everything in one place. If you'd still rather write an email, you can reach us at <email></email>."
     },
     "categories": {
       "GENERAL": {
         "title": "General question",
-        "description": "Anything that doesn't fit one of the other topics."
+        "description": "Anything that doesn't fit one of the other topics.",
+        "examples": "e.g. questions before ordering, feedback, or if you're unsure which topic fits."
       },
       "TECHNICAL": {
         "title": "Technical issue",
-        "description": "Your server won't start, crashes or behaves strangely."
+        "description": "Your server won't start, crashes or behaves strangely.",
+        "examples": "e.g. mods not loading, connection problems, missing files. Tell us what you changed last."
       },
       "BILLING": {
         "title": "Billing & payments",
-        "description": "Invoices, payments, refunds and withdrawals."
+        "description": "Invoices, payments, refunds and withdrawals.",
+        "examples": "e.g. failed or double payments, refunds, extending a paid server."
       },
       "ACCOUNT": {
         "title": "Account & access",
-        "description": "Login, email address, two-factor authentication and account settings."
+        "description": "Login, email address, two-factor authentication and account settings.",
+        "examples": "e.g. no confirmation email, changing your email or username, deleting your account."
       },
       "SUSPENSION": {
         "title": "Server suspension",
-        "description": "Questions about or an appeal against a suspended server."
+        "description": "Questions about or an appeal against a suspended server.",
+        "examples": "e.g. why a server was suspended, appeals, unlocking after a fix."
       }
     },
     "status": {
@@ -1812,9 +1816,7 @@
       "CLOSED": "Closed"
     },
     "list": {
-      "title": "My tickets",
       "newTicket": "New ticket",
-      "support": "Support",
       "active": "Open",
       "closed": "Closed",
       "empty": "You have no open tickets.",

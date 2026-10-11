@@ -10,9 +10,8 @@ the "Support Inbox" card on `/admin` and the new system's own emails and Telegra
 
 | URL | File | Notes |
 | --- | --- | --- |
-| `/support/v2` | `app/[locale]/support/v2/page.tsx` → `components/support/SupportLanding.tsx` | Temporary landing page (`SUPPORT_LANDING_PATH`). `?category=&subject=&server=` are forwarded to the form, so the legacy deep links work once it replaces `/support`. |
-| `/support/tickets` | `app/[locale]/support/tickets/page.tsx` | My tickets, `?view=closed` for the closed tab |
-| `/support/tickets/new` | `…/tickets/new/{page,NewTicketForm}.tsx` | Prefill: `?category=` (enum value), `?subject=`, `?server=` (Pterodactyl id from the dashboard URL). A SUSPENSION ticket preselects the only suspended server. |
+| `/support/tickets` | `app/[locale]/support/tickets/page.tsx` | The support page: the customer's tickets (`?view=closed` for closed ones; a sign-in hint when logged out), the single "New ticket" button and a deliberately low-key email fallback (`SupportEmailHint`). `?category=&subject=&server=` are forwarded to the form, so the legacy `/support` deep links work once they point here. |
+| `/support/tickets/new` | `…/tickets/new/{page,NewTicketForm}.tsx` | Below the category picker: `categories.*.description` + the one-line `categories.*.examples` hint. Prefill: `?category=` (enum value), `?subject=`, `?server=` (Pterodactyl id from the dashboard URL). A SUSPENSION ticket preselects the only suspended server. |
 | `/support/tickets/[ticketId]` | `…/tickets/[ticketId]/*` | Chat view; `ticketId` is the cuid |
 | `/admin/support` | `app/[locale]/admin/support/page.tsx` | Inbox; filters live in the URL: `view`, `category`, `priority`, `sort`, `q`, `userId`, `serverId`, `page` |
 | `/admin/support/[number]` | `app/[locale]/admin/support/[number]/page.tsx` | Admin detail; uses the human ticket number |
@@ -57,8 +56,7 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
 
 ## Files
 
-- `lib/tickets/` — `constants.ts` (lengths, abuse limits, `SUPPORT_LANDING_PATH`, refresh
-  interval), `types.ts` (`TicketActionResult` + error codes), `presentation.ts` (badge styles,
+- `lib/tickets/` — `constants.ts` (lengths, abuse limits, refresh interval), `types.ts` (`TicketActionResult` + error codes), `presentation.ts` (badge styles,
   English admin labels, `staffDisplayName`, Europe/Berlin date formatting), `timeline.ts` (day
   separators), `urls.ts` (absolute customer/admin URLs for emails and Telegram).
 - `lib/validation/tickets.ts` — zod schemas for every action plus the inbox query string.
@@ -67,7 +65,7 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
 - `app/actions/tickets/customerTicketActions.ts` — create, reply, close, `markTicketReadAction`
   (also used by admins).
 - `app/actions/tickets/adminTicketActions.ts` — reply, update fields, delete, note CRUD + pin.
-- `components/support/` — landing page, `TicketStatusLabel` (status as coloured dot + text; the
+- `components/support/` — `TicketCategoryIcon`, `TicketStatusLabel` (status as coloured dot + text; the
   ticket UI deliberately uses no pill badges), `TicketAvatar` (profile picture with initials
   fallback, used on both sides of the chat), `LinkifiedText`, `TicketAutoRefresh`.
 - `components/admin/tickets/` — inbox view nav + filter toolbar (`TicketInboxFilters.tsx`), composer, note item, the compact sidebar
@@ -112,8 +110,9 @@ days → `RESOLVED` (optionally with a reminder first).
 
 ## Switching over (not done yet)
 
-1. Render `SupportLanding` from `app/[locale]/support/page.tsx` and set `SUPPORT_LANDING_PATH` to
-   `/support`; delete `support/v2`. Keep `support/EmailAndCopyButton.tsx` (the landing uses it).
+1. Redirect `/support` to `/support/tickets` (keeping the query string). The new page has its
+   own `components/support/SupportEmailHint.tsx`, so `support/EmailAndCopyButton.tsx` can go
+   with the legacy page.
 2. Point the "contact support" links at the new pages: Footer, MainMenu, error pages,
    `ServerReadyPoller`, `RefundRequestButton`, `PaymentsTab`, the suspension links
    (`suspensionActions.supportUrl`, `GameServerCard`, `ServerSuspended` — add `&server=`), and

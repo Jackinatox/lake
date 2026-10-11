@@ -18,7 +18,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Link, useRouter } from '@/i18n/navigation';
 import {
-    SUPPORT_LANDING_PATH,
     TICKET_CATEGORIES,
     TICKET_MESSAGE_MAX_LENGTH,
     TICKET_SUBJECT_MAX_LENGTH,
@@ -99,7 +98,7 @@ export default function NewTicketForm({
         <div className="mx-auto -mt-2 min-h-[calc(100dvh-4rem)] w-full max-w-3xl pb-24 md:-mt-4 md:px-6 md:pb-32">
             <header className="sticky top-0 z-30 -mx-2 flex items-center gap-2 border-b bg-background px-2 py-2 md:-mx-6 md:px-6">
                 <Button asChild variant="ghost" size="icon" className="shrink-0">
-                    <Link href={SUPPORT_LANDING_PATH} aria-label={t('form.back')}>
+                    <Link href="/support/tickets" aria-label={t('form.back')}>
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>
@@ -144,7 +143,10 @@ export default function NewTicketForm({
                                 })}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                                {t(`categories.${category}.description`)}
+                                <span className="font-medium text-foreground">
+                                    {t(`categories.${category}.description`)}
+                                </span>{' '}
+                                {t(`categories.${category}.examples`)}
                             </p>
                         </fieldset>
 

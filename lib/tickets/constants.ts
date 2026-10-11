@@ -37,12 +37,6 @@ export const ACTIVE_TICKET_STATES: TicketState[] = [
     'RESOLVED',
 ];
 
-/**
- * Where the new support landing page lives until it replaces the legacy `/support` page.
- * Switching over means rendering `SupportLanding` from `/support` and changing this constant.
- */
-export const SUPPORT_LANDING_PATH = '/support/v2';
-
 /** Admin inbox page size. */
 export const ADMIN_TICKETS_PAGE_SIZE = 50;
 

@@ -1787,33 +1787,37 @@
   "supportTickets": {
     "landing": {
       "title": "Wie können wir <highlight>Dir helfen</highlight>?",
-      "subtitle": "Wähle ein Thema und eröffne ein Ticket. Du schreibst direkt mit unserem Team und bekommst eine E-Mail, sobald wir antworten.",
-      "openTicket": "Ticket eröffnen",
+      "subtitle": "Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.",
       "yourTickets": "Deine Tickets",
-      "viewAll": "Alle Tickets anzeigen",
-      "noActiveTickets": "Du hast keine offenen Tickets.",
-      "loginHint": "<strong>Melde Dich an</strong>, um ein Ticket zu eröffnen und Deine Unterhaltungen zu verfolgen."
+      "loginHint": "<strong>Melde Dich an</strong>, um ein Ticket zu eröffnen und Deine Unterhaltungen zu verfolgen.",
+      "emailTitle": "Lieber per E-Mail?",
+      "emailText": "Über ein Ticket erreichst Du uns am schnellsten und alles bleibt an einem Ort. Wenn Du trotzdem lieber eine E-Mail schreibst, erreichst Du uns unter <email></email>."
     },
     "categories": {
       "GENERAL": {
         "title": "Allgemeine Frage",
-        "description": "Alles, was zu keinem der anderen Themen passt."
+        "description": "Alles, was zu keinem der anderen Themen passt.",
+        "examples": "z. B. Fragen vor der Bestellung, Feedback oder wenn Du unsicher bist, welches Thema passt."
       },
       "TECHNICAL": {
         "title": "Technisches Problem",
-        "description": "Dein Server startet nicht, stürzt ab oder verhält sich seltsam."
+        "description": "Dein Server startet nicht, stürzt ab oder verhält sich seltsam.",
+        "examples": "z. B. Mods laden nicht, Verbindungsprobleme, fehlende Dateien. Schreib uns, was Du zuletzt geändert hast."
       },
       "BILLING": {
         "title": "Abrechnung & Zahlung",
-        "description": "Rechnungen, Zahlungen, Erstattungen und Widerrufe."
+        "description": "Rechnungen, Zahlungen, Erstattungen und Widerrufe.",
+        "examples": "z. B. fehlgeschlagene oder doppelte Zahlungen, Erstattungen, Verlängerung eines bezahlten Servers."
       },
       "ACCOUNT": {
         "title": "Account & Zugang",
-        "description": "Login, E-Mail-Adresse, Zwei-Faktor-Authentifizierung und Kontoeinstellungen."
+        "description": "Login, E-Mail-Adresse, Zwei-Faktor-Authentifizierung und Kontoeinstellungen.",
+        "examples": "z. B. keine Bestätigungs-E-Mail, E-Mail-Adresse oder Benutzername ändern, Account löschen."
       },
       "SUSPENSION": {
         "title": "Server-Sperrung",
-        "description": "Fragen zu oder Einspruch gegen einen gesperrten Server."
+        "description": "Fragen zu oder Einspruch gegen einen gesperrten Server.",
+        "examples": "z. B. warum ein Server gesperrt wurde, Einspruch, Freischaltung nach einer Behebung."
       }
     },
     "status": {
@@ -1824,9 +1828,7 @@
       "CLOSED": "Geschlossen"
     },
     "list": {
-      "title": "Meine Tickets",
       "newTicket": "Neues Ticket",
-      "support": "Support",
       "active": "Offen",
       "closed": "Geschlossen",
       "empty": "Du hast keine offenen Tickets.",
