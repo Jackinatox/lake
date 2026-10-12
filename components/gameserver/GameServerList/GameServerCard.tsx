@@ -51,9 +51,9 @@ function ServerCard({
     // server yet, so the end date is in the past and must not be shown as a deadline.
     const suspensionProcessing = isSuspensionProcessing(suspension);
     const supportHref = suspension
-        ? `/support?category=SUSPENSION&subject=${encodeURIComponent(
+        ? `/support/tickets/new?category=SUSPENSION&subject=${encodeURIComponent(
               tSuspended('ticketSubject', { serverName: server.name }),
-          )}`
+          )}${server.ptServerId ? `&server=${encodeURIComponent(server.ptServerId)}` : ''}`
         : null;
 
     const expiration = isExpired

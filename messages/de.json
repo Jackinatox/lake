@@ -218,7 +218,10 @@
     "copyEmail": "E-Mail kopieren",
     "copyEmailSuccess": "E-Mail-Adresse kopiert",
     "copyEmailError": "E-Mail konnte nicht kopiert werden",
-    "openMail": "E-Mail-App öffnen"
+    "openMail": "E-Mail-App öffnen",
+    "legacyTitle": "Dieses Kontaktformular wird eingestellt",
+    "legacyText": "Wir haben ein neues Ticketsystem: Du schreibst direkt mit unserem Team, kannst jede Anfrage verfolgen und bekommst eine E-Mail, sobald wir antworten. Bitte nutze es für neue Anfragen.",
+    "legacyLink": "Zum neuen Support"
   },
   "notAdmin": "Du bist kein Admin.",
   "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen.",

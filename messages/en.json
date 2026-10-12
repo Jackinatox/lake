@@ -208,7 +208,10 @@
     "copyEmail": "Copy email",
     "copyEmailSuccess": "Email copied to clipboard",
     "copyEmailError": "Couldn't copy email",
-    "openMail": "Open email app"
+    "openMail": "Open email app",
+    "legacyTitle": "This contact form is being retired",
+    "legacyText": "We've moved to a new ticket system: you chat directly with our team, can follow every request and get an email whenever we reply. Please use it for new requests.",
+    "legacyLink": "Go to the new support"
   },
   "status": {
     "PROVISIONING": {

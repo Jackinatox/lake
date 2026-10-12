@@ -58,8 +58,8 @@ const sections: AdminSection[] = [
                 Icon: SquarePlay,
             },
             {
-                name: 'Tickets',
-                description: 'Support requests',
+                name: 'Tickets (legacy)',
+                description: 'Old contact form requests',
                 link: '/admin/tickets',
                 Icon: Ticket,
             },

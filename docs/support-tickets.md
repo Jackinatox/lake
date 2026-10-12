@@ -1,10 +1,11 @@
 # Support tickets (conversation system)
 
 Customers open tickets and chat with admins in a messaging-style thread. Admins work them from
-an inbox with assignment, priorities, internal notes and an audit trail. It **coexists with the
-legacy `SupportTicket` system** (`/support` contact form → `app/api/tickets/route.ts`,
-`/admin/tickets`) until the links are switched over. Nothing links to the new pages yet except
-the "Support Inbox" card on `/admin` and the new system's own emails and Telegram messages.
+an inbox with assignment, priorities, internal notes and an audit trail. All "contact support"
+links (menu, footer, error pages, emails, suspension links) point here. The **legacy
+`SupportTicket` system** (`/support` contact form → `app/api/tickets/route.ts`, `/admin/tickets`)
+is still reachable but deprecated: both pages show a banner linking to the new pages, and it is
+due for removal (see below).
 
 ## Routes
 
@@ -111,14 +112,14 @@ emails. When it changes a ticket it must keep the same invariants as lake:
 Typical rules: `RESOLVED` for N days (`statusChangedAt`) → `CLOSED`; `WAITING_FOR_CUSTOMER` for N
 days → `RESOLVED` (optionally with a reminder first).
 
-## Switching over (not done yet)
+## Removing the legacy system (not done yet)
 
-1. Redirect `/support` to `/support/tickets` (keeping the query string). The new page has its
-   own `components/support/SupportEmailHint.tsx`, so `support/EmailAndCopyButton.tsx` can go
-   with the legacy page.
-2. Point the "contact support" links at the new pages: Footer, MainMenu, error pages,
-   `ServerReadyPoller`, `RefundRequestButton`, `PaymentsTab`, the suspension links
-   (`suspensionActions.supportUrl`, `GameServerCard`, `ServerSuspended` — add `&server=`), and
-   the email templates/`EmailLayout`. Add "My tickets" to the profile/menu.
-3. Replace the `/admin/tickets` card, update the ticket counts in `app/api/status/route.ts`, then
-   remove the legacy route, actions, templates, `SupportTicket` and `TicketStatus`.
+Links already point at the new pages; suspension links go straight to
+`/support/tickets/new?category=SUSPENSION&subject=…&server=<ptServerId>`.
+
+1. Redirect `/support` to `/support/tickets` (keeping the query string, which the new page
+   forwards to the form) and delete `app/[locale]/support/{page,HelpComponent,ContactForm,
+   EmailAndCopyButton}.tsx` plus the `getHelp.*` keys that only they use.
+2. Remove `/admin/tickets` and its card on `/admin`, update the ticket counts in
+   `app/api/status/route.ts`, then the legacy route, actions, templates, `SupportTicket` and
+   `TicketStatus`.

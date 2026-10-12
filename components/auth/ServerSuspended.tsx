@@ -7,18 +7,23 @@ import { getTranslations } from 'next-intl/server';
 
 interface ServerSuspendedProps {
     serverName: string;
+    ptServerId: string;
     suspension: ActiveSuspension;
 }
 
-export default async function ServerSuspended({ serverName, suspension }: ServerSuspendedProps) {
+export default async function ServerSuspended({
+    serverName,
+    ptServerId,
+    suspension,
+}: ServerSuspendedProps) {
     const t = await getTranslations('ServerSuspended');
     const until = formatDate(suspension.expiresAt, true);
     // Inside the grace window the end date is already in the past — naming it would read as
     // "suspended until yesterday". Say what is actually happening instead.
     const processing = isSuspensionProcessing(suspension);
-    const supportHref = `/support?category=SUSPENSION&subject=${encodeURIComponent(
+    const supportHref = `/support/tickets/new?category=SUSPENSION&subject=${encodeURIComponent(
         t('ticketSubject', { serverName }),
-    )}`;
+    )}&server=${encodeURIComponent(ptServerId)}`;
 
     return (
         <div className="flex justify-center items-center min-h-screen p-4">
