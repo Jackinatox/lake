@@ -81,7 +81,10 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
   `staffDisplayName` never falls back to the email address.
 - **Live updates without websockets.** `useRefreshWhileVisible` calls `router.refresh()` every 30s
   (ticket pages) / 60s (inbox) while the tab is visible. `TicketAutoRefresh` also marks the ticket
-  read and scrolls to the newest message whenever the latest message id changes.
+  read and scrolls just far enough to show the newest message above the composer whenever the latest
+  message id changes (never past the top, so a short conversation opens at scroll position 0). The navbar is not sticky on
+  `/support/tickets/<anything>` (`components/Navbar.tsx`) because those pages have their own
+  sticky header.
 - **Reply conflicts.** The admin composer sends `lastSeenMessageId`; if a newer message exists the
   action returns `conflict`, the page refreshes and the draft is kept (drafts live in
   localStorage under `ticket-draft:<ticketId>:<reply|note>`).
