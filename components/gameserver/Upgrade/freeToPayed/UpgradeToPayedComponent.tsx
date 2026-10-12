@@ -121,7 +121,7 @@ export function UpgradeHardwareConfigToPayed({
     return (
         <div className="min-h-screen bg-background md:-my-4">
             {/* Header with total price - STICKY TO TOP */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-4">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between gap-4">
                         <h1 className="text-xl sm:text-2xl font-bold">{t('config.title')}</h1>
@@ -420,7 +420,7 @@ export function UpgradeHardwareConfigToPayed({
 
                     {/* Price Overview Section */}
                     <div className="order-1 lg:order-2">
-                        <div className="lg:sticky lg:top-4">
+                        <div className="lg:sticky lg:top-20">
                             <Card className="shadow-lg border-2 border-primary/20">
                                 <CardHeader className="pb-4 bg-primary/5">
                                     <div className="flex items-center gap-2">

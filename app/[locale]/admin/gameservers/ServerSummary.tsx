@@ -58,7 +58,7 @@ export default function ServerSummary({ stats, activeAttention, filterCount }: S
         diskGiB >= 1024 ? `${(diskGiB / 1024).toFixed(1)} TiB` : `${diskGiB.toFixed(0)} GiB`;
     const free = stats.byType.FREE ?? 0;
     const paid = stats.total - free;
-    const suspended = stats.attention.suspended;
+    const suspended = stats.suspendedCount;
 
     return (
         <div className={cn('space-y-2 transition-opacity', pending && 'opacity-60')}>

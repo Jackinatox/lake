@@ -96,7 +96,7 @@ export default function FreeGameServerBooking({
     return (
         <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Sticky header */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-2">
                 <div className="w-full px-2 md:px-6 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">

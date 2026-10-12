@@ -29,27 +29,26 @@ const RESOURCE_DIMENSIONS: Dimension[] = ['location', 'game'];
 
 /**
  * Categorical palette for the dimensions that have no meaning-colour of their own (location,
- * game). Fixed order, never cycled: slots are handed out by a stable sort of the entity ids, so
- * filtering or a change in ranking never repaints a slice. Beyond eight entities the rest folds
- * into "Other" rather than inventing a ninth hue.
+ * game). Fixed order, never cycled. The slot itself is assigned in `page.tsx` from the full
+ * list of locations/games, so a slice keeps its colour across filter changes and reloads.
  *
- * Both columns are validated for colour-vision deficiency against their own surface (worst
- * adjacent ΔE 9.1 light / 8.4 dark, OKLab ×100). Every slice is also named in the legend, which
- * is what keeps the three light steps that sit under 3:1 contrast legible.
+ * These are CSS variables (`app/globals.css`, light + `.dark`), applied inline rather than as
+ * `bg-[#hex]` utilities: an arbitrary-value class only exists if Tailwind's scanner happens to
+ * have picked it up, which in dev can lag behind an edit and leave the bar unpainted until a
+ * rebuild. A variable always resolves, and it swaps with the theme without a second class.
  */
 const SERIES_COLORS = [
-    'bg-[#2a78d6] dark:bg-[#3987e5]',
-    'bg-[#eb6834] dark:bg-[#d95926]',
-    'bg-[#1baf7a] dark:bg-[#199e70]',
-    'bg-[#eda100] dark:bg-[#c98500]',
-    'bg-[#e87ba4] dark:bg-[#d55181]',
-    'bg-[#008300] dark:bg-[#008300]',
-    'bg-[#4a3aa7] dark:bg-[#9085e9]',
-    'bg-[#e34948] dark:bg-[#e66767]',
+    'var(--series-1)',
+    'var(--series-2)',
+    'var(--series-3)',
+    'var(--series-4)',
+    'var(--series-5)',
+    'var(--series-6)',
+    'var(--series-7)',
+    'var(--series-8)',
 ];
 
 const OTHER_COLOR = 'bg-muted-foreground/40';
-const MAX_SERIES = SERIES_COLORS.length;
 
 /** Renewal buckets are a state, not an identity — urgency colours, darkest problem first. */
 const RENEWAL_BAR: Record<string, string> = {
@@ -60,39 +59,33 @@ const RENEWAL_BAR: Record<string, string> = {
     later: 'bg-muted-foreground/40',
 };
 
-type Segment = ServerSlice & { bar: string };
+type Segment = ServerSlice & {
+    /** Tailwind class for the dimensions whose colour carries meaning (status, plan, renewal). */
+    bar?: string;
+    /** Resolved colour for the categorical dimensions — applied inline, see `SERIES_COLORS`. */
+    barColor?: string;
+};
+
+/** Whichever of the two a segment carries, as props for the painted element. */
+function paint(segment: Segment) {
+    return {
+        className: segment.bar,
+        style: segment.barColor ? { backgroundColor: segment.barColor } : undefined,
+    };
+}
 
 /**
- * Hands out palette slots by entity id (ascending), not by the slice's rank in the current
- * view, and folds everything past the eighth entity into one "Other" slice.
+ * Paints a slice from its server-assigned slot (`colorIndex`), so a location keeps its colour
+ * no matter which other slices the filter leaves standing. Entities past the eighth share the
+ * neutral "other" grey rather than getting an invented ninth hue — they keep their own slice
+ * and label, so the legend still tells them apart.
  */
 function withCategoricalColors(slices: ServerSlice[]): Segment[] {
-    const order = [...slices].sort((a, b) => Number(a.key) - Number(b.key));
-    const slot = new Map(order.map((slice, index) => [slice.key, index]));
-
-    if (slices.length <= MAX_SERIES) {
-        return slices.map((slice) => ({
-            ...slice,
-            bar: SERIES_COLORS[slot.get(slice.key) ?? 0],
-        }));
-    }
-
-    const ranked = [...slices].sort((a, b) => b.count - a.count);
-    const kept = ranked.slice(0, MAX_SERIES - 1);
-    const rest = ranked.slice(MAX_SERIES - 1);
-
-    return [
-        ...kept.map((slice) => ({ ...slice, bar: SERIES_COLORS[slot.get(slice.key) ?? 0] })),
-        {
-            key: '__other__',
-            label: `Other (${rest.length})`,
-            count: rest.reduce((sum, slice) => sum + slice.count, 0),
-            ramMB: rest.reduce((sum, slice) => sum + slice.ramMB, 0),
-            cpuPercent: rest.reduce((sum, slice) => sum + slice.cpuPercent, 0),
-            filter: {},
-            bar: OTHER_COLOR,
-        },
-    ];
+    return slices.map((slice) =>
+        slice.colorIndex !== undefined && slice.colorIndex < SERIES_COLORS.length
+            ? { ...slice, barColor: SERIES_COLORS[slice.colorIndex] }
+            : { ...slice, bar: OTHER_COLOR },
+    );
 }
 
 export default function ServerDistribution({
@@ -239,7 +232,11 @@ export default function ServerDistribution({
                             <TooltipTrigger asChild>
                                 <button
                                     type="button"
-                                    style={{ flexGrow: weight(segment), flexBasis: 0 }}
+                                    style={{
+                                        flexGrow: weight(segment),
+                                        flexBasis: 0,
+                                        ...paint(segment).style,
+                                    }}
                                     onMouseEnter={() => setHovered(segment.key)}
                                     onMouseLeave={() => setHovered(null)}
                                     onFocus={() => setHovered(segment.key)}
@@ -249,7 +246,7 @@ export default function ServerDistribution({
                                     aria-label={`${segment.label}: ${describe(segment)}`}
                                     className={cn(
                                         'h-full min-w-[3px] transition-opacity',
-                                        segment.bar,
+                                        paint(segment).className,
                                         hovered && hovered !== segment.key && 'opacity-30',
                                         // inset: a normal ring would be clipped by the bar
                                         isActive(segment) && 'ring-2 ring-inset ring-foreground/60',
@@ -298,9 +295,10 @@ export default function ServerDistribution({
                                 )}
                             >
                                 <span
+                                    style={paint(segment).style}
                                     className={cn(
                                         'h-2 w-2 shrink-0 rounded-full',
-                                        segment.bar,
+                                        paint(segment).className,
                                         empty && 'opacity-40',
                                     )}
                                 />

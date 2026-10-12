@@ -7,10 +7,10 @@ import {
     Check,
     ChevronRight,
     Copy,
-    ExternalLink,
     Filter,
     PlugZap,
     ScrollText,
+    Terminal,
     Trash2,
     TriangleAlert,
     Undo2,
@@ -371,9 +371,12 @@ export default function ServerRow({
                             </TooltipTrigger>
                             <TooltipContent>Logs of this server (7 d)</TooltipContent>
                         </Tooltip>
-                        {ptAdmin && (
-                            <IconLink href={ptAdmin} title="Open in Pterodactyl admin">
-                                <ExternalLink className="h-3.5 w-3.5" />
+                        {ptPanel && (
+                            <IconLink
+                                href={ptPanel}
+                                title="Open the Pterodactyl console (live logs)"
+                            >
+                                <Terminal className="h-3.5 w-3.5" />
                             </IconLink>
                         )}
                     </span>
@@ -522,16 +525,6 @@ export default function ServerRow({
                             >
                                 All servers of this owner
                             </Link>
-                            {ptPanel && (
-                                <a
-                                    href={ptPanel}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="underline underline-offset-2"
-                                >
-                                    PT console
-                                </a>
-                            )}
                             {ptAdmin && (
                                 <a
                                     href={ptAdmin}

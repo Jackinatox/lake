@@ -1,7 +1,8 @@
 # Admin gameserver panel (`/admin/gameservers`)
 
 Dense, URL-driven cockpit for every gameserver. Top to bottom: the filter bar
-(incl. a `created` timespan), six KPI tiles, a row of "needs attention" chips, a
+(one row of content-width controls, incl. a `created` timespan that defaults to the last
+30 days), six KPI tiles, a row of "needs attention" chips, a
 stacked distribution bar, and a 32px-per-row list with expandable detail. The filters
 come first because **everything below them describes the set they define**. It replaces the old 14-column
 `GameserversTable` and shares its idiom with the log viewer (see
@@ -42,32 +43,44 @@ their own filter applied. They are a toggle group, and counting them inside thei
 selection would zero out every chip but the active one — and a chip showing 0 is disabled,
 so there would be no way to switch from one to another.
 
-Default scope hides deleted servers (`status != DELETED`, the `scope` piece). It is dropped
+Two scopes are on before any filter is touched: deleted servers are hidden
+(`status != DELETED`, the `scope` piece) and so are suspended ones (the `suspension` piece,
+default `active`). Suspension is deliberately **not** an attention chip — it is a scope with
+its own three-way control, because an admin almost always wants the servers that are not
+quarantined. The "Suspended" KPI tile keeps counting them anyway: it is the one query that
+drops the `suspension` piece (`selection('suspension')`), so it reads the real number in the
+default view and tells you there is something to switch to. It is dropped
 when the status filter explicitly asks for deleted rows (`DELETED` or `ANY`), and when a
 `serverId` or `search` pinpoints a row — finding a deleted server is usually the reason
 such a link was followed.
 
 ## URL params
 
-| Param                  | Meaning                                                                                                       |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `search`               | name, lake id, `ptServerId`, numeric `ptAdminId`, owner email/username                                        |
-| `userId`               | owner; clearing it also clears `serverId`                                                                     |
-| `serverId`             | single server — no control of its own, a deep-link target only                                                |
-| `type`                 | `FREE` / `PACKAGE` / `CUSTOM`                                                                                 |
-| `locationId`, `gameId` | numeric; a non-numeric value is ignored, not passed to Prisma                                                 |
-| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted                                  |
-| `attention`            | one `AttentionKey` (see below)                                                                                |
-| `renewal`              | one `RenewalKey` (see below)                                                                                  |
-| `sort`, `dir`          | `created` (default, i.e. newest booking first) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default |
-| `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                                                      |
-| `suspended=true`       | legacy alias of `attention=suspended`, kept for bookmarked links                                              |
+| Param                  | Meaning                                                                                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `search`               | name, lake id, `ptServerId`, numeric `ptAdminId`, owner email/username                                                                                       |
+| `userId`               | owner; clearing it also clears `serverId`                                                                                                                    |
+| `serverId`             | single server — no control of its own, a deep-link target only                                                                                               |
+| `type`                 | `FREE` / `PACKAGE` / `CUSTOM`                                                                                                                                |
+| `locationId`, `gameId` | numeric; a non-numeric value is ignored, not passed to Prisma                                                                                                |
+| `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted                                                                                 |
+| `attention`            | one `AttentionKey` (see below)                                                                                                                               |
+| `renewal`              | one `RenewalKey` (see below)                                                                                                                                 |
+| `created`              | timespan on `createdAt`: `ALL` / `1d` / `7d` / `30d` / `90d` / `365d`. Absent means `DEFAULT_CREATED_RANGE` (30 d), so it is "Any time" that needs the param |
+| `sort`, `dir`          | `created` (default, i.e. newest booking first) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default                                                |
+| `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                                                                                                     |
+| `suspension`           | quarantine scope: `active` (default, hides suspended) / `suspended` / `all`. Absent means `active`, so it is the other two that carry the param              |
+| `suspended=true`       | legacy alias of `suspension=suspended`, kept for bookmarked links                                                                                            |
 
 `useServerParams` is the single writer: `setParams` patches (and resets `page`),
-`toggleParam` clears a param that already holds the clicked value, and `only`
-replaces the whole filter set — that last one is what the distribution bars use, so
-clicking a slice shows _that_ slice instead of intersecting it with whatever was
-already filtered. All three push inside a transition, and the `pending` flag dims the
+`toggleParam` clears a param that already holds the clicked value, `only` replaces the
+dimension filters — that is what the distribution bars use, so clicking a slice shows
+_that_ slice instead of intersecting it with whatever was already filtered — and
+`clearAll` backs the Clear button. The difference between the last two is what survives:
+`only` carries `VIEW_PARAMS` (`limit`, `sort`, `dir` **plus `created` and `suspension`**),
+because dropping those would snap the view back to its defaults — the last 30 days, no
+suspended servers — and could hide the very servers whose slice was clicked; `clearAll`
+keeps only the layout params, so both scopes are reset along with every other filter. All three push inside a transition, and the `pending` flag dims the
 affected card while the server component re-renders.
 
 ## Attention chips
@@ -76,14 +89,13 @@ affected card while the server component re-renders.
 count and the filtered list use the _same_ `where` fragment, so a chip that says 3
 always lists exactly those 3 servers.
 
-| Key         | Detects                                                                          |
-| ----------- | -------------------------------------------------------------------------------- |
-| `failed`    | `CREATION_FAILED` — PT rejected the create call                                  |
-| `stuck`     | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
-| `orphaned`  | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
-| `overdue`   | `ACTIVE` past its expiry — the worker has not caught up                          |
-| `suspended` | `suspendedServerWhere()`, i.e. incl. the grace window                            |
-| `errors`    | ERROR/FATAL `ApplicationLog` rows in the last `ERROR_WINDOW_HOURS` (24)          |
+| Key        | Detects                                                                          |
+| ---------- | -------------------------------------------------------------------------------- |
+| `failed`   | `CREATION_FAILED` — PT rejected the create call                                  |
+| `stuck`    | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
+| `orphaned` | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
+| `overdue`  | `ACTIVE` past its expiry — the worker has not caught up                          |
+| `errors`   | ERROR/FATAL `ApplicationLog` rows in the last `ERROR_WINDOW_HOURS` (24)          |
 
 ## Distribution card
 
@@ -106,10 +118,16 @@ Colour rules worth keeping:
 - Status, Plan and Renewals carry their own meaning-colours (`presentation.ts`,
   `RENEWAL_BAR`) — the same ones the rows use, so a red dot means the same thing everywhere.
 - Location and Game have no natural colour, so they draw from `SERIES_COLORS`, a fixed
-  eight-slot categorical palette with a light and a dark step per slot. Slots are handed
-  out by a **stable sort of the entity id**, never by the slice's current rank, so
-  filtering never repaints the survivors. Past eight entities the rest folds into a grey
-  "Other" slice instead of inventing a ninth hue.
+  eight-slot categorical palette defined as CSS variables (`--series-1…8` in
+  `app/globals.css`, with their own steps under `.dark`) and applied **inline**, not as
+  `bg-[#hex]` utilities — an arbitrary-value class only exists if Tailwind's scanner picked
+  it up, which in dev can lag an edit and leave the bar unpainted until a rebuild. The slot
+  (`ServerSlice.colorIndex`) is assigned in `page.tsx` from the **complete** list of
+  locations/games — the one loaded for the dropdowns, which never narrows — not from the
+  slices that survived the filter. That is what keeps a location's colour identical across
+  filter changes and reloads; only adding or removing a location shifts the slots. Entities
+  past the eighth share the neutral grey instead of getting an invented ninth hue, keeping
+  their own slice and label.
 - The palette is validated for colour-vision deficiency against both surfaces (worst
   adjacent ΔE 9.1 light / 8.4 dark, OKLab ×100). Three light steps sit under 3:1 contrast,
   which is allowed only because every slice is named in the legend — do not drop the legend.
@@ -125,7 +143,7 @@ price, the booking date (`createdAt`, absolute — it is matched against invoice
 tooltip adds the time and the relative distance), relative expiry (red overdue / amber
 < 24 h), the `ptServerId` (click to copy — it
 is the id that goes into the panel or a ticket; `—` when the server was never
-provisioned), a logs link, a PT-admin link and the actions menu. The expanded panel groups into three columns — **identity** (server id, owner, both PT
+provisioned), a logs link, a PT-console link and the actions menu. The expanded panel groups into three columns — **identity** (server id, owner, both PT
 ids, all copyable), **setup** (status, game, plan, and one `Resources` line carrying CPU,
 RAM, disk, backups, ports and the tier) and **dates** (created, last extended, expires) —
 followed by `errorText`, the full suspension, `gameConfig` JSON and a link row.
@@ -135,11 +153,12 @@ followed by `errorText`, the full suspension, `gameConfig` JSON and a link row.
 - Row → `/admin/logs?userId=…&serverId=…&range=7d`, and the red error badge →
   the same with `level=ERROR&range=1d`. Together with the log viewer's links _into_
   this page, a server can be followed in both directions without a search.
-- `panelServerUrl` (PT console, `{panel}/server/{ptServerId}`),
-  `panelAdminServerUrl` (`{panel}/admin/servers/view/{ptAdminId}`) and
-  `panelAdminUserUrl` (`{panel}/admin/users/view/{ptUserId}`) all return `null` when
-  the id or `NEXT_PUBLIC_PTERODACTYL_URL` is missing, so an unprovisioned server
-  simply shows no link.
+- The row's terminal icon opens `panelServerUrl` — the **user-facing** console
+  (`{panel}/server/{ptServerId}`), the fastest path to a server's live log. The admin-side
+  links stay in the expanded panel: `panelAdminServerUrl`
+  (`{panel}/admin/servers/view/{ptAdminId}`) and `panelAdminUserUrl`
+  (`{panel}/admin/users/view/{ptUserId}`). All three return `null` when the id or
+  `NEXT_PUBLIC_PTERODACTYL_URL` is missing, so an unprovisioned server simply shows no link.
 
 ## Query cost
 

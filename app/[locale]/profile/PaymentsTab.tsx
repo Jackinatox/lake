@@ -27,7 +27,7 @@ export default async function PaymentsTab() {
                         <p className="text-sm text-muted-foreground">
                             {t('supportInfo.text')}{' '}
                             <Link
-                                href="/support?category=BILLING"
+                                href="/support/tickets/new?category=BILLING"
                                 className="text-primary hover:underline font-medium"
                             >
                                 {t('supportInfo.link')}

@@ -208,7 +208,10 @@
     "copyEmail": "Copy email",
     "copyEmailSuccess": "Email copied to clipboard",
     "copyEmailError": "Couldn't copy email",
-    "openMail": "Open email app"
+    "openMail": "Open email app",
+    "legacyTitle": "This contact form is being retired",
+    "legacyText": "We've moved to a new ticket system: you chat directly with our team, can follow every request and get an email whenever we reply. Please use it for new requests.",
+    "legacyLink": "Go to the new support"
   },
   "status": {
     "PROVISIONING": {
@@ -1777,5 +1780,116 @@
   "contact": {
     "title": "Contact Us",
     "description": "Have a question, suggestion, or just want to reach out? Send us an email and we'll get back to you."
+  },
+  "supportTickets": {
+    "landing": {
+      "title": "How can we <highlight>help</highlight> you?",
+      "subtitle": "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
+      "yourTickets": "Your tickets",
+      "loginHint": "<strong>Sign in</strong> to open a ticket and follow your conversations.",
+      "emailTitle": "Prefer email?",
+      "emailText": "Tickets are the fastest way to reach us and keep everything in one place. If you'd still rather write an email, you can reach us at <email></email>."
+    },
+    "categories": {
+      "GENERAL": {
+        "title": "General question",
+        "description": "Anything that doesn't fit one of the other topics.",
+        "examples": "e.g. questions before ordering, feedback, or if you're unsure which topic fits."
+      },
+      "TECHNICAL": {
+        "title": "Technical issue",
+        "description": "Your server won't start, crashes or behaves strangely.",
+        "examples": "e.g. mods not loading, connection problems, missing files. Tell us what you changed last."
+      },
+      "BILLING": {
+        "title": "Billing & payments",
+        "description": "Invoices, payments, refunds and withdrawals.",
+        "examples": "e.g. failed or double payments, refunds, extending a paid server."
+      },
+      "ACCOUNT": {
+        "title": "Account & access",
+        "description": "Login, email address, two-factor authentication and account settings.",
+        "examples": "e.g. no confirmation email, changing your email or username, deleting your account."
+      },
+      "SUSPENSION": {
+        "title": "Server suspension",
+        "description": "Questions about or an appeal against a suspended server.",
+        "examples": "e.g. why a server was suspended, appeals, unlocking after a fix."
+      }
+    },
+    "status": {
+      "OPEN": "Waiting for support",
+      "WAITING_FOR_CUSTOMER": "Awaiting your reply",
+      "ON_HOLD": "In progress",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed"
+    },
+    "list": {
+      "newTicket": "New ticket",
+      "active": "Open",
+      "closed": "Closed",
+      "empty": "You have no open tickets.",
+      "emptyClosed": "You have no closed tickets.",
+      "you": "You",
+      "team": "Support",
+      "unread": "New reply"
+    },
+    "form": {
+      "title": "Open a ticket",
+      "description": "Describe your issue and we'll answer right here in the ticket. You'll also get an email when we reply.",
+      "back": "Support",
+      "categoryLabel": "Category",
+      "serverLabel": "Affected server",
+      "serverNone": "No specific server",
+      "serverHelper": "Optional, but it helps us find your server faster.",
+      "suspended": "suspended",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Short summary of your issue",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Describe your issue in as much detail as possible…",
+      "length": "{current}/{max}",
+      "submit": "Send ticket",
+      "submitting": "Sending…",
+      "existingTickets": "You already have an open ticket in this category. You can also continue the conversation there:"
+    },
+    "detail": {
+      "back": "My tickets",
+      "openedAt": "Opened {date}",
+      "markSolved": "My issue is solved",
+      "markSolvedTitle": "Close this ticket?",
+      "markSolvedDescription": "A closed ticket can't receive new replies. If something comes up later, simply open a new ticket.",
+      "markSolvedConfirm": "Close ticket",
+      "cancel": "Cancel",
+      "adminBadge": "Admin",
+      "supportTeam": "Support team",
+      "system": "System",
+      "you": "You",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "events": {
+        "resolved": "Support marked this ticket as resolved",
+        "closed": "This ticket was closed",
+        "closedByYou": "You closed this ticket",
+        "reopened": "The ticket was reopened"
+      },
+      "replyPlaceholder": "Write a message…",
+      "send": "Send",
+      "sendHint": "Ctrl + Enter to send",
+      "resolvedHint": "This ticket is resolved. If you reply, it will be reopened.",
+      "closedNotice": "This ticket is closed and can't receive new replies.",
+      "newTicket": "Open a new ticket"
+    },
+    "errors": {
+      "unauthorized": "Please sign in again.",
+      "invalid": "Please check your input.",
+      "notFound": "This ticket could not be found.",
+      "closed": "This ticket is closed.",
+      "serverNotFound": "The selected server could not be found.",
+      "openLimit": "You have too many open tickets. Please wait for a reply or close tickets you no longer need.",
+      "dailyLimit": "You've opened too many tickets today. Please try again tomorrow.",
+      "messageLimit": "You're sending messages too quickly. Please wait a moment and try again.",
+      "conflict": "A new message arrived. Please check it and send again.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }
