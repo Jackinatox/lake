@@ -156,17 +156,17 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
                                             {pollerT('retry')}
                                         </Button>
                                         <Button asChild variant="outline" className="flex-1">
-                                            <Link href="/support">{pollerT('contactSupport')}</Link>
+                                            <Link href="/support/tickets">{pollerT('contactSupport')}</Link>
                                         </Button>
                                     </>
                                 ) : isGeneral ? (
                                     <Button asChild className="flex-1">
-                                        <Link href="/support">{pollerT('contactSupport')}</Link>
+                                        <Link href="/support/tickets">{pollerT('contactSupport')}</Link>
                                     </Button>
                                 ) : (
                                     <>
                                         <Button asChild className="flex-1">
-                                            <Link href="/support">{pollerT('contactSupport')}</Link>
+                                            <Link href="/support/tickets">{pollerT('contactSupport')}</Link>
                                         </Button>
                                         <Button asChild variant="outline" className="flex-1">
                                             <Link href="/">{pollerT('returnHome')}</Link>

@@ -179,7 +179,7 @@ export default function SetupPageClient({
     return (
         <div className="md:-my-4">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-4">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-4">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">

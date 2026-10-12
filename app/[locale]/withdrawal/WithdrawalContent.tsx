@@ -180,7 +180,7 @@ export async function WithdrawalContent() {
             <div className="text-xs text-muted-foreground px-1 pt-2">
                 <p>
                     {t('supportNote')}{' '}
-                    <Link href="/support" className="underline hover:text-foreground">
+                    <Link href="/support/tickets" className="underline hover:text-foreground">
                         {t('supportLink')}
                     </Link>
                     .

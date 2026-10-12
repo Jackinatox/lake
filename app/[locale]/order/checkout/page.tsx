@@ -129,7 +129,7 @@ export default async function OrderCheckoutPage({
     return (
         <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Sticky top bar */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-3">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-3">
                 <div className="w-full px-4 max-w-7xl mx-auto">
                     <div className="flex items-center gap-3">
                         <Button variant="ghost" size="icon" className="shrink-0" asChild>
