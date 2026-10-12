@@ -400,7 +400,7 @@ export default function PerformanceConfigurator({
 
                 {/* ── Price overview ───────────────────────────────────── */}
                 <div className="order-2 lg:order-2">
-                    <div className="lg:sticky lg:top-22">
+                    <div className="lg:sticky lg:top-38">
                         <PriceOverview
                             cpuCores={cpuCores}
                             ramGb={ramGb}

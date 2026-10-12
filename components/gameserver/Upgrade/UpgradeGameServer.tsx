@@ -91,7 +91,7 @@ function UpgradeGameServer({
         return (
             <div className="md:-my-4 w-full flex flex-col min-h-[calc(100dvh-4rem)]">
                 {/* Sticky top bar */}
-                <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-3">
+                <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-3">
                     <div className="w-full px-4 max-w-7xl mx-auto">
                         <div className="flex items-center gap-3">
                             <Button
@@ -150,7 +150,7 @@ function UpgradeGameServer({
         <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {step === 'configure' && (
                 <>
-                    <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
+                    <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-2">
                         <div className="w-full px-1 max-w-7xl mx-auto">
                             <div className="flex items-center gap-3">
                                 <Button variant="ghost" size="icon" asChild className="shrink-0">

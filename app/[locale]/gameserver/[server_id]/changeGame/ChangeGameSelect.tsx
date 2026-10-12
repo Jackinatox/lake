@@ -29,7 +29,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
 
     return (
         <div className="flex flex-col min-h-[calc(100dvh-4rem)]"> 
-            <div className="sticky top-0 z-40 -mx-2 -mt-2 md:-mx-8 md:-mt-4 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="sticky top-16 z-40 -mx-2 -mt-2 md:-mx-8 md:-mt-4 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
