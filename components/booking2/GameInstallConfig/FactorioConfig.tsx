@@ -30,6 +30,7 @@ import {
 } from '@/models/gameSpecificConfig/FactorioConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
+import { NumberConfigInput } from '../shared/number-config-input';
 import { GameConfigProps } from './minecraft-config';
 
 const DLC_OPTIONS: { id: FactorioDLC; label: string }[] = [
@@ -139,19 +140,12 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
                 label="Maximum Slots"
                 description="Maximum number of player slots"
             >
-                <Input
+                <NumberConfigInput
                     id="maxSlots"
-                    type="number"
                     min={1}
                     max={32767}
                     value={config.maxSlots}
-                    onChange={(e) =>
-                        handleChange(
-                            'maxSlots',
-                            Math.max(1, Math.min(32767, Number(e.target.value) || 1)),
-                        )
-                    }
-                    className="w-24 md:w-40"
+                    onChange={(v) => handleChange('maxSlots', v)}
                 />
             </ConfigSettingItem>
 
@@ -195,19 +189,12 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
                 label="Auto Save Interval (minutes)"
                 description="Time between autosaves (1-999)"
             >
-                <Input
+                <NumberConfigInput
                     id="autoSaveInterval"
-                    type="number"
                     min={1}
                     max={999}
                     value={config.autoSaveInterval}
-                    onChange={(e) =>
-                        handleChange(
-                            'autoSaveInterval',
-                            Math.max(1, Math.min(999, Number(e.target.value) || 1)),
-                        )
-                    }
-                    className="w-24 md:w-40"
+                    onChange={(v) => handleChange('autoSaveInterval', v)}
                 />
             </ConfigSettingItem>
 

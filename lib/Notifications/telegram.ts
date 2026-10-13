@@ -117,6 +117,34 @@ export async function sendSupportTicketNotification(params: {
 }
 
 /**
+ * Send notification about a customer reply on a ticket (new ticket system)
+ */
+export async function sendTicketReplyNotification(params: {
+    ticketNumber: number;
+    subject: string;
+    userEmail: string;
+    message: string;
+    reopened: boolean;
+    ticketUrl: string;
+}): Promise<boolean> {
+    const { ticketNumber, subject, userEmail, message, reopened, ticketUrl } = params;
+
+    const text =
+        `<b>💬 ${reopened ? 'Ticket Reopened' : 'New Ticket Reply'} #${ticketNumber}</b>\n` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `<b>User:</b> <code>${escapeHtml(userEmail)}</code>\n` +
+        `<b>Subject:</b> ${escapeHtml(subject)}\n\n` +
+        `<b>Message:</b>\n` +
+        `<pre>${escapeHtml(message.length > 1500 ? `${message.slice(0, 1500)}…` : message)}</pre>`;
+
+    return sendTelegramMessage(text, {
+        reply_markup: {
+            inline_keyboard: [[{ text: '🔗 Open Ticket', url: ticketUrl }]],
+        },
+    });
+}
+
+/**
  * Send fatal error notification
  */
 export async function sendFatalErrorNotification(params: {

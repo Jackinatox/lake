@@ -255,7 +255,7 @@ export default function FreeServerUpgradeClient({
                 <CardContent className="p-4">
                     <p className="text-sm text-muted-foreground text-center">
                         {t('helpText.pre')}{' '}
-                        <Link href="/support" className="font-medium underline">
+                        <Link href="/support/tickets" className="font-medium underline">
                             {t('helpText.link')}
                         </Link>{' '}
                         {t('helpText.post')}

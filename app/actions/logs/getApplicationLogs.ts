@@ -33,6 +33,8 @@ export type LogUserOption = {
     name: string;
     username: string | null;
     email: string;
+    /** Avatar, shown by `AdminUserPicker`. */
+    image: string | null;
 };
 
 export type LogServerOption = {
@@ -172,7 +174,7 @@ export async function searchLogUsers(query: string): Promise<LogUserOption[]> {
     })();
 
     const trimmed = parsed.query.trim();
-    const select = { id: true, name: true, username: true, email: true } as const;
+    const select = { id: true, name: true, username: true, email: true, image: true } as const;
 
     if (!trimmed) {
         return prisma.user.findMany({

@@ -69,31 +69,34 @@ export const auth = betterAuth({
             trustedProviders: ['discord', 'google'],
         },
     },
+    advanced: {
+        database: { joins: true },
+    },
     user: {
         additionalFields: {
             ptUserId: {
                 type: 'number',
                 optional: true,
                 required: false,
-                input: false
+                input: false,
             },
             ptKey: {
                 type: 'string',
                 optional: true,
                 required: false,
-                input: false
+                input: false,
             },
             stripeUserId: {
                 type: 'string',
                 optional: true,
                 required: false,
-                input: false
+                input: false,
             },
             ptUsername: {
                 type: 'string',
                 optional: true,
                 required: false,
-                input: false
+                input: false,
             },
         },
     },
@@ -112,7 +115,7 @@ export const auth = betterAuth({
         enabled: true,
         maxPasswordLength: 128,
         requireEmailVerification: true,
-        disableSignUp: true, 
+        disableSignUp: true,
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendResetPasswordEmail(user.email, url, token);
         },
@@ -171,7 +174,6 @@ export const auth = betterAuth({
             enableMetadata: true,
             defaultPrefix: 'scyd_',
             rateLimit: { enabled: true, maxRequests: 5, timeWindow: 1000 * 2 }, // 5 reqs per 2s
-            
         }),
         twoFactor({
             issuer: 'Scyed',

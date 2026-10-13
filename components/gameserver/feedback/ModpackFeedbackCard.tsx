@@ -1,7 +1,7 @@
 'use client';
 
 import type { MyFeedbackRow } from '@/app/actions/feedback/feedbackActions';
-import { submitFeedbackAction } from '@/app/actions/feedback/feedbackActions';
+import { getMyFeedbackAction, submitFeedbackAction } from '@/app/actions/feedback/feedbackActions';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { feedbackDataSchema, type FeedbackData } from '@/lib/validation/feedback';
 import { ChevronDown, Loader2, MessageSquare, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState, useTransition } from 'react';
+import { useCallback, useEffect, useState, useTransition } from 'react';
 
 const ISSUE_KEYS = [
     'install_failed',
@@ -29,8 +29,7 @@ const OUTCOME_KEYS = ['worked', 'partial', 'failed'] as const;
 type Outcome = (typeof OUTCOME_KEYS)[number];
 
 interface ModpackFeedbackCardProps {
-    gameServerId: string;
-    initialFeedback: MyFeedbackRow[];
+    ptGameServerId: string;
     modpackId?: string;
     modpackVersion?: string;
     locale?: string;
@@ -54,8 +53,7 @@ function StarRow({ rating }: { rating: number }) {
 }
 
 export default function ModpackFeedbackCard({
-    gameServerId,
-    initialFeedback,
+    ptGameServerId,
     modpackId,
     modpackVersion,
     locale,
@@ -72,7 +70,30 @@ export default function ModpackFeedbackCard({
     const [success, setSuccess] = useState(false);
     const [isPending, startTransition] = useTransition();
 
-    const [entries, setEntries] = useState<MyFeedbackRow[]>(initialFeedback);
+    // Previous feedback is never part of the server-rendered payload; it is fetched
+    // the first time the card is expanded.
+    const [entries, setEntries] = useState<MyFeedbackRow[]>([]);
+    const [entriesLoaded, setEntriesLoaded] = useState(false);
+    const [entriesLoading, setEntriesLoading] = useState(false);
+
+    const loadEntries = useCallback(async () => {
+        setEntriesLoading(true);
+        try {
+            const rows = await getMyFeedbackAction(ptGameServerId);
+            setEntries(rows);
+        } catch {
+            // Keep the list empty; submitting still works and surfaces its own error.
+        } finally {
+            // Marked loaded even on failure - otherwise the effect below would
+            // refetch on every rejection, in a loop, for as long as the card is open.
+            setEntriesLoaded(true);
+            setEntriesLoading(false);
+        }
+    }, [ptGameServerId]);
+
+    useEffect(() => {
+        if (open && !entriesLoaded && !entriesLoading) void loadEntries();
+    }, [open, entriesLoaded, entriesLoading, loadEntries]);
 
     const hasAnyInput =
         outcome !== undefined || issues.length > 0 || rating !== undefined || message.trim() !== '';
@@ -100,7 +121,7 @@ export default function ModpackFeedbackCard({
             try {
                 const result = await submitFeedbackAction({
                     type: 'MODPACK_BETA',
-                    gameServerId,
+                    ptGameServerId,
                     title: outcome,
                     message: trimmedMessage === '' ? undefined : trimmedMessage,
                     data,
@@ -242,7 +263,9 @@ export default function ModpackFeedbackCard({
 
                         <div className="space-y-3">
                             <p className="text-sm font-medium">{t('previousTitle')}</p>
-                            {entries.length === 0 ? (
+                            {entriesLoading && entries.length === 0 ? (
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                            ) : entries.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
                                     {t('previousEmpty')}
                                 </p>

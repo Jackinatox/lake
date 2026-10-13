@@ -98,7 +98,7 @@ export const satisfactoryGameSpecificSchema = z.object({
     max_players: integerRangeSchema('Max players', 1, 64),
     num_autosaves: integerRangeSchema('Autosaves', 1, 100),
     upload_crash_report: z.boolean(),
-    autosave_interval: integerRangeSchema('Autosave interval', 60, 3_600),
+    autosave_interval: integerRangeSchema('Autosave interval', 60, 36_000),
 });
 
 export const valheimGameSpecificSchema = z.object({

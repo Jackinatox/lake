@@ -41,7 +41,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
-    const [session, games, freeTierConfig, maxFreeServers, creationEnabled] = await Promise.all([
+    const [session, games, freeTierConfig, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         prisma.gameData.findMany({
             select: { id: true, name: true, slug: true },
@@ -49,11 +49,24 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
             orderBy: { sorting: 'asc' },
         }),
         getFreeTierConfigCached(),
-        getKeyValueNumber(FREE_TIER_MAX_SERVERS),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
 
-    const freeServersUnavailable = !creationEnabled || maxFreeServers === 0;
+    const freeTierLocationInfo = await prisma.location.findFirst({
+        where: {
+            id: freeTierConfig.locationId,
+        },
+        select: {
+            name: true,
+            cpu: {
+                select: {
+                    shortName: true,
+                },
+            },
+        },
+    });
+
+    const freeServersUnavailable = !creationEnabled || freeTierConfig.maxServers === 0;
 
     const currentFreeServers = session?.user
         ? await prisma.gameServer.count({
@@ -75,7 +88,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
 
     const hardwareSpecs = [
         { label: 'CPU', value: `${formatVCoresFromPercent(freeTierConfig.cpu)}` },
-        { label: 'CPU Model', value: 'Xeon E5-2680v4' },
+        { label: 'CPU Model', value: freeTierLocationInfo?.cpu.shortName ?? 'CPU Typ' },
         { label: 'RAM', value: `${formatMB(freeTierConfig.ram)}` },
         { label: 'Disk', value: `${formatMB(freeTierConfig.storage)}` },
         { label: 'Ports', value: `${freeTierConfig.allocations}` },
@@ -185,13 +198,13 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                         {copy.freePageSelectGame}
                     </h2>
                     {currentFreeServers !== null &&
-                        (currentFreeServers >= maxFreeServers ? (
+                        (currentFreeServers >= freeTierConfig.maxServers ? (
                             <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                                {currentFreeServers}/{maxFreeServers} servers used
+                                {currentFreeServers}/{freeTierConfig.maxServers} servers used
                             </span>
                         ) : (
                             <span className="text-xs text-muted-foreground">
-                                {currentFreeServers}/{maxFreeServers} servers used
+                                {currentFreeServers}/{freeTierConfig.maxServers} servers used
                             </span>
                         ))}
                 </div>

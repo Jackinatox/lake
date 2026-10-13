@@ -13,17 +13,15 @@ import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
 import { GameConfig } from '@/models/config';
 import ModpackFeedbackCard from './feedback/ModpackFeedbackCard';
-import type { MyFeedbackRow } from '@/app/actions/feedback/feedbackActions';
 
 export interface ModpackFeedbackProps {
-    initialFeedback: MyFeedbackRow[];
     modpackId: string;
     modpackVersion: string;
     locale: string;
 }
 
 export interface ServerLoaderProps {
-    serverId: string;
+    ptServerId: string;
     ptApiKey: string;
     baseUrl: string;
     initialServer: {
@@ -40,7 +38,7 @@ export interface ServerLoaderProps {
 }
 
 export default function ServerLoader({
-    serverId,
+    ptServerId,
     ptApiKey,
     baseUrl,
     initialServer,
@@ -56,7 +54,7 @@ export default function ServerLoader({
 
     const fetchServerData = useCallback(async () => {
         try {
-            const response = await fetch(`${baseUrl}/api/client/servers/${serverId}`, {
+            const response = await fetch(`${baseUrl}/api/client/servers/${ptServerId}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${ptApiKey}`,
@@ -77,7 +75,7 @@ export default function ServerLoader({
             const data = await response.json();
             const serverData = data.attributes;
 
-            console.log(serverData)
+            console.log(serverData);
 
             // Merge with initial server data
             const updatedServer: GameServer = {
@@ -110,7 +108,7 @@ export default function ServerLoader({
         initialServer.type,
         initialServer.startupCommand,
         ptApiKey,
-        serverId,
+        ptServerId,
         t,
     ]);
 
@@ -121,21 +119,21 @@ export default function ServerLoader({
     // Listen for manual restore/reinstall start/stop events from other components
     useEffect(() => {
         const offStart = onServerEvent('restore_started', (p) => {
-            if (p?.serverId === serverId) {
+            if (p?.serverId === ptServerId) {
                 setIsRestoring(true);
                 setLoading(false);
             }
         });
 
         const offStop = onServerEvent('restore_stopped', (p) => {
-            if (p?.serverId === serverId) {
+            if (p?.serverId === ptServerId) {
                 // re-fetch immediately to pick up final state
                 fetchServerData();
             }
         });
 
         const offReinstallStart = onServerEvent('reinstall_started', (p) => {
-            if (p?.serverId === serverId) {
+            if (p?.serverId === ptServerId) {
                 // reinstall is treated the same as a fresh install
                 setIsInstalling(true);
                 setLoading(false);
@@ -143,7 +141,7 @@ export default function ServerLoader({
         });
 
         const offReinstallStop = onServerEvent('reinstall_stopped', (p) => {
-            if (p?.serverId === serverId) {
+            if (p?.serverId === ptServerId) {
                 // re-fetch immediately to pick up final state
                 fetchServerData();
             }
@@ -155,7 +153,7 @@ export default function ServerLoader({
             offReinstallStart();
             offReinstallStop();
         };
-    }, [fetchServerData, serverId]);
+    }, [fetchServerData, ptServerId]);
 
     // Auto-refresh every 2 seconds while installing or restoring
     useEffect(() => {
@@ -264,7 +262,6 @@ export default function ServerLoader({
                 features={features}
                 loading={loading}
                 modpackFeedback={modpackFeedback}
-                serverId={serverId}
             />
         </WebSocketProvider>
     );
@@ -280,14 +277,12 @@ function WebSocketGate({
     features,
     loading: dataLoading,
     modpackFeedback,
-    serverId,
 }: {
     server: GameServer;
     ptApiKey: string;
     features: EggFeature[];
     loading: boolean;
     modpackFeedback?: ModpackFeedbackProps;
-    serverId: string;
 }) {
     const { isConnected, isLoading: wsLoading } = useConnectionState();
     const [hasConnected, setHasConnected] = useState(false);
@@ -307,8 +302,7 @@ function WebSocketGate({
             {modpackFeedback && (
                 <div className="mt-2.5">
                     <ModpackFeedbackCard
-                        gameServerId={serverId}
-                        initialFeedback={modpackFeedback.initialFeedback}
+                        ptGameServerId={server.identifier}
                         modpackId={modpackFeedback.modpackId}
                         modpackVersion={modpackFeedback.modpackVersion}
                         locale={modpackFeedback.locale}

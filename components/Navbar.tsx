@@ -11,14 +11,8 @@ const isDev = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV === 'development';
 
 export default function Navbar({ locale }: { locale: string }) {
     const pathname = usePathname();
-    const bookingPages = [
-        '/booking',
-        '/upgrade/freeServer/pay',
-        '/order',
-        '/changeGame',
-        '/upgrade/payedServer',
-    ];
-    const unStickNavBar = bookingPages.some((segment) => pathname?.includes(segment));
+    // The ticket form and chat bring their own sticky header, so the navbar scrolls away there.
+    const unStickNavBar = /\/support\/tickets\/[^/]+/.test(pathname ?? '');
     return (
         <nav
             className={`${!unStickNavBar ? 'sticky top-0 z-50' : ''} w-full flex justify-center border-b h-16 ${isDev ? 'bg-yellow-400 border-yellow-500 dark:bg-yellow-500 dark:border-yellow-600' : 'bg-background border-b-foreground/10'}`}

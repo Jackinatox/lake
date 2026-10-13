@@ -8,6 +8,7 @@ import prisma from '@/lib/prisma';
 import { getValidationMessage, serverIdentifierSchema } from '@/lib/validation/common';
 import { submitFeedbackSchema, type SubmitFeedbackInput } from '@/lib/validation/feedback';
 import { headers } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 async function requireSession() {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -31,10 +32,22 @@ export async function submitFeedbackAction(input: SubmitFeedbackInput): Promise<
         }
     })();
 
-    if (parsed.gameServerId) {
-        const server = await getOwnedGameServerSummary(session.user.id, parsed.gameServerId);
-        if (!server) throw new Error('Unauthorized (No Gameserver found)');
+    // Feedback is bound to the GameServer row by its primary key, while the client
+    // only ever knows the Pterodactyl identifier - resolve (and authorize) it here.
+    const server = await getOwnedGameServerSummary(session.user.id, parsed.ptGameServerId);
+    if (!server) {
+        await logger.error('submitFeedbackAction called for a non-owned gameserver', 'SYSTEM', {
+            userId: session.user.id,
+            details: { input },
+        });
+        throw new Error('Unauthorized (No Gameserver found)');
     }
+
+    await logger.info('submitFeedbackAction called', 'SYSTEM', {
+        userId: session.user.id,
+        gameServerId: server.id,
+        details: { input },
+    });
 
     return prisma.feedback.create({
         data: {
@@ -43,7 +56,7 @@ export async function submitFeedbackAction(input: SubmitFeedbackInput): Promise<
             message: parsed.message ?? null,
             data: parsed.data as Prisma.InputJsonValue,
             userId: session.user.id,
-            gameServerId: parsed.gameServerId ?? null,
+            gameServerId: server.id,
         },
         select: {
             id: true,
@@ -61,21 +74,24 @@ export type MyFeedbackRow = {
     createdAt: Date;
 };
 
-export async function getMyFeedbackAction(gameServerId: string): Promise<MyFeedbackRow[]> {
+export async function getMyFeedbackAction(ptGameServerId: string): Promise<MyFeedbackRow[]> {
     const session = await requireSession();
 
     const parsedServerId = (() => {
         try {
-            return serverIdentifierSchema.parse(gameServerId);
+            return serverIdentifierSchema.parse(ptGameServerId);
         } catch (error) {
             throw new Error(getValidationMessage(error));
         }
     })();
 
+    const server = await getOwnedGameServerSummary(session.user.id, parsedServerId);
+    if (!server) throw new Error('Unauthorized (No Gameserver found)');
+
     return prisma.feedback.findMany({
         where: {
             userId: session.user.id,
-            gameServerId: parsedServerId,
+            gameServerId: server.id,
         },
         select: {
             id: true,

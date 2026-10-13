@@ -22,7 +22,7 @@ export default async function ServerDeleted() {
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button variant="outline" asChild>
-                        <a href="/support">{t('contactSupport')}</a>
+                        <a href="/support/tickets">{t('contactSupport')}</a>
                     </Button>
                     <Button asChild>
                         <a href="/">{t('home')}</a>

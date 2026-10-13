@@ -74,7 +74,9 @@ const RATE_LIMIT_WINDOWS = [
     { label: '1d', ms: 86_400_000 },
 ] as const;
 
-function formatRateLimit(max: number, windowMs: number): string {
+// better-auth leaves these null when a key has no rate limit configured.
+function formatRateLimit(max: number | null, windowMs: number | null): string {
+    if (max == null || windowMs == null) return '—';
     const w = RATE_LIMIT_WINDOWS.find((w) => w.ms === windowMs);
     return `${max} / ${w?.label ?? `${windowMs}ms`}`;
 }
@@ -483,11 +485,17 @@ export default function ApiKeysClient({ initialKeys }: Props) {
                                         {formatRateLimit(k.rateLimitMax, k.rateLimitTimeWindow)}
                                     </TableCell>
                                     <TableCell className="font-mono text-xs text-muted-foreground whitespace-nowrap">
-                                        {k.requestCount}
-                                        <span className="text-muted-foreground/60">
-                                            {' '}
-                                            ({Math.round((k.requestCount / k.rateLimitMax) * 100)}%)
-                                        </span>
+                                        {k.requestCount ?? 0}
+                                        {k.rateLimitMax != null && (
+                                            <span className="text-muted-foreground/60">
+                                                {' '}
+                                                (
+                                                {Math.round(
+                                                    ((k.requestCount ?? 0) / k.rateLimitMax) * 100,
+                                                )}
+                                                %)
+                                            </span>
+                                        )}
                                         {k.remaining != null && (
                                             <span className="text-muted-foreground/60">
                                                 {' '}
