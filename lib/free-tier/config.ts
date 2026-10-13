@@ -1,6 +1,5 @@
 import {
     FREE_TIER_CPU_PERCENT,
-    FREE_TIER_CPU_NAME,
     FREE_TIER_RAM_MB,
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
@@ -14,7 +13,6 @@ import { unstable_cache } from 'next/cache';
 
 export interface FreeTierConfig {
     cpu: number;
-    cpuName: string;
     ram: number;
     storage: number;
     backupCount: number;
@@ -25,7 +23,6 @@ export interface FreeTierConfig {
 
 const keys = [
     FREE_TIER_CPU_PERCENT,
-    FREE_TIER_CPU_NAME,
     FREE_TIER_RAM_MB,
     FREE_TIER_STORAGE_MB,
     FREE_TIER_DURATION_DAYS,
@@ -58,8 +55,6 @@ export async function getFreeTierConfig(): Promise<FreeTierConfig> {
         return entry?.number || 0;
     };
 
-    const cpuName = data.find((i) => i.key === FREE_TIER_CPU_NAME)?.string || '';
-
     const [cpu, ram, storage, duration, maxServers, backupCount, allocations] = await Promise.all([
         getKeyValueNumber(FREE_TIER_CPU_PERCENT),
         getKeyValueNumber(FREE_TIER_RAM_MB),
@@ -72,7 +67,6 @@ export async function getFreeTierConfig(): Promise<FreeTierConfig> {
 
     return {
         cpu: cpu,
-        cpuName: cpuName,
         ram: ram,
         storage: storage,
         backupCount: backupCount,
