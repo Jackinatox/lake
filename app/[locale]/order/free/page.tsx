@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
 import { getFreeTierConfigCached } from '@/lib/free-tier/config';
-import { Gift, CheckCircle2 } from 'lucide-react';
+import { Archive, CheckCircle2, Cpu, Gift, HardDrive, MemoryStick, Network } from 'lucide-react';
 import type { Metadata } from 'next';
 import { Card, CardContent } from '@/components/ui/card';
 import { FaqSection } from '@/components/faq/FaqSection';
@@ -86,13 +86,17 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
         };
     });
 
+    const cpuModel = freeTierLocationInfo?.cpu.shortName;
     const hardwareSpecs = [
-        { label: 'CPU', value: `${formatVCoresFromPercent(freeTierConfig.cpu)}` },
-        { label: 'CPU Model', value: freeTierLocationInfo?.cpu.shortName ?? 'CPU Typ' },
-        { label: 'RAM', value: `${formatMB(freeTierConfig.ram)}` },
-        { label: 'Disk', value: `${formatMB(freeTierConfig.storage)}` },
-        { label: 'Ports', value: `${freeTierConfig.allocations}` },
-        { label: 'Backups', value: `${freeTierConfig.backupCount}` },
+        {
+            icon: Cpu,
+            value: formatVCoresFromPercent(freeTierConfig.cpu),
+            label: cpuModel ? copy.freePageSpecCpuOn(cpuModel) : 'CPU',
+        },
+        { icon: MemoryStick, value: formatMB(freeTierConfig.ram), label: 'RAM' },
+        { icon: HardDrive, value: formatMB(freeTierConfig.storage), label: copy.freePageSpecDisk },
+        { icon: Network, value: `${freeTierConfig.allocations}`, label: 'Ports' },
+        { icon: Archive, value: `${freeTierConfig.backupCount}`, label: 'Backups' },
     ];
 
     return (
@@ -120,10 +124,6 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                                     ),
                                 )}
                         </h1>
-                        <p className="flex items-center justify-center gap-1.5 text-sm md:text-base text-muted-foreground">
-                            <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                            <span>{copy.freePageSubheading}</span>
-                        </p>
                     </div>
                 </div>
             </section>
@@ -141,22 +141,52 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                     <CardContent className="p-3 md:p-4">
                         {/* Shared specs table */}
                         <div className="md:flex md:gap-6">
-                            <div className="md:w-1/2 space-y-2">
-                                <h2 className="text-sm font-semibold md:text-xs md:uppercase md:tracking-wide mb-3">
+                            <div className="md:flex-1 md:min-w-0">
+                                <h2 className="text-sm font-semibold text-foreground mb-3">
                                     {copy.freePageSpecsLabel}
                                 </h2>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                <ul className="space-y-2.5">
                                     {hardwareSpecs.map((spec) => (
-                                        <div key={spec.label} className="flex flex-col text-sm">
-                                            <span className="text-muted-foreground">
-                                                {spec.label}
+                                        <li
+                                            key={spec.label}
+                                            className="flex items-center gap-2.5 text-sm"
+                                        >
+                                            <spec.icon className="h-4 w-4 text-green-500 shrink-0" />
+                                            <span>
+                                                <span className="font-semibold text-foreground">
+                                                    {spec.value}
+                                                </span>{' '}
+                                                <span className="text-muted-foreground">
+                                                    {spec.label}
+                                                </span>
                                             </span>
-                                            <span className="font-medium text-foreground">
-                                                {spec.value}
-                                            </span>
-                                        </div>
+                                        </li>
                                     ))}
-                                </div>
+                                </ul>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="hidden md:block w-px bg-border shrink-0" />
+                            <div className="mt-3 pt-3 border-t border-border md:hidden" />
+
+                            {/* No-catch points */}
+                            <div className="md:flex-1 md:min-w-0">
+                                <h2 className="text-sm font-semibold text-foreground mb-3">
+                                    {copy.freePageNoCatchLabel}
+                                </h2>
+                                <ul className="space-y-2.5">
+                                    {[copy.freePageSubheading, ...copy.freePageNoCatchPoints].map(
+                                        (point) => (
+                                            <li
+                                                key={point}
+                                                className="flex items-start gap-2.5 text-sm text-muted-foreground"
+                                            >
+                                                <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500 shrink-0" />
+                                                <span>{point}</span>
+                                            </li>
+                                        ),
+                                    )}
+                                </ul>
                             </div>
 
                             {/* Divider */}
@@ -164,7 +194,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                             <div className="mt-3 pt-1 border-t border-border md:hidden" />
 
                             {/* FAQ — collapsible on mobile, always open on desktop */}
-                            <div className="md:w-1/2">
+                            <div className="md:flex-1 md:min-w-0">
                                 <div className="md:hidden">
                                     <Accordion type="single" collapsible>
                                         <AccordionItem value="why-free" className="border-none">
@@ -177,10 +207,10 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                                         </AccordionItem>
                                     </Accordion>
                                 </div>
-                                <div className="hidden md:block space-y-1.5">
-                                    <p className="text-sm font-medium text-foreground">
+                                <div className="hidden md:block">
+                                    <h2 className="text-sm font-semibold text-foreground mb-3">
                                         {copy.freePageWhyFreeQuestion}
-                                    </p>
+                                    </h2>
                                     <p className="text-sm text-muted-foreground">
                                         {copy.freePageWhyFreeAnswerLong}
                                     </p>
