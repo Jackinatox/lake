@@ -99,12 +99,20 @@ const metadataCopy = {
         freePageHeading: 'Hol Dir Deinen kostenlosen Gameserver',
         freePageHeadingHighlight: 'kostenlosen',
         freePageSubheading: 'Keine Zahlungsdaten erforderlich',
-        freePageWhyFreeQuestion: 'Warum sind die Server kostenlos?',
+        freePageWhyFreeQuestion: 'Warum kostenlos?',
         freePageWhyFreeAnswerShort:
-            'Wir betreiben diese Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist. Die Ressourcen sind begrenzt, aber ideal für kleine Gameserver und zum Ausprobieren.',
+            'Wir möchten, dass Du uns ohne Risiko kennenlernen kannst. Deshalb laufen auch die kostenlosen Server auf moderner Hardware.',
         freePageWhyFreeAnswerLong:
-            'Wir betreiben diese kostenlosen Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist als moderne Systeme. Die Ressourcen sind im Vergleich zu unseren bezahlten Plänen begrenzt — perfekt für kleine Gameserver, Freunde-Runden oder zum Ausprobieren, bevor Du upgradest.',
+            'Wir möchten, dass Du uns ohne Risiko kennenlernen kannst. Deshalb laufen auch die kostenlosen Server auf moderner Hardware mit hoher Leistung pro Kern, auf die es bei Gameservern besonders ankommt.',
+        freePageNoCatchLabel: 'Fair Play',
+        freePageNoCatchPoints: [
+            'Keine Slot-Begrenzung',
+            'Keine Warteschlange',
+            'Läuft weiter, auch wenn niemand online ist',
+        ],
         freePageSpecsLabel: 'Server-Specs',
+        freePageSpecCpuOn: (cpu: string) => `auf ${cpu}`,
+        freePageSpecDisk: 'Speicherplatz',
         freePageSelectGame: 'Wähle Dein Spiel',
         freePageFaqHeading: 'Häufige Fragen',
     },
@@ -170,12 +178,20 @@ const metadataCopy = {
         freePageHeading: 'Get Your Free Game Server',
         freePageHeadingHighlight: 'Free',
         freePageSubheading: 'No payment details required',
-        freePageWhyFreeQuestion: 'Why are the servers free?',
+        freePageWhyFreeQuestion: 'Why free?',
         freePageWhyFreeAnswerShort:
-            'We run these servers on older enterprise hardware that is significantly cheaper to operate. Resources are limited, but great for small game servers and trying things out.',
+            'We want you to get to know us without any risk. That is why our free servers also run on modern hardware.',
         freePageWhyFreeAnswerLong:
-            'We run these free servers on older enterprise hardware that is significantly cheaper to operate than modern infrastructure. Resources are limited compared to our paid plans — perfect for small game servers, playing with friends, or trying things out before upgrading.',
+            'We want you to get to know us without any risk. That is why our free servers also run on modern hardware with strong per-core performance, which matters most for game servers.',
+        freePageNoCatchLabel: 'Fair Play',
+        freePageNoCatchPoints: [
+            'No player slot limit',
+            'No queue',
+            'Stays online even when no one is playing',
+        ],
         freePageSpecsLabel: 'Server Specs',
+        freePageSpecCpuOn: (cpu: string) => `on ${cpu}`,
+        freePageSpecDisk: 'Storage',
         freePageSelectGame: 'Select Your Game',
         freePageFaqHeading: 'Frequently Asked Questions',
     },
@@ -224,7 +240,11 @@ const metadataCopy = {
         freePageWhyFreeQuestion: string;
         freePageWhyFreeAnswerShort: string;
         freePageWhyFreeAnswerLong: string;
+        freePageNoCatchLabel: string;
+        freePageNoCatchPoints: string[];
         freePageSpecsLabel: string;
+        freePageSpecCpuOn: (cpu: string) => string;
+        freePageSpecDisk: string;
         freePageSelectGame: string;
         freePageFaqHeading: string;
     }
