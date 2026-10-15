@@ -51,6 +51,7 @@ const metadataCopy = {
         supportTitle: 'Support',
         supportDescription:
             'Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.',
+        supportTicketTitle: 'Support-Ticket',
         orderIndexTitle: 'Gameserver-Hosting',
         orderIndexDescription:
             'Wähle ein Spiel und konfiguriere Deinen Gameserver mit flexibler Hardware, Speichertiers und schnellem Setup.',
@@ -142,6 +143,7 @@ const metadataCopy = {
         supportTitle: 'Support',
         supportDescription:
             "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
+        supportTicketTitle: 'Support ticket',
         orderIndexTitle: 'Game Server Hosting',
         orderIndexDescription:
             'Choose a game and configure your game server with flexible hardware, storage tiers, and fast setup.',
@@ -231,6 +233,7 @@ const metadataCopy = {
         changelogDescription: string;
         supportTitle: string;
         supportDescription: string;
+        supportTicketTitle: string;
         orderIndexTitle: string;
         orderIndexDescription: string;
         orderConfigureTitle: (summary?: string) => string;
@@ -437,6 +440,18 @@ export function createPublicMetadata({
     };
 }
 
+/** Keeps a page out of search results. Used instead of a robots.txt `Disallow`, which would stop
+ *  crawlers from ever seeing this tag. Layouts of private sections export it directly. */
+export const PRIVATE_ROBOTS: Metadata['robots'] = {
+    index: false,
+    follow: false,
+    googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+    },
+};
+
 export function createPrivateMetadata({
     title,
     description,
@@ -447,14 +462,6 @@ export function createPrivateMetadata({
     return {
         title,
         description,
-        robots: {
-            index: false,
-            follow: false,
-            googleBot: {
-                index: false,
-                follow: false,
-                noimageindex: true,
-            },
-        },
+        robots: PRIVATE_ROBOTS,
     };
 }

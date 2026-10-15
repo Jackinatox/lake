@@ -6,7 +6,18 @@ import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { getActiveSuspension } from '@/lib/gameserver/suspension';
 import { TICKET_CATEGORIES, TICKET_SUBJECT_MAX_LENGTH } from '@/lib/tickets/constants';
 import { headers } from 'next/headers';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
 import NewTicketForm, { type TicketServerOption } from './NewTicketForm';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    return createPrivateMetadata({ title: getMetadataCopy(locale).supportTicketTitle });
+}
 
 type SearchParams = { category?: string; subject?: string; server?: string };
 
