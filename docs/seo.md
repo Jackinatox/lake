@@ -1,4 +1,4 @@
-# SEO: robots.txt, sitemap, canonical/hreflang, noindex
+# SEO: robots.txt, sitemap, canonical/hreflang, noindex, JSON-LD
 
 Public pages get canonical + hreflang tags from one helper, are listed in `sitemap.xml` with the
 same hreflang set, and robots.txt only blocks non-HTML routes. Private pages are kept out of the
@@ -14,7 +14,7 @@ fetched, so crawlers would never see its noindex and could still index the bare 
     to `og:type=article` with published/modified time (blog posts).
   - `createPrivateMetadata({ title })` and `PRIVATE_ROBOTS`: `noindex, nofollow`.
   - `metadataCopy`: per-locale titles/descriptions for pages without their own message keys.
-  - `SITE_URL`: absolute origin (`NEXT_PUBLIC_APP_URL`) for sitemap and robots.
+  - `SITE_URL`: absolute origin (`NEXT_PUBLIC_APP_URL`) for sitemap, robots and JSON-LD.
 - `app/layout.tsx`: `metadataBase`, which turns the relative canonical/hreflang URLs absolute.
 - `app/robots.ts`: `Disallow: /api/, /webhook/` plus the `Sitemap:` line.
 - `app/sitemap.ts`: `localeUrls(path, ...)` emits one entry per locale with
@@ -38,6 +38,14 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   `/support/tickets/new`, `/support/tickets/[ticketId]`, `/products/wait/[jobId]`, and the legacy
   `/support` form (duplicate of `/support/tickets` until it is removed).
 - `/support/tickets` itself is public (the support landing page) and is in the sitemap.
+
+## Structured data (JSON-LD)
+
+- `lib/structuredData.ts` builds the objects, `components/seo/JsonLd.tsx` renders them (escapes
+  `<`).
+- Homepage: `Organization` (name, logo, email) + `WebSite`. Blog posts: `BlogPosting`.
+- Only mark up what is visible on the page. Google can issue a manual action for markup that is
+  not, which is why there is no `Product`/`Offer` with a price yet.
 
 ## Adding a page
 

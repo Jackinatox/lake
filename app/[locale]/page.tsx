@@ -9,6 +9,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
+import { homeJsonLd } from '@/lib/structuredData';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export async function generateMetadata({
     params,
@@ -26,8 +28,9 @@ export async function generateMetadata({
     });
 }
 
-export default async function LandingPage() {
-    const [t, tFreeServer] = await Promise.all([
+export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
+    const [{ locale }, t, tFreeServer] = await Promise.all([
+        params,
         getTranslations('landingpage'),
         getTranslations('freeServer'),
     ]);
@@ -68,6 +71,7 @@ export default async function LandingPage() {
 
     return (
         <main className="flex flex-col min-h-screen -mx-2 md:-mx-8 -my-5 overflow-x-hidden">
+            <JsonLd data={homeJsonLd(locale)} />
             <style>{`
                 @keyframes lp-fade-up {
                     from { opacity: 0; transform: translateY(28px); }

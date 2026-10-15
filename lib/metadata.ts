@@ -1,7 +1,7 @@
 import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
-const SITE_NAME = 'Scyed Hosting';
+export const SITE_NAME = 'Scyed Hosting';
 
 /** Absolute site origin for sitemap.xml and robots.txt, which need full URLs. */
 export const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://scyed.com';
