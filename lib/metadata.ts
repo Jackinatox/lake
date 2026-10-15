@@ -382,6 +382,7 @@ export function createPublicMetadata({
     keywords,
     image,
     article,
+    noindex,
 }: {
     locale: string;
     path: string;
@@ -391,6 +392,9 @@ export function createPublicMetadata({
     image?: MetaImage;
     /** Marks the page as an article (og:type=article) with its dates. */
     article?: { publishedTime: Date; modifiedTime?: Date };
+    /** Order funnel steps: keep title and link preview, but stay out of the index (links are
+     *  still followed). */
+    noindex?: boolean;
 }): Metadata {
     const normalizedLocale = normalizeLocale(locale);
     const languages = Object.fromEntries(
@@ -404,6 +408,7 @@ export function createPublicMetadata({
         title,
         description,
         keywords,
+        ...(noindex ? { robots: { index: false, follow: true } } : {}),
         alternates: {
             canonical: localizedPath(normalizedLocale, path),
             languages: {

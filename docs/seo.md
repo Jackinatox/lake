@@ -11,7 +11,8 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   - `createPublicMetadata({ locale, path, title, description, article? })`: canonical
     `/<locale><path>`, `alternates.languages` for every locale plus `x-default` (= default locale
     `de`), OpenGraph, Twitter. `path` is locale-less (`'/'` for the homepage). `article` switches
-    to `og:type=article` with published/modified time (blog posts).
+    to `og:type=article` with published/modified time (blog posts). `noindex` gives
+    `noindex, follow` but keeps title and link preview (order funnel steps).
   - `createPrivateMetadata({ title })` and `PRIVATE_ROBOTS`: `noindex, nofollow`.
   - `metadataCopy`: per-locale titles/descriptions for pages without their own message keys.
   - `SITE_URL`: absolute origin (`NEXT_PUBLIC_APP_URL`) for sitemap, robots and JSON-LD.
@@ -19,7 +20,7 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - `app/robots.ts`: `Disallow: /api/, /webhook/` plus the `Sitemap:` line.
 - `app/sitemap.ts`: `localeUrls(path, ...)` emits one entry per locale with
   `alternates.languages`. Contains home, pricing, blog, changelog, `/support/tickets`, the order
-  pages per enabled game, and blog posts (`published && listed && publishedAt <= now`).
+  page per enabled game, and blog posts (`published && listed && publishedAt <= now`).
   `dynamic = 'force-dynamic'`: rendered per request, otherwise it is built once at build time.
   Not ISR, because that cache lives per instance and we run several. Legal pages are indexable
   but deliberately not listed.
@@ -38,6 +39,9 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   `/support/tickets/new`, `/support/tickets/[ticketId]`, `/products/wait/[jobId]`, and the legacy
   `/support` form (duplicate of `/support/tickets` until it is removed).
 - `/support/tickets` itself is public (the support landing page) and is in the sitemap.
+- Order funnel steps `/order/[game]/setup` and `/order/configure/games` use
+  `createPublicMetadata({ noindex: true })` (`noindex, follow`) and are not in the sitemap:
+  without a configuration they are empty or an error message. `/order/configure` stays indexable.
 
 ## Structured data (JSON-LD)
 
