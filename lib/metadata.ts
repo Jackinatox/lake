@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 
 const SITE_NAME = 'Scyed Hosting';
 
+/** Absolute site origin for sitemap.xml and robots.txt, which need full URLs. */
+export const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://scyed.com';
+
 // Social/link previews (Telegram, Twitter, etc.) size the image from the actual file at
 // og:image, not from the declared width/height. Serving a small optimized version via the
 // Next image optimizer makes platforms render a compact thumbnail instead of a huge banner.
