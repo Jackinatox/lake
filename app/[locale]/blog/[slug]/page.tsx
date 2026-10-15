@@ -6,30 +6,26 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
 import { Metadata } from 'next';
+import { createPublicMetadata } from '@/lib/metadata';
+import { markdownExcerpt } from '@/lib/markdownExcerpt';
 
 export async function generateMetadata({
     params,
-    searchParams,
 }: {
-    params: Promise<{ slug: string }>;
-    searchParams: Promise<{ from?: string }>;
+    params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const [{ slug }, { from }] = await Promise.all([params, searchParams]);
+    const { locale, slug } = await params;
     const post = await getBlogPostBySlug(slug);
     if (!post) {
-        return {
-            metadataBase: appUrl ? new URL(appUrl) : undefined,
-            title: 'Post not found',
-        };
+        return { title: 'Post not found' };
     }
-    return {
-        metadataBase: appUrl ? new URL(appUrl) : undefined,
+    return createPublicMetadata({
+        locale,
+        path: `/blog/${slug}`,
         title: post.title,
-        description: post.title
-            ? `Blog Post: ${post.title}`
-            : 'A little above average Gameserver hosting platform',
-    };
+        description: markdownExcerpt(post.content) || post.title,
+        article: { publishedTime: post.publishedAt, modifiedTime: post.updatedAt },
+    });
 }
 
 export default async function BlogPostPage({

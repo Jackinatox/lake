@@ -7,6 +7,24 @@ import { Gift, ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/',
+        title: copy.homeTitle,
+        description: copy.homeDescription,
+    });
+}
 
 export default async function LandingPage() {
     const [t, tFreeServer] = await Promise.all([

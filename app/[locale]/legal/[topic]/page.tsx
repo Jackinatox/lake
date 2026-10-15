@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import LegalPageTemplate from './LegalPageTemplate';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { createPublicMetadata } from '@/lib/metadata';
 
 const topics = ['tos', 'privacy', 'imprint', 'returns', 'payments'] as const;
 export type LegalTopic = (typeof topics)[number];
@@ -34,8 +35,10 @@ export async function generateMetadata({
     }
     const castTopic: LegalTopic = topic as LegalTopic;
 
-    return {
-        title: `${castTopic.toUpperCase()} - Legal`,
-        description: t(`topics.${topic}.description`),
-    };
+    return createPublicMetadata({
+        locale,
+        path: `/legal/${castTopic}`,
+        title: t(`topics.${castTopic}.title`),
+        description: t(`topics.${castTopic}.description`),
+    });
 }

@@ -2,12 +2,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
+import { createPublicMetadata } from '@/lib/metadata';
 
-export default async function Page({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'contact' });
 
@@ -38,8 +35,10 @@ export async function generateMetadata({
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'contact' });
 
-    return {
+    return createPublicMetadata({
+        locale,
+        path: '/legal/contact',
         title: t('title'),
         description: t('description'),
-    };
+    });
 }

@@ -15,6 +15,24 @@ import { LogIn, Plus } from 'lucide-react';
 import { getFormatter, getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/support/tickets',
+        title: copy.supportTitle,
+        description: copy.supportDescription,
+    });
+}
 
 type SearchParams = { view?: string; category?: string; subject?: string; server?: string };
 

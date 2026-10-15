@@ -4,20 +4,24 @@ import formatDate from '@/lib/formatDate';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
+import { stripMarkdown } from '@/lib/markdownExcerpt';
 
-function stripMarkdown(md: string): string {
-    return md
-        .replace(/#{1,6}\s/g, '')
-        .replace(/\*\*([^*]+)\*\*/g, '$1')
-        .replace(/\*([^*]+)\*/g, '$1')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
-        .replace(/>\s/g, '')
-        .replace(/[-*+]\s/g, '')
-        .replace(/\n/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/blog',
+        title: copy.blogTitle,
+        description: copy.blogDescription,
+    });
 }
 
 export default async function BlogPage({

@@ -39,6 +39,18 @@ const ogLocaleByLocale: Record<SupportedLocale, string> = {
 
 const metadataCopy = {
     de: {
+        homeTitle: 'Gameserver-Hosting leicht gemacht',
+        homeDescription:
+            'Miete Deinen Gameserver mit flexibler CPU, RAM und Laufzeit. Startklar in Sekunden, mit übersichtlichem Control Panel, Backups und kostenlosen Servern zum Testen.',
+        blogTitle: 'Blog',
+        blogDescription:
+            'Neuigkeiten, Anleitungen und Hintergründe rund um Gameserver-Hosting bei Scyed.',
+        changelogTitle: 'Neuigkeiten',
+        changelogDescription:
+            'Die neuesten Updates, Verbesserungen und Fehlerbehebungen bei Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            'Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.',
         orderIndexTitle: 'Gameserver-Hosting',
         orderIndexDescription:
             'Wähle ein Spiel und konfiguriere Deinen Gameserver mit flexibler Hardware, Speichertiers und schnellem Setup.',
@@ -120,6 +132,16 @@ const metadataCopy = {
         freePageFaqHeading: 'Häufige Fragen',
     },
     en: {
+        homeTitle: 'Game Server Hosting Made Easy',
+        homeDescription:
+            'Rent your game server with flexible CPU, RAM and runtime. Ready in seconds, with a clean control panel, backups and free servers to try us out.',
+        blogTitle: 'Blog',
+        blogDescription: 'News, guides and background on game server hosting at Scyed.',
+        changelogTitle: "What's New",
+        changelogDescription: 'The latest updates, improvements and fixes at Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
         orderIndexTitle: 'Game Server Hosting',
         orderIndexDescription:
             'Choose a game and configure your game server with flexible hardware, storage tiers, and fast setup.',
@@ -201,6 +223,14 @@ const metadataCopy = {
 } satisfies Record<
     SupportedLocale,
     {
+        homeTitle: string;
+        homeDescription: string;
+        blogTitle: string;
+        blogDescription: string;
+        changelogTitle: string;
+        changelogDescription: string;
+        supportTitle: string;
+        supportDescription: string;
         orderIndexTitle: string;
         orderIndexDescription: string;
         orderConfigureTitle: (summary?: string) => string;
@@ -348,6 +378,7 @@ export function createPublicMetadata({
     description,
     keywords,
     image,
+    article,
 }: {
     locale: string;
     path: string;
@@ -355,6 +386,8 @@ export function createPublicMetadata({
     description: string;
     keywords?: string[];
     image?: MetaImage;
+    /** Marks the page as an article (og:type=article) with its dates. */
+    article?: { publishedTime: Date; modifiedTime?: Date };
 }): Metadata {
     const normalizedLocale = normalizeLocale(locale);
     const languages = Object.fromEntries(
@@ -376,7 +409,13 @@ export function createPublicMetadata({
             },
         },
         openGraph: {
-            type: 'website',
+            ...(article
+                ? {
+                      type: 'article',
+                      publishedTime: article.publishedTime.toISOString(),
+                      modifiedTime: article.modifiedTime?.toISOString(),
+                  }
+                : { type: 'website' }),
             siteName: SITE_NAME,
             title,
             description,
