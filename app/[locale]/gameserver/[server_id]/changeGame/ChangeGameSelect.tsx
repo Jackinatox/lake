@@ -2,12 +2,14 @@ import GameCard from '@/components/order/game/gameCard';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Gamepad2, MousePointerClick } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 interface ChangeGameSelectProps {
     serverId: string;
 }
 
 async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
+    const t = await getTranslations('orderFlow');
     const data = await prisma.gameData.findMany({
         select: {
             id: true,
@@ -19,7 +21,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     });
 
     if (!data || data.length === 0) {
-        return <div>No Games.</div>;
+        return <div>{t('chooseGame.noGames')}</div>;
     }
 
     const games = data.map((game) => ({
@@ -28,14 +30,14 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
     }));
 
     return (
-        <div className="flex flex-col min-h-[calc(100dvh-4rem)]"> 
+        <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
             <div className="sticky top-16 z-40 -mx-2 -mt-2 md:-mx-8 md:-mt-4 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0">
                             <Gamepad2 className="h-4 w-4 shrink-0 text-muted-foreground" />
                             <span className="text-sm font-semibold text-foreground truncate">
-                                Choose a Game
+                                {t('chooseGame.title')}
                             </span>
                         </div>
                         <Link
@@ -43,7 +45,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
                             className="flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             <ArrowLeft className="h-4 w-4" />
-                            <span className="hidden sm:inline">Back</span>
+                            <span className="hidden sm:inline">{t('back')}</span>
                         </Link>
                     </div>
                 </div>
@@ -70,7 +72,7 @@ async function ChangeGameSelect({ serverId }: ChangeGameSelectProps) {
                 <div className="mx-auto w-full max-w-5xl px-4 py-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground h-9">
                         <MousePointerClick className="h-4 w-4 shrink-0" />
-                        <span>Select a game to continue to configuration</span>
+                        <span>{t('chooseGame.selectHint')}</span>
                     </div>
                 </div>
             </div>

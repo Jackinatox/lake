@@ -1894,5 +1894,51 @@
       "conflict": "A new message arrived. Please check it and send again.",
       "unknown": "Something went wrong. Please try again."
     }
+  },
+  "orderFlow": {
+    "total": "Total",
+    "back": "Back",
+    "continue": "Continue",
+    "configuredOrder": {
+      "subtitle": "Configure your server",
+      "continueLabel": "Continue to Setup"
+    },
+    "configureHardware": {
+      "title": "Configure Hardware",
+      "subtitle": "Configure your hardware, then choose a game",
+      "continueLabel": "Choose a Game"
+    },
+    "chooseGame": {
+      "title": "Choose a Game",
+      "subtitle": "Hardware configured, now pick a game",
+      "noGames": "No games available.",
+      "selectHint": "Select a game to continue to configuration"
+    },
+    "setup": {
+      "noHardware": "No hardware configuration found. Please configure your hardware first.",
+      "configureHardware": "Configure Hardware",
+      "title": "Game Setup",
+      "edit": "Edit",
+      "gameSettings": "Configure your game-specific settings",
+      "loginToContinue": "Log in to continue",
+      "processing": "Processing...",
+      "continueToPayment": "Continue to Payment",
+      "restoreFailedTitle": "Unable to restore game configuration",
+      "restoreFailedDescription": "Please configure your game settings.",
+      "loginRequiredTitle": "Login Required",
+      "loginRequiredDescription": "Please log in to continue with the purchase.",
+      "invalidConfigTitle": "Invalid configuration",
+      "errorTitle": "Error",
+      "errorDescription": "There was an error processing your request."
+    },
+    "chips": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Disk",
+      "backups": "Backups",
+      "ports": "Ports",
+      "duration": "Duration",
+      "daysSuffix": "d"
+    }
   }
 }

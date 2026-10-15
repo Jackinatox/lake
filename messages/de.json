@@ -1906,5 +1906,51 @@
       "conflict": "Es ist eine neue Nachricht eingegangen. Bitte lies sie und sende erneut.",
       "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
     }
+  },
+  "orderFlow": {
+    "total": "Gesamt",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "configuredOrder": {
+      "subtitle": "Konfiguriere Deinen Server",
+      "continueLabel": "Weiter zum Setup"
+    },
+    "configureHardware": {
+      "title": "Hardware konfigurieren",
+      "subtitle": "Konfiguriere Deine Hardware und wähle danach ein Spiel",
+      "continueLabel": "Spiel wählen"
+    },
+    "chooseGame": {
+      "title": "Spiel wählen",
+      "subtitle": "Hardware konfiguriert, jetzt ein Spiel wählen",
+      "noGames": "Keine Spiele verfügbar.",
+      "selectHint": "Wähle ein Spiel, um mit der Konfiguration fortzufahren"
+    },
+    "setup": {
+      "noHardware": "Keine Hardware-Konfiguration gefunden. Bitte konfiguriere zuerst Deine Hardware.",
+      "configureHardware": "Hardware konfigurieren",
+      "title": "Spiel-Setup",
+      "edit": "Bearbeiten",
+      "gameSettings": "Lege die Einstellungen für Dein Spiel fest",
+      "loginToContinue": "Melde Dich an, um fortzufahren",
+      "processing": "Wird verarbeitet…",
+      "continueToPayment": "Weiter zur Zahlung",
+      "restoreFailedTitle": "Spielkonfiguration konnte nicht wiederhergestellt werden",
+      "restoreFailedDescription": "Bitte lege Deine Spieleinstellungen erneut fest.",
+      "loginRequiredTitle": "Anmeldung erforderlich",
+      "loginRequiredDescription": "Bitte melde Dich an, um mit dem Kauf fortzufahren.",
+      "invalidConfigTitle": "Ungültige Konfiguration",
+      "errorTitle": "Fehler",
+      "errorDescription": "Bei der Verarbeitung Deiner Anfrage ist ein Fehler aufgetreten."
+    },
+    "chips": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Speicher",
+      "backups": "Backups",
+      "ports": "Ports",
+      "duration": "Laufzeit",
+      "daysSuffix": "T"
+    }
   }
 }
