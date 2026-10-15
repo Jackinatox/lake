@@ -46,7 +46,7 @@ export default async function LandingPage() {
             imageSrc: '/images/home/panel.webp',
             width: 2074,
             height: 1412,
-            alt: 'Control panel screenshot',
+            alt: t('panelImageAlt'),
         },
         {
             title: t('fileManagerTitle'),
@@ -54,7 +54,7 @@ export default async function LandingPage() {
             imageSrc: '/images/home/filemanager.webp',
             width: 1812,
             height: 906,
-            alt: 'File manager screenshot',
+            alt: t('fileManagerImageAlt'),
         },
         {
             title: t('backupTitle'),
@@ -62,7 +62,7 @@ export default async function LandingPage() {
             imageSrc: '/images/home/backups.webp',
             width: 1608,
             height: 818,
-            alt: 'Backups screenshot',
+            alt: t('backupImageAlt'),
         },
     ];
 
@@ -133,14 +133,14 @@ export default async function LandingPage() {
                                 {t('highlightSetup')}
                             </p>
 
-                            <div className="lp-up d1 leading-none">
-                                <h1 className="text-[clamp(2.25rem,9vw,4.5rem)] font-black tracking-tight uppercase leading-[0.9]">
+                            <h1 className="lp-up d1 leading-none">
+                                <span className="block text-[clamp(2.25rem,9vw,4.5rem)] font-black tracking-tight uppercase leading-[0.9]">
                                     {t('header1')}
-                                </h1>
-                                <h1 className="text-[clamp(2.25rem,9vw,4.5rem)] font-black tracking-tight uppercase leading-[0.9] text-primary">
+                                </span>{' '}
+                                <span className="block text-[clamp(2.25rem,9vw,4.5rem)] font-black tracking-tight uppercase leading-[0.9] text-primary">
                                     {t('header2')}
-                                </h1>
-                            </div>
+                                </span>
+                            </h1>
 
                             <p className="lp-up d2 text-base md:text-lg text-muted-foreground max-w-md leading-relaxed">
                                 {t('heroSubtitle')}
@@ -179,7 +179,7 @@ export default async function LandingPage() {
                             <div className="relative rounded-xl border overflow-hidden shadow-xl shadow-black/20">
                                 <ThemeImage
                                     src="/images/home/panel.webp"
-                                    alt="Control panel"
+                                    alt={t('panelImageAlt')}
                                     width={2074}
                                     height={1412}
                                     className="w-full h-auto"
@@ -194,7 +194,7 @@ export default async function LandingPage() {
                                 <div className="panel-tilt w-full rounded-xl border overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.35)]">
                                     <ThemeImage
                                         src="/images/home/panel.webp"
-                                        alt="Control panel"
+                                        alt={t('panelImageAlt')}
                                         width={2074}
                                         height={1412}
                                         className="w-full h-auto"
