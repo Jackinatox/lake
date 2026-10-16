@@ -6,41 +6,41 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
 import { Metadata } from 'next';
+import { createPublicMetadata } from '@/lib/metadata';
+import { markdownExcerpt } from '@/lib/markdownExcerpt';
+import { blogPostingJsonLd } from '@/lib/structuredData';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export async function generateMetadata({
     params,
-    searchParams,
 }: {
-    params: Promise<{ slug: string }>;
-    searchParams: Promise<{ from?: string }>;
+    params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const [{ slug }, { from }] = await Promise.all([params, searchParams]);
+    const { locale, slug } = await params;
     const post = await getBlogPostBySlug(slug);
     if (!post) {
-        return {
-            metadataBase: appUrl ? new URL(appUrl) : undefined,
-            title: 'Post not found',
-        };
+        return { title: 'Post not found' };
     }
-    return {
-        metadataBase: appUrl ? new URL(appUrl) : undefined,
+    return createPublicMetadata({
+        locale,
+        path: `/blog/${slug}`,
         title: post.title,
-        description: post.title
-            ? `Blog Post: ${post.title}`
-            : 'A little above average Gameserver hosting platform',
-    };
+        description: markdownExcerpt(post.content) || post.title,
+        article: { publishedTime: post.publishedAt, modifiedTime: post.updatedAt },
+        // Unlisted posts are reachable by link only, so keep them out of search results too.
+        noindex: !post.listed,
+    });
 }
 
 export default async function BlogPostPage({
     params,
     searchParams,
 }: {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ locale: string; slug: string }>;
     searchParams: Promise<{ from?: string }>;
 }) {
     const t = await getTranslations('blog');
-    const [{ slug }, { from }] = await Promise.all([params, searchParams]);
+    const [{ locale, slug }, { from }] = await Promise.all([params, searchParams]);
     const post = await getBlogPostBySlug(slug);
 
     if (!post) notFound();
@@ -52,6 +52,16 @@ export default async function BlogPostPage({
 
     return (
         <div className="mx-auto max-w-4xl w-full p-2">
+            <JsonLd
+                data={blogPostingJsonLd({
+                    locale,
+                    slug,
+                    title: post.title,
+                    description: markdownExcerpt(post.content) || post.title,
+                    publishedAt: date,
+                    updatedAt: post.updatedAt,
+                })}
+            />
             <Link
                 href={backHref}
                 className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"

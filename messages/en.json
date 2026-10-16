@@ -102,16 +102,19 @@
     "toolsHeader": "Our tools",
     "panelTitle": "Control Panel",
     "panelDesc": "Manage your server with simple controls — start, stop, restart, and monitor performance without the fuss.",
+    "panelImageAlt": "Control panel screenshot",
     "panelFeature1": "One-click deployment",
     "panelFeature2": "Live performance view",
     "panelFeature3": "Server console",
     "fileManagerTitle": "Files in your browser",
     "fileManagerDesc": "Open, edit and download files directly in your browser. Or connect via FTP.",
+    "fileManagerImageAlt": "File manager screenshot",
     "fileManagerFeature1": "Edit files in-browser",
     "fileManagerFeature2": "Upload & download",
     "fileManagerFeature3": "Advanced actions via FTP",
     "backupTitle": "Backups you can trust",
     "backupDesc": "Create backups of your entire gameserver and restore them whenever you need.",
+    "backupImageAlt": "Backups screenshot",
     "backupFeature1": "Automatic scheduled backups (coming soon)",
     "backupFeature2": "One-click restore",
     "backupFeature3": "Download backups",
@@ -1890,6 +1893,52 @@
       "messageLimit": "You're sending messages too quickly. Please wait a moment and try again.",
       "conflict": "A new message arrived. Please check it and send again.",
       "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "orderFlow": {
+    "total": "Total",
+    "back": "Back",
+    "continue": "Continue",
+    "configuredOrder": {
+      "subtitle": "Configure your server",
+      "continueLabel": "Continue to Setup"
+    },
+    "configureHardware": {
+      "title": "Configure Hardware",
+      "subtitle": "Configure your hardware, then choose a game",
+      "continueLabel": "Choose a Game"
+    },
+    "chooseGame": {
+      "title": "Choose a Game",
+      "subtitle": "Hardware configured, now pick a game",
+      "noGames": "No games available.",
+      "selectHint": "Select a game to continue to configuration"
+    },
+    "setup": {
+      "noHardware": "No hardware configuration found. Please configure your hardware first.",
+      "configureHardware": "Configure Hardware",
+      "title": "Game Setup",
+      "edit": "Edit",
+      "gameSettings": "Configure your game-specific settings",
+      "loginToContinue": "Log in to continue",
+      "processing": "Processing...",
+      "continueToPayment": "Continue to Payment",
+      "restoreFailedTitle": "Unable to restore game configuration",
+      "restoreFailedDescription": "Please configure your game settings.",
+      "loginRequiredTitle": "Login Required",
+      "loginRequiredDescription": "Please log in to continue with the purchase.",
+      "invalidConfigTitle": "Invalid configuration",
+      "errorTitle": "Error",
+      "errorDescription": "There was an error processing your request."
+    },
+    "chips": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Disk",
+      "backups": "Backups",
+      "ports": "Ports",
+      "duration": "Duration",
+      "daysSuffix": "d"
     }
   }
 }

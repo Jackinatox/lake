@@ -26,6 +26,8 @@ export async function generateMetadata({
         title: copy.orderConfigureGamesTitle(summary ?? undefined),
         description: copy.orderConfigureGamesDescription,
         keywords: ['choose game server', 'game selection', 'configured server'],
+        // A funnel step that only makes sense after /order/configure.
+        noindex: true,
     });
 }
 

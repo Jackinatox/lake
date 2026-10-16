@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { GameData, PerformanceGroup, ResourceTier } from '@/models/prisma';
 
@@ -39,6 +40,7 @@ export default function GamesAfterHardwareClient({
     performanceGroups,
 }: Props) {
     const searchParams = useSearchParams();
+    const t = useTranslations('orderFlow');
     const cpu = parseFiniteNumber(searchParams.get('cpu'), 4);
     const ram = parseFiniteNumber(searchParams.get('ram'), 4);
     const days = Math.max(1, Math.round(parseFiniteNumber(searchParams.get('days'), 30)));
@@ -85,10 +87,10 @@ export default function GamesAfterHardwareClient({
                         </Button>
                         <div className="flex-1 min-w-0">
                             <h1 className="text-base sm:text-lg font-bold leading-tight">
-                                Choose a Game
+                                {t('chooseGame.title')}
                             </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
-                                Hardware configured — now pick a game
+                                {t('chooseGame.subtitle')}
                             </p>
                         </div>
                     </div>

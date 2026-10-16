@@ -3,6 +3,18 @@ import { Link } from '@/i18n/navigation';
 import { ArrowRight, Info } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import HelpComponent from './HelpComponent';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
+
+// Duplicate of /support/tickets until it is removed, so it is kept out of the index.
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    return createPrivateMetadata({ title: getMetadataCopy(locale).supportTitle });
+}
 
 // Legacy contact form, superseded by /support/tickets; to be removed (see docs/support-tickets.md).
 async function page() {
