@@ -114,16 +114,19 @@
     "toolsHeader": "Unsere Tools",
     "panelTitle": "Control Panel",
     "panelDesc": "Verwalte Deinen Server mit klaren Bedienelementen — starten, stoppen, neu starten und Performance prüfen, ganz ohne Aufwand.",
+    "panelImageAlt": "Screenshot des Control Panels",
     "panelFeature1": "Ein-Klick-Bereitstellung",
     "panelFeature2": "Echtzeit-Performance",
     "panelFeature3": "Server Konsole",
     "fileManagerTitle": "Dateien direkt im Browser",
     "fileManagerDesc": "Öffne, bearbeite und lade Dateien direkt im Browser hoch oder herunter. Alternativ per FTP verbinden.",
+    "fileManagerImageAlt": "Screenshot des Dateimanagers",
     "fileManagerFeature1": "Dateien im Browser bearbeiten",
     "fileManagerFeature2": "Hochladen & herunterladen",
     "fileManagerFeature3": "Erweiterte Aktionen per FTP",
     "backupTitle": "Zuverlässige Backups",
     "backupDesc": "Erstelle Backups deines kompletten Gameservers und stelle sie jederzeit wieder her.",
+    "backupImageAlt": "Screenshot der Backup-Verwaltung",
     "backupFeature1": "Automatische geplante Backups (bald verfügbar)",
     "backupFeature2": "Ein-Klick-Wiederherstellung",
     "backupFeature3": "Backups herunterladen",
@@ -1902,6 +1905,52 @@
       "messageLimit": "Du sendest zu viele Nachrichten. Bitte warte einen Moment und versuche es erneut.",
       "conflict": "Es ist eine neue Nachricht eingegangen. Bitte lies sie und sende erneut.",
       "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
+  },
+  "orderFlow": {
+    "total": "Gesamt",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "configuredOrder": {
+      "subtitle": "Konfiguriere Deinen Server",
+      "continueLabel": "Weiter zum Setup"
+    },
+    "configureHardware": {
+      "title": "Hardware konfigurieren",
+      "subtitle": "Konfiguriere Deine Hardware und wähle danach ein Spiel",
+      "continueLabel": "Spiel wählen"
+    },
+    "chooseGame": {
+      "title": "Spiel wählen",
+      "subtitle": "Hardware konfiguriert, jetzt ein Spiel wählen",
+      "noGames": "Keine Spiele verfügbar.",
+      "selectHint": "Wähle ein Spiel, um mit der Konfiguration fortzufahren"
+    },
+    "setup": {
+      "noHardware": "Keine Hardware-Konfiguration gefunden. Bitte konfiguriere zuerst Deine Hardware.",
+      "configureHardware": "Hardware konfigurieren",
+      "title": "Spiel-Setup",
+      "edit": "Bearbeiten",
+      "gameSettings": "Lege die Einstellungen für Dein Spiel fest",
+      "loginToContinue": "Melde Dich an, um fortzufahren",
+      "processing": "Wird verarbeitet…",
+      "continueToPayment": "Weiter zur Zahlung",
+      "restoreFailedTitle": "Spielkonfiguration konnte nicht wiederhergestellt werden",
+      "restoreFailedDescription": "Bitte lege Deine Spieleinstellungen erneut fest.",
+      "loginRequiredTitle": "Anmeldung erforderlich",
+      "loginRequiredDescription": "Bitte melde Dich an, um mit dem Kauf fortzufahren.",
+      "invalidConfigTitle": "Ungültige Konfiguration",
+      "errorTitle": "Fehler",
+      "errorDescription": "Bei der Verarbeitung Deiner Anfrage ist ein Fehler aufgetreten."
+    },
+    "chips": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Speicher",
+      "backups": "Backups",
+      "ports": "Ports",
+      "duration": "Laufzeit",
+      "daysSuffix": "T"
     }
   }
 }

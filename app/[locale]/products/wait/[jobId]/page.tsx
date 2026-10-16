@@ -4,6 +4,7 @@ import ProvisioningStatus from '@/components/provisioning/ProvisioningStatus';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
+import { createPrivateMetadata } from '@/lib/metadata';
 
 interface ProvisioningPageProps {
     params: Promise<{
@@ -16,10 +17,10 @@ export async function generateMetadata({ params }: ProvisioningPageProps) {
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'provisioning' });
 
-    return {
+    return createPrivateMetadata({
         title: t('title'),
         description: t('description'),
-    };
+    });
 }
 
 export default async function ProvisioningPage({ params }: ProvisioningPageProps) {

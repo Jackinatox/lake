@@ -20,6 +20,7 @@ import { ArrowLeft, ArrowRight, Info, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SetupPageClientProps {
     game: Game;
@@ -39,6 +40,7 @@ export default function SetupPageClient({
     const searchParams = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
+    const t = useTranslations('orderFlow');
     const locale = useLakeLocale();
     const session = authClient.useSession();
     const gameConfigRef = useRef<{ submit: () => void }>(null);
@@ -58,14 +60,14 @@ export default function SetupPageClient({
                 setInitialGameConfig(orderData.gameConfig);
             } else {
                 toast({
-                    title: 'Unable to restore game configuration',
-                    description: 'Please configure your game settings.',
+                    title: t('setup.restoreFailedTitle'),
+                    description: t('setup.restoreFailedDescription'),
                 });
             }
         }
 
         restoreOrder();
-    }, [orderIdParam, toast]);
+    }, [orderIdParam, toast, t]);
 
     const isLoggedIn = Boolean(session.data?.user);
 
@@ -91,11 +93,9 @@ export default function SetupPageClient({
     if (!hardwareConfig) {
         return (
             <div className="p-8 text-center">
-                <p className="text-muted-foreground mb-4">
-                    No hardware configuration found. Please configure your hardware first.
-                </p>
+                <p className="text-muted-foreground mb-4">{t('setup.noHardware')}</p>
                 <Button asChild>
-                    <Link href={`/order/${gameSlug}`}>Configure Hardware</Link>
+                    <Link href={`/order/${gameSlug}`}>{t('setup.configureHardware')}</Link>
                 </Button>
             </div>
         );
@@ -110,8 +110,8 @@ export default function SetupPageClient({
     const handleGameConfigSubmit = async (gameConfig: GameConfig) => {
         if (!isLoggedIn) {
             toast({
-                title: 'Login Required',
-                description: 'Please log in to continue with the purchase.',
+                title: t('setup.loginRequiredTitle'),
+                description: t('setup.loginRequiredDescription'),
                 variant: 'destructive',
             });
             return;
@@ -120,7 +120,7 @@ export default function SetupPageClient({
         const parsedGameConfig = gameConfigSchema.safeParse(gameConfig);
         if (!parsedGameConfig.success || !configuredResult) {
             toast({
-                title: 'Invalid configuration',
+                title: t('setup.invalidConfigTitle'),
                 description: getValidationMessage(
                     parsedGameConfig.success
                         ? new Error('Invalid hardware configuration')
@@ -160,11 +160,8 @@ export default function SetupPageClient({
         } catch (error) {
             console.error('Error submitting configuration:', error);
             toast({
-                title: 'Error',
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : 'There was an error processing your request.',
+                title: t('setup.errorTitle'),
+                description: error instanceof Error ? error.message : t('setup.errorDescription'),
                 variant: 'destructive',
             });
         } finally {
@@ -197,17 +194,19 @@ export default function SetupPageClient({
                                 />
                             </div>
                             <div>
-                                <h1 className="text-xl sm:text-2xl font-bold">Game Setup</h1>
+                                <h1 className="text-xl sm:text-2xl font-bold">
+                                    {t('setup.title')}
+                                </h1>
                                 <p className="text-sm text-muted-foreground">{game.name}</p>
                             </div>
                         </div>
                         {price && (
                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
                                 <span className="text-sm text-muted-foreground hidden sm:inline">
-                                    Total:
+                                    {t('total')}:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    €{(price.totalCents / 100).toFixed(2)}
+                                    {(price.totalCents / 100).toFixed(2)} €
                                 </span>
                             </div>
                         )}
@@ -240,7 +239,7 @@ export default function SetupPageClient({
                         <Button variant="outline" size="sm" asChild className="shrink-0">
                             <Link href={backHref}>
                                 <Pencil className="h-3 w-3 mr-1.5" />
-                                Edit
+                                {t('setup.edit')}
                             </Link>
                         </Button>
                     </div>
@@ -263,7 +262,7 @@ export default function SetupPageClient({
                                 {game.name}
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                                Configure your game-specific settings
+                                {t('setup.gameSettings')}
                             </p>
                         </div>
                     </div>
@@ -284,7 +283,7 @@ export default function SetupPageClient({
                         <div className="flex items-center justify-center gap-2 mb-3 sm:hidden">
                             <Info className="shrink-0 h-4 w-4" />
                             <span className="text-sm text-muted-foreground">
-                                Log in to continue
+                                {t('setup.loginToContinue')}
                             </span>
                         </div>
                     )}
@@ -292,7 +291,7 @@ export default function SetupPageClient({
                         <Button variant="outline" asChild className="w-full sm:w-auto">
                             <Link href={backHref}>
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back
+                                {t('back')}
                             </Link>
                         </Button>
                         <div className="flex items-center gap-4 w-full sm:w-auto">
@@ -300,7 +299,7 @@ export default function SetupPageClient({
                                 <div className="hidden sm:flex items-center gap-2">
                                     <Info className="shrink-0 h-4 w-4" />
                                     <span className="text-sm text-muted-foreground">
-                                        Log in to continue
+                                        {t('setup.loginToContinue')}
                                     </span>
                                 </div>
                             )}
@@ -309,7 +308,7 @@ export default function SetupPageClient({
                                 disabled={loading || !isLoggedIn}
                                 className="w-full sm:w-auto sm:ml-auto"
                             >
-                                {loading ? 'Processing...' : 'Continue to Payment'}
+                                {loading ? t('setup.processing') : t('setup.continueToPayment')}
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>

@@ -1,7 +1,10 @@
 import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
-const SITE_NAME = 'Scyed Hosting';
+export const SITE_NAME = 'Scyed Hosting';
+
+/** Absolute site origin for sitemap.xml and robots.txt, which need full URLs. */
+export const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://scyed.com';
 
 // Social/link previews (Telegram, Twitter, etc.) size the image from the actual file at
 // og:image, not from the declared width/height. Serving a small optimized version via the
@@ -36,6 +39,19 @@ const ogLocaleByLocale: Record<SupportedLocale, string> = {
 
 const metadataCopy = {
     de: {
+        homeTitle: 'Gameserver-Hosting leicht gemacht',
+        homeDescription:
+            'Miete Deinen Gameserver mit flexibler CPU, RAM und Laufzeit. Startklar in Sekunden, mit übersichtlichem Control Panel, Backups und kostenlosen Servern zum Testen.',
+        blogTitle: 'Blog',
+        blogDescription:
+            'Neuigkeiten, Anleitungen und Hintergründe rund um Gameserver-Hosting bei Scyed.',
+        changelogTitle: 'Neuigkeiten',
+        changelogDescription:
+            'Die neuesten Updates, Verbesserungen und Fehlerbehebungen bei Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            'Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.',
+        supportTicketTitle: 'Support-Ticket',
         orderIndexTitle: 'Gameserver-Hosting',
         orderIndexDescription:
             'Wähle ein Spiel und konfiguriere Deinen Gameserver mit flexibler Hardware, Speichertiers und schnellem Setup.',
@@ -117,6 +133,17 @@ const metadataCopy = {
         freePageFaqHeading: 'Häufige Fragen',
     },
     en: {
+        homeTitle: 'Game Server Hosting Made Easy',
+        homeDescription:
+            'Rent your game server with flexible CPU, RAM and runtime. Ready in seconds, with a clean control panel, backups and free servers to try us out.',
+        blogTitle: 'Blog',
+        blogDescription: 'News, guides and background on game server hosting at Scyed.',
+        changelogTitle: "What's New",
+        changelogDescription: 'The latest updates, improvements and fixes at Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
+        supportTicketTitle: 'Support ticket',
         orderIndexTitle: 'Game Server Hosting',
         orderIndexDescription:
             'Choose a game and configure your game server with flexible hardware, storage tiers, and fast setup.',
@@ -198,6 +225,15 @@ const metadataCopy = {
 } satisfies Record<
     SupportedLocale,
     {
+        homeTitle: string;
+        homeDescription: string;
+        blogTitle: string;
+        blogDescription: string;
+        changelogTitle: string;
+        changelogDescription: string;
+        supportTitle: string;
+        supportDescription: string;
+        supportTicketTitle: string;
         orderIndexTitle: string;
         orderIndexDescription: string;
         orderConfigureTitle: (summary?: string) => string;
@@ -345,6 +381,8 @@ export function createPublicMetadata({
     description,
     keywords,
     image,
+    article,
+    noindex,
 }: {
     locale: string;
     path: string;
@@ -352,6 +390,11 @@ export function createPublicMetadata({
     description: string;
     keywords?: string[];
     image?: MetaImage;
+    /** Marks the page as an article (og:type=article) with its dates. */
+    article?: { publishedTime: Date; modifiedTime?: Date };
+    /** Order funnel steps: keep title and link preview, but stay out of the index (links are
+     *  still followed). */
+    noindex?: boolean;
 }): Metadata {
     const normalizedLocale = normalizeLocale(locale);
     const languages = Object.fromEntries(
@@ -365,6 +408,7 @@ export function createPublicMetadata({
         title,
         description,
         keywords,
+        ...(noindex ? { robots: { index: false, follow: true } } : {}),
         alternates: {
             canonical: localizedPath(normalizedLocale, path),
             languages: {
@@ -373,7 +417,13 @@ export function createPublicMetadata({
             },
         },
         openGraph: {
-            type: 'website',
+            ...(article
+                ? {
+                      type: 'article',
+                      publishedTime: article.publishedTime.toISOString(),
+                      modifiedTime: article.modifiedTime?.toISOString(),
+                  }
+                : { type: 'website' }),
             siteName: SITE_NAME,
             title,
             description,
@@ -395,6 +445,18 @@ export function createPublicMetadata({
     };
 }
 
+/** Keeps a page out of search results. Used instead of a robots.txt `Disallow`, which would stop
+ *  crawlers from ever seeing this tag. Layouts of private sections export it directly. */
+export const PRIVATE_ROBOTS: Metadata['robots'] = {
+    index: false,
+    follow: false,
+    googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+    },
+};
+
 export function createPrivateMetadata({
     title,
     description,
@@ -405,14 +467,6 @@ export function createPrivateMetadata({
     return {
         title,
         description,
-        robots: {
-            index: false,
-            follow: false,
-            googleBot: {
-                index: false,
-                follow: false,
-                noimageindex: true,
-            },
-        },
+        robots: PRIVATE_ROBOTS,
     };
 }

@@ -22,9 +22,20 @@ import { cn } from '@/lib/utils';
 import { ArrowLeft, Server, ShieldCheck } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
+import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import CloseTicketButton from './CloseTicketButton';
 import CustomerReplyComposer from './CustomerReplyComposer';
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    return createPrivateMetadata({ title: getMetadataCopy(locale).supportTicketTitle });
+}
 
 type TimelineEntry =
     | {

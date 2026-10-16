@@ -53,6 +53,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `seo.md` — robots.txt, sitemap (with hreflang), canonical/hreflang via
+  `createPublicMetadata`, noindex for private sections (why not robots.txt
+  `Disallow`) and JSON-LD. Read when adding a public or private page, or
+  touching the sitemap, robots, structured data or the proxy matcher.
 - `server-suspension.md` — Admin suspension/quarantine of gameservers: the
   `GameServerSuspension` table (and why it is not a `GameServerStatus` value),
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
