@@ -27,6 +27,8 @@ export async function generateMetadata({
         title: post.title,
         description: markdownExcerpt(post.content) || post.title,
         article: { publishedTime: post.publishedAt, modifiedTime: post.updatedAt },
+        // Unlisted posts are reachable by link only, so keep them out of search results too.
+        noindex: !post.listed,
     });
 }
 

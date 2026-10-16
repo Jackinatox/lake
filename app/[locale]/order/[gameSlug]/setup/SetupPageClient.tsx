@@ -206,7 +206,7 @@ export default function SetupPageClient({
                                     {t('total')}:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    €{(price.totalCents / 100).toFixed(2)}
+                                    {(price.totalCents / 100).toFixed(2)} €
                                 </span>
                             </div>
                         )}

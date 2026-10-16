@@ -5,12 +5,14 @@ export function stripMarkdown(md: string): string {
             // Images before links, otherwise `![alt](src)` is read as a link and leaves `!alt`.
             .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
             .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-            .replace(/#{1,6}\s/g, '')
+            // Block markers only at the start of a line, so a ` - ` or `C# ` inside a sentence
+            // survives. Before emphasis, otherwise two `* item` bullets are read as italics.
+            .replace(/^\s*#{1,6}\s+/gm, '')
+            .replace(/^\s*>\s?/gm, '')
+            .replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, '')
             .replace(/\*\*([^*]+)\*\*/g, '$1')
             .replace(/\*([^*]+)\*/g, '$1')
             .replace(/`([^`]+)`/g, '$1')
-            .replace(/>\s/g, '')
-            .replace(/[-*+]\s/g, '')
             .replace(/\n/g, ' ')
             .replace(/\s+/g, ' ')
             .trim()

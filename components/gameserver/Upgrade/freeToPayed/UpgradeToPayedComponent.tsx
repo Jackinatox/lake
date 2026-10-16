@@ -131,7 +131,7 @@ export function UpgradeHardwareConfigToPayed({
                                     Total:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    €{(totalPrice.totalCents / 100).toFixed(2)}
+                                    {(totalPrice.totalCents / 100).toFixed(2)} €
                                 </span>
                             </div>
                         </div>

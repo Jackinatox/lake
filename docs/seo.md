@@ -38,6 +38,8 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - Per page via `createPrivateMetadata`: `/gameserver/*`, `/order/checkout`,
   `/support/tickets/new`, `/support/tickets/[ticketId]`, `/products/wait/[jobId]`, and the legacy
   `/support` form (duplicate of `/support/tickets` until it is removed).
+- Unlisted blog posts (`listed = false`) get `createPublicMetadata({ noindex: true })`: reachable
+  by link, but neither in the sitemap nor in search results.
 - `/support/tickets` itself is public (the support landing page) and is in the sitemap.
 - Order funnel steps `/order/[game]/setup` and `/order/configure/games` use
   `createPublicMetadata({ noindex: true })` (`noindex, follow`) and are not in the sitemap:
