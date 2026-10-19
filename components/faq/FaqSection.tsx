@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { getLocale } from 'next-intl/server';
 import { getFaqsByCategory } from '@/app/data-access-layer/faq/getFaqsByCategory';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { faqPageJsonLd } from '@/lib/structuredData';
 import {
     Accordion,
     AccordionContent,
@@ -23,6 +25,9 @@ type FaqSectionProps = {
 /**
  * Reusable FAQ block. Pass the categories you want to surface and it fetches the
  * matching, enabled FAQs from the database in the current locale.
+ *
+ * Also emits FAQPage JSON-LD, so use at most one FaqSection per page (Google expects a
+ * single FAQPage per URL).
  *
  * It is a server component that streams in via <Suspense>, so it can also be
  * embedded inside a client component by passing it through as `children`/a prop
@@ -56,12 +61,15 @@ async function FaqList({ categories, heading, className }: FaqSectionProps) {
                         <AccordionTrigger className="text-left text-sm font-medium">
                             {faq.question}
                         </AccordionTrigger>
-                        <AccordionContent>
+                        {/* forceMount: Radix otherwise leaves closed answers out of the HTML,
+                            so crawlers would only see the questions */}
+                        <AccordionContent forceMount>
                             <MarkdownRenderer content={faq.answer} />
                         </AccordionContent>
                     </AccordionItem>
                 ))}
             </Accordion>
+            <JsonLd data={faqPageJsonLd(faqs)} />
         </div>
     );
 }

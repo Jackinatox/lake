@@ -50,6 +50,10 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - `lib/structuredData.ts` builds the objects, `components/seo/JsonLd.tsx` renders them (escapes
   `<`).
 - Homepage: `Organization` (name, logo, email) + `WebSite`. Blog posts: `BlogPosting`.
+- `components/faq/FaqSection.tsx` emits `FAQPage` (answers as plain text via `stripMarkdown`), so
+  at most one `FaqSection` per page. Its `AccordionContent` uses `forceMount`: Radix otherwise
+  renders closed answers as empty, and crawlers would only see the questions.
+  `components/ui/accordion.tsx` hides force-mounted closed content with `data-[state=closed]:hidden`.
 - Only mark up what is visible on the page. Google can issue a manual action for markup that is
   not, which is why there is no `Product`/`Offer` with a price yet.
 
