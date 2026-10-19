@@ -24,9 +24,9 @@ import {
     Tag,
     TrendingUp,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useRouter } from '@/i18n/navigation';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];

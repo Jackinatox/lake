@@ -38,8 +38,8 @@ import { ticketDayLabel, withDaySeparators } from '@/lib/tickets/timeline';
 import { cn } from '@/lib/utils';
 import { Pin, ShieldCheck } from 'lucide-react';
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
 
 type TimelineEntry =
     | { kind: 'message'; createdAt: Date; message: AdminTicketDetail['messages'][number] }

@@ -28,6 +28,12 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   turns off next-intl's own hreflang `Link` header, which pointed `x-default` at `/` and
   contradicted the head and sitemap. The matcher must exclude `robots.txt` and `sitemap.xml`,
   otherwise they get redirected to `/<locale>/robots.txt` and 404.
+- `i18n/navigation.ts`: `Link`, `useRouter`, `redirect`, `usePathname` that know the locale. All
+  internal links use this `Link` (not `next/link`) with a locale-less `href` such as
+  `/order/free`; it renders `/de/order/free` or `/en/order/free`. An unprefixed link in the HTML
+  costs crawlers a 307 to the locale URL. Its `usePathname` returns the path without the locale,
+  `next/navigation`'s includes it, so never feed the latter into this `Link`/router (double
+  prefix). Server `redirect` takes `{ href, locale }`.
 - `lib/markdownExcerpt.ts`: `stripMarkdown` (blog list excerpts) and `markdownExcerpt` (~155 char
   meta description for blog posts).
 

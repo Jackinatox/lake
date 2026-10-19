@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils';
 import { adminTicketFiltersSchema } from '@/lib/validation/tickets';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { headers } from 'next/headers';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 

@@ -10,13 +10,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import InfoButton from '@/components/InfoButton';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
 import type { HardwareRecommendationSlim, ResourceTierDisplay } from '@/models/prisma';
 import { ORDER_DURATIONS } from '@/lib/validation/common';
 import { performanceConfiguratorQuerySchema } from '@/lib/validation/order';
+import { useRouter } from '@/i18n/navigation';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -8,6 +7,7 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Shield } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 export type Crumb = {
     label: string;

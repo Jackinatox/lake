@@ -21,7 +21,7 @@ import {
 import { Loader2, FileX2, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface RefundRequestButtonProps {
     orderId: string;

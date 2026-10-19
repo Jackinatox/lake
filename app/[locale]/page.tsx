@@ -6,11 +6,11 @@ import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { Gift, ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { homeJsonLd } from '@/lib/structuredData';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,

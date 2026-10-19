@@ -4,10 +4,10 @@ import { ThemeImage } from '@/components/ui/theme-image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 'lucide-react';
-import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export interface PackageDisplay {
     id: number;

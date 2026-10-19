@@ -10,9 +10,9 @@ import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayNa
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { Mail, AlertTriangle } from 'lucide-react';
-import Link from 'next/link';
 import LogoutButton from './LogoutButton';
 import UsernameEditor from './UsernameEditor';
+import { Link } from '@/i18n/navigation';
 
 type Account = { id: string; providerId: string };
 

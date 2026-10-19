@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { ThemeImage } from '@/components/ui/theme-image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface GameCardProps {
     card: {

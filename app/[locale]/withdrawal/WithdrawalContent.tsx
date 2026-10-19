@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { WithdrawableOrderItem } from './WithdrawableOrderItem';
 import { RefundHistoryItem } from './RefundHistoryItem';
 import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export async function WithdrawalContent() {
     const session = await auth.api.getSession({ headers: await headers() });

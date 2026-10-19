@@ -2,7 +2,6 @@
 
 import { ThemeImage } from '@/components/ui/theme-image';
 import * as React from 'react';
-import Link from 'next/link';
 import {
     ChevronDown,
     Menu as MenuIcon,
@@ -30,6 +29,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from '@/co
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './language-switcher';
 import { authClient } from '@/lib/auth-client';
+import { Link } from '@/i18n/navigation';
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
 type SubItem = { labelKey: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };

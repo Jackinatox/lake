@@ -12,11 +12,11 @@ import type { Appearance } from '@stripe/stripe-js';
 
 const BILLING_ADDRESS_THRESHOLD_CENTS = 5000;
 import { loadStripe } from '@stripe/stripe-js';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lock, ShoppingCart } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import { useRouter } from '@/i18n/navigation';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 

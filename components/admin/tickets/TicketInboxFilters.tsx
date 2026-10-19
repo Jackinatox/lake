@@ -15,9 +15,9 @@ import { adminTicketCategoryLabels, adminTicketPriorityLabels } from '@/lib/tick
 import { cn } from '@/lib/utils';
 import type { AdminTicketSort, AdminTicketView } from '@/lib/validation/tickets';
 import { SearchIcon, XIcon } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 
 const VIEW_LABELS: Record<AdminTicketView, string> = {
     needsReply: 'Needs reply',

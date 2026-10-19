@@ -1,11 +1,11 @@
 'use client';
 
 import { ThemeImage } from '@/components/ui/theme-image';
-import Link from 'next/link';
 import MainMenu from '@/components/Menu/MainMenu';
 import Profile from '@/components/auth/profile';
 import { LanguageSwitcher } from '@/components/Menu/language-switcher';
 import { usePathname } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
 
 const isDev = process.env.NEXT_PUBLIC_DEPLOYMENT_ENV === 'development';
 

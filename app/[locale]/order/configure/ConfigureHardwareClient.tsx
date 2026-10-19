@@ -4,9 +4,9 @@ import PerformanceConfigurator from '@/components/order/PerformanceConfigurator'
 import { Button } from '@/components/ui/button';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, Wrench } from 'lucide-react';
-import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface ConfigureHardwareClientProps {
     performanceGroups: PerformanceGroup[];

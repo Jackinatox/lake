@@ -14,8 +14,8 @@ import { authClient } from '@/lib/auth-client';
 import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { Laptop, LogOut, Moon, Sun, User, UserRoundCog } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { useSyncExternalStore } from 'react';
+import { Link } from '@/i18n/navigation';
 
 const subscribe = () => () => {};
 

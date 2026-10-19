@@ -13,9 +13,10 @@ import { useTranslations } from 'next-intl';
 import InfoButton from '@/components/InfoButton';
 import { calcBackups, calcDiskSize } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
+import { useRouter } from '@/i18n/navigation';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];

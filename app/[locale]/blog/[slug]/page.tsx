@@ -2,7 +2,6 @@ import { getBlogPostBySlug } from '@/app/actions/blog/blogActions';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import formatDate from '@/lib/formatDate';
 import { Metadata } from 'next';
@@ -10,6 +9,7 @@ import { createPublicMetadata } from '@/lib/metadata';
 import { markdownExcerpt } from '@/lib/markdownExcerpt';
 import { blogPostingJsonLd } from '@/lib/structuredData';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,

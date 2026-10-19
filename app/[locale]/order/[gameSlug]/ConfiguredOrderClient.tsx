@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface ConfiguredOrderClientProps {
     performanceGroups: PerformanceGroup[];

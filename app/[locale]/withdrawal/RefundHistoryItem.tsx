@@ -19,7 +19,7 @@ import {
     Undo2,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface RefundHistoryItemProps {
     refundId: string;

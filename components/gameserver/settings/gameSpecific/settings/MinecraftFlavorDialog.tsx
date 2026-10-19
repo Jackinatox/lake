@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { GameServer } from '@/models/gameServerModel';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface MinecraftFlavorDialogProps {
     triggerText?: string;
