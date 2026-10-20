@@ -31,12 +31,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
+    const games = await prisma.gameData.findMany({
+        select: { name: true },
+        where: { enabled: true },
+        orderBy: { sorting: 'asc' },
+    });
+    const gameNames = games.map((game) => game.name);
 
     return createPublicMetadata({
         locale,
         path: '/order/free',
-        title: copy.freeOrderIndexTitle,
-        description: copy.freeOrderIndexDescription,
+        title: copy.freeOrderIndexTitle(gameNames),
+        description: copy.freeOrderIndexDescription(gameNames),
         keywords: ['free game server', 'free gameserver', 'free minecraft server', 'free hosting'],
     });
 }

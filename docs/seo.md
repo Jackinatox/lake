@@ -54,7 +54,7 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - Unlisted blog posts (`listed = false`) get `createPublicMetadata({ noindex: true })`: reachable
   by link, but neither in the sitemap nor in search results.
 - `/support/tickets` itself is public (the support landing page) and is in the sitemap.
-- Order funnel steps `/order/[game]/setup` and `/order/configure/games` use
+- Order funnel steps `/order/[game]/setup`, `/order/configure/games` and `/order/free/[game]` use
   `createPublicMetadata({ noindex: true })` (`noindex, follow`) and are not in the sitemap:
   without a configuration they are empty or an error message. `/order/configure` stays indexable.
 
