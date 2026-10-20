@@ -132,14 +132,14 @@ const metadataCopy = {
         freePageSelectGame: 'Wähle Dein Spiel',
         freePageFaqHeading: 'Häufige Fragen',
         freePageAboutHeading: 'So funktioniert Dein kostenloser Gameserver',
-        freePageAboutParagraphs: ({ games, durationDays, maxServers }) => [
+        freePageAboutParagraphs: ({ games, durationDays, maxServers, deleteAfterDays }) => [
             `Bei Scyed bekommst Du einen kostenlosen Gameserver für ${new Intl.ListFormat('de', { type: 'conjunction' }).format(games)}, ohne Zahlungsdaten und ohne Abo. Du meldest Dich mit Discord oder Google an, wählst Dein Spiel und Dein Server wird automatisch eingerichtet. Verwaltet wird er in unserem eigenen Dashboard mit Konsole, Dateimanager, Backups und Einstellungen.` +
                 (maxServers === 1
                     ? ' Pro Account kannst Du einen kostenlosen Server betreiben.'
                     : maxServers > 1
                       ? ` Pro Account kannst Du bis zu ${maxServers} kostenlose Server gleichzeitig betreiben.`
                       : ''),
-            `Ein kostenloser Server läuft ${durationDays} Tage. Du kannst ihn jederzeit mit wenigen Klicks kostenlos verlängern, so oft Du willst, die Laufzeit startet dann wieder bei ${durationDays} Tagen. Verlängerst Du nicht, schaltet sich der Server nach Ablauf ab. Deine Daten bleiben erhalten und mit einer Verlängerung läuft er wieder. Bleibt ein abgelaufener Server drei Monate lang inaktiv, wird er gelöscht.`,
+            `Ein kostenloser Server läuft ${durationDays} Tage. Du kannst ihn jederzeit mit wenigen Klicks kostenlos verlängern, so oft Du willst, die Laufzeit startet dann wieder bei ${durationDays} Tagen. Verlängerst Du nicht, schaltet sich der Server nach Ablauf ab. Deine Daten bleiben erhalten und mit einer Verlängerung läuft er wieder. Verlängerst Du einen abgelaufenen Server nicht innerhalb von ${deleteAfterDays} Tagen, wird er gelöscht.`,
         ],
     },
     en: {
@@ -232,14 +232,14 @@ const metadataCopy = {
         freePageSelectGame: 'Select Your Game',
         freePageFaqHeading: 'Frequently Asked Questions',
         freePageAboutHeading: 'How your free game server works',
-        freePageAboutParagraphs: ({ games, durationDays, maxServers }) => [
+        freePageAboutParagraphs: ({ games, durationDays, maxServers, deleteAfterDays }) => [
             `Scyed gives you a free game server for ${new Intl.ListFormat('en', { type: 'conjunction' }).format(games)}, with no payment details and no subscription. Sign in with Discord or Google, pick your game and your server is set up automatically. You manage it in our own dashboard with console, file manager, backups and settings.` +
                 (maxServers === 1
                     ? ' You can run one free server per account.'
                     : maxServers > 1
                       ? ` You can run up to ${maxServers} free servers per account at the same time.`
                       : ''),
-            `A free server runs for ${durationDays} days. You can extend it for free at any time in a few clicks, as often as you like, and the runtime starts again at ${durationDays} days. If you do not extend it, the server shuts down when it expires. Your data is kept and extending it brings it back. If an expired server stays inactive for three months, it is deleted.`,
+            `A free server runs for ${durationDays} days. You can extend it for free at any time in a few clicks, as often as you like, and the runtime starts again at ${durationDays} days. If you do not extend it, the server shuts down when it expires. Your data is kept and extending it brings it back. If you do not extend an expired server within ${deleteAfterDays} days, it is deleted.`,
         ],
     },
 } satisfies Record<
@@ -308,6 +308,7 @@ const metadataCopy = {
             games: string[];
             durationDays: number;
             maxServers: number;
+            deleteAfterDays: number;
         }) => string[];
     }
 >;

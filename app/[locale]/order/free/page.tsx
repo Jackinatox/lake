@@ -15,7 +15,11 @@ import {
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { auth } from '@/auth';
-import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import {
+    CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
+    FREE_SERVER_CREATION_ENABLED,
+    FREE_TIER_MAX_SERVERS,
+} from '@/app/GlobalConstants';
 import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import { headers } from 'next/headers';
@@ -41,7 +45,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
-    const [session, games, freeTierConfig, creationEnabled] = await Promise.all([
+    const [session, games, freeTierConfig, creationEnabled, deleteAfterDays] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         prisma.gameData.findMany({
             select: { id: true, name: true, slug: true },
@@ -50,6 +54,8 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
         }),
         getFreeTierConfigCached(),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
+        // Same key the worker uses to delete expired servers
+        getKeyValueNumber(CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS),
     ]);
 
     const freeTierLocationInfo = await prisma.location.findFirst({
@@ -263,6 +269,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                             games: games.map((game) => game.name),
                             durationDays: freeTierConfig.duration,
                             maxServers: freeTierConfig.maxServers,
+                            deleteAfterDays,
                         })
                         .map((paragraph) => (
                             <p key={paragraph}>{paragraph}</p>
