@@ -23,18 +23,6 @@ export default function Footer() {
                                 {t('support_center')}
                             </Link>
                             <Link
-                                href="/support/tickets"
-                                className="hover:text-foreground transition-colors"
-                            >
-                                {t('faq')}
-                            </Link>
-                            <Link
-                                href="/support/tickets"
-                                className="hover:text-foreground transition-colors"
-                            >
-                                {t('documentation')}
-                            </Link>
-                            <Link
                                 href={'/withdrawal'}
                                 className="hover:text-foreground transition-colors"
                             >
@@ -98,9 +86,6 @@ export default function Footer() {
                     <div className="flex flex-col gap-4">
                         <h3 className="font-semibold text-base">{t('company')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-                            <Link href="/" className="hover:text-foreground transition-colors">
-                                {t('about')}
-                            </Link>
                             <Link href="/blog" className="hover:text-foreground transition-colors">
                                 {t('blog')}
                             </Link>
