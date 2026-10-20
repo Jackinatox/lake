@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
                     {/* Support */}
                     <div className="flex flex-col gap-4">
-                        <h3 className="font-semibold text-base">Support</h3>
+                        <h3 className="font-semibold text-base">{t('supportHeading')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
                                 href="/support/tickets"
@@ -53,7 +53,7 @@ export default function Footer() {
 
                     {/* Rechtliches */}
                     <div className="flex flex-col gap-4">
-                        <h3 className="font-semibold text-base">Rechtliches</h3>
+                        <h3 className="font-semibold text-base">{t('legalHeading')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
                                 href="/legal/imprint"
@@ -139,7 +139,7 @@ export default function Footer() {
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">
-                            © 2026 Scyed. All rights reserved.
+                            {t('copyright')}
                         </span>
                     </div>
                     <ThemeSwitcher />
