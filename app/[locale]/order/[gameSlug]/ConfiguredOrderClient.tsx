@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
@@ -15,6 +15,8 @@ interface ConfiguredOrderClientProps {
     game: { id: number; name: string; slug: string };
     hasFreeServers: boolean;
     hardwareRecommendations: HardwareRecommendationSlim[];
+    /** Server-rendered text below the configurator, see GameDetails */
+    detailsSlot?: ReactNode;
 }
 
 interface PriceInfo {
@@ -28,6 +30,7 @@ export default function ConfiguredOrderClient({
     resourceTiers,
     game,
     hardwareRecommendations,
+    detailsSlot,
 }: ConfiguredOrderClientProps) {
     const t = useTranslations('orderFlow');
     const imgPath = `/images/games/icons/${game.name.toLowerCase()}.webp`;
@@ -59,7 +62,7 @@ export default function ConfiguredOrderClient({
                         </div>
                         <div className="flex-1 min-w-0">
                             <h1 className="text-base sm:text-lg font-bold leading-tight">
-                                {game.name}
+                                {t('configuredOrder.heading', { game: game.name })}
                             </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
                                 {t('configuredOrder.subtitle')}
@@ -96,6 +99,8 @@ export default function ConfiguredOrderClient({
                     onPriceUpdate={handlePriceUpdate}
                 />
             </div>
+
+            {detailsSlot}
 
             {/* Sticky bottom bar — mobile only */}
             {priceInfo && (

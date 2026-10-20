@@ -1916,7 +1916,8 @@
     "continue": "Continue",
     "configuredOrder": {
       "subtitle": "Configure your server",
-      "continueLabel": "Continue to Setup"
+      "continueLabel": "Continue to Setup",
+      "heading": "{game} Server Hosting"
     },
     "configureHardware": {
       "title": "Configure Hardware",
@@ -1955,5 +1956,28 @@
       "duration": "Duration",
       "daysSuffix": "d"
     }
+  },
+  "gameDetails": {
+    "heading": "Your {game} server at Scyed",
+    "intro": {
+      "minecraft": [
+        "With your own Minecraft server you play with your friends on your world, vanilla, with plugins or with mods. You choose the server type and Minecraft version when you order, setup then runs automatically, and we pick the right Java version for you.",
+        "For plugins choose Paper, for mods Fabric, Forge or NeoForge, depending on which loader your mods are made for. You can switch the server type later in the settings without losing your files.",
+        "Everything else you manage in the Scyed dashboard: console, file manager for worlds, plugins and mods, backups and settings."
+      ]
+    },
+    "modpacks": "You can install Modrinth modpacks right when you order (beta).",
+    "versionRange": "{oldest} to {newest}",
+    "serverTypesTitle": "Server types and versions",
+    "colServerType": "Server type",
+    "colVersions": "Versions",
+    "hardwareTitle": "Recommended hardware",
+    "hardwareSubtitle": "Our recommendation per server type. More players, mods or large worlds need more.",
+    "colVariant": "Variant",
+    "colMinimum": "Minimum",
+    "colRecommended": "Recommended",
+    "freeServerLink": "Try {game} for free first",
+    "docsHardwareLink": "What performance groups mean and how we share CPU and RAM",
+    "faqHeading": "Frequently asked questions about {game} servers"
   }
 }
