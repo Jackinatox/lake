@@ -53,12 +53,15 @@ interface PricingClientProps {
     performanceGroups: PerformanceGroup[];
     resourceTiers: ResourceTierDisplay[];
     faqSlot?: ReactNode;
+    /** Server-rendered price tables for every group, see PriceOverview */
+    overviewSlot?: ReactNode;
 }
 
 export default function PricingClient({
     performanceGroups,
     resourceTiers,
     faqSlot,
+    overviewSlot,
 }: PricingClientProps) {
     const t = useTranslations('pricing');
     const router = useRouter();
@@ -519,6 +522,8 @@ export default function PricingClient({
                     </Button>
                 </div>
             </section>
+
+            {overviewSlot}
 
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <section className="max-w-3xl mx-auto w-full pb-4 md:pb-8">
