@@ -12,7 +12,11 @@ fetched, so crawlers would never see its noindex and could still index the bare 
     `/<locale><path>`, `alternates.languages` for every locale plus `x-default` (= default locale
     `de`), OpenGraph, Twitter. `path` is locale-less (`'/'` for the homepage). `article` switches
     to `og:type=article` with published/modified time (blog posts). `noindex` gives
-    `noindex, follow` but keeps title and link preview (order funnel steps).
+    `noindex, follow` but keeps title and link preview (order funnel steps). `contentLocale`
+    is for content that exists in one language only: canonical, og:url and hreflang then point
+    at that locale from every locale's URL. Blog posts use `BLOG_CONTENT_LOCALE` (`de`, since
+    `BlogPost` has no language field), and the sitemap lists only their `/de` URL
+    (`localeUrls(..., locales)`).
   - `createPrivateMetadata({ title })` and `PRIVATE_ROBOTS`: `noindex, nofollow`.
   - `metadataCopy`: per-locale titles/descriptions for pages without their own message keys.
   - `SITE_URL`: absolute origin (`NEXT_PUBLIC_APP_URL`) for sitemap, robots and JSON-LD.

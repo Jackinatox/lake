@@ -29,6 +29,9 @@ export function gameIconImage(gameName: string, alt: string): MetaImage {
 }
 
 type SupportedLocale = (typeof routing.locales)[number];
+
+/** `BlogPost` has no language field: every post is written in German, also under /en/blog. */
+export const BLOG_CONTENT_LOCALE: SupportedLocale = 'de';
 type SearchParamValue = string | string[] | undefined;
 type SearchParamRecord = Record<string, SearchParamValue>;
 
@@ -410,6 +413,7 @@ export function createPublicMetadata({
     image,
     article,
     noindex,
+    contentLocale,
 }: {
     locale: string;
     path: string;
@@ -422,10 +426,17 @@ export function createPublicMetadata({
     /** Order funnel steps: keep title and link preview, but stay out of the index (links are
      *  still followed). */
     noindex?: boolean;
+    /** The content exists in this language only (blog posts). Every locale's URL then points its
+     *  canonical at this one and hreflang lists only it, so the German text under /en is not a
+     *  duplicate. */
+    contentLocale?: SupportedLocale;
 }): Metadata {
-    const normalizedLocale = normalizeLocale(locale);
+    const normalizedLocale = contentLocale ?? normalizeLocale(locale);
     const languages = Object.fromEntries(
-        routing.locales.map((currentLocale) => [currentLocale, localizedPath(currentLocale, path)]),
+        (contentLocale ? [contentLocale] : routing.locales).map((currentLocale) => [
+            currentLocale,
+            localizedPath(currentLocale, path),
+        ]),
     );
 
     const ogImage = image ?? DEFAULT_OG_IMAGE;
@@ -440,7 +451,7 @@ export function createPublicMetadata({
             canonical: localizedPath(normalizedLocale, path),
             languages: {
                 ...languages,
-                'x-default': localizedPath(routing.defaultLocale, path),
+                'x-default': localizedPath(contentLocale ?? routing.defaultLocale, path),
             },
         },
         openGraph: {
