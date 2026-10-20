@@ -921,7 +921,8 @@
     "withdrawal": "Verträge widerrufen",
     "payments": "Zahlungsbedingungen",
     "returns": "Widerrufsrecht",
-    "status": "Status"
+    "status": "Status",
+    "vatNote": "Alle Preise sind Endpreise. Als Kleinunternehmer nach § 19 UStG berechnen wir keine Umsatzsteuer."
   },
   "gameserver": {
     "feedback": {

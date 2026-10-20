@@ -909,7 +909,8 @@
     "withdrawal": "Withdrawal contracts",
     "payments": "Payment terms",
     "returns": "Withdrawal rights",
-    "status": "Status"
+    "status": "Status",
+    "vatNote": "All prices are final. As a small business under Section 19 of the German VAT Act (UStG), we do not charge VAT."
   },
   "gameserver": {
     "feedback": {

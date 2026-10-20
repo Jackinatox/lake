@@ -145,6 +145,10 @@ export default function Footer() {
                     <ThemeSwitcher />
                     <CookieSettingsButton />
                 </div>
+
+                <p className="mt-6 text-xs text-muted-foreground text-center md:text-left">
+                    {t('vatNote')}
+                </p>
             </div>
         </footer>
     );
