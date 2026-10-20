@@ -247,7 +247,7 @@ const ConsoleV2 = () => {
                     disabled={disabled}
                     placeholder={disabled ? 'Console disabled...' : 'Enter command...'}
                     className={cn(
-                        'flex-1 bg-transparent border-none outline-none font-mono text-sm text-zinc-200 placeholder:text-zinc-600',
+                        'flex-1 bg-transparent border-none outline-none font-mono text-base md:text-sm text-zinc-200 placeholder:text-zinc-600',
                         disabled && 'cursor-not-allowed opacity-50',
                     )}
                     autoComplete="off"
