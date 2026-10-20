@@ -22,6 +22,11 @@ export default function Footer() {
                             >
                                 {t('support_center')}
                             </Link>
+                            {/* Plain <a>: the docs are a separate Starlight site under /docs/,
+                                outside the locale routing, so next-intl's Link must not prefix it */}
+                            <a href="/docs/" className="hover:text-foreground transition-colors">
+                                {t('documentation')}
+                            </a>
                             <Link
                                 href={'/withdrawal'}
                                 className="hover:text-foreground transition-colors"

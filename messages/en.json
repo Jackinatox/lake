@@ -910,7 +910,8 @@
     "vatNote": "All prices are final. As a small business under Section 19 of the German VAT Act (UStG), we do not charge VAT.",
     "supportHeading": "Support",
     "legalHeading": "Legal",
-    "copyright": "© 2026 Scyed. All rights reserved."
+    "copyright": "© 2026 Scyed. All rights reserved.",
+    "documentation": "Documentation"
   },
   "gameserver": {
     "feedback": {

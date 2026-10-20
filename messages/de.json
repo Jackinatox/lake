@@ -922,7 +922,8 @@
     "vatNote": "Alle Preise sind Endpreise. Als Kleinunternehmer nach § 19 UStG berechnen wir keine Umsatzsteuer.",
     "supportHeading": "Support",
     "legalHeading": "Rechtliches",
-    "copyright": "© 2026 Scyed. Alle Rechte vorbehalten."
+    "copyright": "© 2026 Scyed. Alle Rechte vorbehalten.",
+    "documentation": "Dokumentation"
   },
   "gameserver": {
     "feedback": {
