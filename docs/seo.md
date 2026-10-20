@@ -72,3 +72,9 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 Public: use `createPublicMetadata` in `generateMetadata` and add a `localeUrls(...)` line to the
 sitemap. Private: use `createPrivateMetadata`, or put it under one of the noindex layouts. Do not
 add it to robots.txt.
+
+Public pages: no page-level `<Suspense>` around the main client component, and none inside
+`FaqSection`. A boundary that suspends (e.g. on a server-component slot passed to the client)
+streams the whole content into a `<div hidden>` at the end of the HTML; crawlers that do not run
+JS (most AI crawlers) read that poorly. Every route renders dynamically (the root layout reads the
+locale from the request), so `useSearchParams` works without a boundary.

@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { fetchPerformanceGroups } from '@/lib/actions';
 import prisma from '@/lib/prisma';
 import PricingClient from '@/components/pricing/PricingClient';
@@ -49,19 +48,20 @@ export default async function PricingPage() {
         }),
     ]);
 
+    // No <Suspense> around the client: it would stream the whole page into a hidden <div> at the
+    // end of the HTML, which crawlers that do not run JS read poorly. Every route renders
+    // dynamically (root layout reads the locale from the request), so useSearchParams needs none.
     return (
-        <Suspense>
-            <PricingClient
-                performanceGroups={performanceGroups}
-                resourceTiers={resourceTiers}
-                faqSlot={<FaqSection categories={['pricing']} />}
-                overviewSlot={
-                    <PriceOverview
-                        performanceGroups={performanceGroups}
-                        resourceTiers={resourceTiers}
-                    />
-                }
-            />
-        </Suspense>
+        <PricingClient
+            performanceGroups={performanceGroups}
+            resourceTiers={resourceTiers}
+            faqSlot={<FaqSection categories={['pricing']} />}
+            overviewSlot={
+                <PriceOverview
+                    performanceGroups={performanceGroups}
+                    resourceTiers={resourceTiers}
+                />
+            }
+        />
     );
 }
