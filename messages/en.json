@@ -1737,7 +1737,8 @@
     }
   },
   "blog": {
-    "title": "Back to overview",
+    "title": "Blog",
+    "backToOverview": "Back to overview",
     "listTitle": "Latest Posts",
     "readMore": "Read more",
     "noPosts": "No posts yet.",

@@ -48,7 +48,7 @@ export default async function BlogPostPage({
     const date = post.publishedAt ?? post.createdAt;
 
     const backHref = from === 'changelog' ? '/changelog' : '/blog';
-    const backLabel = t('title');
+    const backLabel = t('backToOverview');
 
     return (
         <div className="mx-auto max-w-4xl w-full p-2">

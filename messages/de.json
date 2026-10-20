@@ -1749,7 +1749,8 @@
     }
   },
   "blog": {
-    "title": "Zurück zur Übersicht",
+    "title": "Blog",
+    "backToOverview": "Zurück zur Übersicht",
     "listTitle": "Neueste Beiträge",
     "readMore": "Weiterlesen",
     "noPosts": "Noch keine Beiträge.",
