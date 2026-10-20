@@ -1973,9 +1973,7 @@
     "heading": "Dein {game}-Server bei Scyed",
     "intro": {
       "minecraft": [
-        "Mit einem eigenen Minecraft-Server spielst Du mit Deinen Freunden auf Eurer Welt, ob Vanilla, mit Plugins oder mit Mods. Server-Typ und Minecraft-Version wählst Du bei der Bestellung, die Einrichtung läuft danach automatisch, die passende Java-Version stellen wir selbst ein.",
-        "Für Plugins nimmst Du Paper, für Mods Fabric, Forge oder NeoForge, je nachdem, für welchen Loader Deine Mods gemacht sind. Den Server-Typ kannst Du später in den Einstellungen wechseln, ohne Deine Dateien zu verlieren.",
-        "Im Scyed-Dashboard verwaltest Du alles Weitere: Konsole, Dateimanager für Welten, Plugins und Mods, Backups und Einstellungen."
+        "Server-Typ und Minecraft-Version wählst Du selbst und kannst sie jederzeit wechseln, genauso wie den Modloader, das Spiel oder eine eigene server.jar. Standardmäßig läuft die Java Edition, mit Geyser kommen auch Bedrock-Spieler auf Deinen Server. Bestehende Welten lädst Du per SFTP hoch."
       ]
     },
     "modpacks": "Modpacks von Modrinth installierst Du direkt bei der Bestellung (Beta).",
