@@ -98,6 +98,25 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
   (`sendSupportTicketNotification`) and customer reply (`sendTicketReplyNotification`), both
   linking to `/admin/support/<number>`.
 
+## Application logs
+
+Every ticket action writes a `SUPPORT_TICKET` `ApplicationLog` via `logTicketEvent`
+(`lib/tickets/log.ts`). The log is always bound to the ticket's **customer** (`userId`) and
+**linked server** (`gameServerId`), never to the acting admin, so `/admin/logs?userId=…` or
+`?serverId=…` shows a customer's whole ticket history. The actor is in `details.actorId` /
+`details.actorRole`, alongside `ticketId` / `ticketNumber`; the request's IP and user agent are
+attached. Message and note bodies are never logged, only their length.
+
+| Level | Events |
+| --- | --- |
+| `TRACE` | note edited, note pinned/unpinned, staff reply rejected by a reply `conflict` |
+| `INFO` | ticket created, customer reply (and reopen), customer close, staff reply (status change, self-assign), admin field update (one entry listing every changed field), note added/deleted, customer reply rejected because the ticket is closed |
+| `WARN` | ticket deleted, abuse limit hit (`openLimit`/`dailyLimit`/`messageLimit`), a customer naming a server they do not own, a customer reply/close on a ticket that is not theirs |
+| `ERROR` | unexpected failures (`logger.logError`, bound to the acting user because the ticket may not be loaded yet); failed ticket emails are logged as `EMAIL`, bound to the customer and server too |
+
+An admin update that changes the linked server is bound to the new server (or the old one when
+it was unlinked). `markTicketReadAction` is deliberately not logged (it fires on every view).
+
 ## Worker contract
 
 Lake does not auto-close anything; the worker (separate repo) owns the cron cleanup and its
