@@ -32,6 +32,14 @@ markdown files under `docs/`, NOT in this file. How to use it:
   set and its URL params, the links from a log row into the admin gameserver
   list, and the `serverId` filter on that list. Read when touching the log
   viewer, `getApplicationLogs`, or the gameserver admin filters.
+- `admin-gameserver-panel.md` — The `/admin/gameservers` panel: the summary tiles, the
+  "needs attention" chips, the distribution card, the dense server rows and every
+  URL param. Read when touching the gameserver admin screen, its filters, or the
+  links between it and the log viewer / Pterodactyl panel.
+- `game-images.md` — Where per-game icons and banners live
+  (`public/images/{light,dark}/games/icons/<slug>.webp`, `games/banners/<slug>.jpg`), how
+  `ThemeImage` picks the themed one, and `hasGameIcon()` for games without art. Read when
+  showing a game icon anywhere or adding a game.
 - `admin-job-status.md` — The `/admin/jobStatus` dashboard: how the jobs the
   worker reports are joined with the `JobRun`/`WorkerLog` tables, the
   Prisma-derived types in `types/jobs.ts`, and the job-name ↔ `WorkerJobType`
@@ -45,6 +53,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `seo.md` — robots.txt, sitemap (with hreflang), canonical/hreflang via
+  `createPublicMetadata`, noindex for private sections (why not robots.txt
+  `Disallow`) and JSON-LD. Read when adding a public or private page, or
+  touching the sitemap, robots, structured data or the proxy matcher.
 - `server-suspension.md` — Admin suspension/quarantine of gameservers: the
   `GameServerSuspension` table (and why it is not a `GameServerStatus` value),
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
@@ -53,6 +65,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
 - `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
   redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
   go offline or when touching `proxy.ts`.
+- `support-tickets.md` — The new conversation-based ticket system (`Ticket*`
+  tables, `/support/tickets/*`, `/admin/support`) that coexists with the legacy
+  `SupportTicket`: status flow, internal notes, emails/Telegram, the worker
+  auto-close contract and the switch-over checklist. Read when touching
+  tickets or support pages.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

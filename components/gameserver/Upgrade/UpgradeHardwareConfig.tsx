@@ -387,7 +387,7 @@ export function UpgradeHardwareConfig({
 
                 {/* Price Overview Section */}
                 <div className="order-1 lg:order-2">
-                    <div className="lg:sticky lg:top-24">
+                    <div className="lg:sticky lg:top-40">
                         <Card className="shadow-lg border-2 border-primary/20">
                             <CardHeader className="pb-4">
                                 <div className="flex items-center gap-2">

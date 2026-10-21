@@ -40,9 +40,10 @@ const serverForEmail = {
     user: { select: { email: true, name: true, username: true, displayUsername: true } },
 } as const;
 
-function supportUrl(serverName: string) {
+function supportUrl(serverName: string, ptServerId: string | null) {
     const subject = `Sperrung meines Servers "${serverName}"`;
-    return `${process.env.NEXT_PUBLIC_APP_URL}/support?category=SUSPENSION&subject=${encodeURIComponent(subject)}`;
+    const server = ptServerId ? `&server=${encodeURIComponent(ptServerId)}` : '';
+    return `${process.env.NEXT_PUBLIC_APP_URL}/support/tickets/new?category=SUSPENSION&subject=${encodeURIComponent(subject)}${server}`;
 }
 
 /**
@@ -139,7 +140,7 @@ export async function suspendGameServer(input: SuspendGameServerInput): Promise<
             reason,
             suspendedUntil: expiresAt,
             deleteAfterExpiry,
-            supportUrl: supportUrl(gameServer.name),
+            supportUrl: supportUrl(gameServer.name, gameServer.ptServerId),
         }).catch((error) =>
             logger.error('Failed to send server suspended email', 'EMAIL', {
                 gameServerId,

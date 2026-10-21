@@ -114,16 +114,19 @@
     "toolsHeader": "Unsere Tools",
     "panelTitle": "Control Panel",
     "panelDesc": "Verwalte Deinen Server mit klaren Bedienelementen — starten, stoppen, neu starten und Performance prüfen, ganz ohne Aufwand.",
+    "panelImageAlt": "Screenshot des Control Panels",
     "panelFeature1": "Ein-Klick-Bereitstellung",
     "panelFeature2": "Echtzeit-Performance",
     "panelFeature3": "Server Konsole",
     "fileManagerTitle": "Dateien direkt im Browser",
     "fileManagerDesc": "Öffne, bearbeite und lade Dateien direkt im Browser hoch oder herunter. Alternativ per FTP verbinden.",
+    "fileManagerImageAlt": "Screenshot des Dateimanagers",
     "fileManagerFeature1": "Dateien im Browser bearbeiten",
     "fileManagerFeature2": "Hochladen & herunterladen",
     "fileManagerFeature3": "Erweiterte Aktionen per FTP",
     "backupTitle": "Zuverlässige Backups",
     "backupDesc": "Erstelle Backups deines kompletten Gameservers und stelle sie jederzeit wieder her.",
+    "backupImageAlt": "Screenshot der Backup-Verwaltung",
     "backupFeature1": "Automatische geplante Backups (bald verfügbar)",
     "backupFeature2": "Ein-Klick-Wiederherstellung",
     "backupFeature3": "Backups herunterladen",
@@ -218,7 +221,10 @@
     "copyEmail": "E-Mail kopieren",
     "copyEmailSuccess": "E-Mail-Adresse kopiert",
     "copyEmailError": "E-Mail konnte nicht kopiert werden",
-    "openMail": "E-Mail-App öffnen"
+    "openMail": "E-Mail-App öffnen",
+    "legacyTitle": "Dieses Kontaktformular wird eingestellt",
+    "legacyText": "Wir haben ein neues Ticketsystem: Du schreibst direkt mit unserem Team, kannst jede Anfrage verfolgen und bekommst eine E-Mail, sobald wir antworten. Bitte nutze es für neue Anfragen.",
+    "legacyLink": "Zum neuen Support"
   },
   "notAdmin": "Du bist kein Admin.",
   "notAdminDescription": "Du hast keine Admin-Rechte, um diese Seite zu sehen.",
@@ -402,6 +408,11 @@
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
       "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "numberField": {
+        "required": "Bitte eine Zahl eingeben",
+        "wholeNumber": "Nur ganze Zahlen",
+        "range": "Muss zwischen {min} und {max} liegen"
+      },
       "minecraft": {
         "modpackTab": "Modpack (Beta)",
         "modpackBeta": {
@@ -1536,6 +1547,7 @@
       "allServers": "Alle Server",
       "userSearchPlaceholder": "E-Mail, Benutzername, ID...",
       "noUsers": "Keine Benutzer gefunden",
+      "clearUser": "Benutzerfilter entfernen",
       "freeServer": "Free",
       "timeRanges": {
         "ALL": "Gesamte Zeit",
@@ -1783,6 +1795,163 @@
   "contact": {
     "title": "Kontakt",
     "description": "Hast du eine Frage, einen Vorschlag oder möchtest uns einfach erreichen? Schreib uns eine E-Mail und wir melden uns bei dir."
+  },
+  "supportTickets": {
+    "landing": {
+      "title": "Wie können wir <highlight>Dir helfen</highlight>?",
+      "subtitle": "Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.",
+      "yourTickets": "Deine Tickets",
+      "loginHint": "<strong>Melde Dich an</strong>, um ein Ticket zu eröffnen und Deine Unterhaltungen zu verfolgen.",
+      "emailTitle": "Lieber per E-Mail?",
+      "emailText": "Über ein Ticket erreichst Du uns am schnellsten und alles bleibt an einem Ort. Wenn Du trotzdem lieber eine E-Mail schreibst, erreichst Du uns unter <email></email>."
+    },
+    "categories": {
+      "GENERAL": {
+        "title": "Allgemeine Frage",
+        "description": "Alles, was zu keinem der anderen Themen passt.",
+        "examples": "z. B. Fragen vor der Bestellung, Feedback oder wenn Du unsicher bist, welches Thema passt."
+      },
+      "TECHNICAL": {
+        "title": "Technisches Problem",
+        "description": "Dein Server startet nicht, stürzt ab oder verhält sich seltsam.",
+        "examples": "z. B. Mods laden nicht, Verbindungsprobleme, fehlende Dateien. Schreib uns, was Du zuletzt geändert hast."
+      },
+      "BILLING": {
+        "title": "Abrechnung & Zahlung",
+        "description": "Rechnungen, Zahlungen, Erstattungen und Widerrufe.",
+        "examples": "z. B. fehlgeschlagene oder doppelte Zahlungen, Erstattungen, Verlängerung eines bezahlten Servers."
+      },
+      "ACCOUNT": {
+        "title": "Account & Zugang",
+        "description": "Login, E-Mail-Adresse, Zwei-Faktor-Authentifizierung und Kontoeinstellungen.",
+        "examples": "z. B. keine Bestätigungs-E-Mail, E-Mail-Adresse oder Benutzername ändern, Account löschen."
+      },
+      "SUSPENSION": {
+        "title": "Server-Sperrung",
+        "description": "Fragen zu oder Einspruch gegen einen gesperrten Server.",
+        "examples": "z. B. warum ein Server gesperrt wurde, Einspruch, Freischaltung nach einer Behebung."
+      }
+    },
+    "status": {
+      "OPEN": "Wartet auf Support",
+      "WAITING_FOR_CUSTOMER": "Wartet auf Deine Antwort",
+      "ON_HOLD": "In Bearbeitung",
+      "RESOLVED": "Gelöst",
+      "CLOSED": "Geschlossen"
+    },
+    "list": {
+      "newTicket": "Neues Ticket",
+      "active": "Offen",
+      "closed": "Geschlossen",
+      "empty": "Du hast keine offenen Tickets.",
+      "emptyClosed": "Du hast keine geschlossenen Tickets.",
+      "you": "Du",
+      "team": "Support",
+      "unread": "Neue Antwort"
+    },
+    "form": {
+      "title": "Ticket eröffnen",
+      "description": "Beschreibe Dein Anliegen und wir antworten Dir direkt hier im Ticket. Zusätzlich bekommst Du eine E-Mail, sobald wir antworten.",
+      "back": "Support",
+      "categoryLabel": "Kategorie",
+      "serverLabel": "Betroffener Server",
+      "serverNone": "Kein bestimmter Server",
+      "serverHelper": "Optional, hilft uns aber, Deinen Server schneller zu finden.",
+      "suspended": "gesperrt",
+      "subjectLabel": "Betreff",
+      "subjectPlaceholder": "Kurze Zusammenfassung Deines Anliegens",
+      "messageLabel": "Nachricht",
+      "messagePlaceholder": "Beschreibe Dein Anliegen so genau wie möglich…",
+      "length": "{current}/{max}",
+      "submit": "Ticket senden",
+      "submitting": "Wird gesendet…",
+      "existingTickets": "Du hast bereits ein offenes Ticket in dieser Kategorie. Du kannst die Unterhaltung auch dort fortsetzen:"
+    },
+    "detail": {
+      "back": "Meine Tickets",
+      "openedAt": "Eröffnet am {date}",
+      "markSolved": "Mein Problem ist gelöst",
+      "markSolvedTitle": "Ticket schließen?",
+      "markSolvedDescription": "Ein geschlossenes Ticket kann keine neuen Antworten mehr erhalten. Falls später etwas ist, eröffne einfach ein neues Ticket.",
+      "markSolvedConfirm": "Ticket schließen",
+      "cancel": "Abbrechen",
+      "adminBadge": "Admin",
+      "supportTeam": "Support-Team",
+      "system": "System",
+      "you": "Du",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "events": {
+        "resolved": "Der Support hat dieses Ticket als gelöst markiert",
+        "closed": "Dieses Ticket wurde geschlossen",
+        "closedByYou": "Du hast dieses Ticket geschlossen",
+        "reopened": "Das Ticket wurde wieder geöffnet"
+      },
+      "replyPlaceholder": "Nachricht schreiben…",
+      "send": "Senden",
+      "sendHint": "Strg + Enter zum Senden",
+      "resolvedHint": "Dieses Ticket ist gelöst. Wenn Du antwortest, wird es wieder geöffnet.",
+      "closedNotice": "Dieses Ticket ist geschlossen und kann keine neuen Antworten mehr erhalten.",
+      "newTicket": "Neues Ticket eröffnen"
+    },
+    "errors": {
+      "unauthorized": "Bitte melde Dich erneut an.",
+      "invalid": "Bitte überprüfe Deine Eingaben.",
+      "notFound": "Dieses Ticket wurde nicht gefunden.",
+      "closed": "Dieses Ticket ist geschlossen.",
+      "serverNotFound": "Der ausgewählte Server wurde nicht gefunden.",
+      "openLimit": "Du hast zu viele offene Tickets. Bitte warte auf eine Antwort oder schließe Tickets, die Du nicht mehr brauchst.",
+      "dailyLimit": "Du hast heute zu viele Tickets eröffnet. Bitte versuche es morgen erneut.",
+      "messageLimit": "Du sendest zu viele Nachrichten. Bitte warte einen Moment und versuche es erneut.",
+      "conflict": "Es ist eine neue Nachricht eingegangen. Bitte lies sie und sende erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    }
+  },
+  "orderFlow": {
+    "total": "Gesamt",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "configuredOrder": {
+      "subtitle": "Konfiguriere Deinen Server",
+      "continueLabel": "Weiter zum Setup"
+    },
+    "configureHardware": {
+      "title": "Hardware konfigurieren",
+      "subtitle": "Konfiguriere Deine Hardware und wähle danach ein Spiel",
+      "continueLabel": "Spiel wählen"
+    },
+    "chooseGame": {
+      "title": "Spiel wählen",
+      "subtitle": "Hardware konfiguriert, jetzt ein Spiel wählen",
+      "noGames": "Keine Spiele verfügbar.",
+      "selectHint": "Wähle ein Spiel, um mit der Konfiguration fortzufahren"
+    },
+    "setup": {
+      "noHardware": "Keine Hardware-Konfiguration gefunden. Bitte konfiguriere zuerst Deine Hardware.",
+      "configureHardware": "Hardware konfigurieren",
+      "title": "Spiel-Setup",
+      "edit": "Bearbeiten",
+      "gameSettings": "Lege die Einstellungen für Dein Spiel fest",
+      "loginToContinue": "Melde Dich an, um fortzufahren",
+      "processing": "Wird verarbeitet…",
+      "continueToPayment": "Weiter zur Zahlung",
+      "restoreFailedTitle": "Spielkonfiguration konnte nicht wiederhergestellt werden",
+      "restoreFailedDescription": "Bitte lege Deine Spieleinstellungen erneut fest.",
+      "loginRequiredTitle": "Anmeldung erforderlich",
+      "loginRequiredDescription": "Bitte melde Dich an, um mit dem Kauf fortzufahren.",
+      "invalidConfigTitle": "Ungültige Konfiguration",
+      "errorTitle": "Fehler",
+      "errorDescription": "Bei der Verarbeitung Deiner Anfrage ist ein Fehler aufgetreten."
+    },
+    "chips": {
+      "cpu": "CPU",
+      "ram": "RAM",
+      "disk": "Speicher",
+      "backups": "Backups",
+      "ports": "Ports",
+      "duration": "Laufzeit",
+      "daysSuffix": "T"
+    }
   },
   "Maintenance": {
     "title": "Wartung: Gameserver vorübergehend offline",

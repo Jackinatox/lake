@@ -31,7 +31,7 @@ export default function GameserverError({
                         {t('tryAgain')}
                     </Button>
                     <Button asChild variant="outline" className="w-full">
-                        <Link href="/support">{t('contactSupport')}</Link>
+                        <Link href="/support/tickets">{t('contactSupport')}</Link>
                     </Button>
                 </CardContent>
             </Card>

@@ -1,11 +1,9 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { routing } from './i18n/routing';
 import { isMaintenanceMode, MAINTENANCE_BLOCKED_PATH } from '@/lib/maintenance';
 
-const intlMiddleware = createMiddleware({
-    locales: ['de', 'en'],
-    defaultLocale: 'de',
-});
+const intlMiddleware = createMiddleware(routing);
 
 export async function proxy(request: NextRequest) {
     if (isMaintenanceMode()) {
@@ -27,6 +25,6 @@ export const config = {
     matcher: [
         '/',
         '/(de|en)/:path*',
-        '/((?!api|sitemap.xml|_next/static|_next/image|favicon.ico|webhook|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api|sitemap.xml|robots.txt|_next/static|_next/image|favicon.ico|webhook|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 };

@@ -1,7 +1,10 @@
 import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
-const SITE_NAME = 'Scyed Hosting';
+export const SITE_NAME = 'Scyed Hosting';
+
+/** Absolute site origin for sitemap.xml and robots.txt, which need full URLs. */
+export const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://scyed.com';
 
 // Social/link previews (Telegram, Twitter, etc.) size the image from the actual file at
 // og:image, not from the declared width/height. Serving a small optimized version via the
@@ -36,6 +39,19 @@ const ogLocaleByLocale: Record<SupportedLocale, string> = {
 
 const metadataCopy = {
     de: {
+        homeTitle: 'Gameserver-Hosting leicht gemacht',
+        homeDescription:
+            'Miete Deinen Gameserver mit flexibler CPU, RAM und Laufzeit. Startklar in Sekunden, mit übersichtlichem Control Panel, Backups und kostenlosen Servern zum Testen.',
+        blogTitle: 'Blog',
+        blogDescription:
+            'Neuigkeiten, Anleitungen und Hintergründe rund um Gameserver-Hosting bei Scyed.',
+        changelogTitle: 'Neuigkeiten',
+        changelogDescription:
+            'Die neuesten Updates, Verbesserungen und Fehlerbehebungen bei Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            'Eröffne ein Ticket und schreib direkt mit unserem Team. Du bekommst eine E-Mail, sobald wir antworten.',
+        supportTicketTitle: 'Support-Ticket',
         orderIndexTitle: 'Gameserver-Hosting',
         orderIndexDescription:
             'Wähle ein Spiel und konfiguriere Deinen Gameserver mit flexibler Hardware, Speichertiers und schnellem Setup.',
@@ -99,16 +115,35 @@ const metadataCopy = {
         freePageHeading: 'Hol Dir Deinen kostenlosen Gameserver',
         freePageHeadingHighlight: 'kostenlosen',
         freePageSubheading: 'Keine Zahlungsdaten erforderlich',
-        freePageWhyFreeQuestion: 'Warum sind die Server kostenlos?',
+        freePageWhyFreeQuestion: 'Warum kostenlos?',
         freePageWhyFreeAnswerShort:
-            'Wir betreiben diese Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist. Die Ressourcen sind begrenzt, aber ideal für kleine Gameserver und zum Ausprobieren.',
+            'Wir möchten, dass Du uns ohne Risiko kennenlernen kannst. Deshalb laufen auch die kostenlosen Server auf moderner Hardware.',
         freePageWhyFreeAnswerLong:
-            'Wir betreiben diese kostenlosen Server auf älterer Enterprise-Hardware, die deutlich günstiger im Betrieb ist als moderne Systeme. Die Ressourcen sind im Vergleich zu unseren bezahlten Plänen begrenzt — perfekt für kleine Gameserver, Freunde-Runden oder zum Ausprobieren, bevor Du upgradest.',
+            'Wir möchten, dass Du uns ohne Risiko kennenlernen kannst. Deshalb laufen auch die kostenlosen Server auf moderner Hardware mit hoher Leistung pro Kern, auf die es bei Gameservern besonders ankommt.',
+        freePageNoCatchLabel: 'Fair Play',
+        freePageNoCatchPoints: [
+            'Keine Slot-Begrenzung',
+            'Keine Warteschlange',
+            'Läuft weiter, auch wenn niemand online ist',
+        ],
         freePageSpecsLabel: 'Server-Specs',
+        freePageSpecCpuOn: (cpu: string) => `auf ${cpu}`,
+        freePageSpecDisk: 'Speicherplatz',
         freePageSelectGame: 'Wähle Dein Spiel',
         freePageFaqHeading: 'Häufige Fragen',
     },
     en: {
+        homeTitle: 'Game Server Hosting Made Easy',
+        homeDescription:
+            'Rent your game server with flexible CPU, RAM and runtime. Ready in seconds, with a clean control panel, backups and free servers to try us out.',
+        blogTitle: 'Blog',
+        blogDescription: 'News, guides and background on game server hosting at Scyed.',
+        changelogTitle: "What's New",
+        changelogDescription: 'The latest updates, improvements and fixes at Scyed Hosting.',
+        supportTitle: 'Support',
+        supportDescription:
+            "Open a ticket and chat directly with our team. You'll get an email whenever we reply.",
+        supportTicketTitle: 'Support ticket',
         orderIndexTitle: 'Game Server Hosting',
         orderIndexDescription:
             'Choose a game and configure your game server with flexible hardware, storage tiers, and fast setup.',
@@ -170,18 +205,35 @@ const metadataCopy = {
         freePageHeading: 'Get Your Free Game Server',
         freePageHeadingHighlight: 'Free',
         freePageSubheading: 'No payment details required',
-        freePageWhyFreeQuestion: 'Why are the servers free?',
+        freePageWhyFreeQuestion: 'Why free?',
         freePageWhyFreeAnswerShort:
-            'We run these servers on older enterprise hardware that is significantly cheaper to operate. Resources are limited, but great for small game servers and trying things out.',
+            'We want you to get to know us without any risk. That is why our free servers also run on modern hardware.',
         freePageWhyFreeAnswerLong:
-            'We run these free servers on older enterprise hardware that is significantly cheaper to operate than modern infrastructure. Resources are limited compared to our paid plans — perfect for small game servers, playing with friends, or trying things out before upgrading.',
+            'We want you to get to know us without any risk. That is why our free servers also run on modern hardware with strong per-core performance, which matters most for game servers.',
+        freePageNoCatchLabel: 'Fair Play',
+        freePageNoCatchPoints: [
+            'No player slot limit',
+            'No queue',
+            'Stays online even when no one is playing',
+        ],
         freePageSpecsLabel: 'Server Specs',
+        freePageSpecCpuOn: (cpu: string) => `on ${cpu}`,
+        freePageSpecDisk: 'Storage',
         freePageSelectGame: 'Select Your Game',
         freePageFaqHeading: 'Frequently Asked Questions',
     },
 } satisfies Record<
     SupportedLocale,
     {
+        homeTitle: string;
+        homeDescription: string;
+        blogTitle: string;
+        blogDescription: string;
+        changelogTitle: string;
+        changelogDescription: string;
+        supportTitle: string;
+        supportDescription: string;
+        supportTicketTitle: string;
         orderIndexTitle: string;
         orderIndexDescription: string;
         orderConfigureTitle: (summary?: string) => string;
@@ -224,7 +276,11 @@ const metadataCopy = {
         freePageWhyFreeQuestion: string;
         freePageWhyFreeAnswerShort: string;
         freePageWhyFreeAnswerLong: string;
+        freePageNoCatchLabel: string;
+        freePageNoCatchPoints: string[];
         freePageSpecsLabel: string;
+        freePageSpecCpuOn: (cpu: string) => string;
+        freePageSpecDisk: string;
         freePageSelectGame: string;
         freePageFaqHeading: string;
     }
@@ -325,6 +381,8 @@ export function createPublicMetadata({
     description,
     keywords,
     image,
+    article,
+    noindex,
 }: {
     locale: string;
     path: string;
@@ -332,6 +390,11 @@ export function createPublicMetadata({
     description: string;
     keywords?: string[];
     image?: MetaImage;
+    /** Marks the page as an article (og:type=article) with its dates. */
+    article?: { publishedTime: Date; modifiedTime?: Date };
+    /** Order funnel steps: keep title and link preview, but stay out of the index (links are
+     *  still followed). */
+    noindex?: boolean;
 }): Metadata {
     const normalizedLocale = normalizeLocale(locale);
     const languages = Object.fromEntries(
@@ -345,6 +408,7 @@ export function createPublicMetadata({
         title,
         description,
         keywords,
+        ...(noindex ? { robots: { index: false, follow: true } } : {}),
         alternates: {
             canonical: localizedPath(normalizedLocale, path),
             languages: {
@@ -353,7 +417,13 @@ export function createPublicMetadata({
             },
         },
         openGraph: {
-            type: 'website',
+            ...(article
+                ? {
+                      type: 'article',
+                      publishedTime: article.publishedTime.toISOString(),
+                      modifiedTime: article.modifiedTime?.toISOString(),
+                  }
+                : { type: 'website' }),
             siteName: SITE_NAME,
             title,
             description,
@@ -375,6 +445,18 @@ export function createPublicMetadata({
     };
 }
 
+/** Keeps a page out of search results. Used instead of a robots.txt `Disallow`, which would stop
+ *  crawlers from ever seeing this tag. Layouts of private sections export it directly. */
+export const PRIVATE_ROBOTS: Metadata['robots'] = {
+    index: false,
+    follow: false,
+    googleBot: {
+        index: false,
+        follow: false,
+        noimageindex: true,
+    },
+};
+
 export function createPrivateMetadata({
     title,
     description,
@@ -385,14 +467,6 @@ export function createPrivateMetadata({
     return {
         title,
         description,
-        robots: {
-            index: false,
-            follow: false,
-            googleBot: {
-                index: false,
-                follow: false,
-                noimageindex: true,
-            },
-        },
+        robots: PRIVATE_ROBOTS,
     };
 }

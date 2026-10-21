@@ -112,6 +112,7 @@ model GameServer {
   ApplicationLog ApplicationLog[]
   suspensions    GameServerSuspension[]
   feedbacks      Feedback[]
+  tickets        Ticket[]
 
   @@index([resourceTierId])
 }
@@ -339,6 +340,129 @@ model SupportTicket {
   @@index([ticketId])
 }
 
+// Conversation-based ticket system. It coexists with the legacy `SupportTicket` until the links
+// are switched over and reuses `TicketCategory`; see docs/support-tickets.md.
+enum TicketState {
+  OPEN // waiting for a staff reply
+  WAITING_FOR_CUSTOMER
+  ON_HOLD // waiting on something internal; the customer sees "in progress"
+  RESOLVED // the customer can still reopen it by replying; the worker closes it later
+  CLOSED // final, read-only
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum TicketAuthorRole {
+  CUSTOMER
+  STAFF
+  SYSTEM // automated messages, e.g. from the worker
+}
+
+enum TicketEventType {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  CATEGORY_CHANGED
+  SUBJECT_CHANGED
+  ASSIGNEE_CHANGED
+  SERVER_CHANGED
+}
+
+model Ticket {
+  id           String         @id @default(cuid()) // used in customer URLs
+  number       Int            @unique @default(autoincrement()) // shown as "#1042", used in admin URLs
+  userId       String?
+  user         User?          @relation("TicketCustomer", fields: [userId], references: [id], onDelete: SetNull)
+  subject      String
+  category     TicketCategory
+  status       TicketState    @default(OPEN)
+  priority     TicketPriority @default(NORMAL)
+  assigneeId   String?
+  assignee     User?          @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  gameServerId String?
+  gameServer   GameServer?    @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
+
+  statusChangedAt       DateTime  @default(now())
+  lastMessageAt         DateTime  @default(now())
+  lastCustomerMessageAt DateTime?
+  lastStaffMessageAt    DateTime? // STAFF and SYSTEM messages; drives the customer's unread marker
+  firstResponseAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages   TicketMessage[]
+  notes      TicketNote[]
+  events     TicketEvent[]
+  readStates TicketReadState[]
+
+  @@index([status, lastMessageAt])
+  @@index([userId, lastMessageAt])
+  @@index([assigneeId, status])
+  @@index([gameServerId])
+}
+
+model TicketMessage {
+  id         Int              @id @default(autoincrement())
+  ticketId   String
+  ticket     Ticket           @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorRole TicketAuthorRole // snapshot, so a later role change does not rewrite history
+  body       String           @db.Text
+  createdAt  DateTime         @default(now())
+
+  @@index([ticketId, createdAt])
+}
+
+// Internal admin notes. A separate table (instead of a flag on TicketMessage) so customer
+// queries cannot leak them by forgetting a filter.
+model TicketNote {
+  id        Int      @id @default(autoincrement())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  body      String   @db.Text
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+}
+
+// Audit trail. `fromValue`/`toValue` are display snapshots (enum value, username, server name).
+// A null actor means the system (e.g. the worker auto-closing a ticket).
+model TicketEvent {
+  id        Int             @id @default(autoincrement())
+  ticketId  String
+  ticket    Ticket          @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  actorId   String?
+  actor     User?           @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  type      TicketEventType
+  fromValue String?
+  toValue   String?
+  createdAt DateTime        @default(now())
+
+  @@index([ticketId, createdAt])
+}
+
+model TicketReadState {
+  ticketId   String
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt DateTime
+
+  @@id([ticketId, userId])
+  @@index([userId])
+}
+
 enum FeedbackType {
   MODPACK_BETA
   GENERAL
@@ -414,6 +538,13 @@ model User {
 
   suspensionsCreated GameServerSuspension[] @relation("SuspensionCreatedBy")
   suspensionsLifted  GameServerSuspension[] @relation("SuspensionLiftedBy")
+
+  tickets          Ticket[]          @relation("TicketCustomer")
+  assignedTickets  Ticket[]          @relation("TicketAssignee")
+  ticketMessages   TicketMessage[]
+  ticketNotes      TicketNote[]
+  ticketEvents     TicketEvent[]
+  ticketReadStates TicketReadState[]
 
   @@unique([email])
   @@unique([ptUsername])
@@ -630,6 +761,7 @@ enum EmailType {
   TWO_FAKTOR_OPT_SEND
   SUPPORT_TICKET_CREATED
   SUPPORT_TICKET_RESPONSE
+  SUPPORT_TICKET_RESOLVED
   GAME_SERVER_EXPIRED
   GAME_SERVER_EXPIRING_7_DAYS
   GAME_SERVER_EXPIRING_1_DAY

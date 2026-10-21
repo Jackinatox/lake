@@ -44,6 +44,14 @@ A full-stack gameserver hosting platform with Stripe payments, Pterodactyl integ
 - Stripe payment processing + webhooks
 - Discord/Google OAuth
 
+## Assets
+
+Each supported game ships a **small themed icon** at
+`public/images/{light,dark}/games/icons/<slug>.webp` — render it with the auto-switching
+`ThemeImage` component (`<ThemeImage src={`games/icons/${slug}.webp`} />`), which picks the
+light or dark file for you. Wide banners live at `public/images/games/banners/<slug>.jpg`.
+Details, and what to do when a game has no icon yet, in `docs/game-images.md`.
+
 ## Project Status
 
 This is production code for Scyed.com. It likely won't work out of the box for others due to:

@@ -60,7 +60,7 @@ const MENU: MenuItem[] = [
     {
         labelKey: 'support',
         Icon: HeadphonesIcon,
-        href: '/support',
+        href: '/support/tickets',
     },
 ];
 

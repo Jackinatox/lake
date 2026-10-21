@@ -63,7 +63,7 @@ export function EmailLayout({
     hideSignature,
 }: EmailLayoutProps) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const supportHref = appUrl ? `${appUrl}/support` : undefined;
+    const supportHref = appUrl ? `${appUrl}/support/tickets` : undefined;
 
     return (
         <Html>

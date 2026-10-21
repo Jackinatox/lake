@@ -17,19 +17,19 @@ export default function Footer() {
                         <h3 className="font-semibold text-base">Support</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
-                                href="/support"
+                                href="/support/tickets"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('support_center')}
                             </Link>
                             <Link
-                                href="/support"
+                                href="/support/tickets"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('faq')}
                             </Link>
                             <Link
-                                href="/support"
+                                href="/support/tickets"
                                 className="hover:text-foreground transition-colors"
                             >
                                 {t('documentation')}

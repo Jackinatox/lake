@@ -39,7 +39,13 @@ export default async function GameServerLayout({
     const suspension = getActiveSuspension(server);
 
     if (server && suspension) {
-        return <ServerSuspended serverName={server.name} suspension={suspension} />;
+        return (
+            <ServerSuspended
+                serverName={server.name}
+                ptServerId={serverId}
+                suspension={suspension}
+            />
+        );
     }
 
     return children;

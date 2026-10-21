@@ -293,7 +293,7 @@ export function DashboardHeader({
     const isRunning = serverStatus === 'running';
 
     return (
-        <Card className="sticky top-0 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
+        <Card className="sticky top-16 z-20 shadow-sm bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
             <CardContent className="p-1 sm:p-2 md:p-3">
                 {/* Mobile Layout: Status dot + controls + upgrade */}
                 <div className="flex md:hidden items-center justify-between gap-1">

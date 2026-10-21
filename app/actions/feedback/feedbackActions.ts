@@ -32,43 +32,37 @@ export async function submitFeedbackAction(input: SubmitFeedbackInput): Promise<
         }
     })();
 
-    if (parsed.ptGameServerId) {
-        const server = await getOwnedGameServerSummary(session.user.id, parsed.ptGameServerId);
-        if (!server) throw new Error('Unauthorized (No Gameserver found)');
-
-        await logger.info('submitFeedbackAction called', 'SYSTEM', {
+    // Feedback is bound to the GameServer row by its primary key, while the client
+    // only ever knows the Pterodactyl identifier - resolve (and authorize) it here.
+    const server = await getOwnedGameServerSummary(session.user.id, parsed.ptGameServerId);
+    if (!server) {
+        await logger.error('submitFeedbackAction called for a non-owned gameserver', 'SYSTEM', {
             userId: session.user.id,
-            gameServerId: server.id,
-            details: {
-                input,
-            }
+            details: { input },
         });
-        
-        return prisma.feedback.create({
-            data: {
-                type: parsed.type,
-                title: parsed.title ?? null,
-                message: parsed.message ?? null,
-                data: parsed.data as Prisma.InputJsonValue,
-                userId: session.user.id,
-                gameServerId: server.id
-            },
-            select: {
-                id: true,
-                createdAt: true,
-            },
-        });
-    } else {
-        await logger.error('submitFeedbackAction called without ptGameServerId', 'SYSTEM', {
-            userId: session.user.id,
-            details: {
-                input,
-            }
-        });
-        throw new Error('Unauthorized (No Gameserver found)');
-
         throw new Error('Unauthorized (No Gameserver found)');
     }
+
+    await logger.info('submitFeedbackAction called', 'SYSTEM', {
+        userId: session.user.id,
+        gameServerId: server.id,
+        details: { input },
+    });
+
+    return prisma.feedback.create({
+        data: {
+            type: parsed.type,
+            title: parsed.title ?? null,
+            message: parsed.message ?? null,
+            data: parsed.data as Prisma.InputJsonValue,
+            userId: session.user.id,
+            gameServerId: server.id,
+        },
+        select: {
+            id: true,
+            createdAt: true,
+        },
+    });
 }
 
 export type MyFeedbackRow = {
@@ -80,21 +74,24 @@ export type MyFeedbackRow = {
     createdAt: Date;
 };
 
-export async function getMyFeedbackAction(gameServerId: string): Promise<MyFeedbackRow[]> {
+export async function getMyFeedbackAction(ptGameServerId: string): Promise<MyFeedbackRow[]> {
     const session = await requireSession();
 
     const parsedServerId = (() => {
         try {
-            return serverIdentifierSchema.parse(gameServerId);
+            return serverIdentifierSchema.parse(ptGameServerId);
         } catch (error) {
             throw new Error(getValidationMessage(error));
         }
     })();
 
+    const server = await getOwnedGameServerSummary(session.user.id, parsedServerId);
+    if (!server) throw new Error('Unauthorized (No Gameserver found)');
+
     return prisma.feedback.findMany({
         where: {
             userId: session.user.id,
-            gameServerId: parsedServerId,
+            gameServerId: server.id,
         },
         select: {
             id: true,

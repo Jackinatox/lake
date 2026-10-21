@@ -115,21 +115,6 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
             initialServer.gameConfig.gameSlug === 'minecraft'
                 ? initialServer.gameConfig.modpack
                 : undefined;
-        const previousFeedback = modpack
-            ? await prisma.feedback.findMany({
-                  where: { userId: session.user.id, gameServerId: ptServerId },
-                  select: {
-                      id: true,
-                      type: true,
-                      title: true,
-                      message: true,
-                      data: true,
-                      createdAt: true,
-                  },
-                  orderBy: { createdAt: 'desc' },
-                  take: 20,
-              })
-            : [];
 
         return (
             <div className="">
@@ -142,7 +127,6 @@ async function serverCrap({ params }: { params: Promise<{ locale: string; server
                     modpackFeedback={
                         modpack
                             ? {
-                                  initialFeedback: previousFeedback,
                                   modpackId: modpack.projectId,
                                   modpackVersion: modpack.versionId,
                                   locale,

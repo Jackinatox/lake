@@ -13,10 +13,8 @@ import { GameServerType } from '@/app/client/generated/enums';
 import { EggFeature } from '@/app/client/generated/browser';
 import { GameConfig } from '@/models/config';
 import ModpackFeedbackCard from './feedback/ModpackFeedbackCard';
-import type { MyFeedbackRow } from '@/app/actions/feedback/feedbackActions';
 
 export interface ModpackFeedbackProps {
-    initialFeedback: MyFeedbackRow[];
     modpackId: string;
     modpackVersion: string;
     locale: string;
@@ -305,7 +303,6 @@ function WebSocketGate({
                 <div className="mt-2.5">
                     <ModpackFeedbackCard
                         ptGameServerId={server.identifier}
-                        initialFeedback={modpackFeedback.initialFeedback}
                         modpackId={modpackFeedback.modpackId}
                         modpackVersion={modpackFeedback.modpackVersion}
                         locale={modpackFeedback.locale}

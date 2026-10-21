@@ -12,6 +12,7 @@ import type { GameConfig } from '@/models/config';
 import { ValheimConfig, ValheimModdedConfig } from '@/models/gameSpecificConfig/ValheimConfig';
 import { ConfigContainer } from '../shared/config-container';
 import { ConfigSettingItem } from '../shared/config-setting-item';
+import { NumberConfigInput } from '../shared/number-config-input';
 import { AnimatedReveal } from '../shared/animated-reveal';
 import { GameConfigProps } from './minecraft-config';
 
@@ -217,19 +218,12 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                         label={tv('maxPlayers.label')}
                         description={tv('maxPlayers.description')}
                     >
-                        <Input
+                        <NumberConfigInput
                             id="maxPlayers"
-                            type="number"
                             min={1}
                             max={64}
                             value={config.max_players}
-                            onChange={(e) =>
-                                handleChange(
-                                    'max_players',
-                                    Math.max(1, Math.min(64, Number(e.target.value) || 1)),
-                                )
-                            }
-                            className="w-24 md:w-40"
+                            onChange={(v) => handleChange('max_players', v)}
                         />
                     </ConfigSettingItem>
                     <ConfigSettingItem
@@ -248,20 +242,12 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                         label={tv('backupInterval.label')}
                         description={tv('backupInterval.description')}
                     >
-                        <Input
+                        <NumberConfigInput
                             id="backupInterval"
-                            type="number"
                             min={0}
                             max={86400}
-                            step={300}
                             value={config.backup_interval}
-                            onChange={(e) =>
-                                handleChange(
-                                    'backup_interval',
-                                    Math.max(0, Math.min(86400, Number(e.target.value) || 0)),
-                                )
-                            }
-                            className="w-24 md:w-40"
+                            onChange={(v) => handleChange('backup_interval', v)}
                         />
                     </ConfigSettingItem>
                     <ConfigSettingItem
@@ -269,19 +255,12 @@ export const ValheimConfigComponent = forwardRef(function ValheimConfigComponent
                         label={tv('backupCount.label')}
                         description={tv('backupCount.description')}
                     >
-                        <Input
+                        <NumberConfigInput
                             id="backupCount"
-                            type="number"
                             min={0}
                             max={100}
                             value={config.backup_count}
-                            onChange={(e) =>
-                                handleChange(
-                                    'backup_count',
-                                    Math.max(0, Math.min(100, Number(e.target.value) || 0)),
-                                )
-                            }
-                            className="w-24 md:w-40"
+                            onChange={(v) => handleChange('backup_count', v)}
                         />
                     </ConfigSettingItem>
                 </CollapsibleContent>

@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import formatDate from '@/lib/formatDate';
+import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
+import type { Metadata } from 'next';
 
 type ChangelogEntry = Awaited<ReturnType<typeof getPublishedChangelog>>[number];
 
@@ -50,6 +52,22 @@ function groupByMonth(entries: ChangelogEntry[], locale: string) {
     }
 
     return groups;
+}
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+    const { locale } = await params;
+    const copy = getMetadataCopy(locale);
+
+    return createPublicMetadata({
+        locale,
+        path: '/changelog',
+        title: copy.changelogTitle,
+        description: copy.changelogDescription,
+    });
 }
 
 export default async function ChangelogPage() {

@@ -54,10 +54,15 @@ DB-configurable — it disappears only by editing the component.
 - `enum FeedbackType { MODPACK_BETA GENERAL }` — extend this enum for future
   feedback campaigns instead of new tables.
 - `model Feedback`: `id`, `type`, `title?`, `message? @db.Text`,
-  `data Json @default("{}")`, `userId` (cascade-delete relation to `User`),
-  `gameServerId?` (string, the same id used in `/gameserver/[server_id]`
-  routes — NOT a Prisma relation), `createdAt`. Indexed on `userId`, `type`,
-  `gameServerId`.
+  `data Json @default("{}")`, `userId` (`SetNull` relation to `User`),
+  `gameServerId?` (`SetNull` relation to `GameServer`, migration
+  `20260911190415_feedback_gameserver_binding`), `createdAt`. Indexed on
+  `userId`, `type`, `gameServerId`.
+- **`gameServerId` is `GameServer.id`, not the Pterodactyl identifier.** The
+  client only ever knows the pt identifier (the `/gameserver/[server_id]`
+  route param), so both feedback actions take it as `ptGameServerId` and
+  translate it via `getOwnedGameServerSummary` — which is also the ownership
+  check. Never query `Feedback` by the route param directly.
 
 One row per submission. `data` holds the structured survey answers plus
 auto-captured context, validated by `feedbackDataSchema`:
@@ -69,12 +74,12 @@ auto-captured context, validated by `feedbackDataSchema`:
 - `lib/validation/feedback.ts` — zod schemas `feedbackDataSchema`,
   `submitFeedbackSchema`; types `FeedbackData`, `SubmitFeedbackInput`.
 - `app/actions/feedback/feedbackActions.ts` (`'use server'`):
-  - `submitFeedbackAction(input)` — requires session; when `gameServerId` is
-    set, verifies ownership via
-    `app/data-access-layer/gameServer/getOwnedGameServerSummary`; creates the
-    row. Returns `{ id, createdAt }`.
-  - `getMyFeedbackAction(gameServerId)` — current user's rows for that server,
-    newest first, limit 20 (`MyFeedbackRow`).
+  - `submitFeedbackAction(input)` — requires session; `ptGameServerId` is
+    **required** (the FK demands a server); resolves + authorizes it via
+    `app/data-access-layer/gameServer/getOwnedGameServerSummary` and stores
+    `server.id`. Returns `{ id, createdAt }`.
+  - `getMyFeedbackAction(ptGameServerId)` — same resolution, then the current
+    user's rows for that server, newest first, limit 20 (`MyFeedbackRow`).
 
 There is no admin UI for reading feedback yet — query the table directly.
 
@@ -84,11 +89,11 @@ There is no admin UI for reading feedback yet — query the table directly.
 
 - Mounted in `app/[locale]/gameserver/[server_id]/page.tsx` below
   `<ServerLoader />`, **only when the server is minecraft AND has a modpack
-  installed** (the parsed `gameConfig.modpack` is set). The page fetches the
-  user's previous feedback server-side (direct `prisma.feedback.findMany`,
-  same shape as `getMyFeedbackAction`) and passes it as `initialFeedback`,
-  plus `modpackId`/`modpackVersion` from `gameConfig.modpack`
-  (`projectId`/`versionId`) and the locale.
+  installed** (the parsed `gameConfig.modpack` is set). The page passes only
+  `modpackId`/`modpackVersion` from `gameConfig.modpack`
+  (`projectId`/`versionId`) and the locale — **previous feedback is never in
+  the server-rendered payload**: the card calls `getMyFeedbackAction` the
+  first time it is expanded (`loadEntries`, guarded by `entriesLoaded`).
 - Collapsed by default to a single slim row (shadcn `Collapsible`). Expanded:
   outcome radio, six issue checkboxes (`install_failed`, `wont_start`,
   `crashes`, `wrong_mod_versions`, `performance`, `confusing_ui`), 1–5 star

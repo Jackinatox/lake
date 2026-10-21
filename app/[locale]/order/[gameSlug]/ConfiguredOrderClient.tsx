@@ -7,6 +7,7 @@ import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } fro
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ConfiguredOrderClientProps {
     performanceGroups: PerformanceGroup[];
@@ -28,6 +29,7 @@ export default function ConfiguredOrderClient({
     game,
     hardwareRecommendations,
 }: ConfiguredOrderClientProps) {
+    const t = useTranslations('orderFlow');
     const imgPath = `/images/games/icons/${game.name.toLowerCase()}.webp`;
 
     const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
@@ -39,7 +41,7 @@ export default function ConfiguredOrderClient({
     return (
         <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-2">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center gap-3">
                         <Button variant="ghost" size="icon" asChild className="shrink-0">
@@ -60,7 +62,7 @@ export default function ConfiguredOrderClient({
                                 {game.name}
                             </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
-                                Configure your server
+                                {t('configuredOrder.subtitle')}
                             </p>
                         </div>
 
@@ -69,7 +71,7 @@ export default function ConfiguredOrderClient({
                                 <div className="text-xl font-bold text-primary">
                                     {(priceInfo.totalCents / 100).toFixed(2)} €
                                 </div>
-                                <div className="text-xs text-muted-foreground">total</div>
+                                <div className="text-xs text-muted-foreground">{t('total')}</div>
                             </div>
                         )}
                     </div>
@@ -90,7 +92,7 @@ export default function ConfiguredOrderClient({
                     resourceTiers={resourceTiers}
                     hardwareRecommendations={hardwareRecommendations}
                     continueHref={(params) => `/order/${game.slug}/setup?${params}&mode=configured`}
-                    continueLabel="Continue to Setup"
+                    continueLabel={t('configuredOrder.continueLabel')}
                     onPriceUpdate={handlePriceUpdate}
                 />
             </div>
@@ -99,7 +101,7 @@ export default function ConfiguredOrderClient({
             {priceInfo && (
                 <div className="lg:hidden sticky bottom-0 z-20 bg-background/95 backdrop-blur-md border-t p-3 flex items-center gap-3">
                     <div className="flex-1">
-                        <div className="text-xs text-muted-foreground">Total</div>
+                        <div className="text-xs text-muted-foreground">{t('total')}</div>
                         <div className="text-2xl font-bold text-primary">
                             {(priceInfo.totalCents / 100).toFixed(2)} €
                         </div>
@@ -110,7 +112,7 @@ export default function ConfiguredOrderClient({
                         disabled={priceInfo.disabled}
                         onClick={priceInfo.onContinue}
                     >
-                        Continue
+                        {t('continue')}
                     </Button>
                 </div>
             )}
