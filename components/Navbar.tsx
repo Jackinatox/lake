@@ -19,16 +19,17 @@ export default function Navbar({ locale }: { locale: string }) {
         >
             <div className="w-full max-w-7xl flex justify-between items-center p-3 px-5 text-sm">
                 <div className="flex items-center font-semibold">
-                    <Link href="/" className="mr-4 flex items-center">
-                        {/* Height sets the size; sizes must cover the resulting width (h-10 ≈ 90px) */}
+                    {/* shrink-0: in a crowded navbar the flex row would squeeze the logo's width */}
+                    <Link href="/" className="mr-4 flex shrink-0 items-center">
+                        {/* Larger only on tablets (touch, md and up); sizes must cover that width (h-10 ≈ 90px) */}
                         <ThemeImage
                             src="/images/logo/ScyedLogo.webp"
                             alt="Scyed"
                             fill={false}
                             width={1084}
                             height={482}
-                            sizes="90px"
-                            className="h-8 w-auto md:h-10"
+                            sizes="(min-width: 768px) and (pointer: coarse) 90px, 64px"
+                            className="h-7 w-auto md:pointer-coarse:h-10"
                             priority
                         />
                     </Link>
