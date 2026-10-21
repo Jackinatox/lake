@@ -89,8 +89,9 @@ export default function MainMenu({ locale }: MainMenuInterface) {
         <header className="">
             <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 justify-between items-center">
-                    {/* — Desktop Menu — */}
-                    <NavigationMenu className="hidden lg:flex">
+                    {/* — Desktop Menu — (from xl: below that, menu + language + login/profile
+                        overflow the navbar, e.g. on tablets in landscape) */}
+                    <NavigationMenu className="hidden xl:flex">
                         <NavigationMenuList className="flex space-x-4 items-center">
                             {MENU.map((item) =>
                                 item.subItems ? (
@@ -158,7 +159,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                     </NavigationMenu>
 
                     {/* — Mobile Menu — */}
-                    <div className="lg:hidden">
+                    <div className="xl:hidden">
                         <Sheet open={open} onOpenChange={setOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon">
