@@ -26,8 +26,8 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   that the reverse proxy serves under `/docs/`, outside lake and its locale routing; link to it
   with a plain `<a href="/docs/...">`, not next-intl's `Link`.
 - `app/sitemap.ts`: `localeUrls(path, ...)` emits one entry per locale with
-  `alternates.languages`. Contains home, pricing, blog, changelog, `/support/tickets`, the order
-  page per enabled game, and blog posts (`published && listed && publishedAt <= now`).
+  `alternates.languages`. Contains home, pricing, blog, changelog, `/support/tickets`, `/order`,
+  `/order/free`, the order page per enabled game, and blog posts (`published && listed && publishedAt <= now`).
   `dynamic = 'force-dynamic'`: rendered per request, otherwise it is built once at build time.
   Not ISR, because that cache lives per instance and we run several. Legal pages are indexable
   but deliberately not listed.
@@ -54,9 +54,10 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - Unlisted blog posts (`listed = false`) get `createPublicMetadata({ noindex: true })`: reachable
   by link, but neither in the sitemap nor in search results.
 - `/support/tickets` itself is public (the support landing page) and is in the sitemap.
-- Order funnel steps `/order/[game]/setup`, `/order/configure/games` and `/order/free/[game]` use
-  `createPublicMetadata({ noindex: true })` (`noindex, follow`) and are not in the sitemap:
-  without a configuration they are empty or an error message. `/order/configure` stays indexable.
+- Order funnel steps `/order/[game]/setup`, `/order/configure`, `/order/configure/games` and
+  `/order/free/[game]` use `createPublicMetadata({ noindex: true })` (`noindex, follow`) and are
+  not in the sitemap. `/order/configure` is the same hardware-first configurator as `/pricing`,
+  which is the page that should rank for prices; link to `/pricing` from content pages.
 
 ## Structured data (JSON-LD)
 

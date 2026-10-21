@@ -73,12 +73,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const staticOrderPages: MetadataRoute.Sitemap = [
         ...localeUrls('/order', 0.9, 'weekly'),
-        ...localeUrls('/order/configure', 0.8, 'weekly'),
         ...localeUrls('/order/free', 0.8, 'weekly'),
     ];
 
-    // Funnel steps (/order/[game]/setup, /order/configure/games, /order/free/[game]) are noindex
-    // and not listed.
+    // Funnel steps (/order/[game]/setup, /order/configure, /order/configure/games,
+    // /order/free/[game]) are noindex and not listed.
     const gameOrderPages: MetadataRoute.Sitemap = games.flatMap(({ slug, name }) =>
         localeUrls(`/order/${slug}`, 0.85, 'weekly', { images: gameImageUrls(name) }),
     );

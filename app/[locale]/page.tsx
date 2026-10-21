@@ -173,7 +173,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                                     className="text-base w-full sm:w-auto"
                                     asChild
                                 >
-                                    <Link href="/order/configure">{t('buttonComparePlans')}</Link>
+                                    <Link href="/pricing">{t('buttonComparePlans')}</Link>
                                 </Button>
                             </div>
                         </div>
@@ -343,7 +343,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-                            <Link href="/order/configure">{t('buttonComparePlans')}</Link>
+                            <Link href="/pricing">{t('buttonComparePlans')}</Link>
                         </Button>
                     </div>
                 </div>

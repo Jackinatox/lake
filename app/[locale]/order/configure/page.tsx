@@ -25,6 +25,9 @@ export async function generateMetadata({
         title: copy.orderConfigureTitle(summary ?? undefined),
         description: copy.orderConfigureDescription,
         keywords: ['server hardware', 'configure server', 'cpu ram storage', 'game server setup'],
+        // Same hardware-first configurator as /pricing, which is the page that should rank for
+        // prices; this one is the funnel step its "back" link returns to. Links are still followed.
+        noindex: true,
     });
 }
 
