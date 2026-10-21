@@ -68,8 +68,6 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   at most one `FaqSection` per page. Its `AccordionContent` uses `forceMount`: Radix otherwise
   renders closed answers as empty, and crawlers would only see the questions.
   `components/ui/accordion.tsx` hides force-mounted closed content with `data-[state=closed]:hidden`.
-  An optional `leadItem` (question/answer built by the page from live config, not from the `FAQ`
-  table) is rendered first, open by default, and is part of the `FAQPage` markup.
 - Only mark up what is visible on the page. Google can issue a manual action for markup that is
   not, which is why there is no `Product`/`Offer` with a price yet.
 

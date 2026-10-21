@@ -8,10 +8,8 @@ engines and AI answers. Decided with the owner in 2026-10 while working on SEO.
 Information lake has (database, KeyValue config, code) is provided by lake itself, rendered from
 that source on the page, server-side, so crawlers without JS read it too. Examples: games,
 prices, performance groups and CPUs, resource packages, duration surcharges/discounts, free tier
-specs, runtime and deletion period (`/pricing` price overview, free order page explanation).
+specs, runtime and deletion period (e.g. the `/pricing` price overview).
 Never copy such information into FAQ entries, docs or blog posts by hand; link to the page.
-When such a text answers a question, render it as `FaqSection`'s `leadItem` (first entry, open by
-default) instead of a separate block; the free order page does this.
 
 ## FAQ (`FAQ` table, `components/faq/FaqSection.tsx`)
 

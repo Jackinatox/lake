@@ -15,12 +15,8 @@ import {
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { auth } from '@/auth';
-import {
-    CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
-    FREE_SERVER_CREATION_ENABLED,
-    FREE_TIER_MAX_SERVERS,
-} from '@/app/GlobalConstants';
-import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
+import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
+import { getKeyValueBoolean } from '@/lib/keyValue';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import { headers } from 'next/headers';
 
@@ -51,7 +47,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
 
-    const [session, games, freeTierConfig, creationEnabled, deleteAfterDays] = await Promise.all([
+    const [session, games, freeTierConfig, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
         prisma.gameData.findMany({
             select: { id: true, name: true, slug: true },
@@ -60,8 +56,6 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
         }),
         getFreeTierConfigCached(),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
-        // Same key the worker uses to delete expired servers
-        getKeyValueNumber(CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS),
     ]);
 
     const freeTierLocationInfo = await prisma.location.findFirst({
@@ -264,23 +258,9 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                 </div>
             </section>
 
-            {/* FAQ, led by the free tier explanation built from the live config */}
+            {/* FAQ */}
             <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-10 md:pb-14">
-                <FaqSection
-                    categories={['free_servers']}
-                    heading={copy.freePageFaqHeading}
-                    leadItem={{
-                        question: copy.freePageAboutQuestion,
-                        answer: copy
-                            .freePageAboutParagraphs({
-                                games: games.map((game) => game.name),
-                                durationDays: freeTierConfig.duration,
-                                maxServers: freeTierConfig.maxServers,
-                                deleteAfterDays,
-                            })
-                            .join('\n\n'),
-                    }}
-                />
+                <FaqSection categories={['free_servers']} heading={copy.freePageFaqHeading} />
             </section>
         </div>
     );
