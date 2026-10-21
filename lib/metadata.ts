@@ -143,7 +143,7 @@ const metadataCopy = {
         freePageSpecDisk: 'Speicherplatz',
         freePageSelectGame: 'Wähle Dein Spiel',
         freePageFaqHeading: 'Häufige Fragen',
-        freePageAboutHeading: 'So funktioniert Dein kostenloser Gameserver',
+        freePageAboutQuestion: 'Wie funktioniert der kostenlose Gameserver?',
         freePageAboutParagraphs: ({ games, durationDays, maxServers, deleteAfterDays }) => [
             `Bei Scyed bekommst Du einen kostenlosen Gameserver für ${new Intl.ListFormat('de', { type: 'conjunction' }).format(games)}, ohne Zahlungsdaten und ohne Abo. Du meldest Dich mit Discord oder Google an, wählst Dein Spiel und Dein Server wird automatisch eingerichtet. Verwaltet wird er in unserem eigenen Dashboard mit Konsole, Dateimanager, Backups und Einstellungen.` +
                 (maxServers === 1
@@ -250,7 +250,7 @@ const metadataCopy = {
         freePageSpecDisk: 'Storage',
         freePageSelectGame: 'Select Your Game',
         freePageFaqHeading: 'Frequently Asked Questions',
-        freePageAboutHeading: 'How your free game server works',
+        freePageAboutQuestion: 'How does the free game server work?',
         freePageAboutParagraphs: ({ games, durationDays, maxServers, deleteAfterDays }) => [
             `Scyed gives you a free game server for ${new Intl.ListFormat('en', { type: 'conjunction' }).format(games)}, with no payment details and no subscription. Sign in with Discord or Google, pick your game and your server is set up automatically. You manage it in our own dashboard with console, file manager, backups and settings.` +
                 (maxServers === 1
@@ -322,7 +322,7 @@ const metadataCopy = {
         freePageSpecDisk: string;
         freePageSelectGame: string;
         freePageFaqHeading: string;
-        freePageAboutHeading: string;
+        freePageAboutQuestion: string;
         freePageAboutParagraphs: (info: {
             games: string[];
             durationDays: number;

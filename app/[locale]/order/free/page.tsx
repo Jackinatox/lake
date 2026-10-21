@@ -264,28 +264,23 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
                 </div>
             </section>
 
-            {/* Plain-text explanation: what crawlers and AI answers can quote */}
-            <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-6 md:pb-8">
-                <h2 className="mb-3 text-lg font-semibold tracking-tight text-foreground md:text-xl">
-                    {copy.freePageAboutHeading}
-                </h2>
-                <div className="space-y-3 text-sm text-muted-foreground">
-                    {copy
-                        .freePageAboutParagraphs({
-                            games: games.map((game) => game.name),
-                            durationDays: freeTierConfig.duration,
-                            maxServers: freeTierConfig.maxServers,
-                            deleteAfterDays,
-                        })
-                        .map((paragraph) => (
-                            <p key={paragraph}>{paragraph}</p>
-                        ))}
-                </div>
-            </section>
-
-            {/* FAQ */}
+            {/* FAQ, led by the free tier explanation built from the live config */}
             <section className="relative z-10 mx-auto max-w-4xl px-4 md:px-6 pb-10 md:pb-14">
-                <FaqSection categories={['free_servers']} heading={copy.freePageFaqHeading} />
+                <FaqSection
+                    categories={['free_servers']}
+                    heading={copy.freePageFaqHeading}
+                    leadItem={{
+                        question: copy.freePageAboutQuestion,
+                        answer: copy
+                            .freePageAboutParagraphs({
+                                games: games.map((game) => game.name),
+                                durationDays: freeTierConfig.duration,
+                                maxServers: freeTierConfig.maxServers,
+                                deleteAfterDays,
+                            })
+                            .join('\n\n'),
+                    }}
+                />
             </section>
         </div>
     );

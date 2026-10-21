@@ -18,8 +18,15 @@ type FaqSectionProps = {
      * rendered above the list. Omit it to disable the header entirely.
      */
     heading?: string;
+    /**
+     * Optional entry built by the page (e.g. from live config, so it cannot live in the FAQ
+     * table). Shown first and open by default, and included in the FAQPage JSON-LD.
+     */
+    leadItem?: { question: string; answer: string };
     className?: string;
 };
+
+const LEAD_ITEM_VALUE = 'lead';
 
 /**
  * Reusable FAQ block. Pass the categories you want to surface and it fetches the
@@ -35,9 +42,13 @@ type FaqSectionProps = {
  * (e.g. `<SomeClientComponent>{<FaqSection categories={['order']} />}</SomeClientComponent>`),
  * since async server components cannot be imported directly into a client module.
  */
-export async function FaqSection({ categories, heading, className }: FaqSectionProps) {
+export async function FaqSection({ categories, heading, leadItem, className }: FaqSectionProps) {
     const locale = await getLocale();
-    const faqs = await getFaqsByCategory(categories, locale);
+    const dbFaqs = await getFaqsByCategory(categories, locale);
+    const faqs = [
+        ...(leadItem ? [{ ...leadItem, value: LEAD_ITEM_VALUE }] : []),
+        ...dbFaqs.map((faq) => ({ ...faq, value: String(faq.id) })),
+    ];
 
     if (faqs.length === 0) return null;
 
@@ -48,9 +59,14 @@ export async function FaqSection({ categories, heading, className }: FaqSectionP
                     {heading}
                 </h2>
             )}
-            <Accordion type="single" collapsible className="space-y-1">
+            <Accordion
+                type="single"
+                collapsible
+                defaultValue={leadItem ? LEAD_ITEM_VALUE : undefined}
+                className="space-y-1"
+            >
                 {faqs.map((faq) => (
-                    <AccordionItem key={faq.id} value={String(faq.id)}>
+                    <AccordionItem key={faq.value} value={faq.value}>
                         <AccordionTrigger className="text-left text-sm font-medium">
                             {faq.question}
                         </AccordionTrigger>
