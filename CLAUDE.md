@@ -50,6 +50,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
   the layout that blocks `/gameserver/[server_id]/*`. Read when touching
   suspensions, `GameServerStatus`, or `toggleSuspendGameServer`.
+- `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
+  redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
+  go offline or when touching `proxy.ts`.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft
