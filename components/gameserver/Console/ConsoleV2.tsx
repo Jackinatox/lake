@@ -223,7 +223,7 @@ const ConsoleV2 = () => {
             <div
                 ref={scrollAreaRef}
                 onScroll={handleScroll}
-                className="flex-1 min-h-0 overflow-y-auto p-3 font-mono text-sm leading-relaxed cursor-text"
+                className="flex-1 min-h-0 overflow-y-auto p-3 font-mono text-xs leading-relaxed cursor-text"
             >
                 {!hasOutput && <div className="text-zinc-600 italic">No output yet...</div>}
                 <div ref={logContainerRef} />
@@ -231,7 +231,7 @@ const ConsoleV2 = () => {
 
             {/* Input Area */}
             <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/50 border-t border-zinc-800">
-                <span className="text-emerald-500 font-mono text-sm select-none">&gt;</span>
+                <span className="text-emerald-500 font-mono text-xs select-none">&gt;</span>
                 <input
                     type="text"
                     value={inputValue}
@@ -247,7 +247,7 @@ const ConsoleV2 = () => {
                     disabled={disabled}
                     placeholder={disabled ? 'Console disabled...' : 'Enter command...'}
                     className={cn(
-                        'flex-1 bg-transparent border-none outline-none font-mono text-base md:text-sm text-zinc-200 placeholder:text-zinc-600',
+                        'flex-1 bg-transparent border-none outline-none font-mono text-base md:text-xs text-zinc-200 placeholder:text-zinc-600',
                         disabled && 'cursor-not-allowed opacity-50',
                     )}
                     autoComplete="off"
