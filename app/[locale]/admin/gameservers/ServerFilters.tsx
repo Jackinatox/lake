@@ -120,7 +120,7 @@ export default function ServerFilters({
                             value={search}
                             onChange={(event) => setSearch(event.target.value)}
                             maxLength={200}
-                            className="h-8 pl-7 text-xs md:text-xs"
+                            className="h-8 pl-7 text-base md:text-xs"
                         />
                     </div>
                 </Field>
