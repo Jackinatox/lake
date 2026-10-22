@@ -17,11 +17,11 @@ import { Button } from '@/components/ui/button';
 import { Lock, ShoppingCart } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { useRouter } from '@/i18n/navigation';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function buildAppearance(isDark: boolean): Appearance {
-
     if (isDark) {
         return {
             theme: 'night',
@@ -88,6 +88,7 @@ function CustomServerPaymentElements({
 function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolean }) {
     const result = useCheckoutElements();
     const router = useRouter();
+    const { formatEuro } = useFormatEuro();
 
     const [tosAccepted, setTosAccepted] = useState(false);
     const [widerrufsAccepted, setWiderrufsAccepted] = useState(false);
@@ -138,10 +139,8 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
         checkout.total.total.minorUnitsAmount >= BILLING_ADDRESS_THRESHOLD_CENTS;
     const canSubmit = tosAccepted && widerrufsAccepted && checkout.canConfirm && !loading;
 
-    const formattedTotal = new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: checkout.currency.toUpperCase(),
-    }).format(checkout.total.total.minorUnitsAmount / 100);
+    // Checkout runs in EUR only
+    const formattedTotal = formatEuro(checkout.total.total.minorUnitsAmount);
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-6 px-0">
@@ -162,7 +161,7 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
 
             <Separator />
 
-            <PaymentElement/>
+            <PaymentElement />
 
             {requiresBillingAddress && (
                 <BillingAddressElement

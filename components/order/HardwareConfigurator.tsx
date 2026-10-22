@@ -17,6 +17,7 @@ import { useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import { useRouter } from '@/i18n/navigation';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -74,6 +75,7 @@ export default function HardwareConfigurator({
     continueLabel,
     disableContinue,
 }: HardwareConfiguratorProps) {
+    const { formatEuroNumber } = useFormatEuro();
     const t = useTranslations('buyGameServer.hardware');
     const tl = useTranslations('buyGameServer.hardware.labels');
     const router = useRouter();
@@ -258,7 +260,7 @@ export default function HardwareConfigurator({
                             <SliderSection
                                 label={formatVCores(cpuCores)}
                                 sublabel={selectedPFGroup.cpu.name}
-                                detail={`${(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)} ${tl('perVcore')}`}
+                                detail={`${formatEuroNumber(selectedPFGroup.cpu.pricePerCore)} ${tl('perVcore')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableCpuStops}
@@ -271,7 +273,7 @@ export default function HardwareConfigurator({
                             {/* RAM */}
                             <SliderSection
                                 label={`${ramGb} ${tl('ramUnit')}`}
-                                detail={`${(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)} ${tl('perGiB')}`}
+                                detail={`${formatEuroNumber(selectedPFGroup.ram.pricePerGb)} ${tl('perGiB')}`}
                             >
                                 <LogarithmicSlider
                                     stops={availableRamStops}

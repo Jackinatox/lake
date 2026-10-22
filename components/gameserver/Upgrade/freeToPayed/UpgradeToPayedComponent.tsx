@@ -21,6 +21,7 @@ import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 /** Render tick marks for a slider */
 function SliderTicks({ min, max, step }: { min: number; max: number; step: number }) {
@@ -50,6 +51,7 @@ export function UpgradeHardwareConfigToPayed({
     performanceOptions,
     onNext,
 }: HardwareConfigProps) {
+    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('extendServer');
     const tl = useTranslations('buyGameServer.hardware.labels');
 
@@ -131,7 +133,7 @@ export function UpgradeHardwareConfigToPayed({
                                     Total:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    {(totalPrice.totalCents / 100).toFixed(2)} €
+                                    {formatEuro(totalPrice.totalCents)}
                                 </span>
                             </div>
                         </div>
@@ -270,7 +272,7 @@ export function UpgradeHardwareConfigToPayed({
                                             </span>
                                         </div>
                                         <div className="text-xs sm:text-sm text-muted-foreground">
-                                            {(selectedPFGroup.cpu.pricePerCore / 100).toFixed(2)}{' '}
+                                            {formatEuroNumber(selectedPFGroup.cpu.pricePerCore)}{' '}
                                             {t('config.cpu.price-suffix')}
                                         </div>
                                     </div>
@@ -304,7 +306,7 @@ export function UpgradeHardwareConfigToPayed({
                                             {ramGb} {t('config.ram.label-suffix')}
                                         </div>
                                         <div className="text-xs sm:text-sm text-muted-foreground">
-                                            {(selectedPFGroup.ram.pricePerGb / 100).toFixed(2)}{' '}
+                                            {formatEuroNumber(selectedPFGroup.ram.pricePerGb)}{' '}
                                             {t('config.ram.price-suffix')}
                                         </div>
                                     </div>
@@ -455,10 +457,10 @@ export function UpgradeHardwareConfigToPayed({
                                                         })}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {(totalPrice.cents.cpu / 100).toFixed(2)} €
+                                                        {formatEuro(totalPrice.cents.cpu)}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {(totalPrice.cents.ram / 100).toFixed(2)} €
+                                                        {formatEuro(totalPrice.cents.ram)}
                                                     </TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -469,7 +471,7 @@ export function UpgradeHardwareConfigToPayed({
                                     <div className="flex justify-between items-center w-full text-lg">
                                         <span className="text-primary">{t('footer.total')}</span>
                                         <span className="text-2xl font-bold text-primary">
-                                            {(totalPrice.totalCents / 100).toFixed(2)} €
+                                            {formatEuro(totalPrice.totalCents)}
                                         </span>
                                     </div>
                                     {totalPrice.totalCents > 0 && totalPrice.totalCents < 100 && (

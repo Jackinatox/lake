@@ -21,6 +21,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@/i18n/navigation';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
@@ -54,6 +55,7 @@ export default function PricingClient({
     resourceTiers,
     faqSlot,
 }: PricingClientProps) {
+    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('pricing');
     const router = useRouter();
 
@@ -238,12 +240,12 @@ export default function PricingClient({
                                             One price per line on phones, the cards are narrow there */}
                                         <div className="text-xs text-muted-foreground tabular-nums">
                                             <span className="block whitespace-nowrap sm:inline">
-                                                {(p.cpu.pricePerCore / 100).toFixed(2)}{' '}
+                                                {formatEuroNumber(p.cpu.pricePerCore)}{' '}
                                                 {t('table.perVCore')}
                                             </span>
                                             <span className="hidden sm:inline"> · </span>
                                             <span className="block whitespace-nowrap sm:inline">
-                                                {(p.ram.pricePerGb / 100).toFixed(2)}{' '}
+                                                {formatEuroNumber(p.ram.pricePerGb)}{' '}
                                                 {t('table.perGiB')}
                                             </span>
                                         </div>
@@ -276,8 +278,8 @@ export default function PricingClient({
                         icon={Cpu}
                         label={t('table.cpu')}
                         sublabel={pf.cpu.name}
-                        unit={`${(pf.cpu.pricePerCore / 100).toFixed(2)} ${t('table.perVCore')}`}
-                        subtotal={`${(price.cents.cpu / 100).toFixed(2)} €`}
+                        unit={`${formatEuroNumber(pf.cpu.pricePerCore)} ${t('table.perVCore')}`}
+                        subtotal={formatEuro(price.cents.cpu)}
                     >
                         <Stepper
                             value={cpuValue}
@@ -294,8 +296,8 @@ export default function PricingClient({
                         icon={MemoryStick}
                         label={t('table.ram')}
                         sublabel={pf.ram.name}
-                        unit={`${(pf.ram.pricePerGb / 100).toFixed(2)} ${t('table.perGiB')}`}
-                        subtotal={`${(price.cents.ram / 100).toFixed(2)} €`}
+                        unit={`${formatEuroNumber(pf.ram.pricePerGb)} ${t('table.perGiB')}`}
+                        subtotal={formatEuro(price.cents.ram)}
                     >
                         <Stepper
                             value={ramValue}
@@ -316,10 +318,10 @@ export default function PricingClient({
                                 label={t('table.resources')}
                                 unit={
                                     tier && tier.priceCents > 0
-                                        ? `${(tier.priceCents / 100).toFixed(2)} ${t('table.perMonth')}`
+                                        ? `${formatEuroNumber(tier.priceCents)} ${t('table.perMonth')}`
                                         : t('table.free')
                                 }
-                                subtotal={`${(price.tierPriceCents / 100).toFixed(2)} €`}
+                                subtotal={formatEuro(price.tierPriceCents)}
                                 isLast
                             >
                                 {null}
@@ -474,7 +476,7 @@ export default function PricingClient({
                             </span>
                             <span className="font-medium tabular-nums">
                                 {price.discount.cents > 0 ? '−' : '+'}
-                                {(Math.abs(price.discount.cents) / 100).toFixed(2)} €
+                                {formatEuro(Math.abs(price.discount.cents))}
                             </span>
                         </div>
                     )}
@@ -488,7 +490,7 @@ export default function PricingClient({
                             </div>
                         </div>
                         <div className="text-2xl md:text-3xl font-bold tabular-nums">
-                            {(price.totalCents / 100).toFixed(2)} €
+                            {formatEuro(price.totalCents)}
                         </div>
                     </div>
                 </div>

@@ -22,6 +22,7 @@ import TwoFactorRemovedTemplate from './templates/TwoFactorRemovedTemplate';
 import { percentToVCores } from '../GlobalFunctions/formatVCores';
 import { OrderType, SupportTicket, RefundServerAction } from '@/app/client/generated/browser';
 import { TicketCategory, TicketStatus } from '@/app/client/generated/enums';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 export async function sendConfirmEmail(to: string, url: string) {
     const html = await render(
@@ -379,7 +380,7 @@ export async function sendRefundEmail(data: RefundEmailData) {
 
     await sendMail(
         data.userEmail,
-        `Erstattung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
+        `Erstattung: ${formatEuro(data.refundAmountCents, 'de')} für deinen ${data.gameName} Server`,
         html,
         'REFUND',
     );
@@ -415,7 +416,7 @@ export async function sendWithdrawalEmail(data: WithdrawalEmailData) {
 
     await sendMail(
         data.userEmail,
-        `Widerrufsbestätigung: ${(data.refundAmountCents / 100).toFixed(2)} € für deinen ${data.gameName} Server`,
+        `Widerrufsbestätigung: ${formatEuro(data.refundAmountCents, 'de')} für deinen ${data.gameName} Server`,
         html,
         'WITHDRAWAL',
     );

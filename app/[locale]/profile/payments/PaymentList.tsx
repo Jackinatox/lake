@@ -6,7 +6,8 @@ import prisma from '@/lib/prisma';
 import { CreditCard } from 'lucide-react';
 import { PaymentItem } from './paymentItem';
 import { headers } from 'next/headers';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 import { FreeServerSection } from './FreeServerSection';
 import { Separator } from '@/components/ui/separator';
 
@@ -51,6 +52,7 @@ async function PaymentList() {
         return acc + refunded;
     }, 0);
     const t = await getTranslations('payments');
+    const locale = await getLocale();
 
     return (
         <Card>
@@ -64,10 +66,10 @@ async function PaymentList() {
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <span className="font-medium">{t('totalSpend')}:</span>
                     <div className="text-right">
-                        <span className="font-medium">{(totalSpent / 100).toFixed(2)} €</span>
+                        <span className="font-medium">{formatEuro(totalSpent, locale)}</span>
                         {totalRefunded > 0 && (
                             <p className="text-xs text-muted-foreground">
-                                {t('refund.totalRefunded')}: {(totalRefunded / 100).toFixed(2)} €
+                                {t('refund.totalRefunded')}: {formatEuro(totalRefunded, locale)}
                             </p>
                         )}
                     </div>

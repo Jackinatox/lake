@@ -5,6 +5,7 @@ import { RefundRequestButton } from '@/components/payments/RefundRequestButton';
 import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
 import { Gamepad2, Clock, Undo2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 interface WithdrawableOrderItemProps {
     orderId: string;
@@ -33,6 +34,7 @@ export function WithdrawableOrderItem({
     serverName,
     existingRefunds,
 }: WithdrawableOrderItemProps) {
+    const { formatEuro } = useFormatEuro();
     const t = useTranslations('withdrawalPage.eligibleOrders');
     const tPayments = useTranslations('payments');
 
@@ -71,13 +73,11 @@ export function WithdrawableOrderItem({
 
                 <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                     <span>{formatDate(created)}</span>
-                    <span className="font-medium text-foreground">
-                        {(price / 100).toFixed(2)} €
-                    </span>
+                    <span className="font-medium text-foreground">{formatEuro(price)}</span>
                     {alreadyRefundedCents > 0 && (
                         <span className="flex items-center gap-0.5">
                             <Undo2 className="h-3 w-3" />
-                            {t('alreadyRefunded')}: {(alreadyRefundedCents / 100).toFixed(2)} €
+                            {t('alreadyRefunded')}: {formatEuro(alreadyRefundedCents)}
                         </span>
                     )}
                 </div>

@@ -8,6 +8,7 @@ import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 export interface PackageDisplay {
     id: number;
@@ -30,6 +31,7 @@ interface PackageCardProps {
 }
 
 export default function PackageCard({ pkg, href }: PackageCardProps) {
+    const { formatEuro } = useFormatEuro();
     const t = useTranslations('order.package');
     return (
         <Link href={href} className="group block">
@@ -113,7 +115,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                         <div className="flex items-center gap-3">
                             <div className="text-right">
                                 <div className="text-lg font-bold text-primary">
-                                    {(pkg.priceCents / 100).toFixed(2)} €
+                                    {formatEuro(pkg.priceCents)}
                                 </div>
                                 <div className="text-xs text-muted-foreground">{t('perMonth')}</div>
                             </div>

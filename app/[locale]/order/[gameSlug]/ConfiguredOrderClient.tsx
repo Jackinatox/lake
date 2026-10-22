@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useState, useCallback, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 interface ConfiguredOrderClientProps {
     performanceGroups: PerformanceGroup[];
@@ -32,6 +33,7 @@ export default function ConfiguredOrderClient({
     hardwareRecommendations,
     detailsSlot,
 }: ConfiguredOrderClientProps) {
+    const { formatEuro } = useFormatEuro();
     const t = useTranslations('orderFlow');
     const imgPath = `/images/games/icons/${game.name.toLowerCase()}.webp`;
 
@@ -72,7 +74,7 @@ export default function ConfiguredOrderClient({
                         {priceInfo && (
                             <div className="text-right shrink-0">
                                 <div className="text-xl font-bold text-primary">
-                                    {(priceInfo.totalCents / 100).toFixed(2)} €
+                                    {formatEuro(priceInfo.totalCents)}
                                 </div>
                                 <div className="text-xs text-muted-foreground">{t('total')}</div>
                             </div>
@@ -108,7 +110,7 @@ export default function ConfiguredOrderClient({
                     <div className="flex-1">
                         <div className="text-xs text-muted-foreground">{t('total')}</div>
                         <div className="text-2xl font-bold text-primary">
-                            {(priceInfo.totalCents / 100).toFixed(2)} €
+                            {formatEuro(priceInfo.totalCents)}
                         </div>
                     </div>
                     <Button

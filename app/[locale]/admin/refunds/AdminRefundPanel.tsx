@@ -29,12 +29,14 @@ import {
 import type { RefundServerAction, RefundType } from '@/app/client/generated/browser';
 import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import type { RefundableOrder } from '@/models/prisma';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 interface AdminRefundPanelProps {
     orders: RefundableOrder[];
 }
 
 export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
+    const { formatEuro } = useFormatEuro();
     const { toast } = useToast();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -223,15 +225,15 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className="text-sm font-medium">
-                                            {(order.price / 100).toFixed(2)} €
+                                            {formatEuro(order.price)}
                                         </p>
                                         {alreadyRefunded > 0 && (
                                             <p className="text-xs text-orange-500">
-                                                -{(alreadyRefunded / 100).toFixed(2)} € refunded
+                                                -{formatEuro(alreadyRefunded)} refunded
                                             </p>
                                         )}
                                         <p className="text-xs text-muted-foreground">
-                                            Bal: {(remaining / 100).toFixed(2)} €
+                                            Bal: {formatEuro(remaining)}
                                         </p>
                                     </div>
                                 </div>
@@ -272,20 +274,16 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                 <div className="flex justify-between">
                                     <span>Original amount:</span>
                                     <span className="font-medium">
-                                        {(selectedOrder.price / 100).toFixed(2)} €
+                                        {formatEuro(selectedOrder.price)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Already refunded:</span>
-                                    <span>
-                                        {(getAlreadyRefunded(selectedOrder) / 100).toFixed(2)} €
-                                    </span>
+                                    <span>{formatEuro(getAlreadyRefunded(selectedOrder))}</span>
                                 </div>
                                 <div className="flex justify-between font-medium">
                                     <span>Remaining balance:</span>
-                                    <span>
-                                        {(getRemainingBalance(selectedOrder) / 100).toFixed(2)} €
-                                    </span>
+                                    <span>{formatEuro(getRemainingBalance(selectedOrder))}</span>
                                 </div>
                             </div>
 
@@ -301,7 +299,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                             className="flex justify-between text-xs text-muted-foreground"
                                         >
                                             <span>
-                                                {(r.amount / 100).toFixed(2)} € — {r.status}
+                                                {formatEuro(r.amount)} — {r.status}
                                                 {r.type === 'WITHDRAWAL'
                                                     ? ' (Widerruf)'
                                                     : ' (Erstattung)'}

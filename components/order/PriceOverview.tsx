@@ -6,6 +6,7 @@ import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import type { NewPriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import { useTranslations } from 'next-intl';
 import { Cpu, MemoryStick, HardDrive, Tag, TrendingUp, Clock } from 'lucide-react';
+import { useFormatEuro } from '@/hooks/useFormatEuro';
 
 interface PriceOverviewProps {
     cpuCores: number;
@@ -26,6 +27,7 @@ export default function PriceOverview({
     continueLabel,
     disableContinue,
 }: PriceOverviewProps) {
+    const { formatEuro } = useFormatEuro();
     const t = useTranslations('buyGameServer.hardware');
     const tp = useTranslations('buyGameServer.hardware.price');
     const tb = useTranslations('buyGameServer.hardware.button');
@@ -40,18 +42,18 @@ export default function PriceOverview({
             <CardContent className="px-4 pt-4 pb-0 md:px-6 md:pt-6 md:pb-0 space-y-1.5 sm:space-y-2">
                 {/* CPU */}
                 <Row icon={Cpu} label={`${formatVCores(cpuCores)}`}>
-                    {(totalPrice.cents.cpu / 100).toFixed(2)} €
+                    {formatEuro(totalPrice.cents.cpu)}
                 </Row>
 
                 {/* RAM */}
                 <Row icon={MemoryStick} label={`${ramGb} GiB RAM`}>
-                    {(totalPrice.cents.ram / 100).toFixed(2)} €
+                    {formatEuro(totalPrice.cents.ram)}
                 </Row>
 
                 {/* Storage tier */}
                 {totalPrice.tierPriceCents > 0 && (
                     <Row icon={HardDrive} label={to('storageTier')}>
-                        {(totalPrice.tierPriceCents / 100).toFixed(2)} €
+                        {formatEuro(totalPrice.tierPriceCents)}
                     </Row>
                 )}
 
@@ -65,7 +67,7 @@ export default function PriceOverview({
                         label={tp('discount', { percent: totalPrice.discount.percent })}
                         green
                     >
-                        -{(totalPrice.discount.cents / 100).toFixed(2)} €
+                        -{formatEuro(totalPrice.discount.cents)}
                     </Row>
                 )}
 
@@ -76,7 +78,7 @@ export default function PriceOverview({
                         label={tp('surcharge', { percent: Math.abs(totalPrice.discount.percent) })}
                         orange
                     >
-                        +{(Math.abs(totalPrice.discount.cents) / 100).toFixed(2)} €
+                        +{formatEuro(Math.abs(totalPrice.discount.cents))}
                     </Row>
                 )}
 
@@ -84,7 +86,7 @@ export default function PriceOverview({
                 <div className="flex items-center justify-between border-t pt-3 mt-3 sm:pt-3 sm:mt-4">
                     <span className="text-sm text-muted-foreground">{tp('total')}</span>
                     <span className="text-2xl font-bold tabular-nums">
-                        {(grandTotalCents / 100).toFixed(2)} €
+                        {formatEuro(grandTotalCents)}
                     </span>
                 </div>
             </CardContent>
