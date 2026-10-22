@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { FaqSection } from '@/components/faq/FaqSection';
+import { DOCS_URL } from '@/lib/metadata';
 
 type GameDetailsProps = {
     game: { name: string; slug: string };
@@ -47,7 +48,7 @@ export async function GameDetails({ game, hasFreeServers }: GameDetailsProps) {
                 <li>
                     {/* Plain <a>: the docs live outside lake's locale routing */}
                     <a
-                        href="/docs/server/hardware-und-leistung/"
+                        href={`${DOCS_URL}/server/hardware-und-leistung/`}
                         className="underline underline-offset-4 hover:text-primary"
                     >
                         {t('docsHardwareLink')}
