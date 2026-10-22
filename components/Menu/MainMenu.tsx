@@ -191,13 +191,13 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             href="/gameserver"
                                             onClick={() => setOpen(false)}
                                             className={cn(
-                                                'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
+                                                'flex items-center px-3 py-3 text-base font-semibold rounded-lg transition-colors',
                                                 isActive('/gameserver')
                                                     ? 'bg-primary/20 text-primary font-semibold'
                                                     : 'hover:text-primary',
                                             )}
                                         >
-                                            <LayoutDashboard className="h-6 w-6 mr-3" />
+                                            <LayoutDashboard className="h-5 w-5 mr-3" />
                                             {tm('dashboard')}
                                         </Link>
                                     )}
@@ -206,11 +206,11 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     <Button
                                         asChild
                                         variant="secondary"
-                                        className="w-full justify-start px-4 py-3 h-auto text-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+                                        className="w-full justify-start gap-3 px-3 py-3 h-auto text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         <Link href="/order/free" className="flex items-center">
-                                            <Gift className="h-6 w-6 mr-3" />
+                                            <Gift className="h-5 w-5" />
                                             {t('buttonText')}
                                         </Link>
                                     </Button>
