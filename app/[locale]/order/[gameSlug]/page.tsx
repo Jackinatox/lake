@@ -5,8 +5,6 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ConfiguredOrderClient from './ConfiguredOrderClient';
 import { GameDetails } from '@/components/order/GameDetails';
-import { getKeyValueBoolean } from '@/lib/keyValue';
-import { MINECRAFT_MODPACKS_ENABLED } from '@/app/GlobalConstants';
 import { cache } from 'react';
 
 // Old imports — kept so the file is easy to restore
@@ -119,14 +117,7 @@ export default async function GameLandingPage({
             game={{ id: game.id, name: game.name, slug: game.slug }}
             hasFreeServers={freeLocations.length > 0}
             hardwareRecommendations={game.hardwareRecommendations}
-            detailsSlot={
-                <GameDetails
-                    game={game}
-                    hardwareRecommendations={game.hardwareRecommendations}
-                    hasFreeServers={freeLocations.length > 0}
-                    modpacksEnabled={await getKeyValueBoolean(MINECRAFT_MODPACKS_ENABLED, false)}
-                />
-            }
+            detailsSlot={<GameDetails game={game} hasFreeServers={freeLocations.length > 0} />}
         />
     );
 }

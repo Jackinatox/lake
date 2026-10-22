@@ -1964,16 +1964,6 @@
         "You choose the server type and Minecraft version yourself and can switch them at any time, just like the mod loader or the game, or you upload your own server.jar. Your server always runs Java Edition; with the Geyser plugin, Bedrock players can join too. Upload existing worlds via SFTP."
       ]
     },
-    "modpacks": "You can install Modrinth modpacks right when you order (beta).",
-    "versionRange": "{oldest} to {newest}",
-    "serverTypesTitle": "Server types and versions",
-    "colServerType": "Server type",
-    "colVersions": "Versions",
-    "hardwareTitle": "Recommended hardware",
-    "hardwareSubtitle": "Our recommendation per server type. More players, mods or large worlds need more.",
-    "colVariant": "Variant",
-    "colMinimum": "Minimum",
-    "colRecommended": "Recommended",
     "freeServerLink": "Try {game} for free first",
     "docsHardwareLink": "What performance groups mean and how we share CPU and RAM",
     "faqHeading": "Frequently asked questions about {game} servers"
