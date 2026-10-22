@@ -1955,5 +1955,17 @@
     "freeServerLink": "Try {game} for free first",
     "docsHardwareLink": "What performance groups mean and how we share CPU and RAM",
     "faqHeading": "Frequently asked questions about {game} servers"
+  },
+  "Maintenance": {
+    "title": "Maintenance: game servers temporarily offline",
+    "description": "A critical security vulnerability has been published in PHP, which our game server panel (Pterodactyl) runs on. To protect you and your data, we have taken all game server panels offline as a precaution until a fixed version is available and installed.",
+    "impact": "During this time you cannot manage your server: the dashboard, console, file manager, backups and settings are unavailable, and new servers cannot be ordered.",
+    "next": "We are working on it with high priority and will bring everything back online as soon as it is safe to do so. No action is needed on your side.",
+    "apology": "We are sorry for the inconvenience and thank you for your patience.",
+    "contactSupport": "Contact support",
+    "home": "Back to home",
+    "bannerTitle": "Maintenance: game servers are temporarily offline",
+    "bannerDescription": "Due to a critical security vulnerability in PHP we have taken our game server panel offline as a precaution.",
+    "bannerLink": "Learn more"
   }
 }
