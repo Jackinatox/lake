@@ -229,16 +229,8 @@ const ConsoleV2 = () => {
                 <div ref={logContainerRef} />
             </div>
 
-            {/* Input Area. A form with autoComplete="off" is one more hint to iOS/Chrome that this
-                is not a login form */}
-            <form
-                autoComplete="off"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSubmit();
-                }}
-                className="flex items-center gap-2 px-3 py-2 bg-zinc-900/50 border-t border-zinc-800"
-            >
+            {/* Input Area */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900/50 border-t border-zinc-800">
                 <span className="text-emerald-500 font-mono text-xs select-none">&gt;</span>
                 <input
                     type="text"
@@ -271,15 +263,15 @@ const ConsoleV2 = () => {
                     data-lpignore="true"
                 />
                 <Button
-                    type="submit"
                     size="icon"
                     variant="ghost"
+                    onClick={handleSubmit}
                     disabled={disabled || !inputValue.trim()}
                     className="h-7 w-7 text-zinc-400 hover:text-emerald-500 hover:bg-zinc-800"
                 >
                     <Send className="h-3.5 w-3.5" />
                 </Button>
-            </form>
+            </div>
         </div>
     );
 };
