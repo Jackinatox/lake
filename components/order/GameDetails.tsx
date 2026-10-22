@@ -58,7 +58,7 @@ export async function GameDetails({ game, hasFreeServers }: GameDetailsProps) {
             <FaqSection
                 categories={[`game_${game.slug}`]}
                 heading={t('faqHeading', { game: game.name })}
-                className="max-w-3xl"
+                className="max-w-3xl mt-2 md:mt-6"
             />
         </section>
     );

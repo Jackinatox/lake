@@ -228,7 +228,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
             </section>
 
             {/* Game Selection */}
-            <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-6 md:pb-6">
+            <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-8 md:pb-12">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-sm font-semibold text-foreground">
                         {copy.freePageSelectGame}
