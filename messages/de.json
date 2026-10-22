@@ -1668,10 +1668,7 @@
       "perVCore": "€ / vCore / Monat",
       "perGiB": "€ / GiB / Monat",
       "vCoreRange": "{min}–{max} vCores",
-      "ramRange": "{min}–{max} GiB",
-      "groupLabel": "Gruppe",
-      "cpuPrice": "Pro vCore",
-      "ramPrice": "Pro GiB RAM"
+      "ramRange": "{min}–{max} GiB"
     },
     "resourceTiers": {
       "title": "Ressourcenpakete",
@@ -1680,9 +1677,7 @@
       "backupsLabel": "Backups",
       "portsLabel": "Ports",
       "perMonth": "/ Monat",
-      "free": "Kostenlos",
-      "tierLabel": "Paket",
-      "priceLabel": "Preis"
+      "free": "Kostenlos"
     },
     "discounts": {
       "title": "Laufzeit-Rabatte",
@@ -1694,9 +1689,7 @@
       "threeMonthsLabel": "3 Monate",
       "threeMonthsModifier": "−10 % Rabatt",
       "sixMonthsLabel": "6 Monate",
-      "sixMonthsModifier": "−15 % Rabatt",
-      "durationLabel": "Laufzeit",
-      "modifierLabel": "Preis"
+      "sixMonthsModifier": "−15 % Rabatt"
     },
     "configurator": {
       "continueLabel": "Spiel wählen"
@@ -1755,11 +1748,6 @@
       "subtitle": "Konfiguriere Deine Hardware und wähle Dein Spiel — in unter einer Minute.",
       "primary": "Jetzt konfigurieren",
       "secondary": "Kostenlose Variante testen"
-    },
-    "overview": {
-      "title": "Preisübersicht",
-      "subtitle": "Alle Performance-Gruppen und Ressourcenpakete auf einen Blick. Die Preise gelten für 30 Tage, Du zahlst einmalig für die gewählte Laufzeit, ohne Abo.",
-      "vatNote": "Alle Preise sind Endpreise. Als Kleinunternehmer nach § 19 UStG berechnen wir keine Umsatzsteuer."
     }
   },
   "blog": {

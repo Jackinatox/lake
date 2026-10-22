@@ -1,13 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import ResourceTierSelector from '@/components/order/ResourceTierSelector';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { cn } from '@/lib/utils';
@@ -53,15 +47,12 @@ interface PricingClientProps {
     performanceGroups: PerformanceGroup[];
     resourceTiers: ResourceTierDisplay[];
     faqSlot?: ReactNode;
-    /** Server-rendered price tables for every group, see PriceOverview */
-    overviewSlot?: ReactNode;
 }
 
 export default function PricingClient({
     performanceGroups,
     resourceTiers,
     faqSlot,
-    overviewSlot,
 }: PricingClientProps) {
     const t = useTranslations('pricing');
     const router = useRouter();
@@ -243,6 +234,19 @@ export default function PricingClient({
                                         <div className="text-xs text-muted-foreground truncate">
                                             {p.cpu.name}
                                         </div>
+                                        {/* Every group's prices in the HTML, not only the selected one's.
+                                            One price per line on phones, the cards are narrow there */}
+                                        <div className="text-xs text-muted-foreground tabular-nums">
+                                            <span className="block whitespace-nowrap sm:inline">
+                                                {(p.cpu.pricePerCore / 100).toFixed(2)}{' '}
+                                                {t('table.perVCore')}
+                                            </span>
+                                            <span className="hidden sm:inline"> · </span>
+                                            <span className="block whitespace-nowrap sm:inline">
+                                                {(p.ram.pricePerGb / 100).toFixed(2)}{' '}
+                                                {t('table.perGiB')}
+                                            </span>
+                                        </div>
                                     </div>
                                     <ChevronRight
                                         className={cn(
@@ -303,46 +307,31 @@ export default function PricingClient({
                         />
                     </Row>
 
-                    {/* Resource package row */}
+                    {/* Resource package row. Cards instead of a dropdown: a closed dropdown's
+                        options (and their prices) are not in the server HTML */}
                     {resourceTiers.length > 0 && (
-                        <Row
-                            icon={HardDrive}
-                            label={t('table.resources')}
-                            stretchControl
-                            unit={
-                                tier && tier.priceCents > 0
-                                    ? `${(tier.priceCents / 100).toFixed(2)} ${t('table.perMonth')}`
-                                    : t('table.free')
-                            }
-                            subtotal={`${(price.tierPriceCents / 100).toFixed(2)} €`}
-                        >
-                            <Select
-                                value={tier ? String(tier.id) : ''}
-                                onValueChange={(v) => setTierId(Number(v))}
+                        <>
+                            <Row
+                                icon={HardDrive}
+                                label={t('table.resources')}
+                                unit={
+                                    tier && tier.priceCents > 0
+                                        ? `${(tier.priceCents / 100).toFixed(2)} ${t('table.perMonth')}`
+                                        : t('table.free')
+                                }
+                                subtotal={`${(price.tierPriceCents / 100).toFixed(2)} €`}
+                                isLast
                             >
-                                <SelectTrigger className="h-9 w-full sm:w-auto">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="min-w-[280px]">
-                                    {resourceTiers.map((rt) => (
-                                        <SelectItem key={rt.id} value={String(rt.id)}>
-                                            <span className="flex items-center gap-2 whitespace-nowrap">
-                                                <span className="font-medium">
-                                                    {rt.name || `Tier ${rt.id}`}
-                                                </span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {t('table.tierSummary', {
-                                                        disk: rt.diskMB / 1024,
-                                                        backups: rt.backups,
-                                                        ports: rt.ports,
-                                                    })}
-                                                </span>
-                                            </span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </Row>
+                                {null}
+                            </Row>
+                            <div className="px-4 pb-3 border-b">
+                                <ResourceTierSelector
+                                    tiers={resourceTiers}
+                                    selectedId={tier?.id ?? null}
+                                    onSelect={setTierId}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {/* Duration — horizontal timeline track */}
@@ -523,8 +512,6 @@ export default function PricingClient({
                 </div>
             </section>
 
-            {overviewSlot}
-
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <section className="max-w-3xl mx-auto w-full pb-4 md:pb-8">
                 <h2 className="text-lg md:text-xl font-semibold mb-3">{t('faq.title')}</h2>
@@ -552,7 +539,6 @@ function Row({
     subtotal,
     children,
     isLast,
-    stretchControl,
 }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
@@ -561,7 +547,6 @@ function Row({
     subtotal: string;
     children: React.ReactNode;
     isLast?: boolean;
-    stretchControl?: boolean;
 }) {
     return (
         <div
@@ -586,14 +571,7 @@ function Row({
                 </div>
 
                 {/* Control */}
-                <div
-                    className={cn(
-                        'max-w-full min-w-0 sm:ml-0 sm:flex-initial',
-                        stretchControl ? 'basis-full w-full sm:basis-auto sm:w-auto' : 'ml-auto',
-                    )}
-                >
-                    {children}
-                </div>
+                <div className="max-w-full min-w-0 ml-auto sm:ml-0 sm:flex-initial">{children}</div>
             </div>
 
             {/* Unit price (sm+ third column) */}

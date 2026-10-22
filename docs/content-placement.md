@@ -8,7 +8,9 @@ engines and AI answers. Decided with the owner in 2026-10 while working on SEO.
 Information lake has (database, KeyValue config, code) is provided by lake itself, rendered from
 that source on the page, server-side, so crawlers without JS read it too. Examples: games,
 prices, performance groups and CPUs, resource packages, duration surcharges/discounts, free tier
-specs, runtime and deletion period (e.g. the `/pricing` price overview).
+specs, runtime and deletion period. Prefer showing it where the user needs it anyway (e.g. every
+performance group's and resource package's price on the `/pricing` selection cards) over a separate
+table that repeats it.
 Never copy such information into FAQ entries, docs or blog posts by hand; link to the page.
 
 ## FAQ (`FAQ` table, `components/faq/FaqSection.tsx`)

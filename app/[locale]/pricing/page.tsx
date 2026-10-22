@@ -1,7 +1,6 @@
 import { fetchPerformanceGroups } from '@/lib/actions';
 import prisma from '@/lib/prisma';
 import PricingClient from '@/components/pricing/PricingClient';
-import { PriceOverview } from '@/components/pricing/PriceOverview';
 import { FaqSection } from '@/components/faq/FaqSection';
 import { createPublicMetadata } from '@/lib/metadata';
 import { getTranslations } from 'next-intl/server';
@@ -56,12 +55,6 @@ export default async function PricingPage() {
             performanceGroups={performanceGroups}
             resourceTiers={resourceTiers}
             faqSlot={<FaqSection categories={['pricing']} />}
-            overviewSlot={
-                <PriceOverview
-                    performanceGroups={performanceGroups}
-                    resourceTiers={resourceTiers}
-                />
-            }
         />
     );
 }
