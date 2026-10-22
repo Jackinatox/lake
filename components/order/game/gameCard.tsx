@@ -23,6 +23,8 @@ export default function GameCard({ card, imageSrc }: GameCardProps) {
                             src={imageSrc || '/placeholder.svg'}
                             alt={card.name}
                             fill
+                            // Every grid using GameCard: 2 / 3 / 4 columns, at most max-w-6xl wide
+                            sizes="(min-width: 1152px) 288px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw"
                             className="object-cover rounded-t-lg"
                         />
                     </div>
