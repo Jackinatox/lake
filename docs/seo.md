@@ -24,9 +24,7 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - `app/robots.ts`: `Disallow: /api/, /webhook/` plus two `Sitemap:` lines: lake's own and the
   docs' (`/docs/sitemap-index.xml`). The docs are a separate Starlight site (`Scyed/lake-docs`)
   that the reverse proxy serves under `/docs/`, outside lake and its locale routing; link to it
-  with a plain `<a href={`${DOCS_URL}/...`}>` (`lib/metadata.ts`, absolute so dev links work too),
-  not next-intl's `Link`. Should a `/docs` request still reach lake (dev), `proxy.ts` redirects it
-  to `DOCS_URL`.
+  with a plain `<a href="/docs/...">`, not next-intl's `Link`.
 - `app/sitemap.ts`: `localeUrls(path, ...)` emits one entry per locale with
   `alternates.languages`. Contains home, pricing, blog, changelog, `/support/tickets`, `/order`,
   `/order/free`, the order page per enabled game, and blog posts (`published && listed && publishedAt <= now`).

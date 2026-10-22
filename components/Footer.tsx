@@ -2,7 +2,6 @@ import { ThemeSwitcher } from '@/components/Menu/theme-switcher';
 import { ThemeImage } from '@/components/ui/theme-image';
 import CookieSettingsButton from '@/components/CookieSettingsButton';
 import { Link } from '@/i18n/navigation';
-import { DOCS_URL } from '@/lib/metadata';
 import { useTranslations } from 'next-intl';
 
 export default function Footer() {
@@ -23,12 +22,9 @@ export default function Footer() {
                             >
                                 {t('support_center')}
                             </Link>
-                            {/* Plain <a>: the docs are a separate Starlight site, outside the
-                                locale routing, so next-intl's Link must not prefix it */}
-                            <a
-                                href={`${DOCS_URL}/`}
-                                className="hover:text-foreground transition-colors"
-                            >
+                            {/* Plain <a>: the docs are a separate Starlight site under /docs/,
+                                outside the locale routing, so next-intl's Link must not prefix it */}
+                            <a href="/docs/" className="hover:text-foreground transition-colors">
                                 {t('documentation')}
                             </a>
                             <Link
@@ -132,7 +128,9 @@ export default function Footer() {
                                 priority
                             />
                         </Link>
-                        <span className="text-sm text-muted-foreground">{t('copyright')}</span>
+                        <span className="text-sm text-muted-foreground">
+                            {t('copyright')}
+                        </span>
                     </div>
                     <ThemeSwitcher />
                     <CookieSettingsButton />
