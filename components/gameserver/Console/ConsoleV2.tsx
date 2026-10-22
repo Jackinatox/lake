@@ -250,8 +250,17 @@ const ConsoleV2 = () => {
                         'flex-1 bg-transparent border-none outline-none font-mono text-base md:text-xs text-zinc-200 placeholder:text-zinc-600',
                         disabled && 'cursor-not-allowed opacity-50',
                     )}
+                    // A command line, not a login field: without these hints Chrome on iOS offers
+                    // saved passwords here, and phones autocorrect/capitalize commands
+                    name="console-command"
                     autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                     spellCheck={false}
+                    enterKeyHint="send"
+                    data-form-type="other"
+                    data-1p-ignore
+                    data-lpignore="true"
                 />
                 <Button
                     size="icon"
