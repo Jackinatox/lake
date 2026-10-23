@@ -28,6 +28,11 @@ than about three sentences (e.g. installing a modpack, restoring a backup, uploa
 switching games, what a performance group is). Same rule: no hard-coded lake information, link to
 the lake page instead.
 
+Links from the docs to lake pages have no language prefix (`https://scyed.com/pricing`, not
+`/de/pricing`), decided with the owner: lake then picks the language (locale cookie, then
+`Accept-Language`, then `de`), and links need no change if the docs get an English version. The
+307 this costs crawlers is accepted; inside lake, links keep the prefix (`docs/seo.md`).
+
 ## Not at all
 
 When the page itself already explains it in plain text, do not repeat it in FAQ or docs.
