@@ -19,7 +19,6 @@ const getGameLandingPageData = cache(async (gameSlug: string) => {
                 id: true,
                 name: true,
                 slug: true,
-                data: true,
                 hardwareRecommendations: {
                     orderBy: { sorting: 'asc' },
                     select: {
@@ -113,7 +112,8 @@ export default async function GameLandingPage({
         <ConfiguredOrderClient
             performanceGroups={performanceGroups}
             resourceTiers={resourceTiers}
-            // Not the whole game: data holds every version of every flavor, the client needs none
+            // Not the whole game: hardwareRecommendations are passed separately, so they are not
+            // serialized to the client twice
             game={{ id: game.id, name: game.name, slug: game.slug }}
             hasFreeServers={freeLocations.length > 0}
             hardwareRecommendations={game.hardwareRecommendations}
