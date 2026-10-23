@@ -5,7 +5,7 @@ import { formatEuro, formatEuroNumber } from '@/lib/GlobalFunctions/formatEuro';
 export function useFormatEuro() {
     const locale = useLocale();
     return {
-        formatEuro: (cents: number) => formatEuro(cents, locale),
+        formatEuro: (cents: number, unit?: string) => formatEuro(cents, locale, unit),
         formatEuroNumber: (cents: number) => formatEuroNumber(cents, locale),
     };
 }
