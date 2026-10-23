@@ -21,7 +21,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface SetupPageClientProps {
     game: Game;
@@ -38,7 +38,6 @@ export default function SetupPageClient({
     resourceTiers,
     modpacksEnabled,
 }: SetupPageClientProps) {
-    const { formatEuro } = useFormatEuro();
     const searchParams = useSearchParams();
     const router = useRouter();
     const { toast } = useToast();
@@ -208,7 +207,7 @@ export default function SetupPageClient({
                                     {t('total')}:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    {formatEuro(price.totalCents)}
+                                    <Euro cents={price.totalCents} />
                                 </span>
                             </div>
                         )}

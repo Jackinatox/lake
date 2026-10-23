@@ -21,7 +21,7 @@ import type { HardwareConfig } from '@/models/config';
 import { PerformanceGroup } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 /** Render tick marks for a slider */
 function SliderTicks({ min, max, step }: { min: number; max: number; step: number }) {
@@ -51,7 +51,6 @@ export function UpgradeHardwareConfigToPayed({
     performanceOptions,
     onNext,
 }: HardwareConfigProps) {
-    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('extendServer');
     const tl = useTranslations('buyGameServer.hardware.labels');
 
@@ -133,7 +132,7 @@ export function UpgradeHardwareConfigToPayed({
                                     Total:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    {formatEuro(totalPrice.totalCents)}
+                                    <Euro cents={totalPrice.totalCents} />
                                 </span>
                             </div>
                         </div>
@@ -272,8 +271,10 @@ export function UpgradeHardwareConfigToPayed({
                                             </span>
                                         </div>
                                         <div className="text-xs sm:text-sm text-muted-foreground">
-                                            {formatEuroNumber(selectedPFGroup.cpu.pricePerCore)}{' '}
-                                            {t('config.cpu.price-suffix')}
+                                            <Euro
+                                                cents={selectedPFGroup.cpu.pricePerCore}
+                                                unit={t('config.cpu.price-suffix')}
+                                            />
                                         </div>
                                     </div>
                                     <div className="px-2">
@@ -306,8 +307,10 @@ export function UpgradeHardwareConfigToPayed({
                                             {ramGb} {t('config.ram.label-suffix')}
                                         </div>
                                         <div className="text-xs sm:text-sm text-muted-foreground">
-                                            {formatEuroNumber(selectedPFGroup.ram.pricePerGb)}{' '}
-                                            {t('config.ram.price-suffix')}
+                                            <Euro
+                                                cents={selectedPFGroup.ram.pricePerGb}
+                                                unit={t('config.ram.price-suffix')}
+                                            />
                                         </div>
                                     </div>
                                     <div className="px-2">
@@ -457,10 +460,10 @@ export function UpgradeHardwareConfigToPayed({
                                                         })}
                                                     </TableCell>
                                                     <TableCell>
-                                                        {formatEuro(totalPrice.cents.cpu)}
+                                                        <Euro cents={totalPrice.cents.cpu} />
                                                     </TableCell>
                                                     <TableCell>
-                                                        {formatEuro(totalPrice.cents.ram)}
+                                                        <Euro cents={totalPrice.cents.ram} />
                                                     </TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -471,12 +474,14 @@ export function UpgradeHardwareConfigToPayed({
                                     <div className="flex justify-between items-center w-full text-lg">
                                         <span className="text-primary">{t('footer.total')}</span>
                                         <span className="text-2xl font-bold text-primary">
-                                            {formatEuro(totalPrice.totalCents)}
+                                            <Euro cents={totalPrice.totalCents} />
                                         </span>
                                     </div>
                                     {totalPrice.totalCents > 0 && totalPrice.totalCents < 100 && (
                                         <span className="text-xs text-red-700">
-                                            {t('footer.min-price-hint')}
+                                            {t.rich('footer.min-price-hint', {
+                                                amount: () => <Euro cents={100} />,
+                                            })}
                                         </span>
                                     )}
                                     <Button
@@ -500,7 +505,9 @@ export function UpgradeHardwareConfigToPayed({
                     <div className="flex flex-col sm:flex-row justify-end items-center gap-4">
                         {totalPrice.totalCents > 0 && totalPrice.totalCents < 100 && (
                             <span className="text-sm text-red-700">
-                                {t('footer.min-price-hint')}
+                                {t.rich('footer.min-price-hint', {
+                                    amount: () => <Euro cents={100} />,
+                                })}
                             </span>
                         )}
                         <Button

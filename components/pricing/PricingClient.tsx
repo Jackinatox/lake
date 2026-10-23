@@ -21,7 +21,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
@@ -55,7 +55,6 @@ export default function PricingClient({
     resourceTiers,
     faqSlot,
 }: PricingClientProps) {
-    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('pricing');
     const router = useRouter();
 
@@ -240,13 +239,17 @@ export default function PricingClient({
                                             One price per line on phones, the cards are narrow there */}
                                         <div className="text-xs text-muted-foreground tabular-nums">
                                             <span className="block whitespace-nowrap sm:inline">
-                                                {formatEuroNumber(p.cpu.pricePerCore)}{' '}
-                                                {t('table.perVCore')}
+                                                <Euro
+                                                    cents={p.cpu.pricePerCore}
+                                                    unit={t('table.perVCore')}
+                                                />
                                             </span>
                                             <span className="hidden sm:inline"> · </span>
                                             <span className="block whitespace-nowrap sm:inline">
-                                                {formatEuroNumber(p.ram.pricePerGb)}{' '}
-                                                {t('table.perGiB')}
+                                                <Euro
+                                                    cents={p.ram.pricePerGb}
+                                                    unit={t('table.perGiB')}
+                                                />
                                             </span>
                                         </div>
                                     </div>
@@ -278,8 +281,8 @@ export default function PricingClient({
                         icon={Cpu}
                         label={t('table.cpu')}
                         sublabel={pf.cpu.name}
-                        unit={`${formatEuroNumber(pf.cpu.pricePerCore)} ${t('table.perVCore')}`}
-                        subtotal={formatEuro(price.cents.cpu)}
+                        unit={<Euro cents={pf.cpu.pricePerCore} unit={t('table.perVCore')} />}
+                        subtotal={<Euro cents={price.cents.cpu} />}
                     >
                         <Stepper
                             value={cpuValue}
@@ -296,8 +299,8 @@ export default function PricingClient({
                         icon={MemoryStick}
                         label={t('table.ram')}
                         sublabel={pf.ram.name}
-                        unit={`${formatEuroNumber(pf.ram.pricePerGb)} ${t('table.perGiB')}`}
-                        subtotal={formatEuro(price.cents.ram)}
+                        unit={<Euro cents={pf.ram.pricePerGb} unit={t('table.perGiB')} />}
+                        subtotal={<Euro cents={price.cents.ram} />}
                     >
                         <Stepper
                             value={ramValue}
@@ -317,11 +320,13 @@ export default function PricingClient({
                                 icon={HardDrive}
                                 label={t('table.resources')}
                                 unit={
-                                    tier && tier.priceCents > 0
-                                        ? `${formatEuroNumber(tier.priceCents)} ${t('table.perMonth')}`
-                                        : t('table.free')
+                                    tier && tier.priceCents > 0 ? (
+                                        <Euro cents={tier.priceCents} unit={t('table.perMonth')} />
+                                    ) : (
+                                        t('table.free')
+                                    )
                                 }
-                                subtotal={formatEuro(price.tierPriceCents)}
+                                subtotal={<Euro cents={price.tierPriceCents} />}
                                 isLast
                             >
                                 {null}
@@ -476,7 +481,7 @@ export default function PricingClient({
                             </span>
                             <span className="font-medium tabular-nums">
                                 {price.discount.cents > 0 ? '−' : '+'}
-                                {formatEuro(Math.abs(price.discount.cents))}
+                                <Euro cents={Math.abs(price.discount.cents)} />
                             </span>
                         </div>
                     )}
@@ -490,7 +495,7 @@ export default function PricingClient({
                             </div>
                         </div>
                         <div className="text-2xl md:text-3xl font-bold tabular-nums">
-                            {formatEuro(price.totalCents)}
+                            <Euro cents={price.totalCents} />
                         </div>
                     </div>
                 </div>
@@ -499,7 +504,7 @@ export default function PricingClient({
                 <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
                     {priceTooSmall && (
                         <span className="text-xs text-red-500 sm:mr-auto">
-                            {t('table.minOrderHint')}
+                            {t.rich('table.minOrderHint', { amount: () => <Euro cents={100} /> })}
                         </span>
                     )}
                     <Button
@@ -545,8 +550,8 @@ function Row({
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     sublabel?: string;
-    unit: string;
-    subtotal: string;
+    unit: React.ReactNode;
+    subtotal: React.ReactNode;
     children: React.ReactNode;
     isLast?: boolean;
 }) {

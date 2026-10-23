@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Lock, ShoppingCart } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { useRouter } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -88,7 +88,6 @@ function CustomServerPaymentElements({
 function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolean }) {
     const result = useCheckoutElements();
     const router = useRouter();
-    const { formatEuro } = useFormatEuro();
 
     const [tosAccepted, setTosAccepted] = useState(false);
     const [widerrufsAccepted, setWiderrufsAccepted] = useState(false);
@@ -140,7 +139,7 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
     const canSubmit = tosAccepted && widerrufsAccepted && checkout.canConfirm && !loading;
 
     // Checkout runs in EUR only
-    const formattedTotal = formatEuro(checkout.total.total.minorUnitsAmount);
+    const total = <Euro cents={checkout.total.total.minorUnitsAmount} />;
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-6 px-0">
@@ -156,7 +155,7 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
                     <ShoppingCart className="h-4 w-4 shrink-0" />
                     <span>Gesamtbetrag</span>
                 </div>
-                <span className="text-lg font-bold tabular-nums">{formattedTotal}</span>
+                <span className="text-lg font-bold tabular-nums">{total}</span>
             </div>
 
             <Separator />
@@ -223,7 +222,7 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
                 ) : (
                     <span className="flex items-center gap-2">
                         <Lock className="h-4 w-4" />
-                        Jetzt {formattedTotal} bezahlen
+                        Jetzt {total} bezahlen
                     </span>
                 )}
             </Button>

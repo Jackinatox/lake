@@ -4,7 +4,7 @@ import { Archive, Clock, Cpu, HardDrive, MemoryStick, Network } from 'lucide-rea
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface HardwareChipBarProps {
     cpu: number;
@@ -27,7 +27,6 @@ export default function HardwareChipBar({
     totalCents,
     className,
 }: HardwareChipBarProps) {
-    const { formatEuro } = useFormatEuro();
     const t = useTranslations('orderFlow.chips');
 
     return (
@@ -71,7 +70,9 @@ export default function HardwareChipBar({
             {totalCents > 0 && (
                 <>
                     <div className="w-px h-5 bg-border shrink-0 ml-auto" />
-                    <Chip color="primary">{formatEuro(totalCents)}</Chip>
+                    <Chip color="primary">
+                        <Euro cents={totalCents} />
+                    </Chip>
                 </>
             )}
         </div>

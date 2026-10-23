@@ -290,11 +290,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/mo"
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/mo"
       }
     },
     "pricing": {
@@ -309,11 +309,11 @@
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
       },
-      "discount-with-amount": "(minus {amount} € discount)"
+      "discount-with-amount": "(minus <amount></amount> discount)"
     },
     "footer": {
       "total": "Total",
-      "min-price-hint": "Minimum price €1",
+      "min-price-hint": "Minimum price <amount></amount>",
       "continue": "Continue to Payment"
     }
   },
@@ -369,7 +369,7 @@
         "discount": "Discount (-{percent}%)",
         "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
-        "minOrderHint": "Minimum order value is 1.00 €."
+        "minOrderHint": "Minimum order value is <amount></amount>."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -379,8 +379,10 @@
         "backupCount": "Backup Slots",
         "allocationsUnit": "Ports",
         "allocations": "Ports",
-        "perVcore": "€ / vCore",
-        "perGiB": "€ / GiB"
+        "perVcore": "€/vCore",
+        "perGiB": "€/GiB",
+        "perVcoreMonth": "€/vCore/mo",
+        "perGiBMonth": "€/GiB/mo"
       },
       "button": {
         "continue": "Continue"
@@ -473,11 +475,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/mo"
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/mo"
       }
     },
     "pricing": {
@@ -495,7 +497,7 @@
     },
     "footer": {
       "total": "Total",
-      "min-price-hint": "Minimum price €1",
+      "min-price-hint": "Minimum price <amount></amount>",
       "continue": "Continue to Payment"
     }
   },
@@ -1349,7 +1351,7 @@
       "button": "Configure Upgrade",
       "pricing": {
         "title": "Flexible Pricing",
-        "description": "Pay only for what you use, starting from €1.00."
+        "description": "Pay only for what you use, starting from <amount></amount>."
       }
     },
     "helpText": {
@@ -1712,7 +1714,7 @@
       "surcharge": "Short-term surcharge (+{percent}%)",
       "total": "Total",
       "totalSub": "One-time payment for {days} days",
-      "minOrderHint": "Minimum order value is 1.00 €"
+      "minOrderHint": "Minimum order value is <amount></amount>"
     },
     "faq": {
       "title": "Common questions",

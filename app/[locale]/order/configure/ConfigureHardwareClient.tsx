@@ -7,7 +7,7 @@ import { ArrowLeft, Wrench } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface ConfigureHardwareClientProps {
     performanceGroups: PerformanceGroup[];
@@ -24,7 +24,6 @@ export default function ConfigureHardwareClient({
     performanceGroups,
     resourceTiers,
 }: ConfigureHardwareClientProps) {
-    const { formatEuro } = useFormatEuro();
     const t = useTranslations('orderFlow');
     const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
 
@@ -57,7 +56,7 @@ export default function ConfigureHardwareClient({
                         {priceInfo && (
                             <div className="text-right shrink-0">
                                 <div className="text-xl font-bold text-primary">
-                                    {formatEuro(priceInfo.totalCents)}
+                                    <Euro cents={priceInfo.totalCents} />
                                 </div>
                                 <div className="text-xs text-muted-foreground">{t('total')}</div>
                             </div>
@@ -90,7 +89,7 @@ export default function ConfigureHardwareClient({
                     <div className="flex-1">
                         <div className="text-xs text-muted-foreground">{t('total')}</div>
                         <div className="text-2xl font-bold text-primary">
-                            {formatEuro(priceInfo.totalCents)}
+                            <Euro cents={priceInfo.totalCents} />
                         </div>
                     </div>
                     <Button

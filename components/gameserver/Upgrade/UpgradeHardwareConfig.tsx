@@ -22,7 +22,7 @@ import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import ResourceTierSelector from '@/components/order/ResourceTierSelector';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface HardwareConfigProps {
     diskOptions?: { id: number; size_gb: number; price_per_gb: number }[];
@@ -42,7 +42,6 @@ export function UpgradeHardwareConfig({
     onNext,
     initialDays,
 }: HardwareConfigProps) {
-    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('upgrade');
     const draftConfig = draftSelection?.hardwareConfig ?? null;
 
@@ -315,8 +314,10 @@ export function UpgradeHardwareConfig({
                                         </span>
                                     </div>
                                     <div className="text-xs sm:text-sm text-muted-foreground">
-                                        {formatEuroNumber(selectedPFGroup.cpu.pricePerCore)}{' '}
-                                        {t('config.cpu.price-suffix')}
+                                        <Euro
+                                            cents={selectedPFGroup.cpu.pricePerCore}
+                                            unit={t('config.cpu.price-suffix')}
+                                        />
                                     </div>
                                 </div>
                                 <div className="px-2">
@@ -346,8 +347,10 @@ export function UpgradeHardwareConfig({
                                         {ramGb} {t('config.ram.label-suffix')}
                                     </div>
                                     <div className="text-xs sm:text-sm text-muted-foreground">
-                                        {formatEuroNumber(selectedPFGroup.ram.pricePerGb)}{' '}
-                                        {t('config.ram.price-suffix')}
+                                        <Euro
+                                            cents={selectedPFGroup.ram.pricePerGb}
+                                            unit={t('config.ram.price-suffix')}
+                                        />
                                     </div>
                                 </div>
                                 <div className="px-2">
@@ -421,28 +424,13 @@ export function UpgradeHardwareConfig({
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.upgradeCents.cpu,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.upgradeCents.cpu} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.upgradeCents.ram,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.upgradeCents.ram} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.upgradeCents.tier,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.upgradeCents.tier} />
                                                 </TableCell>
                                             </TableRow>
 
@@ -453,11 +441,19 @@ export function UpgradeHardwareConfig({
                                                             days,
                                                         })}
                                                         <div className="text-primary">
-                                                            {t('pricing.discount-with-amount', {
-                                                                amount: formatEuroNumber(
-                                                                    totalPrice.discount.cents,
-                                                                ),
-                                                            })}
+                                                            {t.rich(
+                                                                'pricing.discount-with-amount',
+                                                                {
+                                                                    amount: () => (
+                                                                        <Euro
+                                                                            cents={
+                                                                                totalPrice.discount
+                                                                                    .cents
+                                                                            }
+                                                                        />
+                                                                    ),
+                                                                },
+                                                            )}
                                                         </div>
                                                     </TableCell>
                                                 ) : (
@@ -468,28 +464,13 @@ export function UpgradeHardwareConfig({
                                                     </TableCell>
                                                 )}
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.extendCents.cpu,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.extendCents.cpu} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.extendCents.ram,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.extendCents.ram} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="whitespace-nowrap">
-                                                        {formatEuroNumber(
-                                                            totalPrice.extendCents.tier,
-                                                        )}{' '}
-                                                        €
-                                                    </span>
+                                                    <Euro cents={totalPrice.extendCents.tier} />
                                                 </TableCell>
                                             </TableRow>
                                         </TableBody>
@@ -501,12 +482,14 @@ export function UpgradeHardwareConfig({
                                     <span className="text-primary">{t('footer.total')}</span>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-primary tabular-nums">
-                                            {formatEuro(totalPrice.totalCents)}
+                                            <Euro cents={totalPrice.totalCents} />
                                         </div>
                                         {totalPrice.totalCents > 0 &&
                                             totalPrice.totalCents < 100 && (
                                                 <div className="text-xs text-red-700 font-normal">
-                                                    {t('footer.min-price-hint')}
+                                                    {t.rich('footer.min-price-hint', {
+                                                        amount: () => <Euro cents={100} />,
+                                                    })}
                                                 </div>
                                             )}
                                     </div>
@@ -533,12 +516,14 @@ export function UpgradeHardwareConfig({
                     <div className="shrink-0 min-w-25">
                         <div className="text-xs text-muted-foreground">{t('footer.total')}</div>
                         <div className="text-xl font-bold text-primary tabular-nums">
-                            {formatEuro(totalPrice.totalCents)}
+                            <Euro cents={totalPrice.totalCents} />
                         </div>
                         <div
                             className={`text-xs text-red-700 ${totalPrice.totalCents > 0 && totalPrice.totalCents < 100 ? 'visible' : 'invisible'}`}
                         >
-                            {t('footer.min-price-hint')}
+                            {t.rich('footer.min-price-hint', {
+                                amount: () => <Euro cents={100} />,
+                            })}
                         </div>
                     </div>
                     <Button

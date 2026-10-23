@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface RefundHistoryItemProps {
     refundId: string;
@@ -53,7 +53,6 @@ export function RefundHistoryItem({
     serverName,
     chargeReceiptUrl,
 }: RefundHistoryItemProps) {
-    const { formatEuro } = useFormatEuro();
     const t = useTranslations('withdrawalPage.history');
     const tPayments = useTranslations('payments');
 
@@ -153,10 +152,10 @@ export function RefundHistoryItem({
                 {/* Amounts */}
                 <div className="flex items-center gap-3 text-xs flex-wrap">
                     <span className="font-medium text-green-600 dark:text-green-400">
-                        {t('refundedAmount')}: {formatEuro(amount)}
+                        {t('refundedAmount')}: <Euro cents={amount} />
                     </span>
                     <span className="text-muted-foreground">
-                        {t('ofOriginal')}: {formatEuro(originalPrice)}
+                        {t('ofOriginal')}: <Euro cents={originalPrice} />
                     </span>
                 </div>
 

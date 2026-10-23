@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { ResourceTierDisplay } from '@/models/prisma';
 import { Archive, HardDrive, Network } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface ResourceTierSelectorProps {
     tiers: ResourceTierDisplay[];
@@ -24,7 +24,6 @@ export default function ResourceTierSelector({
     currentDiskUsageMb = 0,
     persistedTierId = null,
 }: ResourceTierSelectorProps) {
-    const { formatEuroNumber } = useFormatEuro();
     const t = useTranslations('order.resourceTier');
     if (tiers.length === 0) return null;
 
@@ -69,10 +68,7 @@ export default function ResourceTierSelector({
                             <div className="shrink-0 w-16 text-center">
                                 {tier.priceCents > 0 ? (
                                     <span className="text-sm font-semibold tabular-nums">
-                                        {formatEuroNumber(
-                                            Math.round((tier.priceCents / 30) * days),
-                                        )}{' '}
-                                        €
+                                        <Euro cents={Math.round((tier.priceCents / 30) * days)} />
                                     </span>
                                 ) : (
                                     <span className="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -150,10 +146,7 @@ export default function ResourceTierSelector({
                             <div className="mt-3 pt-3 border-t border-border">
                                 {tier.priceCents > 0 ? (
                                     <span className="text-base font-semibold tabular-nums">
-                                        {formatEuroNumber(
-                                            Math.round((tier.priceCents / 30) * days),
-                                        )}{' '}
-                                        €
+                                        <Euro cents={Math.round((tier.priceCents / 30) * days)} />
                                     </span>
                                 ) : (
                                     <span className="text-base font-semibold text-green-600 dark:text-green-400">

@@ -4,8 +4,8 @@ import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileX2, History } from 'lucide-react';
-import { getLocale, getTranslations } from 'next-intl/server';
-import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
+import { getTranslations } from 'next-intl/server';
+import { Euro } from '@/components/Euro';
 import { Separator } from '@/components/ui/separator';
 import { WithdrawableOrderItem } from './WithdrawableOrderItem';
 import { RefundHistoryItem } from './RefundHistoryItem';
@@ -20,8 +20,6 @@ export async function WithdrawalContent() {
     const userId = session.user.id;
 
     const t = await getTranslations('withdrawalPage');
-
-    const locale = await getLocale();
 
     // Fetch orders that could potentially be withdrawn (paid within 14 days, not free)
     const withdrawalWindowDate = new Date();
@@ -144,7 +142,7 @@ export async function WithdrawalContent() {
                                         {t('history.totalRefunded')}:
                                     </span>
                                     <span className="font-medium text-sm">
-                                        {formatEuro(totalRefunded, locale)}
+                                        <Euro cents={totalRefunded} />
                                     </span>
                                 </div>
                                 <Separator />

@@ -22,7 +22,7 @@ import { Loader2, FileX2, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface RefundRequestButtonProps {
     orderId: string;
@@ -30,7 +30,6 @@ interface RefundRequestButtonProps {
 }
 
 export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButtonProps) {
-    const { formatEuro, formatEuroNumber } = useFormatEuro();
     const t = useTranslations('payments.withdrawal');
     const { toast } = useToast();
     const router = useRouter();
@@ -129,7 +128,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         <div className="flex justify-between">
                                             <span>{t('originalAmount')}:</span>
                                             <span className="font-medium">
-                                                {formatEuro(orderAmount)}
+                                                <Euro cents={orderAmount} />
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
@@ -142,10 +141,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         <div className="flex justify-between font-medium text-green-600 dark:text-green-400">
                                             <span>{t('withdrawalAmount')}:</span>
                                             <span>
-                                                {formatEuroNumber(
-                                                    eligibility.refundableAmountCents,
-                                                )}{' '}
-                                                €
+                                                <Euro cents={eligibility.refundableAmountCents} />
                                             </span>
                                         </div>
                                     </div>

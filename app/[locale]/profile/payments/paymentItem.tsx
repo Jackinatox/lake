@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { Euro } from '@/components/Euro';
 
 interface PaymentItemProps {
     amount: number;
@@ -62,7 +62,6 @@ export function PaymentItem({
     totalRefundedCents = 0,
     hasUserRefund = false,
 }: PaymentItemProps) {
-    const { formatEuro } = useFormatEuro();
     const t = useTranslations('payments');
 
     const formatDate = (date: Date) => {
@@ -156,7 +155,7 @@ export function PaymentItem({
                     <div className="flex items-center gap-0.5 md:gap-1 mt-0.5 text-xs text-muted-foreground">
                         <Undo2 className="h-2.5 w-2.5" />
                         <span>
-                            {t('refund.refundedAmount')}: {formatEuro(totalRefundedCents)}
+                            {t('refund.refundedAmount')}: <Euro cents={totalRefundedCents} />
                         </span>
                     </div>
                 )}
@@ -165,7 +164,7 @@ export function PaymentItem({
                 {!isFreeServer && (
                     <>
                         <span className="font-medium text-sm md:text-base whitespace-nowrap">
-                            {formatEuro(amount)}
+                            <Euro cents={amount} />
                         </span>
 
                         {/* Receipt button */}
