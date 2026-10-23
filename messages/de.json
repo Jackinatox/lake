@@ -409,7 +409,7 @@
       "title": "{game}-Konfiguration",
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
-      "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "changeableLater": "Diese Einstellungen gelten ab der Installation. Ändern kannst Du sie später über „Spiel wechseln“, indem Du dasselbe Spiel noch einmal wählst. Der Server wird dabei neu installiert und standardmäßig werden alle Dateien gelöscht. Willst Du Deine Welt behalten, entferne dort den Haken bei „Alle Dateien löschen“.",
       "numberField": {
         "required": "Bitte eine Zahl eingeben",
         "wholeNumber": "Nur ganze Zahlen",

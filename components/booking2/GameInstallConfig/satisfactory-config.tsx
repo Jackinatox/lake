@@ -131,6 +131,8 @@ export const SatisfactoryConfigComponent = forwardRef(function SatisfactoryConfi
                     onCheckedChange={(checked) => handleChange('upload_crash_report', checked)}
                 />
             </ConfigSettingItem>
+
+            <p className="text-sm text-muted-foreground">{t('changeableLater')}</p>
         </ConfigContainer>
     );
 });

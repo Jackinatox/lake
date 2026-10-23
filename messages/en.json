@@ -397,7 +397,7 @@
       "title": "{game} Configuration",
       "description": "Select your preferred game settings",
       "noSpecific": "No specific configuration options available for this game.",
-      "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "changeableLater": "These settings apply from installation. To change them later, use “Change Game” and pick the same game again. This reinstalls the server and by default deletes all files. To keep your world, untick “Delete all files” there.",
       "numberField": {
         "required": "Enter a number",
         "wholeNumber": "Whole numbers only",
