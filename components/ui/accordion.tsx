@@ -39,19 +39,30 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 const AccordionContent = React.forwardRef<
     React.ElementRef<typeof AccordionPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-    <AccordionPrimitive.Content
-        ref={ref}
-        className={cn(
-            'overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down',
-            // forceMount keeps a closed item's content in the DOM (and the SSR HTML), so hide it here
-            props.forceMount && 'data-[state=closed]:hidden',
-        )}
-        {...props}
-    >
-        <div className={cn('pb-4 pt-0', className)}>{children}</div>
-    </AccordionPrimitive.Content>
-));
+>(({ className, children, ...props }, ref) =>
+    props.forceMount ? (
+        // forceMount keeps a closed item's content in the DOM (and the SSR HTML), so collapse it
+        // here. Radix's keyframes need a measured height, which a collapsed element does not have,
+        // and Radix sets transition-duration 0s on Content while measuring; so the inner grid
+        // animates its row from 0fr to 1fr instead. `invisible` (after the transition) keeps closed
+        // answers away from screen readers and tab focus.
+        <AccordionPrimitive.Content ref={ref} className="group/content text-sm" {...props}>
+            <div className="grid transition-[grid-template-rows,visibility] duration-200 ease-out motion-reduce:transition-none group-data-[state=closed]/content:invisible group-data-[state=closed]/content:grid-rows-[0fr] group-data-[state=open]/content:grid-rows-[1fr]">
+                <div className="min-h-0 overflow-hidden">
+                    <div className={cn('pb-4 pt-0', className)}>{children}</div>
+                </div>
+            </div>
+        </AccordionPrimitive.Content>
+    ) : (
+        <AccordionPrimitive.Content
+            ref={ref}
+            className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+            {...props}
+        >
+            <div className={cn('pb-4 pt-0', className)}>{children}</div>
+        </AccordionPrimitive.Content>
+    ),
+);
 
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
