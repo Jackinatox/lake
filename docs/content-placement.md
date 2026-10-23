@@ -19,7 +19,8 @@ Short answers (about 2 to 4 sentences) to questions that come up on a specific p
 that page via its category. Also for legal topics people keep asking about, even though the legal
 texts already contain them: hardly anyone reads those. Redundancy with legal texts is a
 trade-off, decided per topic. Answers must not hard-code lake information (see above); refer to
-the page or link to a docs article for more.
+the page or link to a docs article for more. Links survive on the page but not in the `FAQPage`
+markup; when answers start linking, see `docs/seo.md` (Structured data).
 
 ## Docs (`Scyed/lake-docs`, Starlight, https://scyed.com/docs/)
 

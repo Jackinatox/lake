@@ -71,6 +71,11 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   at most one `FaqSection` per page. Its `AccordionContent` uses `forceMount`: Radix otherwise
   renders closed answers as empty, and crawlers would only see the questions.
   `components/ui/accordion.tsx` hides force-mounted closed content with `data-[state=closed]:hidden`.
+  Links in an answer are dropped from the markup (plain text). Fine while answers hardly link
+  anywhere; once FAQ answers link to docs articles, reconsider emitting `Answer.text` as simple
+  HTML (Google allows `<a>`, `<p>`, lists, `<strong>`). Low priority either way: since 2023 Google
+  shows FAQ rich results only for government and health sites, so a Rich Results Test for these
+  pages only checks validity.
 - Only mark up what is visible on the page. Google can issue a manual action for markup that is
   not, which is why there is no `Product`/`Offer` with a price yet.
 
