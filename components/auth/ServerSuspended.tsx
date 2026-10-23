@@ -4,6 +4,7 @@ import { isSuspensionProcessing, type ActiveSuspension } from '@/lib/gameserver/
 import formatDate from '@/lib/formatDate';
 import { ShieldAlert } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 interface ServerSuspendedProps {
     serverName: string;
@@ -74,10 +75,10 @@ export default async function ServerSuspended({
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button asChild>
-                        <a href={supportHref}>{t('contactSupport')}</a>
+                        <Link href={supportHref}>{t('contactSupport')}</Link>
                     </Button>
                     <Button variant="outline" asChild>
-                        <a href="/">{t('home')}</a>
+                        <Link href="/">{t('home')}</Link>
                     </Button>
                 </CardFooter>
             </Card>
