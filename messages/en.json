@@ -1952,7 +1952,7 @@
     "heading": "Your {game} server at Scyed",
     "intro": {
       "minecraft": [
-        "You choose the server type and Minecraft version yourself and can switch them at any time, just like the mod loader or the game, or you upload your own server.jar. Your server always runs Java Edition; with the Geyser plugin, Bedrock players can join too. Upload existing worlds via SFTP."
+        "You choose the server type and Minecraft version yourself and can switch them at any time, just like the mod loader or the game, or you upload your own server.jar. Your server always runs Java Edition. With Geyser on Paper, Fabric or NeoForge, Bedrock players can join too. Upload existing worlds via SFTP."
       ]
     },
     "freeServerLink": "Try {game} for free first",
