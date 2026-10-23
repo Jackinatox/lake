@@ -29,14 +29,13 @@ import {
 import type { RefundServerAction, RefundType } from '@/app/client/generated/browser';
 import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import type { RefundableOrder } from '@/models/prisma';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 interface AdminRefundPanelProps {
     orders: RefundableOrder[];
 }
 
 export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
-    const { formatEuro } = useFormatEuro();
     const { toast } = useToast();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -225,15 +224,15 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className="text-sm font-medium">
-                                            {formatEuro(order.price)}
+                                            {formatEuro(order.price, 'de')}
                                         </p>
                                         {alreadyRefunded > 0 && (
                                             <p className="text-xs text-orange-500">
-                                                -{formatEuro(alreadyRefunded)} refunded
+                                                -{formatEuro(alreadyRefunded, 'de')} refunded
                                             </p>
                                         )}
                                         <p className="text-xs text-muted-foreground">
-                                            Bal: {formatEuro(remaining)}
+                                            Bal: {formatEuro(remaining, 'de')}
                                         </p>
                                     </div>
                                 </div>
@@ -274,16 +273,20 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                 <div className="flex justify-between">
                                     <span>Original amount:</span>
                                     <span className="font-medium">
-                                        {formatEuro(selectedOrder.price)}
+                                        {formatEuro(selectedOrder.price, 'de')}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Already refunded:</span>
-                                    <span>{formatEuro(getAlreadyRefunded(selectedOrder))}</span>
+                                    <span>
+                                        {formatEuro(getAlreadyRefunded(selectedOrder), 'de')}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between font-medium">
                                     <span>Remaining balance:</span>
-                                    <span>{formatEuro(getRemainingBalance(selectedOrder))}</span>
+                                    <span>
+                                        {formatEuro(getRemainingBalance(selectedOrder), 'de')}
+                                    </span>
                                 </div>
                             </div>
 
@@ -299,7 +302,7 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                                             className="flex justify-between text-xs text-muted-foreground"
                                         >
                                             <span>
-                                                {formatEuro(r.amount)} — {r.status}
+                                                {formatEuro(r.amount, 'de')} — {r.status}
                                                 {r.type === 'WITHDRAWAL'
                                                     ? ' (Widerruf)'
                                                     : ' (Erstattung)'}
@@ -463,8 +466,13 @@ export function AdminRefundPanel({ orders }: AdminRefundPanelProps) {
                             <div className="space-y-2">
                                 <p>
                                     You are about to issue a <strong>{typeLabel}</strong> of{' '}
-                                    <strong>{refundAmountEur} €</strong> to{' '}
-                                    <strong>{selectedOrder?.user.email}</strong> for order{' '}
+                                    <strong>
+                                        {formatEuro(
+                                            Math.round(parseFloat(refundAmountEur) * 100),
+                                            'de',
+                                        )}
+                                    </strong>{' '}
+                                    to <strong>{selectedOrder?.user.email}</strong> for order{' '}
                                     <code className="text-xs">{selectedOrder?.id}</code>.
                                 </p>
                                 {refundType === 'WITHDRAWAL' && (

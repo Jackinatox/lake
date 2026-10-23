@@ -3,6 +3,7 @@ import { formatDate } from '../../formatDate';
 import { formatVCores } from '../../GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '../../GlobalFunctions/ptResourceLogic';
 import { OrderType } from '@/app/client/generated/enums';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 import {
     EmailButton,
     EmailCard,
@@ -29,13 +30,6 @@ export interface InvoiceTemplateProps {
     expiresAt: Date;
     invoicePdfUrl: string;
 }
-
-const formatPrice = (cents: number) => {
-    return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(cents / 100);
-};
 
 export default function InvoiceTemplate({
     userName,
@@ -177,7 +171,7 @@ export default function InvoiceTemplate({
                         <tr>
                             <td style={{ ...priceLabelStyle, fontWeight: 700 }}>Gesamtbetrag:</td>
                             <td style={{ ...priceValueStyle, fontSize: '18px', fontWeight: 700 }}>
-                                {formatPrice(price)}
+                                {formatEuro(price, 'de')}
                             </td>
                         </tr>
                     </tbody>

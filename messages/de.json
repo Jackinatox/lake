@@ -770,6 +770,7 @@
       "cancel": "Abbrechen",
       "confirm": "Widerruf bestätigen",
       "successTitle": "Widerruf eingeleitet",
+      "successDescription": "Widerruf über <amount></amount> wurde eingeleitet.",
       "errorTitle": "Widerrufsfehler",
       "errorCheckingEligibility": "Widerrufsberechtigung konnte nicht geprüft werden. Bitte versuche es erneut.",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",

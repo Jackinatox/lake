@@ -62,7 +62,9 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                 if (result.success) {
                     toast({
                         title: t('successTitle'),
-                        description: result.message,
+                        description: t.rich('successDescription', {
+                            amount: () => <Euro cents={result.amountCents} />,
+                        }),
                     });
                     setDialogOpen(false);
                     router.refresh();

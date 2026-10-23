@@ -3,11 +3,11 @@
  * two decimals. The € sign goes after the number in every locale, separated by a no-break space
  * (U+00A0, as DIN 5008 asks for), so the € never wraps onto a line of its own.
  *
- * In the UI use `<Euro>` (components/Euro.tsx), which also narrows that space. Plain-text places
- * (emails, metadata, toasts, translation values, string props) use `formatEuro`; client
- * components get it with the locale filled in from `useFormatEuro()` (hooks/useFormatEuro.ts).
+ * In the UI use `<Euro>` (components/Euro.tsx), which also narrows that space; inside a message use
+ * an `<amount>` tag with `t.rich`. `formatEuro` is for plain text: emails, metadata, server messages.
+ * The bare number is not exported on purpose: building "number + ' €'" by hand is what this replaces.
  */
-export function formatEuroNumber(cents: number, locale: string): string {
+function formatEuroNumber(cents: number, locale: string): string {
     return new Intl.NumberFormat(locale, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -19,5 +19,5 @@ export function formatEuroNumber(cents: number, locale: string): string {
  * e.g. "€/vCore/Mon." from the messages.
  */
 export function formatEuro(cents: number, locale: string, unit = '€'): string {
-    return `${formatEuroNumber(cents, locale)} ${unit}`;
+    return `${formatEuroNumber(cents, locale)}\u00A0${unit}`;
 }

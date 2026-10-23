@@ -10,7 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useFormatEuro } from '@/hooks/useFormatEuro';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 type RefundEntry = {
     id: string;
@@ -45,7 +45,6 @@ const statusColors: Record<string, string> = {
 };
 
 export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
-    const { formatEuro } = useFormatEuro();
     if (refunds.length === 0) {
         return (
             <p className="text-muted-foreground text-sm p-4 text-center">
@@ -96,10 +95,10 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                                 {refund.order.creationGameData.name}
                             </TableCell>
                             <TableCell className="text-right text-sm">
-                                {formatEuro(refund.order.price)}
+                                {formatEuro(refund.order.price, 'de')}
                             </TableCell>
                             <TableCell className="text-right text-sm font-medium">
-                                {formatEuro(refund.amount)}
+                                {formatEuro(refund.amount, 'de')}
                             </TableCell>
                             <TableCell>
                                 <Badge

@@ -758,6 +758,7 @@
       "cancel": "Cancel",
       "confirm": "Confirm Withdrawal",
       "successTitle": "Withdrawal Initiated",
+      "successDescription": "Withdrawal of <amount></amount> has been initiated.",
       "errorTitle": "Withdrawal Error",
       "errorCheckingEligibility": "Could not check withdrawal eligibility. Please try again.",
       "unexpectedError": "An unexpected error occurred. Please try again.",
