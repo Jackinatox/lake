@@ -328,9 +328,7 @@ export default function PricingClient({
                                 }
                                 subtotal={<Euro cents={price.tierPriceCents} />}
                                 isLast
-                            >
-                                {null}
-                            </Row>
+                            />
                             <div className="px-4 pb-3 border-b">
                                 <ResourceTierSelector
                                     tiers={resourceTiers}
@@ -552,7 +550,8 @@ function Row({
     sublabel?: string;
     unit: React.ReactNode;
     subtotal: React.ReactNode;
-    children: React.ReactNode;
+    /** The control (stepper); the resource row has none, its cards follow below the row */
+    children?: React.ReactNode;
     isLast?: boolean;
 }) {
     return (

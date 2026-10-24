@@ -19,6 +19,16 @@ import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/Globa
 import { getKeyValueBoolean } from '@/lib/keyValue';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import { headers } from 'next/headers';
+import { cache } from 'react';
+
+// Shared by generateMetadata (game names in title and description) and the page: one query per request
+const getFreeOrderGames = cache(async () =>
+    prisma.gameData.findMany({
+        select: { id: true, name: true, slug: true },
+        where: { enabled: true },
+        orderBy: { sorting: 'asc' },
+    }),
+);
 
 export async function generateMetadata({
     params,
@@ -27,11 +37,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
-    const games = await prisma.gameData.findMany({
-        select: { name: true },
-        where: { enabled: true },
-        orderBy: { sorting: 'asc' },
-    });
+    const games = await getFreeOrderGames();
     const gameNames = games.map((game) => game.name);
 
     return createPublicMetadata({
@@ -49,11 +55,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
 
     const [session, games, freeTierConfig, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
-        prisma.gameData.findMany({
-            select: { id: true, name: true, slug: true },
-            where: { enabled: true },
-            orderBy: { sorting: 'asc' },
-        }),
+        getFreeOrderGames(),
         getFreeTierConfigCached(),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
