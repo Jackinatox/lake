@@ -895,7 +895,7 @@
   },
   "changeGame": {
     "flavorChangeTitle": "Spiel-Variante ändern",
-    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Deine Weltdaten bleiben erhalten, außer Du wählst alle Dateien zu löschen.",
+    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Ob dabei alle Dateien gelöscht werden, legst Du mit dem Haken bei „Alle Dateien löschen“ fest: Ohne Haken bleiben Deine Weltdaten erhalten.",
     "flavorChangeCheckbox": "Alle Dateien löschen (Neuinstallation)",
     "gameChangeTitle": "Achtung: Alle Dateien werden gelöscht!",
     "gameChangeDesc": "Der Wechsel zu einem anderen Spiel erfordert eine saubere Installation. Alle vorhandenen Dateien werden dauerhaft gelöscht. Stelle sicher, dass Du wichtige Daten vorher gesichert hast!",

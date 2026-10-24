@@ -883,7 +883,7 @@
   },
   "changeGame": {
     "flavorChangeTitle": "Changing game flavor",
-    "flavorChangeDesc": "You're switching between different versions of the same game. Your world data will be preserved unless you choose to delete all files.",
+    "flavorChangeDesc": "You're switching between different versions of the same game. The “Delete all files” checkbox decides whether all files are deleted: unticked, your world data is kept.",
     "flavorChangeCheckbox": "Delete all files (fresh install)",
     "gameChangeTitle": "Warning: All files will be deleted!",
     "gameChangeDesc": "Switching to a different game requires a clean installation. All existing files will be permanently deleted. Make sure to backup anything important before continuing!",
