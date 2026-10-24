@@ -504,8 +504,7 @@
       "rows": {
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
-      },
-      "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+      }
     },
     "footer": {
       "total": "Gesamt",
@@ -1668,8 +1667,6 @@
       "subtitle": "Jede Gruppe hat eigene CPU- und Speicher-Preise.",
       "cpuLabel": "CPU",
       "ramLabel": "RAM",
-      "perVCore": "€ / vCore / Monat",
-      "perGiB": "€ / GiB / Monat",
       "vCoreRange": "{min}–{max} vCores",
       "ramRange": "{min}–{max} GiB"
     },
