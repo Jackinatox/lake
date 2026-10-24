@@ -41,6 +41,10 @@ import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 
+// The gameserver panel hides deleted and suspended servers by default; a link from a ticket
+// should show every server the customer has, so it widens each of those scopes explicitly.
+const OPEN_SERVER_FILTERS = 'status=ANY&suspension=all&created=ALL';
+
 type TimelineEntry =
     | { kind: 'message'; createdAt: Date; message: AdminTicketDetail['messages'][number] }
     | { kind: 'note'; createdAt: Date; note: AdminTicketDetail['notes'][number] }
@@ -357,7 +361,7 @@ export default async function AdminTicketPage({
                                         All tickets
                                     </Link>
                                     <Link
-                                        href={`/admin/gameservers?userId=${customer.id}`}
+                                        href={`/admin/gameservers?userId=${customer.id}&${OPEN_SERVER_FILTERS}`}
                                         className="text-primary hover:underline"
                                     >
                                         Servers ({context?.servers.length ?? 0})
@@ -445,7 +449,7 @@ export default async function AdminTicketPage({
                             )}
                             <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                                 <Link
-                                    href={`/admin/gameservers?serverId=${server.id}`}
+                                    href={`/admin/gameservers?serverId=${server.id}&${OPEN_SERVER_FILTERS}`}
                                     className="text-primary hover:underline"
                                 >
                                     Admin view
