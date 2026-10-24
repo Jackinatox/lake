@@ -90,4 +90,7 @@ Public pages: no page-level `<Suspense>` around the main client component, and n
 `FaqSection`. A boundary that suspends (e.g. on a server-component slot passed to the client)
 streams the whole content into a `<div hidden>` at the end of the HTML; crawlers that do not run
 JS (most AI crawlers) read that poorly. Every route renders dynamically (the root layout reads the
-locale from the request), so `useSearchParams` works without a boundary.
+locale from the request), so `useSearchParams` works without a boundary. If a page is ever made
+static or ISR (e.g. `setRequestLocale` / `generateStaticParams`), that no longer holds:
+`useSearchParams` without a boundary then breaks its build. Wrap only the part that reads search
+params, not the whole page.
