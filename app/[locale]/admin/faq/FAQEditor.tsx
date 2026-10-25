@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/table';
 import { FAQ } from '@/app/client/generated/browser';
 import FAQEditDialog from './FAQEditDialog';
+import DeleteFAQButton from './DeleteFAQButton';
 
 interface FAQEditorProps {
     faqs: FAQ[];
@@ -71,7 +72,7 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
                         <TableHead>Categories</TableHead>
                         <TableHead className="w-20">Enabled</TableHead>
                         <TableHead className="w-20">Sort</TableHead>
-                        <TableHead className="w-16" />
+                        <TableHead className="w-28" />
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -85,9 +86,12 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
                             <TableCell>{faq.enabled ? 'Yes' : 'No'}</TableCell>
                             <TableCell>{faq.sorting}</TableCell>
                             <TableCell>
-                                <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)}>
-                                    <Pencil className="h-3.5 w-3.5" />
-                                </Button>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)}>
+                                        <Pencil className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <DeleteFAQButton faq={faq} />
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))}

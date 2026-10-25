@@ -27,6 +27,7 @@ import {
 import { FAQ } from '@/app/client/generated/browser';
 import editFAQ from './editFaq';
 import createFAQ from './createFaq';
+import DeleteFAQButton from './DeleteFAQButton';
 
 // ─── Category multi-select combobox ──────────────────────────────────────────
 
@@ -226,6 +227,11 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
                 </div>
 
                 <DialogFooter>
+                    {faq && (
+                        <div className="mr-auto">
+                            <DeleteFAQButton faq={faq} showLabel onDeleted={() => onOpenChange(false)} />
+                        </div>
+                    )}
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancel
                     </Button>
