@@ -70,7 +70,7 @@ export default function CreateUserDialog({ onCreated }: CreateUserDialogProps) {
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button size="sm">
+                <Button size="lg">
                     <UserPlus className="mr-2 h-4 w-4" />
                     Create User
                 </Button>
