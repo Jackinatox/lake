@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { searchUsers } from '@/app/actions/users/adminUsers';
 import { User } from '@/app/client/generated/browser';
 import UsersTable from './usersTable';
+import CreateUserDialog from './createUserDialog';
 
 type UserWithCount = User & { _count: { GameServer: number } };
 
@@ -47,14 +48,17 @@ export default function UsersPageClient() {
                             &middot; {total} total
                         </span>
                     </CardTitle>
-                    <div className="relative w-full sm:max-w-xs">
-                        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Search by email, username, name, ID..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            className="pl-9"
-                        />
+                    <div className="flex w-full items-center gap-2 sm:max-w-md">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder="Search by email, username, name, ID..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+                        <CreateUserDialog onCreated={() => doSearch(query)} />
                     </div>
                 </div>
             </CardHeader>
