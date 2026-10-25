@@ -28,7 +28,9 @@ e.g. "whitelist on but empty" (the default since Minecraft 26.3, where `white-li
 - Radix unmounts inactive tab content, so the attention hook runs in the (always mounted) tab
   trigger. It and the panels share files through `useServerFile`, so there is a single fetch and
   saves show up everywhere. Panels pass `revalidateOnMount` to pick up console / file-manager edits.
-- `readFile` throws `FileNotFoundError` on 404, which the UI shows as "start the server once".
+- `readFile` throws `FileNotFoundError` for a missing file, which the UI shows as "start the server once".
+  Pterodactyl answers a missing file with a **500** (`DaemonConnectionException`), not a 404, so on any
+  failed read `readFile` checks the parent directory listing; a failing listing keeps the original error.
 - `useServerFile().update(fn)` re-reads the file from the server, applies `fn`, and writes it, so
   values the game server wrote in the meantime are kept.
 
