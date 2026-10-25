@@ -15,7 +15,7 @@ import {
     requiredStringSchema,
     z,
 } from './common';
-import { banReasonSchema } from './auth';
+import { AUTH_NAME_MAX_LENGTH, authEmailSchema, authPasswordSchema, banReasonSchema } from './auth';
 
 const apiKeyPermissionSchema = z.enum(ALL_PERMISSIONS as [ApiKeyPermission, ...ApiKeyPermission[]]);
 
@@ -156,6 +156,13 @@ export const adminUserSearchSchema = z.object({
 
 export const verifyUserEmailSchema = z.object({
     userId: nonEmptyIdSchema,
+});
+
+export const adminCreateUserSchema = z.object({
+    email: authEmailSchema,
+    name: optionalStringSchema(AUTH_NAME_MAX_LENGTH),
+    password: authPasswordSchema,
+    emailVerified: z.boolean(),
 });
 
 export const toggleBanUserSchema = z.object({

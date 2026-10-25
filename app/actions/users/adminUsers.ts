@@ -1,7 +1,9 @@
 'use server';
 
 import { auth } from '@/auth';
+import { APIError } from 'better-auth/api';
 import {
+    adminCreateUserSchema,
     adminUserSearchSchema,
     pterodactylUserInfoSchema,
     toggleBanUserSchema,
@@ -68,6 +70,65 @@ export async function searchUsers(query: string) {
     ]);
 
     return { users, total };
+}
+
+export async function createUserAsAdmin(input: {
+    email: string;
+    name?: string;
+    password: string;
+    emailVerified: boolean;
+}): Promise<{ success: true } | { success: false; error: string }> {
+    const session = await requireAdmin();
+    const parsed = adminCreateUserSchema.safeParse(input);
+    if (!parsed.success) {
+        return { success: false, error: getValidationMessage(parsed.error) };
+    }
+    const { email, password, emailVerified } = parsed.data;
+    const name = parsed.data.name || email.split('@')[0];
+
+    let userId: string;
+    try {
+        // The admin plugin endpoint creates the user plus a credential account; the
+        // user.create hooks in auth.ts still run and provision the Pterodactyl account.
+        const { user } = await auth.api.createUser({
+            headers: await headers(),
+            body: { email, password, name, data: { emailVerified } },
+        });
+        userId = user.id;
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof APIError ? error.message : 'Failed to create user',
+        };
+    }
+
+    await logger.info(`Admin ${session.user.email} created user ${email}`, 'SYSTEM', {
+        userId: session.user.id,
+        details: { targetUserId: userId, emailVerified },
+    });
+
+    // Sign-in rejects unverified emails without resending, so send the link right away.
+    if (!emailVerified) {
+        try {
+            await auth.api.sendVerificationEmail({
+                body: { email, callbackURL: '/gameserver' },
+            });
+        } catch (error) {
+            await logger.error(`Failed to send verification email to ${email}`, 'SYSTEM', {
+                userId: session.user.id,
+                details: {
+                    targetUserId: userId,
+                    error: error instanceof Error ? error.message : String(error),
+                },
+            });
+            return {
+                success: false,
+                error: 'User created, but the verification email could not be sent',
+            };
+        }
+    }
+
+    return { success: true };
 }
 
 export async function verifyUserEmail(userId: string) {
