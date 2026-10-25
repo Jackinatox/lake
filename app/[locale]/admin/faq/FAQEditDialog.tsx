@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/command';
 import { FAQ } from '@/app/client/generated/browser';
 import editFAQ from './editFaq';
+import createFAQ from './createFaq';
 
 // ─── Category multi-select combobox ──────────────────────────────────────────
 
@@ -125,7 +126,8 @@ function CategoryCombobox({
 // ─── Dialog ───────────────────────────────────────────────────────────────────
 
 interface FAQEditDialogProps {
-    faq: FAQ;
+    /** Without a faq the dialog creates a new one */
+    faq?: FAQ;
     categories: string[];
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -133,18 +135,27 @@ interface FAQEditDialogProps {
 }
 
 export default function FAQEditDialog({ faq, categories, open, onOpenChange, onSaved }: FAQEditDialogProps) {
-    const [questionDe, setQuestionDe] = useState(faq.question_de);
-    const [questionEn, setQuestionEn] = useState(faq.question_en);
-    const [answerDe, setAnswerDe] = useState(faq.answer_de);
-    const [answerEn, setAnswerEn] = useState(faq.answer_en);
-    const [enabled, setEnabled] = useState(faq.enabled);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(faq.category);
-    const [sorting, setSorting] = useState(faq.sorting);
+    const [questionDe, setQuestionDe] = useState(faq?.question_de ?? '');
+    const [questionEn, setQuestionEn] = useState(faq?.question_en ?? '');
+    const [answerDe, setAnswerDe] = useState(faq?.answer_de ?? '');
+    const [answerEn, setAnswerEn] = useState(faq?.answer_en ?? '');
+    const [enabled, setEnabled] = useState(faq?.enabled ?? true);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(faq?.category ?? []);
+    const [sorting, setSorting] = useState(faq?.sorting ?? 0);
     const [isPending, startTransition] = useTransition();
+
+    // Same rule as createFAQ: both languages and a category, or the entry shows half-empty or nowhere
+    const isComplete =
+        [questionDe, questionEn, answerDe, answerEn].every((text) => text.trim()) &&
+        selectedCategories.length > 0;
 
     function handleSave() {
         startTransition(async () => {
-            await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+            if (faq) {
+                await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+            } else {
+                await createFAQ(questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+            }
             onSaved();
             onOpenChange(false);
         });
@@ -154,7 +165,7 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
         <Dialog open={open} onOpenChange={(v) => !isPending && onOpenChange(v)}>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>Edit FAQ #{faq.id}</DialogTitle>
+                    <DialogTitle>{faq ? `Edit FAQ #${faq.id}` : 'New FAQ'}</DialogTitle>
                 </DialogHeader>
 
                 <Tabs defaultValue="de">
@@ -218,7 +229,7 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={isPending}>
+                    <Button onClick={handleSave} disabled={isPending || (!faq && !isComplete)}>
                         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save
                     </Button>
