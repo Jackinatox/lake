@@ -8,3 +8,10 @@ export function isValidFaqSorting(sorting: number): boolean {
 }
 
 export const FAQ_SORTING_ERROR = `Sort order must be a whole number from 0 to ${FAQ_SORTING_MAX}`;
+
+/** Both languages complete and at least one category, or the entry shows half-empty or on no page. */
+export function hasRequiredFaqContent(texts: string[], categories: string[]): boolean {
+    return texts.every((text) => text.trim()) && categories.length > 0;
+}
+
+export const FAQ_CONTENT_ERROR = 'Questions, answers and at least one category are required';

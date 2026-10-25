@@ -5,7 +5,12 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { revalidateTag } from 'next/cache';
-import { FAQ_SORTING_ERROR, isValidFaqSorting } from './faqRules';
+import {
+    FAQ_CONTENT_ERROR,
+    FAQ_SORTING_ERROR,
+    hasRequiredFaqContent,
+    isValidFaqSorting,
+} from './faqRules';
 
 export default async function createFAQ(
     question_en: string,
@@ -21,12 +26,8 @@ export default async function createFAQ(
 
     if (!isValidFaqSorting(sorting)) throw new Error(FAQ_SORTING_ERROR);
 
-    // A FAQ without both languages or without a category would show up half-empty or nowhere
-    if (
-        ![question_en, question_de, answer_en, answer_de].every((text) => text.trim()) ||
-        categories.length === 0
-    ) {
-        throw new Error('Questions, answers and at least one category are required');
+    if (!hasRequiredFaqContent([question_en, question_de, answer_en, answer_de], categories)) {
+        throw new Error(FAQ_CONTENT_ERROR);
     }
 
     const createdFAQ = await prisma.fAQ.create({

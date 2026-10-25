@@ -16,10 +16,7 @@ export type FaqItem = {
  * Results are cached across requests (revalidated periodically and on the `faq`
  * tag) since FAQ content changes rarely.
  */
-export async function getFaqsByCategory(
-    categories: string[],
-    locale: string,
-): Promise<FaqItem[]> {
+export async function getFaqsByCategory(categories: string[], locale: string): Promise<FaqItem[]> {
     if (categories.length === 0) return [];
 
     const cached = unstable_cache(
@@ -40,11 +37,16 @@ export async function getFaqsByCategory(
             });
 
             const isDe = locale === 'de';
-            return faqs.map((faq) => ({
-                id: faq.id,
-                question: isDe ? faq.question_de : faq.question_en,
-                answer: isDe ? faq.answer_de : faq.answer_en,
-            }));
+            return (
+                faqs
+                    .map((faq) => ({
+                        id: faq.id,
+                        question: isDe ? faq.question_de : faq.question_en,
+                        answer: isDe ? faq.answer_de : faq.answer_en,
+                    }))
+                    // The admin requires both languages, but rows can also come in via SQL
+                    .filter((faq) => faq.question.trim() && faq.answer.trim())
+            );
         },
         ['faq-by-category'],
         { revalidate: 300, tags: ['faq'] },
