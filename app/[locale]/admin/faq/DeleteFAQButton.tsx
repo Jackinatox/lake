@@ -72,7 +72,11 @@ export default function DeleteFAQButton({
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={handleDelete}
+                            onClick={(e) => {
+                                // Keep the dialog open (spinner, disabled) until the delete is done
+                                e.preventDefault();
+                                handleDelete();
+                            }}
                             disabled={isPending}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
