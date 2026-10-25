@@ -517,11 +517,8 @@ export default function PricingClient({
                 </div>
             </section>
 
-            {/* ── FAQ ─────────────────────────────────────────────────── */}
-            <section className="max-w-3xl mx-auto w-full pb-4 md:pb-8">
-                <h2 className="text-lg md:text-xl font-semibold mb-3">{t('faq.title')}</h2>
-                {faqSlot}
-            </section>
+            {/* ── FAQ ─── heading and wrapper come with the slot, so nothing shows without entries */}
+            {faqSlot}
         </div>
     );
 }

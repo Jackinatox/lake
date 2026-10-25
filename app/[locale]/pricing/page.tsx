@@ -30,7 +30,7 @@ export async function generateMetadata({
 }
 
 export default async function PricingPage() {
-    const [performanceGroups, resourceTiers] = await Promise.all([
+    const [performanceGroups, resourceTiers, t] = await Promise.all([
         fetchPerformanceGroups(),
         prisma.resourceTier.findMany({
             where: { enabled: true },
@@ -45,6 +45,7 @@ export default async function PricingPage() {
                 enabled: true,
             },
         }),
+        getTranslations('pricing.faq'),
     ]);
 
     // No <Suspense> around the client: it would stream the whole page into a hidden <div> at the
@@ -54,7 +55,13 @@ export default async function PricingPage() {
         <PricingClient
             performanceGroups={performanceGroups}
             resourceTiers={resourceTiers}
-            faqSlot={<FaqSection categories={['pricing']} />}
+            faqSlot={
+                <FaqSection
+                    categories={['pricing']}
+                    heading={t('title')}
+                    className="max-w-3xl mx-auto w-full pb-4 md:pb-8"
+                />
+            }
         />
     );
 }
