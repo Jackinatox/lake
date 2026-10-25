@@ -1962,7 +1962,7 @@
     "heading": "Dein {game}-Server bei Scyed",
     "intro": {
       "minecraft": [
-        "Server-Typ und Minecraft-Version wählst Du selbst und kannst sie jederzeit wechseln, genauso wie den Modloader oder das Spiel, oder Du lädst eine eigene server.jar hoch. Es läuft immer die Java Edition. Mit Geyser auf Paper, Fabric oder NeoForge kommen auch Bedrock-Spieler auf Deinen Server. Bestehende Welten lädst Du per SFTP hoch."
+        "Server-Typ und Minecraft-Version wählst Du selbst und kannst sie jederzeit wechseln, genauso wie das Spiel, oder Du lädst eine eigene server.jar hoch. Es läuft immer die Java Edition. Mit Geyser auf Paper, Fabric oder NeoForge kommen auch Bedrock-Spieler auf Deinen Server. Bestehende Welten lädst Du per SFTP hoch."
       ]
     },
     "freeServerLink": "{game} erst kostenlos ausprobieren",
