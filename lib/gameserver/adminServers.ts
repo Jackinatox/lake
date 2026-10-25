@@ -122,11 +122,11 @@ export type CreatedRangeKey = 'ALL' | '1d' | '7d' | '30d' | '90d' | '365d';
 export const CREATED_RANGE_KEYS: CreatedRangeKey[] = ['ALL', '1d', '7d', '30d', '90d', '365d'];
 
 /**
- * What the panel shows without a `created` param. A month of history is what an admin almost
- * always wants, and it keeps the first query off the full table; `ALL` is one click away and
- * is then carried in the URL like any other filter.
+ * What the panel shows without a `created` param: no timespan at all, so a fresh visit (or a
+ * deep link that only sets `userId`) never silently hides older servers. A narrower range is
+ * one click away and is then carried in the URL like any other filter.
  */
-export const DEFAULT_CREATED_RANGE: CreatedRangeKey = '30d';
+export const DEFAULT_CREATED_RANGE: CreatedRangeKey = 'ALL';
 
 export const CREATED_RANGE_META: Record<CreatedRangeKey, string> = {
     ALL: 'Any time',

@@ -114,7 +114,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         </p>
                                     </div>
                                     <Button variant="outline" className="w-full" asChild>
-                                        <Link href="/support">
+                                        <Link href="/support/tickets">
                                             <MessageSquare className="h-4 w-4 mr-2" />
                                             {t('openSupportTicket')}
                                         </Link>

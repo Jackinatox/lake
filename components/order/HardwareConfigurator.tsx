@@ -323,7 +323,7 @@ export default function HardwareConfigurator({
 
                 {/* ── Price overview ───────────────────────────────────── */}
                 <div className="order-1 lg:order-2">
-                    <div className="lg:sticky lg:top-4">
+                    <div className="lg:sticky lg:top-20">
                         <PriceOverview
                             cpuCores={cpuCores}
                             ramGb={ramGb}

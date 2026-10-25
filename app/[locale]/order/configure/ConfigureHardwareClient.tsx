@@ -6,6 +6,7 @@ import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, Wrench } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ConfigureHardwareClientProps {
     performanceGroups: PerformanceGroup[];
@@ -22,6 +23,7 @@ export default function ConfigureHardwareClient({
     performanceGroups,
     resourceTiers,
 }: ConfigureHardwareClientProps) {
+    const t = useTranslations('orderFlow');
     const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
 
     const handlePriceUpdate = useCallback((info: PriceInfo) => {
@@ -31,7 +33,7 @@ export default function ConfigureHardwareClient({
     return (
         <div className="md:-my-4 flex flex-col min-h-[calc(100dvh-4rem)]">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b py-2">
+            <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-md border-b py-2">
                 <div className="w-full px-1 max-w-7xl mx-auto">
                     <div className="flex items-center gap-3">
                         <Button variant="ghost" size="icon" asChild className="shrink-0">
@@ -44,10 +46,10 @@ export default function ConfigureHardwareClient({
                         </div>
                         <div className="flex-1 min-w-0">
                             <h1 className="text-base sm:text-lg font-bold leading-tight">
-                                Configure Hardware
+                                {t('configureHardware.title')}
                             </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
-                                Configure your hardware, then choose a game
+                                {t('configureHardware.subtitle')}
                             </p>
                         </div>
                         {priceInfo && (
@@ -55,7 +57,7 @@ export default function ConfigureHardwareClient({
                                 <div className="text-xl font-bold text-primary">
                                     {(priceInfo.totalCents / 100).toFixed(2)} €
                                 </div>
-                                <div className="text-xs text-muted-foreground">total</div>
+                                <div className="text-xs text-muted-foreground">{t('total')}</div>
                             </div>
                         )}
                     </div>
@@ -75,7 +77,7 @@ export default function ConfigureHardwareClient({
                     performanceOptions={performanceGroups}
                     resourceTiers={resourceTiers}
                     continueHref={(params) => `/order/configure/games?${params}`}
-                    continueLabel="Choose a Game"
+                    continueLabel={t('configureHardware.continueLabel')}
                     onPriceUpdate={handlePriceUpdate}
                 />
             </div>
@@ -84,7 +86,7 @@ export default function ConfigureHardwareClient({
             {priceInfo && (
                 <div className="lg:hidden sticky bottom-0 z-20 bg-background/95 backdrop-blur-md border-t p-3 flex items-center gap-3">
                     <div className="flex-1">
-                        <div className="text-xs text-muted-foreground">Total</div>
+                        <div className="text-xs text-muted-foreground">{t('total')}</div>
                         <div className="text-2xl font-bold text-primary">
                             {(priceInfo.totalCents / 100).toFixed(2)} €
                         </div>
@@ -95,7 +97,7 @@ export default function ConfigureHardwareClient({
                         disabled={priceInfo.disabled}
                         onClick={priceInfo.onContinue}
                     >
-                        Choose a Game
+                        {t('configureHardware.continueLabel')}
                     </Button>
                 </div>
             )}

@@ -53,6 +53,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `seo.md` — robots.txt, sitemap (with hreflang), canonical/hreflang via
+  `createPublicMetadata`, noindex for private sections (why not robots.txt
+  `Disallow`) and JSON-LD. Read when adding a public or private page, or
+  touching the sitemap, robots, structured data or the proxy matcher.
 - `server-suspension.md` — Admin suspension/quarantine of gameservers: the
   `GameServerSuspension` table (and why it is not a `GameServerStatus` value),
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
@@ -62,6 +66,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
   registry, the generic form editor and `.properties` format, the shared file cache
   (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
   attention dot. Read when touching game config files or adding a game's config panels.
+- `support-tickets.md` — The new conversation-based ticket system (`Ticket*`
+  tables, `/support/tickets/*`, `/admin/support`) that coexists with the legacy
+  `SupportTicket`: status flow, internal notes, emails/Telegram, the worker
+  auto-close contract and the switch-over checklist. Read when touching
+  tickets or support pages.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

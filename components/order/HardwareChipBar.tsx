@@ -1,7 +1,7 @@
 'use client';
 
 import { Archive, Clock, Cpu, HardDrive, MemoryStick, Network } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
 
@@ -26,45 +26,44 @@ export default function HardwareChipBar({
     totalCents,
     className,
 }: HardwareChipBarProps) {
-    const locale = useLocale();
-    const daysSuffix = locale === 'de' ? 'T' : 'd';
+    const t = useTranslations('orderFlow.chips');
 
     return (
         <div
             className={cn('flex items-center gap-2 md:gap-3 overflow-x-auto', className)}
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
         >
-            <Chip color="blue" label="CPU">
+            <Chip color="blue" label={t('cpu')}>
                 <Cpu className="h-3.5 w-3.5 text-blue-500" />
                 {cpu} vCores
             </Chip>
 
-            <Chip color="purple" label="RAM">
+            <Chip color="purple" label={t('ram')}>
                 <MemoryStick className="h-3.5 w-3.5 text-purple-500" />
                 {formatBytes(ram * 1024 * 1024 * 1024)}
             </Chip>
 
-            <Chip color="green" label="Disk">
+            <Chip color="green" label={t('disk')}>
                 <HardDrive className="h-3.5 w-3.5 text-emerald-500" />
                 {formatBytes(diskGB * 1024 * 1024 * 1024)}
             </Chip>
 
             <div className="w-px h-5 bg-border shrink-0" />
 
-            <Chip color="muted" label="Backups">
+            <Chip color="muted" label={t('backups')}>
                 <Archive className="h-3.5 w-3.5 text-muted-foreground" />
                 {backups}
             </Chip>
 
-            <Chip color="muted" label="Ports">
+            <Chip color="muted" label={t('ports')}>
                 <Network className="h-3.5 w-3.5 text-muted-foreground" />
                 {ports}
             </Chip>
 
-            <Chip color="muted" label="Duration">
+            <Chip color="muted" label={t('duration')}>
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                 {days}
-                {daysSuffix}
+                {t('daysSuffix')}
             </Chip>
 
             {totalCents > 0 && (

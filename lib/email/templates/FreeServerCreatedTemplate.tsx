@@ -178,7 +178,7 @@ export default function FreeServerCreatedTemplate({
             <Text style={{ ...textStyle, marginTop: 16 }}>
                 Dein kostenloser Server ist jetzt aktiv. Bei Fragen erreichst du unser{' '}
                 <a
-                    href={`${process.env.NEXT_PUBLIC_APP_URL}/support`}
+                    href={`${process.env.NEXT_PUBLIC_APP_URL}/support/tickets`}
                     style={{ color: '#0f172a', textDecoration: 'underline' }}
                 >
                     Support-Team

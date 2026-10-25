@@ -26,7 +26,7 @@ export default async function ServerCreationFailed({ serverId }: ServerCreationF
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button asChild>
-                        <a href="/support">{t('contactSupport')}</a>
+                        <a href="/support/tickets">{t('contactSupport')}</a>
                     </Button>
                     <Button variant="outline" asChild>
                         <a href="/">{t('home')}</a>
