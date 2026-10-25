@@ -10,13 +10,20 @@ import { cn } from '@/lib/utils';
 export function Euro({
     cents,
     unit,
+    locale,
     className,
 }: {
     cents: number;
     /** Per-unit price label starting with €, e.g. "€/vCore/Mon." */
     unit?: string;
+    /** Number format of this locale instead of the page's, e.g. 'de' in German-only text */
+    locale?: string;
     className?: string;
 }) {
-    const locale = useLocale();
-    return <span className={cn('euro', className)}>{formatEuro(cents, locale, unit)}</span>;
+    const pageLocale = useLocale();
+    return (
+        <span className={cn('euro', className)}>
+            {formatEuro(cents, locale ?? pageLocale, unit)}
+        </span>
+    );
 }

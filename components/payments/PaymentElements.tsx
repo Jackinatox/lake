@@ -138,8 +138,8 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
         checkout.total.total.minorUnitsAmount >= BILLING_ADDRESS_THRESHOLD_CENTS;
     const canSubmit = tosAccepted && widerrufsAccepted && checkout.canConfirm && !loading;
 
-    // Checkout runs in EUR only
-    const total = <Euro cents={checkout.total.total.minorUnitsAmount} />;
+    // German like the rest of this form (contract language), also under /en
+    const total = <Euro cents={checkout.total.total.minorUnitsAmount} locale="de" />;
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-6 px-0">
