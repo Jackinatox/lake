@@ -5,6 +5,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { revalidateTag } from 'next/cache';
+import { FAQ_SORTING_ERROR, isValidFaqSorting } from './faqRules';
 
 export default async function createFAQ(
     question_en: string,
@@ -17,6 +18,8 @@ export default async function createFAQ(
 ) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (session?.user.role !== 'admin') throw new Error('Unauthorized');
+
+    if (!isValidFaqSorting(sorting)) throw new Error(FAQ_SORTING_ERROR);
 
     // A FAQ without both languages or without a category would show up half-empty or nowhere
     if (

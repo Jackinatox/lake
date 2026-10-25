@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import editFAQ from './editFaq';
 import createFAQ from './createFaq';
 import DeleteFAQButton from './DeleteFAQButton';
+import { FAQ_SORTING_ERROR, FAQ_SORTING_MAX, isValidFaqSorting } from './faqRules';
 
 // ─── Category multi-select combobox ──────────────────────────────────────────
 
@@ -147,6 +148,8 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
 
+    const sortingValid = isValidFaqSorting(sorting);
+
     // Same rule as createFAQ: both languages and a category, or the entry shows half-empty or nowhere
     const isComplete =
         [questionDe, questionEn, answerDe, answerEn].every((text) => text.trim()) &&
@@ -230,10 +233,16 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
                             <Input
                                 id="sorting"
                                 type="number"
+                                min={0}
+                                max={FAQ_SORTING_MAX}
+                                step={1}
                                 value={sorting}
                                 onChange={(e) => setSorting(Number(e.target.value))}
                                 className="w-24"
                             />
+                            {!sortingValid && (
+                                <p className="text-xs text-destructive">{FAQ_SORTING_ERROR}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -247,7 +256,7 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={isPending || (!faq && !isComplete)}>
+                    <Button onClick={handleSave} disabled={isPending || !sortingValid || (!faq && !isComplete)}>
                         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save
                     </Button>
