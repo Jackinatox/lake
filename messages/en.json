@@ -966,12 +966,275 @@
     "tabs": {
       "console": "Console",
       "files": "Files",
+      "config": "Config",
       "network": "Network",
       "backups": "Backups",
       "settings": "Settings",
       "networkComingSoon": "Network control coming soon",
       "backupsComingSoon": "Backup manager coming soon",
       "settingsComingSoon": "Settings coming soon"
+    },
+    "config": {
+      "attention": "Needs your attention",
+      "editor": {
+        "searchPlaceholder": "Search all settings…",
+        "otherCategory": "More settings",
+        "noResults": "No settings match your search.",
+        "locked": "Managed automatically",
+        "modified": "Modified",
+        "invalidNumber": "Enter a whole number between {min} and {max}.",
+        "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}",
+        "discard": "Discard",
+        "save": "Save",
+        "saved": "Saved",
+        "savedDescription": "The file was written to your server.",
+        "saveFailed": "Saving failed",
+        "saveFailedDescription": "The file could not be written. Please try again.",
+        "restartRequired": "Restart required",
+        "restartRequiredDescription": "Your server is running. Restart it to apply the changes.",
+        "restartNow": "Restart now",
+        "editAsText": "Edit as text",
+        "editAsTextDirty": "Save or discard your changes first",
+        "reload": "Reload",
+        "loadFailed": "The file could not be loaded.",
+        "retry": "Try again",
+        "notFoundTitle": "{file} doesn't exist yet",
+        "notFoundDescription": "Start your server once so it generates this file, then come back here.",
+        "reloadHint": "Load the file from the server again",
+        "categoriesLabel": "Categories",
+        "customValueOption": "Custom value…",
+        "customValueHint": "Custom value, saved exactly as entered.",
+        "unknownValue": "Unknown value, but it may still work.",
+        "expectedNumber": "Usually a whole number between {min} and {max}.",
+        "standardValues": "Standard values:"
+      },
+      "minecraft": {
+        "whitelist": {
+          "title": "Whitelist",
+          "description": "Choose who is allowed to join your server.",
+          "attentionTitle": "Nobody can join your server",
+          "attentionDescription": "The whitelist is on but empty, so every player gets rejected. Add yourself and your friends, or turn the whitelist off.",
+          "attentionAddPlayers": "Add players",
+          "attentionDisable": "Disable whitelist",
+          "enabledLabel": "Whitelist enabled",
+          "enabledDescription": "Only players on the list can join.",
+          "disabledDescription": "Every player who knows your server address can join.",
+          "disabledWarning": "Not recommended: without a whitelist, anyone can join and grief your world.",
+          "enabledToast": "Whitelist enabled",
+          "disabledToast": "Whitelist disabled",
+          "toggleFailed": "Could not change the whitelist. Please try again.",
+          "addLabel": "Add player",
+          "addPlaceholder": "Minecraft username",
+          "addButton": "Add",
+          "addedToast": "{name} was added to the whitelist",
+          "removedToast": "{name} was removed from the whitelist",
+          "removeFailed": "Could not remove the player. Please try again.",
+          "remove": "Remove {name}",
+          "playersHeading": "{count, plural, one {# player} other {# players}}",
+          "empty": "No players on the whitelist yet.",
+          "offlineModeHint": "Your server runs in offline mode, so players are added by name without checking their Minecraft account.",
+          "invalidFileTitle": "whitelist.json is invalid",
+          "invalidFileDescription": "Fix or delete the file in the file manager to manage the whitelist here.",
+          "loadFailed": "The whitelist could not be loaded.",
+          "retry": "Try again",
+          "notGeneratedTitle": "No configuration yet",
+          "notGeneratedDescription": "Start your server once so it generates its configuration files, then manage the whitelist here.",
+          "errors": {
+            "alreadyAdded": "{name} is already on the whitelist.",
+            "not_found": "There is no Minecraft account called {name}.",
+            "invalid_name": "Minecraft usernames have 3–16 characters: letters, numbers and _.",
+            "error": "Could not look up {name}. Please try again."
+          },
+          "disableConfirm": {
+            "title": "Disable the whitelist?",
+            "description": "Not recommended. Without a whitelist, anyone who finds your server address can join and change or destroy your world. Adding your friends to the whitelist is the safer option.",
+            "cancel": "Keep whitelist",
+            "confirm": "Disable anyway"
+          }
+        },
+        "properties": {
+          "title": "Server properties",
+          "description": "Settings from server.properties. Most changes take effect after a restart.",
+          "categories": {
+            "gameplay": "Gameplay",
+            "players": "Players",
+            "world": "World",
+            "performance": "Performance",
+            "resourcePack": "Resource pack",
+            "network": "Network"
+          },
+          "options": {
+            "difficulty": {
+              "peaceful": "Peaceful",
+              "easy": "Easy",
+              "normal": "Normal",
+              "hard": "Hard"
+            },
+            "gamemode": {
+              "survival": "Survival",
+              "creative": "Creative",
+              "adventure": "Adventure",
+              "spectator": "Spectator"
+            },
+            "opPermissionLevel": {
+              "level1": "1 – Bypass spawn protection",
+              "level2": "2 – Cheats and command blocks",
+              "level3": "3 – Manage players",
+              "level4": "4 – Full control"
+            },
+            "levelType": {
+              "normal": "Default",
+              "flat": "Superflat",
+              "largeBiomes": "Large biomes",
+              "amplified": "Amplified",
+              "singleBiome": "Single biome"
+            }
+          },
+          "fields": {
+            "motd": {
+              "label": "Message of the day",
+              "description": "Shown below your server name in the server list."
+            },
+            "difficulty": {
+              "label": "Difficulty",
+              "description": "How dangerous mobs and hunger are."
+            },
+            "gamemode": {
+              "label": "Default game mode",
+              "description": "Game mode for players joining for the first time."
+            },
+            "forceGamemode": {
+              "label": "Force game mode",
+              "description": "Put every player into the default game mode when they join."
+            },
+            "hardcore": {
+              "label": "Hardcore",
+              "description": "Players are switched to spectator mode when they die."
+            },
+            "pvp": {
+              "label": "PvP",
+              "description": "Allow players to damage each other."
+            },
+            "allowFlight": {
+              "label": "Allow flight",
+              "description": "Don't kick players who fly in survival mode (needed for some mods)."
+            },
+            "spawnProtection": {
+              "label": "Spawn protection",
+              "description": "Radius in blocks around spawn that only operators can change. 0 turns it off."
+            },
+            "spawnMonsters": {
+              "label": "Spawn monsters",
+              "description": "Let hostile mobs spawn."
+            },
+            "spawnAnimals": {
+              "label": "Spawn animals",
+              "description": "Let animals spawn."
+            },
+            "spawnNpcs": {
+              "label": "Spawn villagers",
+              "description": "Let villagers spawn."
+            },
+            "maxPlayers": {
+              "label": "Max players",
+              "description": "How many players can be online at the same time."
+            },
+            "onlineMode": {
+              "label": "Online mode",
+              "description": "Check every player against their Minecraft account.",
+              "warning": "Turning this off lets anyone join with any name, including yours."
+            },
+            "enforceSecureProfile": {
+              "label": "Enforce secure chat",
+              "description": "Only allow players with a Mojang-signed chat key."
+            },
+            "playerIdleTimeout": {
+              "label": "Idle timeout",
+              "description": "Kick players after this many idle minutes. 0 turns it off."
+            },
+            "opPermissionLevel": {
+              "label": "Operator permission level",
+              "description": "What operators are allowed to do by default."
+            },
+            "enableCommandBlock": {
+              "label": "Command blocks",
+              "description": "Allow command blocks to run."
+            },
+            "hideOnlinePlayers": {
+              "label": "Hide online players",
+              "description": "Don't show the player list in the server list."
+            },
+            "levelSeed": {
+              "label": "World seed",
+              "description": "Seed used to generate the world. Leave empty for a random one.",
+              "warning": "Only applies when a new world is generated."
+            },
+            "levelName": {
+              "label": "World folder",
+              "description": "Name of the folder the world is loaded from.",
+              "warning": "Changing this loads (or creates) a different world."
+            },
+            "levelType": {
+              "label": "World type",
+              "description": "Generator used for new worlds.",
+              "warning": "Only applies when a new world is generated."
+            },
+            "generateStructures": {
+              "label": "Generate structures",
+              "description": "Generate villages, temples and other structures.",
+              "warning": "Only applies to newly generated chunks."
+            },
+            "allowNether": {
+              "label": "Allow the Nether",
+              "description": "Let players travel to the Nether."
+            },
+            "maxWorldSize": {
+              "label": "Max world size",
+              "description": "Radius of the world border in blocks."
+            },
+            "viewDistance": {
+              "label": "View distance",
+              "description": "How many chunks the server sends to players (3–32). Lower values improve performance."
+            },
+            "simulationDistance": {
+              "label": "Simulation distance",
+              "description": "How many chunks around players are active (3–32). Lower values improve performance."
+            },
+            "pauseWhenEmptySeconds": {
+              "label": "Pause when empty",
+              "description": "Pause the server after this many seconds without players. 0 turns it off."
+            },
+            "syncChunkWrites": {
+              "label": "Synchronous chunk writes",
+              "description": "Safer saving at the cost of performance."
+            },
+            "resourcePack": {
+              "label": "Resource pack URL",
+              "description": "Direct download link to a resource pack players are offered."
+            },
+            "requireResourcePack": {
+              "label": "Require resource pack",
+              "description": "Disconnect players who decline the resource pack."
+            },
+            "serverPort": {
+              "label": "Server port",
+              "description": "Set by your server allocation."
+            },
+            "serverIp": {
+              "label": "Server IP",
+              "description": "Set by your server allocation."
+            },
+            "queryPort": {
+              "label": "Query port",
+              "description": "Set by your server allocation."
+            },
+            "rconPort": {
+              "label": "RCON port",
+              "description": "Set by your server allocation."
+            }
+          }
+        }
+      }
     },
     "eula": {
       "title": "Accept Minecraft® EULA",

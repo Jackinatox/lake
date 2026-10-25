@@ -58,6 +58,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
   the layout that blocks `/gameserver/[server_id]/*`. Read when touching
   suspensions, `GameServerStatus`, or `toggleSuspendGameServer`.
+- `game-config-editors.md` — The per-game "Config" dashboard tab: the slug-keyed
+  registry, the generic form editor and `.properties` format, the shared file cache
+  (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
+  attention dot. Read when touching game config files or adding a game's config panels.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft
