@@ -1971,10 +1971,10 @@
   },
   "Maintenance": {
     "title": "Wartung: Gameserver vorübergehend offline",
-    "description": "In PHP, auf dem unser Gameserver-Panel (Pterodactyl) läuft, wurde eine kritische Sicherheitslücke veröffentlicht. Um dich und deine Daten zu schützen, haben wir alle Gameserver-Panels vorsorglich abgeschaltet, bis eine behobene Version verfügbar und installiert ist.",
-    "impact": "In dieser Zeit kannst du deinen Server nicht verwalten: Dashboard, Konsole, Dateimanager, Backups und Einstellungen sind nicht erreichbar, und es können keine neuen Server bestellt werden.",
+    "description": "In PHP, auf dem unser Gameserver-Panel (Pterodactyl) läuft, wurde eine kritische Sicherheitslücke veröffentlicht. Um Dich und Deine Daten zu schützen, haben wir alle Gameserver-Panels vorsorglich abgeschaltet, bis eine behobene Version verfügbar und installiert ist.",
+    "impact": "In dieser Zeit kannst Du Deinen Server nicht verwalten: Dashboard, Konsole, Dateimanager, Backups und Einstellungen sind nicht erreichbar, und es können keine neuen Server bestellt werden.",
     "next": "Wir arbeiten mit höchster Priorität daran und bringen alles wieder online, sobald es sicher ist. Du musst nichts weiter tun.",
-    "apology": "Wir entschuldigen uns für die Unannehmlichkeiten und danken dir für deine Geduld.",
+    "apology": "Wir entschuldigen uns für die Unannehmlichkeiten und danken Dir für Deine Geduld.",
     "contactSupport": "Support kontaktieren",
     "home": "Zur Startseite",
     "bannerTitle": "Wartung: Gameserver sind vorübergehend offline",
