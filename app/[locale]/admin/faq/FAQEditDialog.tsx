@@ -25,6 +25,7 @@ import {
     CommandList,
 } from '@/components/ui/command';
 import { FAQ } from '@/app/client/generated/browser';
+import { useToast } from '@/hooks/use-toast';
 import editFAQ from './editFaq';
 import createFAQ from './createFaq';
 import DeleteFAQButton from './DeleteFAQButton';
@@ -144,6 +145,7 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
     const [selectedCategories, setSelectedCategories] = useState<string[]>(faq?.category ?? []);
     const [sorting, setSorting] = useState(faq?.sorting ?? 0);
     const [isPending, startTransition] = useTransition();
+    const { toast } = useToast();
 
     // Same rule as createFAQ: both languages and a category, or the entry shows half-empty or nowhere
     const isComplete =
@@ -152,13 +154,23 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
 
     function handleSave() {
         startTransition(async () => {
-            if (faq) {
-                await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
-            } else {
-                await createFAQ(questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+            // Without the catch React hands the error to global-error.tsx, which replaces the whole
+            // page and loses everything typed in the dialog
+            try {
+                if (faq) {
+                    await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+                } else {
+                    await createFAQ(questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+                }
+                onSaved();
+                onOpenChange(false);
+            } catch (err) {
+                toast({
+                    title: 'Error',
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                    variant: 'destructive',
+                });
             }
-            onSaved();
-            onOpenChange(false);
         });
     }
 
