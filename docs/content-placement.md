@@ -12,6 +12,10 @@ specs, runtime and deletion period. Prefer showing it where the user needs it an
 performance group's and resource package's price on the `/pricing` selection cards) over a separate
 table that repeats it.
 Never copy such information into FAQ entries, docs or blog posts by hand; link to the page.
+Exceptions, decided with the owner per case: a value that rarely changes and that the page does not show
+may be written into a FAQ answer when the answer is useless without it (currently the free server's 30-day
+runtime and the 3 months until an expired server is deleted). Whoever changes such a value updates those FAQ
+entries in the admin too.
 
 ## FAQ (`FAQ` table, `components/faq/FaqSection.tsx`)
 
