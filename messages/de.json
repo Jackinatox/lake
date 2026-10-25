@@ -924,7 +924,7 @@
     "vatNote": "Alle Preise sind Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
     "supportHeading": "Support",
     "legalHeading": "Rechtliches",
-    "copyright": "© 2026 Scyed. Alle Rechte vorbehalten.",
+    "copyright": "© 2024–{year} Scyed. Alle Rechte vorbehalten.",
     "documentation": "Dokumentation"
   },
   "gameserver": {

@@ -129,7 +129,7 @@ export default function Footer() {
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">
-                            {t('copyright')}
+                            {t('copyright', { year: new Date().getFullYear() })}
                         </span>
                     </div>
                     <ThemeSwitcher />
