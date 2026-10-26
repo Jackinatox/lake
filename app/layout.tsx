@@ -9,6 +9,7 @@ import { ThemeProvider } from 'next-themes';
 import { Geist, Inter } from 'next/font/google';
 import './globals.css';
 import DevSessionInfo from '@/components/auth/DevSessionInfo';
+import MaintenanceBanner from '@/components/MaintenanceBanner';
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -65,6 +66,7 @@ export default async function RootLayout({
                         <main className="flex flex-col flex-1">
                             <Navbar locale={locale} />
                             <div className="flex flex-col gap-10 w-full max-w-8xl mx-auto px-2 md:px-8 p-2 md:py-4 flex-1">
+                                <MaintenanceBanner />
                                 {children}
                                 <Toaster />
                                 {process.env.NODE_ENV !== 'production' && <DevSessionInfo />}
