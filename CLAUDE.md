@@ -66,6 +66,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   registry, the generic form editor and `.properties` format, the shared file cache
   (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
   attention dot. Read when touching game config files or adding a game's config panels.
+- `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
+  redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
+  go offline or when touching `proxy.ts`.
 - `support-tickets.md` — The new conversation-based ticket system (`Ticket*`
   tables, `/support/tickets/*`, `/admin/support`) that coexists with the legacy
   `SupportTicket`: status flow, internal notes, emails/Telegram, the worker

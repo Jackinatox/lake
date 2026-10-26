@@ -6,7 +6,7 @@ import { useConnectionState } from '@/hooks/useServerWebSocket';
 import { GameServer } from '@/models/gameServerModel';
 import { Check, Loader2, Monitor, Wifi } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import GameDashboard from './Console/gameDashboard';
 import { on as onServerEvent } from './serverEvents';
 import { GameServerType } from '@/app/client/generated/enums';
@@ -37,6 +37,9 @@ export interface ServerLoaderProps {
     modpackFeedback?: ModpackFeedbackProps;
 }
 
+const POLL_INTERVAL_MS = 2000;
+const FETCH_TIMEOUT_MS = 10000;
+
 export default function ServerLoader({
     ptServerId,
     ptApiKey,
@@ -51,11 +54,15 @@ export default function ServerLoader({
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const t = useTranslations();
+    // The in-flight request, shared by every caller so the poller and the event listeners
+    // never stack parallel requests while the panel is slow or down.
+    const inFlightRef = useRef<Promise<void> | null>(null);
 
-    const fetchServerData = useCallback(async () => {
+    const doFetchServerData = useCallback(async () => {
         try {
             const response = await fetch(`${baseUrl}/api/client/servers/${ptServerId}`, {
                 method: 'GET',
+                signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
                 headers: {
                     Authorization: `Bearer ${ptApiKey}`,
                     Accept: 'application/json',
@@ -112,6 +119,15 @@ export default function ServerLoader({
         t,
     ]);
 
+    const fetchServerData = useCallback(() => {
+        if (!inFlightRef.current) {
+            inFlightRef.current = doFetchServerData().finally(() => {
+                inFlightRef.current = null;
+            });
+        }
+        return inFlightRef.current;
+    }, [doFetchServerData]);
+
     useEffect(() => {
         fetchServerData();
     }, [fetchServerData]);
@@ -155,15 +171,24 @@ export default function ServerLoader({
         };
     }, [fetchServerData, ptServerId]);
 
-    // Auto-refresh every 2 seconds while installing or restoring
+    // Refresh while installing or restoring: the next request is only scheduled once the
+    // previous one has finished (or failed), so a slow panel never gets parallel requests.
     useEffect(() => {
-        if (isInstalling || isRestoring) {
-            const interval = setInterval(() => {
-                fetchServerData();
-            }, 2000);
+        if (!isInstalling && !isRestoring) return;
 
-            return () => clearInterval(interval);
-        }
+        let stopped = false;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+        const poll = async () => {
+            await fetchServerData();
+            if (!stopped) timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
+        };
+        timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
+
+        return () => {
+            stopped = true;
+            clearTimeout(timeoutId);
+        };
     }, [fetchServerData, isInstalling, isRestoring]);
 
     if (error) {
