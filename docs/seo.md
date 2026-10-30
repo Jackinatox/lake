@@ -77,6 +77,9 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   HTML (Google allows `<a>`, `<p>`, lists, `<strong>`). Low priority either way: since 2023 Google
   shows FAQ rich results only for government and health sites, so a Rich Results Test for these
   pages only checks validity.
+- `JsonLd` takes one object or an array, and gives each entity **its own script tag**. Do not
+  collapse them back into one array-valued script: that is valid JSON-LD, but consumers that read
+  `data['@context']` off the parsed value throw on an array (`@context.toLowerCase` of undefined).
 - Only mark up what is visible on the page. Google can issue a manual action for markup that is
   not, which is why there is no `Product`/`Offer` with a price yet.
 
