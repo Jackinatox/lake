@@ -65,6 +65,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   the admin panel actions, the Pterodactyl suspend guard, the two emails, and
   the layout that blocks `/gameserver/[server_id]/*`. Read when touching
   suspensions, `GameServerStatus`, or `toggleSuspendGameServer`.
+- `game-config-editors.md` — The per-game "Config" dashboard tab: the slug-keyed
+  registry, the generic form editor and `.properties` format, the shared file cache
+  (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
+  attention dot. Read when touching game config files or adding a game's config panels.
 - `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
   redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
   go offline or when touching `proxy.ts`.

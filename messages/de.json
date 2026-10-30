@@ -989,12 +989,275 @@
     "tabs": {
       "console": "Konsole",
       "files": "Dateien",
+      "config": "Konfiguration",
       "network": "Netzwerk",
       "backups": "Backups",
       "settings": "Einstellungen",
       "networkComingSoon": "Netzwerk-Steuerung kommt bald",
       "backupsComingSoon": "Backup-Manager kommt bald",
       "settingsComingSoon": "Einstellungen kommen bald"
+    },
+    "config": {
+      "attention": "Benötigt Deine Aufmerksamkeit",
+      "editor": {
+        "searchPlaceholder": "Alle Einstellungen durchsuchen…",
+        "otherCategory": "Weitere Einstellungen",
+        "noResults": "Keine Einstellungen passen zu Deiner Suche.",
+        "locked": "Wird automatisch verwaltet",
+        "modified": "Geändert",
+        "invalidNumber": "Gib eine ganze Zahl zwischen {min} und {max} ein.",
+        "unsavedChanges": "{count, plural, one {# ungespeicherte Änderung} other {# ungespeicherte Änderungen}}",
+        "discard": "Verwerfen",
+        "save": "Speichern",
+        "saved": "Gespeichert",
+        "savedDescription": "Die Datei wurde auf Deinen Server geschrieben.",
+        "saveFailed": "Speichern fehlgeschlagen",
+        "saveFailedDescription": "Die Datei konnte nicht geschrieben werden. Bitte versuche es erneut.",
+        "restartRequired": "Neustart erforderlich",
+        "restartRequiredDescription": "Dein Server läuft. Starte ihn neu, damit die Änderungen übernommen werden.",
+        "restartNow": "Jetzt neu starten",
+        "editAsText": "Als Text bearbeiten",
+        "editAsTextDirty": "Speichere oder verwirf zuerst Deine Änderungen",
+        "reload": "Neu laden",
+        "loadFailed": "Die Datei konnte nicht geladen werden.",
+        "retry": "Erneut versuchen",
+        "notFoundTitle": "{file} existiert noch nicht",
+        "notFoundDescription": "Starte Deinen Server einmal, damit er diese Datei erstellt, und komm dann hierher zurück.",
+        "reloadHint": "Datei erneut vom Server laden",
+        "categoriesLabel": "Kategorien",
+        "customValueOption": "Eigener Wert…",
+        "customValueHint": "Eigener Wert, wird genau so gespeichert.",
+        "unknownValue": "Der Wert ist unbekannt, kann aber trotzdem funktionieren.",
+        "expectedNumber": "Normalerweise eine ganze Zahl zwischen {min} und {max}.",
+        "standardValues": "Standardwerte:"
+      },
+      "minecraft": {
+        "whitelist": {
+          "title": "Whitelist",
+          "description": "Lege fest, wer Deinem Server beitreten darf.",
+          "attentionTitle": "Niemand kann Deinem Server beitreten",
+          "attentionDescription": "Die Whitelist ist aktiv, aber leer – jeder Spieler wird abgewiesen. Füge Dich und Deine Freunde hinzu oder schalte die Whitelist aus.",
+          "attentionAddPlayers": "Spieler hinzufügen",
+          "attentionDisable": "Whitelist deaktivieren",
+          "enabledLabel": "Whitelist aktiv",
+          "enabledDescription": "Nur Spieler auf der Liste können beitreten.",
+          "disabledDescription": "Jeder, der Deine Serveradresse kennt, kann beitreten.",
+          "disabledWarning": "Nicht empfohlen: Ohne Whitelist kann jeder beitreten und Deine Welt zerstören.",
+          "enabledToast": "Whitelist aktiviert",
+          "disabledToast": "Whitelist deaktiviert",
+          "toggleFailed": "Die Whitelist konnte nicht geändert werden. Bitte versuche es erneut.",
+          "addLabel": "Spieler hinzufügen",
+          "addPlaceholder": "Minecraft-Benutzername",
+          "addButton": "Hinzufügen",
+          "addedToast": "{name} wurde zur Whitelist hinzugefügt",
+          "removedToast": "{name} wurde von der Whitelist entfernt",
+          "removeFailed": "Der Spieler konnte nicht entfernt werden. Bitte versuche es erneut.",
+          "remove": "{name} entfernen",
+          "playersHeading": "{count, plural, one {# Spieler} other {# Spieler}}",
+          "empty": "Noch keine Spieler auf der Whitelist.",
+          "offlineModeHint": "Dein Server läuft im Offline-Modus. Spieler werden daher nur über ihren Namen hinzugefügt, ohne ihr Minecraft-Konto zu prüfen.",
+          "invalidFileTitle": "whitelist.json ist ungültig",
+          "invalidFileDescription": "Repariere oder lösche die Datei im Dateimanager, um die Whitelist hier zu verwalten.",
+          "loadFailed": "Die Whitelist konnte nicht geladen werden.",
+          "retry": "Erneut versuchen",
+          "notGeneratedTitle": "Noch keine Konfiguration",
+          "notGeneratedDescription": "Starte Deinen Server einmal, damit er seine Konfigurationsdateien erstellt, und verwalte die Whitelist dann hier.",
+          "errors": {
+            "alreadyAdded": "{name} ist bereits auf der Whitelist.",
+            "not_found": "Es gibt kein Minecraft-Konto namens {name}.",
+            "invalid_name": "Minecraft-Benutzernamen haben 3–16 Zeichen: Buchstaben, Zahlen und _.",
+            "error": "{name} konnte nicht nachgeschlagen werden. Bitte versuche es erneut."
+          },
+          "disableConfirm": {
+            "title": "Whitelist deaktivieren?",
+            "description": "Nicht empfohlen. Ohne Whitelist kann jeder, der Deine Serveradresse findet, beitreten und Deine Welt verändern oder zerstören. Deine Freunde zur Whitelist hinzuzufügen ist die sicherere Wahl.",
+            "cancel": "Whitelist behalten",
+            "confirm": "Trotzdem deaktivieren"
+          }
+        },
+        "properties": {
+          "title": "Server-Eigenschaften",
+          "description": "Einstellungen aus der server.properties. Die meisten Änderungen gelten nach einem Neustart.",
+          "categories": {
+            "gameplay": "Gameplay",
+            "players": "Spieler",
+            "world": "Welt",
+            "performance": "Leistung",
+            "resourcePack": "Ressourcenpaket",
+            "network": "Netzwerk"
+          },
+          "options": {
+            "difficulty": {
+              "peaceful": "Friedlich",
+              "easy": "Einfach",
+              "normal": "Normal",
+              "hard": "Schwer"
+            },
+            "gamemode": {
+              "survival": "Überleben",
+              "creative": "Kreativ",
+              "adventure": "Abenteuer",
+              "spectator": "Zuschauer"
+            },
+            "opPermissionLevel": {
+              "level1": "1 – Spawnschutz umgehen",
+              "level2": "2 – Cheats und Befehlsblöcke",
+              "level3": "3 – Spieler verwalten",
+              "level4": "4 – Volle Kontrolle"
+            },
+            "levelType": {
+              "normal": "Standard",
+              "flat": "Flachland",
+              "largeBiomes": "Große Biome",
+              "amplified": "Zerklüftet",
+              "singleBiome": "Einzelnes Biom"
+            }
+          },
+          "fields": {
+            "motd": {
+              "label": "Nachricht des Tages",
+              "description": "Wird in der Serverliste unter Deinem Servernamen angezeigt."
+            },
+            "difficulty": {
+              "label": "Schwierigkeit",
+              "description": "Wie gefährlich Monster und Hunger sind."
+            },
+            "gamemode": {
+              "label": "Standard-Spielmodus",
+              "description": "Spielmodus für Spieler, die zum ersten Mal beitreten."
+            },
+            "forceGamemode": {
+              "label": "Spielmodus erzwingen",
+              "description": "Setzt jeden Spieler beim Beitreten in den Standard-Spielmodus."
+            },
+            "hardcore": {
+              "label": "Hardcore",
+              "description": "Spieler werden nach dem Tod in den Zuschauermodus versetzt."
+            },
+            "pvp": {
+              "label": "PvP",
+              "description": "Spieler können sich gegenseitig Schaden zufügen."
+            },
+            "allowFlight": {
+              "label": "Fliegen erlauben",
+              "description": "Spieler, die im Überlebensmodus fliegen, werden nicht gekickt (für manche Mods nötig)."
+            },
+            "spawnProtection": {
+              "label": "Spawnschutz",
+              "description": "Radius in Blöcken um den Spawn, den nur Operatoren verändern dürfen. 0 schaltet ihn aus."
+            },
+            "spawnMonsters": {
+              "label": "Monster spawnen",
+              "description": "Feindliche Kreaturen dürfen spawnen."
+            },
+            "spawnAnimals": {
+              "label": "Tiere spawnen",
+              "description": "Tiere dürfen spawnen."
+            },
+            "spawnNpcs": {
+              "label": "Dorfbewohner spawnen",
+              "description": "Dorfbewohner dürfen spawnen."
+            },
+            "maxPlayers": {
+              "label": "Maximale Spieler",
+              "description": "Wie viele Spieler gleichzeitig online sein können."
+            },
+            "onlineMode": {
+              "label": "Online-Modus",
+              "description": "Prüft jeden Spieler gegen sein Minecraft-Konto.",
+              "warning": "Ist er aus, kann jeder mit jedem Namen beitreten – auch mit Deinem."
+            },
+            "enforceSecureProfile": {
+              "label": "Sicheren Chat erzwingen",
+              "description": "Nur Spieler mit einem von Mojang signierten Chat-Schlüssel zulassen."
+            },
+            "playerIdleTimeout": {
+              "label": "Inaktivitäts-Timeout",
+              "description": "Spieler nach so vielen inaktiven Minuten kicken. 0 schaltet es aus."
+            },
+            "opPermissionLevel": {
+              "label": "Operator-Berechtigungsstufe",
+              "description": "Was Operatoren standardmäßig dürfen."
+            },
+            "enableCommandBlock": {
+              "label": "Befehlsblöcke",
+              "description": "Befehlsblöcke dürfen ausgeführt werden."
+            },
+            "hideOnlinePlayers": {
+              "label": "Online-Spieler verbergen",
+              "description": "Die Spielerliste wird in der Serverliste nicht angezeigt."
+            },
+            "levelSeed": {
+              "label": "Welt-Seed",
+              "description": "Seed zum Generieren der Welt. Leer lassen für einen zufälligen.",
+              "warning": "Gilt nur, wenn eine neue Welt generiert wird."
+            },
+            "levelName": {
+              "label": "Welt-Ordner",
+              "description": "Name des Ordners, aus dem die Welt geladen wird.",
+              "warning": "Eine Änderung lädt (oder erstellt) eine andere Welt."
+            },
+            "levelType": {
+              "label": "Welttyp",
+              "description": "Generator für neue Welten.",
+              "warning": "Gilt nur, wenn eine neue Welt generiert wird."
+            },
+            "generateStructures": {
+              "label": "Bauwerke generieren",
+              "description": "Dörfer, Tempel und andere Bauwerke generieren.",
+              "warning": "Gilt nur für neu generierte Chunks."
+            },
+            "allowNether": {
+              "label": "Nether erlauben",
+              "description": "Spieler dürfen in den Nether reisen."
+            },
+            "maxWorldSize": {
+              "label": "Maximale Weltgröße",
+              "description": "Radius der Weltbarriere in Blöcken."
+            },
+            "viewDistance": {
+              "label": "Sichtweite",
+              "description": "Wie viele Chunks der Server an Spieler sendet (3–32). Niedrigere Werte verbessern die Leistung."
+            },
+            "simulationDistance": {
+              "label": "Simulationsdistanz",
+              "description": "Wie viele Chunks um Spieler aktiv sind (3–32). Niedrigere Werte verbessern die Leistung."
+            },
+            "pauseWhenEmptySeconds": {
+              "label": "Pausieren wenn leer",
+              "description": "Pausiert den Server nach so vielen Sekunden ohne Spieler. 0 schaltet es aus."
+            },
+            "syncChunkWrites": {
+              "label": "Synchrones Chunk-Speichern",
+              "description": "Sichereres Speichern auf Kosten der Leistung."
+            },
+            "resourcePack": {
+              "label": "Ressourcenpaket-URL",
+              "description": "Direkter Download-Link zu einem Ressourcenpaket, das Spielern angeboten wird."
+            },
+            "requireResourcePack": {
+              "label": "Ressourcenpaket erzwingen",
+              "description": "Spieler trennen, die das Ressourcenpaket ablehnen."
+            },
+            "serverPort": {
+              "label": "Server-Port",
+              "description": "Wird durch Deine Server-Zuweisung festgelegt."
+            },
+            "serverIp": {
+              "label": "Server-IP",
+              "description": "Wird durch Deine Server-Zuweisung festgelegt."
+            },
+            "queryPort": {
+              "label": "Query-Port",
+              "description": "Wird durch Deine Server-Zuweisung festgelegt."
+            },
+            "rconPort": {
+              "label": "RCON-Port",
+              "description": "Wird durch Deine Server-Zuweisung festgelegt."
+            }
+          }
+        }
+      }
     },
     "eula": {
       "title": "Minecraft® EULA akzeptieren",
