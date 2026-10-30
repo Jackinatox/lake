@@ -333,9 +333,10 @@
     "errors": {
       "gameNotFound": {
         "title": "Spiel nicht gefunden",
-        "description": "Das gesuchte Spiel existiert nicht oder ist nicht mehr verfügbar. Bitte wähle aus unseren verfügbaren Spielen.",
-        "browseGames": "Spiele durchsuchen",
-        "home": "Zur Startseite"
+        "description": "Unter dieser Adresse haben wir kein Spiel gefunden. Vielleicht ist der Link veraltet oder das Spiel wird nicht mehr angeboten. Wähle einfach eines unserer verfügbaren Spiele.",
+        "browseGames": "Alle Spiele ansehen",
+        "freeServer": "Kostenlosen Server holen",
+        "missingGame": "Dir fehlt ein Spiel? <link>Sag uns Bescheid</link>"
       },
       "loadingError": {
         "title": "Etwas ist schiefgelaufen",

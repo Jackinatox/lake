@@ -31,6 +31,8 @@ export async function generateMetadata({
             path: '/order/free',
             title: copy.freeOrderIndexTitle([]),
             description: copy.freeOrderIndexDescription([]),
+            // Unknown slug renders GameNotFound with HTTP 200: keep that soft 404 out of the index.
+            noindex: true,
         });
     }
 

@@ -321,9 +321,10 @@
     "errors": {
       "gameNotFound": {
         "title": "Game Not Found",
-        "description": "The game you're looking for doesn't exist or is no longer available. Please choose from our available games.",
-        "browseGames": "Browse Games",
-        "home": "Go to Home"
+        "description": "We couldn't find a game at this address. The link may be outdated, or the game is no longer offered. Pick one of our available games instead.",
+        "browseGames": "Browse All Games",
+        "freeServer": "Get a Free Server",
+        "missingGame": "Is your game missing? <link>Let us know</link>"
       },
       "loadingError": {
         "title": "Something Went Wrong",
