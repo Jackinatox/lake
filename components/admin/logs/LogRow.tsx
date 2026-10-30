@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { ChevronRight, Filter } from 'lucide-react';
 import { LogLevel } from '@/app/client/generated/enums';
 import { ApplicationLogWithRelations } from '@/models/prisma';
 import { cn } from '@/lib/utils';
 import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 type LogRowProps = {
     log: ApplicationLogWithRelations;

@@ -4,10 +4,11 @@ import { ThemeImage } from '@/components/ui/theme-image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Cpu, Database, HardDrive, MapPin, MemoryStick, Star } from 'lucide-react';
-import Link from 'next/link';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 export interface PackageDisplay {
     id: number;
@@ -113,7 +114,7 @@ export default function PackageCard({ pkg, href }: PackageCardProps) {
                         <div className="flex items-center gap-3">
                             <div className="text-right">
                                 <div className="text-lg font-bold text-primary">
-                                    {(pkg.priceCents / 100).toFixed(2)} €
+                                    <Euro cents={pkg.priceCents} />
                                 </div>
                                 <div className="text-xs text-muted-foreground">{t('perMonth')}</div>
                             </div>

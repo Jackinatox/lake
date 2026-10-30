@@ -302,11 +302,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/Mon."
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/Mon."
       }
     },
     "pricing": {
@@ -321,11 +321,11 @@
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
       },
-      "discount-with-amount": "(-{amount} € Rabatt)"
+      "discount-with-amount": "(-<amount></amount> Rabatt)"
     },
     "footer": {
       "total": "Gesamt",
-      "min-price-hint": "Mindestpreis 1 €",
+      "min-price-hint": "Mindestpreis <amount></amount>",
       "continue": "Weiter zur Zahlung"
     }
   },
@@ -333,9 +333,10 @@
     "errors": {
       "gameNotFound": {
         "title": "Spiel nicht gefunden",
-        "description": "Das gesuchte Spiel existiert nicht oder ist nicht mehr verfügbar. Bitte wähle aus unseren verfügbaren Spielen.",
-        "browseGames": "Spiele durchsuchen",
-        "home": "Zur Startseite"
+        "description": "Unter dieser Adresse haben wir kein Spiel gefunden. Vielleicht ist der Link veraltet oder das Spiel wird nicht mehr angeboten. Wähle einfach eines unserer verfügbaren Spiele.",
+        "browseGames": "Alle Spiele ansehen",
+        "freeServer": "Kostenlosen Server holen",
+        "missingGame": "Dir fehlt ein Spiel? <link>Sag uns Bescheid</link>"
       },
       "loadingError": {
         "title": "Etwas ist schiefgelaufen",
@@ -381,7 +382,7 @@
         "discount": "Rabatt (-{percent}%)",
         "surcharge": "Kurzzeitaufschlag (+{percent}%)",
         "total": "Gesamt",
-        "minOrderHint": "Der Mindestbestellwert beträgt 1,00 €."
+        "minOrderHint": "Der Mindestbestellwert beträgt <amount></amount>."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -391,8 +392,10 @@
         "backupCount": "Backup-Slots",
         "allocationsUnit": "Ports",
         "allocations": "Ports",
-        "perVcore": "€ / vCore",
-        "perGiB": "€ / GiB"
+        "perVcore": "€/vCore",
+        "perGiB": "€/GiB",
+        "perVcoreMonth": "€/vCore/Mon.",
+        "perGiBMonth": "€/GiB/Mon."
       },
       "button": {
         "continue": "Weiter"
@@ -407,7 +410,7 @@
       "title": "{game}-Konfiguration",
       "description": "Wähle Deine bevorzugten Spieleinstellungen.",
       "noSpecific": "Keine spezifischen Konfigurationsoptionen für dieses Spiel verfügbar.",
-      "changeableLater": "Du kannst all diese Einstellungen später jederzeit über Dein Server-Dashboard ändern und ansehen.",
+      "changeableLater": "Diese Einstellungen gelten ab der Installation. Ändern kannst Du sie später über „Spiel wechseln“, indem Du dasselbe Spiel noch einmal wählst. Der Server wird dabei neu installiert und standardmäßig werden alle Dateien gelöscht. Willst Du Deine Welt behalten, entferne dort den Haken bei „Alle Dateien löschen“.",
       "numberField": {
         "required": "Bitte eine Zahl eingeben",
         "wholeNumber": "Nur ganze Zahlen",
@@ -485,11 +488,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/Mon."
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/Mon."
       }
     },
     "pricing": {
@@ -502,12 +505,11 @@
       "rows": {
         "upgrade-for-days": "Upgrade für {days} Tage",
         "extend-for-days": "Verlängerung für {days} Tage"
-      },
-      "discount-with-amount": "(zzgl. {amount} € Rabatt)"
+      }
     },
     "footer": {
       "total": "Gesamt",
-      "min-price-hint": "Mindestpreis 1 €",
+      "min-price-hint": "Mindestpreis <amount></amount>",
       "continue": "Weiter zur Zahlung"
     }
   },
@@ -768,6 +770,7 @@
       "cancel": "Abbrechen",
       "confirm": "Widerruf bestätigen",
       "successTitle": "Widerruf eingeleitet",
+      "successDescription": "Widerruf über <amount></amount> wurde eingeleitet.",
       "errorTitle": "Widerrufsfehler",
       "errorCheckingEligibility": "Widerrufsberechtigung konnte nicht geprüft werden. Bitte versuche es erneut.",
       "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
@@ -881,8 +884,8 @@
         "description": "Rechtliche Angaben und Unternehmensinformationen."
       },
       "returns": {
-        "title": "Rückgaberichtlinie",
-        "description": "Unsere Richtlinie zu Erstattungen und Stornierungen."
+        "title": "Widerrufsbelehrung",
+        "description": "Dein Widerrufsrecht als Verbraucher und wie Du es ausübst."
       },
       "payments": {
         "title": "Zahlungen",
@@ -892,7 +895,7 @@
   },
   "changeGame": {
     "flavorChangeTitle": "Spiel-Variante ändern",
-    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Deine Weltdaten bleiben erhalten, außer Du wählst alle Dateien zu löschen.",
+    "flavorChangeDesc": "Du wechselst zwischen verschiedenen Versionen des gleichen Spiels. Ob dabei alle Dateien gelöscht werden, legst Du mit dem Haken bei „Alle Dateien löschen“ fest: Ohne Haken bleiben Deine Weltdaten erhalten.",
     "flavorChangeCheckbox": "Alle Dateien löschen (Neuinstallation)",
     "gameChangeTitle": "Achtung: Alle Dateien werden gelöscht!",
     "gameChangeDesc": "Der Wechsel zu einem anderen Spiel erfordert eine saubere Installation. Alle vorhandenen Dateien werden dauerhaft gelöscht. Stelle sicher, dass Du wichtige Daten vorher gesichert hast!",
@@ -912,16 +915,18 @@
     "agb": "AGB",
     "datenschutz": "Datenschutz",
     "support_center": "Support-Center",
-    "faq": "FAQ (Bald verfügbar)",
-    "documentation": "Dokumentation (Bald verfügbar)",
-    "about": "Über uns (Bald verfügbar)",
     "blog": "Blog",
     "company": "Unternehmen",
     "contactUs": "Kontakt",
     "withdrawal": "Verträge widerrufen",
     "payments": "Zahlungsbedingungen",
     "returns": "Widerrufsrecht",
-    "status": "Status"
+    "status": "Status",
+    "vatNote": "Alle Preise sind Endpreise. Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.",
+    "supportHeading": "Support",
+    "legalHeading": "Rechtliches",
+    "copyright": "© 2024–{year} Scyed. Alle Rechte vorbehalten.",
+    "documentation": "Dokumentation"
   },
   "gameserver": {
     "feedback": {
@@ -1622,7 +1627,7 @@
       "button": "Upgrade konfigurieren",
       "pricing": {
         "title": "Flexible Preise",
-        "description": "Zahle nur für das, was Du nutzt, ab 1,00 €."
+        "description": "Zahle nur für das, was Du nutzt, ab <amount></amount>."
       }
     },
     "helpText": {
@@ -1857,6 +1862,7 @@
     "storageTier": "Resource-Tier",
     "resourceTier": {
       "free": "Kostenlos",
+      "perMonth": "/Mon.",
       "disk": "Speicher",
       "backups": "Backups",
       "ports": "Ports",
@@ -1926,14 +1932,12 @@
       "subtitle": "Jede Gruppe hat eigene CPU- und Speicher-Preise.",
       "cpuLabel": "CPU",
       "ramLabel": "RAM",
-      "perVCore": "€ / vCore / Monat",
-      "perGiB": "€ / GiB / Monat",
       "vCoreRange": "{min}–{max} vCores",
       "ramRange": "{min}–{max} GiB"
     },
     "resourceTiers": {
       "title": "Ressourcenpakete",
-      "subtitle": "Disk-, Backup- und Port-Pakete — wähle, was Dein Server braucht.",
+      "subtitle": "Disk-, Backup- und Port-Pakete: Wähle, was Dein Server braucht.",
       "diskLabel": "Speicher",
       "backupsLabel": "Backups",
       "portsLabel": "Ports",
@@ -1968,9 +1972,9 @@
       "resources": "Ressourcen",
       "duration": "Laufzeit",
       "gib": "GiB",
-      "perVCore": "€/vCore/Mt.",
-      "perGiB": "€/GiB/Mt.",
-      "perMonth": "€/Monat",
+      "perVCore": "€/vCore/Mon.",
+      "perGiB": "€/GiB/Mon.",
+      "perMonth": "€/Mon.",
       "free": "Kostenlos",
       "tierSummary": "{disk} GiB · {backups} Backups · {ports} Ports",
       "durations": {
@@ -1985,7 +1989,7 @@
       "surcharge": "Kurzzeit-Aufschlag (+{percent} %)",
       "total": "Gesamt",
       "totalSub": "Einmalige Zahlung für {days} Tage",
-      "minOrderHint": "Mindestbestellwert beträgt 1,00 €"
+      "minOrderHint": "Mindestbestellwert beträgt <amount></amount>"
     },
     "faq": {
       "title": "Häufige Fragen",
@@ -2012,7 +2016,8 @@
     }
   },
   "blog": {
-    "title": "Zurück zur Übersicht",
+    "title": "Blog",
+    "backToOverview": "Zurück zur Übersicht",
     "listTitle": "Neueste Beiträge",
     "readMore": "Weiterlesen",
     "noPosts": "Noch keine Beiträge.",
@@ -2176,7 +2181,8 @@
     "continue": "Weiter",
     "configuredOrder": {
       "subtitle": "Konfiguriere Deinen Server",
-      "continueLabel": "Weiter zum Setup"
+      "continueLabel": "Weiter zum Setup",
+      "heading": "{game} Server mieten"
     },
     "configureHardware": {
       "title": "Hardware konfigurieren",
@@ -2216,12 +2222,23 @@
       "daysSuffix": "T"
     }
   },
+  "gameDetails": {
+    "heading": "Dein {game}-Server bei Scyed",
+    "intro": {
+      "minecraft": [
+        "Server-Typ und Minecraft-Version wählst Du selbst und kannst sie jederzeit wechseln, genauso wie das Spiel, oder Du lädst eine eigene server.jar hoch. Es läuft immer die Java Edition. Mit Geyser auf Paper, Fabric oder NeoForge kommen auch Bedrock-Spieler auf Deinen Server. Bestehende Welten lädst Du per SFTP hoch."
+      ]
+    },
+    "freeServerLink": "{game} erst kostenlos ausprobieren",
+    "docsHardwareLink": "Was Performance-Gruppen bedeuten und wie wir CPU und RAM aufteilen",
+    "faqHeading": "Häufige Fragen zu {game}-Servern"
+  },
   "Maintenance": {
     "title": "Wartung: Gameserver vorübergehend offline",
-    "description": "In PHP, auf dem unser Gameserver-Panel (Pterodactyl) läuft, wurde eine kritische Sicherheitslücke veröffentlicht. Um dich und deine Daten zu schützen, haben wir alle Gameserver-Panels vorsorglich abgeschaltet, bis eine behobene Version verfügbar und installiert ist.",
-    "impact": "In dieser Zeit kannst du deinen Server nicht verwalten: Dashboard, Konsole, Dateimanager, Backups und Einstellungen sind nicht erreichbar, und es können keine neuen Server bestellt werden.",
+    "description": "In PHP, auf dem unser Gameserver-Panel (Pterodactyl) läuft, wurde eine kritische Sicherheitslücke veröffentlicht. Um Dich und Deine Daten zu schützen, haben wir alle Gameserver-Panels vorsorglich abgeschaltet, bis eine behobene Version verfügbar und installiert ist.",
+    "impact": "In dieser Zeit kannst Du Deinen Server nicht verwalten: Dashboard, Konsole, Dateimanager, Backups und Einstellungen sind nicht erreichbar, und es können keine neuen Server bestellt werden.",
     "next": "Wir arbeiten mit höchster Priorität daran und bringen alles wieder online, sobald es sicher ist. Du musst nichts weiter tun.",
-    "apology": "Wir entschuldigen uns für die Unannehmlichkeiten und danken dir für deine Geduld.",
+    "apology": "Wir entschuldigen uns für die Unannehmlichkeiten und danken Dir für Deine Geduld.",
     "contactSupport": "Support kontaktieren",
     "home": "Zur Startseite",
     "bannerTitle": "Wartung: Gameserver sind vorübergehend offline",

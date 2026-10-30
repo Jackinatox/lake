@@ -16,9 +16,19 @@ import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { auth } from '@/auth';
 import { FREE_SERVER_CREATION_ENABLED, FREE_TIER_MAX_SERVERS } from '@/app/GlobalConstants';
-import { getKeyValueBoolean, getKeyValueNumber } from '@/lib/keyValue';
+import { getKeyValueBoolean } from '@/lib/keyValue';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
 import { headers } from 'next/headers';
+import { cache } from 'react';
+
+// Shared by generateMetadata (game names in title and description) and the page: one query per request
+const getFreeOrderGames = cache(async () =>
+    prisma.gameData.findMany({
+        select: { id: true, name: true, slug: true },
+        where: { enabled: true },
+        orderBy: { sorting: 'asc' },
+    }),
+);
 
 export async function generateMetadata({
     params,
@@ -27,12 +37,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
     const { locale } = await params;
     const copy = getMetadataCopy(locale);
+    const games = await getFreeOrderGames();
+    const gameNames = games.map((game) => game.name);
 
     return createPublicMetadata({
         locale,
         path: '/order/free',
-        title: copy.freeOrderIndexTitle,
-        description: copy.freeOrderIndexDescription,
+        title: copy.freeOrderIndexTitle(gameNames),
+        description: copy.freeOrderIndexDescription(gameNames),
         keywords: ['free game server', 'free gameserver', 'free minecraft server', 'free hosting'],
     });
 }
@@ -43,11 +55,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
 
     const [session, games, freeTierConfig, creationEnabled] = await Promise.all([
         auth.api.getSession({ headers: await headers() }),
-        prisma.gameData.findMany({
-            select: { id: true, name: true, slug: true },
-            where: { enabled: true },
-            orderBy: { sorting: 'asc' },
-        }),
+        getFreeOrderGames(),
         getFreeTierConfigCached(),
         getKeyValueBoolean(FREE_SERVER_CREATION_ENABLED, true),
     ]);
@@ -222,7 +230,7 @@ export default async function OrderPage({ params }: { params: Promise<{ locale: 
             </section>
 
             {/* Game Selection */}
-            <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-6 md:pb-6">
+            <section className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pb-8 md:pb-12">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-sm font-semibold text-foreground">
                         {copy.freePageSelectGame}

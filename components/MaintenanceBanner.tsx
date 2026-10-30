@@ -1,6 +1,7 @@
 import { isMaintenanceMode } from '@/lib/maintenance';
 import { ShieldAlert } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 /** Site-wide notice shown above every page while `MAINTENANCE_MODE` is on. */
 export default async function MaintenanceBanner() {
@@ -16,9 +17,9 @@ export default async function MaintenanceBanner() {
                     <p className="text-sm font-medium text-foreground">{t('bannerTitle')}</p>
                     <p className="text-sm text-muted-foreground">
                         {t('bannerDescription')}{' '}
-                        <a href="/maintenance" className="underline font-medium text-foreground">
+                        <Link href="/maintenance" className="underline font-medium text-foreground">
                             {t('bannerLink')}
-                        </a>
+                        </Link>
                     </p>
                 </div>
             </div>

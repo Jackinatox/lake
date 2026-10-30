@@ -290,11 +290,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/mo"
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/mo"
       }
     },
     "pricing": {
@@ -309,11 +309,11 @@
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
       },
-      "discount-with-amount": "(minus {amount} € discount)"
+      "discount-with-amount": "(minus <amount></amount> discount)"
     },
     "footer": {
       "total": "Total",
-      "min-price-hint": "Minimum price €1",
+      "min-price-hint": "Minimum price <amount></amount>",
       "continue": "Continue to Payment"
     }
   },
@@ -321,9 +321,10 @@
     "errors": {
       "gameNotFound": {
         "title": "Game Not Found",
-        "description": "The game you're looking for doesn't exist or is no longer available. Please choose from our available games.",
-        "browseGames": "Browse Games",
-        "home": "Go to Home"
+        "description": "We couldn't find a game at this address. The link may be outdated, or the game is no longer offered. Pick one of our available games instead.",
+        "browseGames": "Browse All Games",
+        "freeServer": "Get a Free Server",
+        "missingGame": "Is your game missing? <link>Let us know</link>"
       },
       "loadingError": {
         "title": "Something Went Wrong",
@@ -369,7 +370,7 @@
         "discount": "Discount (-{percent}%)",
         "surcharge": "Short-term surcharge (+{percent}%)",
         "total": "Total",
-        "minOrderHint": "Minimum order value is 1.00 €."
+        "minOrderHint": "Minimum order value is <amount></amount>."
       },
       "labels": {
         "ramUnit": "GiB RAM",
@@ -379,8 +380,10 @@
         "backupCount": "Backup Slots",
         "allocationsUnit": "Ports",
         "allocations": "Ports",
-        "perVcore": "€ / vCore",
-        "perGiB": "€ / GiB"
+        "perVcore": "€/vCore",
+        "perGiB": "€/GiB",
+        "perVcoreMonth": "€/vCore/mo",
+        "perGiBMonth": "€/GiB/mo"
       },
       "button": {
         "continue": "Continue"
@@ -395,7 +398,7 @@
       "title": "{game} Configuration",
       "description": "Select your preferred game settings",
       "noSpecific": "No specific configuration options available for this game.",
-      "changeableLater": "You can change and review all of these settings later from your server dashboard.",
+      "changeableLater": "These settings apply from installation. To change them later, use “Change Game” and pick the same game again. This reinstalls the server and by default deletes all files. To keep your world, untick “Delete all files” there.",
       "numberField": {
         "required": "Enter a number",
         "wholeNumber": "Whole numbers only",
@@ -473,11 +476,11 @@
       },
       "little-info": "Info",
       "cpu": {
-        "price-suffix": "€ / vCore"
+        "price-suffix": "€/vCore/mo"
       },
       "ram": {
         "label-suffix": "GiB RAM",
-        "price-suffix": "€ / GiB"
+        "price-suffix": "€/GiB/mo"
       }
     },
     "pricing": {
@@ -490,12 +493,11 @@
       "rows": {
         "upgrade-for-days": "Upgrade for {days} days",
         "extend-for-days": "Extend for {days} days"
-      },
-      "discount-with-amount": "(minus {amount} € discount)"
+      }
     },
     "footer": {
       "total": "Total",
-      "min-price-hint": "Minimum price €1",
+      "min-price-hint": "Minimum price <amount></amount>",
       "continue": "Continue to Payment"
     }
   },
@@ -756,6 +758,7 @@
       "cancel": "Cancel",
       "confirm": "Confirm Withdrawal",
       "successTitle": "Withdrawal Initiated",
+      "successDescription": "Withdrawal of <amount></amount> has been initiated.",
       "errorTitle": "Withdrawal Error",
       "errorCheckingEligibility": "Could not check withdrawal eligibility. Please try again.",
       "unexpectedError": "An unexpected error occurred. Please try again.",
@@ -869,8 +872,8 @@
         "description": "Legal disclosure and company information."
       },
       "returns": {
-        "title": "Returns Policy",
-        "description": "Our policy on refunds and cancellations."
+        "title": "Right of Withdrawal",
+        "description": "Your right of withdrawal as a consumer and how to exercise it."
       },
       "payments": {
         "title": "Payments",
@@ -880,7 +883,7 @@
   },
   "changeGame": {
     "flavorChangeTitle": "Changing game flavor",
-    "flavorChangeDesc": "You're switching between different versions of the same game. Your world data will be preserved unless you choose to delete all files.",
+    "flavorChangeDesc": "You're switching between different versions of the same game. The “Delete all files” checkbox decides whether all files are deleted: unticked, your world data is kept.",
     "flavorChangeCheckbox": "Delete all files (fresh install)",
     "gameChangeTitle": "Warning: All files will be deleted!",
     "gameChangeDesc": "Switching to a different game requires a clean installation. All existing files will be permanently deleted. Make sure to backup anything important before continuing!",
@@ -900,16 +903,18 @@
     "agb": "Terms",
     "datenschutz": "Privacy",
     "support_center": "Support-Center",
-    "faq": "FAQ (Coming Soon)",
-    "documentation": "Documentation (Coming Soon)",
-    "about": "About Us (Coming Soon)",
     "blog": "Blog",
     "company": "Company",
     "contactUs": "Contact",
     "withdrawal": "Withdrawal contracts",
     "payments": "Payment terms",
     "returns": "Withdrawal rights",
-    "status": "Status"
+    "status": "Status",
+    "vatNote": "All prices are final. Under Section 19 of the German VAT Act (UStG), no VAT is charged.",
+    "supportHeading": "Support",
+    "legalHeading": "Legal",
+    "copyright": "© 2024–{year} Scyed. All rights reserved.",
+    "documentation": "Documentation"
   },
   "gameserver": {
     "feedback": {
@@ -1610,7 +1615,7 @@
       "button": "Configure Upgrade",
       "pricing": {
         "title": "Flexible Pricing",
-        "description": "Pay only for what you use, starting from €1.00."
+        "description": "Pay only for what you use, starting from <amount></amount>."
       }
     },
     "helpText": {
@@ -1845,6 +1850,7 @@
     "storageTier": "Resource Tier",
     "resourceTier": {
       "free": "Free",
+      "perMonth": "/mo",
       "disk": "Disk",
       "backups": "Backups",
       "ports": "Ports",
@@ -1914,14 +1920,12 @@
       "subtitle": "Each group has its own CPU and memory pricing.",
       "cpuLabel": "CPU",
       "ramLabel": "RAM",
-      "perVCore": "€ / vCore / month",
-      "perGiB": "€ / GiB / month",
       "vCoreRange": "{min}–{max} vCores",
       "ramRange": "{min}–{max} GiB"
     },
     "resourceTiers": {
       "title": "Resource packages",
-      "subtitle": "Disk, backup and port packages — pick whatever your server needs.",
+      "subtitle": "Disk, backup and port packages: pick whatever your server needs.",
       "diskLabel": "Disk",
       "backupsLabel": "Backups",
       "portsLabel": "Ports",
@@ -1973,7 +1977,7 @@
       "surcharge": "Short-term surcharge (+{percent}%)",
       "total": "Total",
       "totalSub": "One-time payment for {days} days",
-      "minOrderHint": "Minimum order value is 1.00 €"
+      "minOrderHint": "Minimum order value is <amount></amount>"
     },
     "faq": {
       "title": "Common questions",
@@ -2000,7 +2004,8 @@
     }
   },
   "blog": {
-    "title": "Back to overview",
+    "title": "Blog",
+    "backToOverview": "Back to overview",
     "listTitle": "Latest Posts",
     "readMore": "Read more",
     "noPosts": "No posts yet.",
@@ -2164,7 +2169,8 @@
     "continue": "Continue",
     "configuredOrder": {
       "subtitle": "Configure your server",
-      "continueLabel": "Continue to Setup"
+      "continueLabel": "Continue to Setup",
+      "heading": "{game} Server Hosting"
     },
     "configureHardware": {
       "title": "Configure Hardware",
@@ -2203,6 +2209,17 @@
       "duration": "Duration",
       "daysSuffix": "d"
     }
+  },
+  "gameDetails": {
+    "heading": "Your {game} server at Scyed",
+    "intro": {
+      "minecraft": [
+        "You choose the server type and Minecraft version yourself and can switch them at any time, just like the game, or you upload your own server.jar. Your server always runs Java Edition. With Geyser on Paper, Fabric or NeoForge, Bedrock players can join too. Upload existing worlds via SFTP."
+      ]
+    },
+    "freeServerLink": "Try {game} for free first",
+    "docsHardwareLink": "What performance groups mean and how we share CPU and RAM",
+    "faqHeading": "Frequently asked questions about {game} servers"
   },
   "Maintenance": {
     "title": "Maintenance: game servers temporarily offline",

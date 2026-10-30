@@ -2,7 +2,6 @@
 
 import { ThemeImage } from '@/components/ui/theme-image';
 import * as React from 'react';
-import Link from 'next/link';
 import {
     ChevronDown,
     Menu as MenuIcon,
@@ -30,6 +29,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetHeader } from '@/co
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './language-switcher';
 import { authClient } from '@/lib/auth-client';
+import { Link } from '@/i18n/navigation';
 
 // 1) Define a TS type for clarity (optional, but helpful in larger apps)
 type SubItem = { labelKey: string; href: string; Icon: React.FC<React.SVGProps<SVGSVGElement>> };
@@ -89,8 +89,9 @@ export default function MainMenu({ locale }: MainMenuInterface) {
         <header className="">
             <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 justify-between items-center">
-                    {/* — Desktop Menu — */}
-                    <NavigationMenu className="hidden lg:flex">
+                    {/* — Desktop Menu — (from xl: below that, menu + language + login/profile
+                        overflow the navbar, e.g. on tablets in landscape) */}
+                    <NavigationMenu className="hidden xl:flex">
                         <NavigationMenuList className="flex space-x-4 items-center">
                             {MENU.map((item) =>
                                 item.subItems ? (
@@ -158,7 +159,7 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                     </NavigationMenu>
 
                     {/* — Mobile Menu — */}
-                    <div className="lg:hidden">
+                    <div className="xl:hidden">
                         <Sheet open={open} onOpenChange={setOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon">
@@ -190,13 +191,13 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                             href="/gameserver"
                                             onClick={() => setOpen(false)}
                                             className={cn(
-                                                'flex items-center px-4 py-3 text-lg font-semibold rounded-lg transition-colors',
+                                                'flex items-center px-3 py-3 text-base font-semibold rounded-lg transition-colors',
                                                 isActive('/gameserver')
                                                     ? 'bg-primary/20 text-primary font-semibold'
                                                     : 'hover:text-primary',
                                             )}
                                         >
-                                            <LayoutDashboard className="h-6 w-6 mr-3" />
+                                            <LayoutDashboard className="h-5 w-5 mr-3" />
                                             {tm('dashboard')}
                                         </Link>
                                     )}
@@ -205,11 +206,11 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     <Button
                                         asChild
                                         variant="secondary"
-                                        className="w-full justify-start px-4 py-3 h-auto text-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+                                        className="w-full justify-start gap-3 px-3 py-3 h-auto text-base font-semibold bg-green-600 hover:bg-green-700 text-white"
                                         onClick={() => setOpen(false)}
                                     >
                                         <Link href="/order/free" className="flex items-center">
-                                            <Gift className="h-6 w-6 mr-3" />
+                                            <Gift className="h-5 w-5" />
                                             {t('buttonText')}
                                         </Link>
                                     </Button>

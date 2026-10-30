@@ -20,7 +20,8 @@ import {
     XCircle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface PaymentItemProps {
     amount: number;
@@ -154,7 +155,7 @@ export function PaymentItem({
                     <div className="flex items-center gap-0.5 md:gap-1 mt-0.5 text-xs text-muted-foreground">
                         <Undo2 className="h-2.5 w-2.5" />
                         <span>
-                            {t('refund.refundedAmount')}: {(totalRefundedCents / 100).toFixed(2)} €
+                            {t('refund.refundedAmount')}: <Euro cents={totalRefundedCents} />
                         </span>
                     </div>
                 )}
@@ -163,7 +164,7 @@ export function PaymentItem({
                 {!isFreeServer && (
                     <>
                         <span className="font-medium text-sm md:text-base whitespace-nowrap">
-                            {(amount / 100).toFixed(2)} €
+                            <Euro cents={amount} />
                         </span>
 
                         {/* Receipt button */}

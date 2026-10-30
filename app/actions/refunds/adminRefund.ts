@@ -9,6 +9,7 @@ import { adminRefundSchema, refundRequestSchema } from '@/lib/validation/order';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { RefundServerAction, RefundType } from '@/app/client/generated/browser';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 export type AdminRefundParams = {
     orderId: string;
@@ -59,7 +60,7 @@ export async function adminRefund(
     if (amountCents > remainingBalance) {
         return {
             success: false,
-            message: `Amount (${(amountCents / 100).toFixed(2)} €) exceeds remaining balance (${(remainingBalance / 100).toFixed(2)} €)`,
+            message: `Amount (${formatEuro(amountCents, 'de')}) exceeds remaining balance (${formatEuro(remainingBalance, 'de')})`,
         };
     }
 
@@ -149,7 +150,7 @@ export async function adminRefund(
 
         return {
             success: true,
-            message: `${typeLabel} of ${(amountCents / 100).toFixed(2)} € has been initiated for order ${order.id}`,
+            message: `${typeLabel} of ${formatEuro(amountCents, 'de')} has been initiated for order ${order.id}`,
         };
     } catch (error) {
         logger.error(`Failed to create admin ${typeLabel}`, 'PAYMENT', {

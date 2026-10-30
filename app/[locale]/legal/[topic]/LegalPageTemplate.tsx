@@ -25,13 +25,16 @@ const LEGAL_CONSTANTS_MAP: Record<LegalTopic, { de: string; en: string }> = {
 interface LegalPageTemplateProps {
     pageType: LegalTopic;
     locale: string;
+    title: string;
 }
 
-async function LegalPageTemplate({ pageType, locale }: LegalPageTemplateProps) {
+async function LegalPageTemplate({ pageType, locale, title }: LegalPageTemplateProps) {
     const htmlContent = await getLegalContent(locale, pageType);
 
     return (
         <div className="w-full max-w-4xl mx-auto">
+            {/* The Händlerbund texts bring their own visible title, but not as a heading */}
+            <h1 className="sr-only">{title}</h1>
             <Card>
                 <CardContent>
                     <div

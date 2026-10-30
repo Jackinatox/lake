@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
                     {/* Support */}
                     <div className="flex flex-col gap-4">
-                        <h3 className="font-semibold text-base">Support</h3>
+                        <h3 className="font-semibold text-base">{t('supportHeading')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
                                 href="/support/tickets"
@@ -22,18 +22,11 @@ export default function Footer() {
                             >
                                 {t('support_center')}
                             </Link>
-                            <Link
-                                href="/support/tickets"
-                                className="hover:text-foreground transition-colors"
-                            >
-                                {t('faq')}
-                            </Link>
-                            <Link
-                                href="/support/tickets"
-                                className="hover:text-foreground transition-colors"
-                            >
+                            {/* Plain <a>: the docs are a separate Starlight site under /docs/,
+                                outside the locale routing, so next-intl's Link must not prefix it */}
+                            <a href="/docs/" className="hover:text-foreground transition-colors">
                                 {t('documentation')}
-                            </Link>
+                            </a>
                             <Link
                                 href={'/withdrawal'}
                                 className="hover:text-foreground transition-colors"
@@ -53,7 +46,7 @@ export default function Footer() {
 
                     {/* Rechtliches */}
                     <div className="flex flex-col gap-4">
-                        <h3 className="font-semibold text-base">Rechtliches</h3>
+                        <h3 className="font-semibold text-base">{t('legalHeading')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <Link
                                 href="/legal/imprint"
@@ -98,9 +91,6 @@ export default function Footer() {
                     <div className="flex flex-col gap-4">
                         <h3 className="font-semibold text-base">{t('company')}</h3>
                         <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
-                            <Link href="/" className="hover:text-foreground transition-colors">
-                                {t('about')}
-                            </Link>
                             <Link href="/blog" className="hover:text-foreground transition-colors">
                                 {t('blog')}
                             </Link>
@@ -139,12 +129,16 @@ export default function Footer() {
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">
-                            © 2026 Scyed. All rights reserved.
+                            {t('copyright', { year: new Date().getFullYear() })}
                         </span>
                     </div>
                     <ThemeSwitcher />
                     <CookieSettingsButton />
                 </div>
+
+                <p className="mt-6 text-xs text-muted-foreground text-center md:text-left">
+                    {t('vatNote')}
+                </p>
             </div>
         </footer>
     );

@@ -6,7 +6,7 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { ChevronRight, CreditCard, Database, HardDrive, MemoryStick, Network, Zap } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 interface FreeServerSpecsProps {
     cpu: string;

@@ -33,8 +33,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { TICKET_SUBJECT_MAX_LENGTH, TICKET_SUBJECT_MIN_LENGTH } from '@/lib/tickets/constants';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState, useTransition, type FormEvent } from 'react';
+import { useRouter } from '@/i18n/navigation';
 
 /** "⋯" menu next to the ticket title: rename the subject, delete the ticket. */
 export default function TicketHeaderActions({

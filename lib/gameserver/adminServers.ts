@@ -1,5 +1,6 @@
 import type { Prisma } from '@/app/client/generated/browser';
 import { suspendedServerWhere } from './suspension';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 /**
  * Shared vocabulary of the admin gameserver panel (`/admin/gameservers`): what counts as the
@@ -201,9 +202,9 @@ export function formatGiB(mb: number, decimals = 0): string {
     return `${(mb / 1024).toFixed(decimals)}`;
 }
 
-/** Cents (`GameServer.price`) to a euro string. */
+/** Cents (`GameServer.price`) to a euro string, always German format (the admin area's target language). */
 export function formatCents(cents: number): string {
-    return `€${(cents / 100).toFixed(2)}`;
+    return formatEuro(cents, 'de');
 }
 
 const SHORT_DATE = new Intl.DateTimeFormat('de-DE', {

@@ -59,9 +59,10 @@ export async function checkWithdrawalEligibility(
  * Creates a Stripe refund for the pro-rata unused amount.
  * The contract ends immediately upon withdrawal.
  */
-export async function requestUserWithdrawal(
-    orderId: string,
-): Promise<{ success: boolean; message: string }> {
+export async function requestUserWithdrawal(orderId: string): Promise<
+    // The client words the success toast itself, in the user's language
+    { success: true; amountCents: number } | { success: false; message: string }
+> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) throw new Error('Not authenticated');
     const { orderId: parsedOrderId } = refundRequestSchema.parse({ orderId });
@@ -165,7 +166,7 @@ export async function requestUserWithdrawal(
 
         return {
             success: true,
-            message: `Withdrawal of ${(eligibility.refundableAmountCents / 100).toFixed(2)} € has been initiated`,
+            amountCents: eligibility.refundableAmountCents,
         };
     } catch (error) {
         logger.error('Failed to create user withdrawal', 'PAYMENT', {

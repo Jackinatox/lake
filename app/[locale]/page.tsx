@@ -6,11 +6,11 @@ import { ChangelogStrip } from '@/components/landing/ChangelogStrip';
 import { Gift, ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import Link from 'next/link';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { homeJsonLd } from '@/lib/structuredData';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,
@@ -173,7 +173,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                                     className="text-base w-full sm:w-auto"
                                     asChild
                                 >
-                                    <Link href="/order/configure">{t('buttonComparePlans')}</Link>
+                                    <Link href="/pricing">{t('buttonComparePlans')}</Link>
                                 </Button>
                             </div>
                         </div>
@@ -343,7 +343,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                             </Link>
                         </Button>
                         <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-                            <Link href="/order/configure">{t('buttonComparePlans')}</Link>
+                            <Link href="/pricing">{t('buttonComparePlans')}</Link>
                         </Button>
                     </div>
                 </div>

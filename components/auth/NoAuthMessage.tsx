@@ -2,7 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default async function NotLoggedIn() {
     const t = await getTranslations('NotLoggedIn');

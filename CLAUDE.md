@@ -53,6 +53,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `content-placement.md` — Where user-facing information goes: rendered by lake from its
+  own data, FAQ entries, or the Starlight docs (`Scyed/lake-docs`, scyed.com/docs). Read
+  before writing FAQ texts, docs pages or page copy that states prices, limits or rules.
 - `seo.md` — robots.txt, sitemap (with hreflang), canonical/hreflang via
   `createPublicMetadata`, noindex for private sections (why not robots.txt
   `Disallow`) and JSON-LD. Read when adding a public or private page, or

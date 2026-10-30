@@ -38,8 +38,8 @@ import { ticketDayLabel, withDaySeparators } from '@/lib/tickets/timeline';
 import { cn } from '@/lib/utils';
 import { Pin, ShieldCheck } from 'lucide-react';
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
 
 // The gameserver panel hides deleted and suspended servers by default; a link from a ticket
 // should show every server the customer has, so it widens each of those scopes explicitly.

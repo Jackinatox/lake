@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import {
     Activity,
     BookOpen,
@@ -22,6 +21,7 @@ import {
     Undo2,
     UsersIcon,
 } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 type AdminItem = {
     name: string;

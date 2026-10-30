@@ -18,8 +18,15 @@ export default async function page({
         notFound();
     }
     const castTopic: LegalTopic = topic as LegalTopic;
+    const t = await getTranslations({ locale, namespace: 'legalOverview' });
 
-    return <LegalPageTemplate pageType={castTopic} locale={locale} />;
+    return (
+        <LegalPageTemplate
+            pageType={castTopic}
+            locale={locale}
+            title={t(`topics.${castTopic}.title`)}
+        />
+    );
 }
 
 export async function generateMetadata({
