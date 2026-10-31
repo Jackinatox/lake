@@ -23,8 +23,14 @@ export default function Footer() {
                                 {t('support_center')}
                             </Link>
                             {/* Plain <a>: the docs are a separate Starlight site under /docs/,
-                                outside the locale routing, so next-intl's Link must not prefix it */}
-                            <a href="/docs/" className="hover:text-foreground transition-colors">
+                                outside the locale routing, so next-intl's Link must not prefix it.
+                                Docs links open in a new tab, like every docs link in lake */}
+                            <a
+                                href="/docs/"
+                                target="_blank"
+                                rel="noopener"
+                                className="hover:text-foreground transition-colors"
+                            >
                                 {t('documentation')}
                             </a>
                             <Link

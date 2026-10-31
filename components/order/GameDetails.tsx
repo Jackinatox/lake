@@ -48,6 +48,8 @@ export async function GameDetails({ game, hasFreeServers }: GameDetailsProps) {
                     {/* Plain <a>: the docs live outside lake's locale routing */}
                     <a
                         href="/docs/rund-um-scyed/server/hardware-und-leistung/"
+                        target="_blank"
+                        rel="noopener"
                         className="underline underline-offset-4 hover:text-primary"
                     >
                         {t('docsHardwareLink')}
