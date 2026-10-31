@@ -24,7 +24,10 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - `app/robots.ts`: `Disallow: /api/, /webhook/` plus two `Sitemap:` lines: lake's own and the
   docs' (`/docs/sitemap-index.xml`). The docs are a separate Starlight site (`Scyed/lake-docs`)
   that the reverse proxy serves under `/docs/`, outside lake and its locale routing; link to it
-  with a plain `<a href="/docs/...">`, not next-intl's `Link`.
+  with a plain `<a href="/docs/..." target="_blank" rel="noopener">`, not next-intl's `Link`.
+  Docs links always open in a new tab. In FAQ answers and blog posts, `MarkdownRenderer` opens
+  every link in a new tab except lake-internal ones (relative or on lake's own domain, not
+  `/docs`); anchors and `mailto:`/`tel:` stay as they are.
 - `app/sitemap.ts`: `localeUrls(path, ...)` emits one entry per locale with
   `alternates.languages`. Contains home, pricing, blog, changelog, `/support/tickets`, `/order`,
   `/order/free`, the order page per enabled game, and blog posts (`published && listed && publishedAt <= now`).
