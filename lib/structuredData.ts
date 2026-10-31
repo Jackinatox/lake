@@ -1,4 +1,5 @@
 import { SITE_NAME, SITE_URL } from '@/lib/metadata';
+import { stripMarkdown } from '@/lib/markdownExcerpt';
 
 // schema.org JSON-LD for Google rich results, rendered with components/seo/JsonLd.tsx.
 // Only describe what is also visible on the page; Google penalizes markup that is not.
@@ -31,6 +32,19 @@ export function homeJsonLd(locale: string) {
             publisher: publisher(),
         },
     ];
+}
+
+/** FAQPage for an FAQ block; answers are markdown in the DB, the markup gets plain text. */
+export function faqPageJsonLd(faqs: { question: string; answer: string }[]) {
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqs.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: { '@type': 'Answer', text: stripMarkdown(faq.answer) },
+        })),
+    };
 }
 
 export function blogPostingJsonLd({

@@ -10,13 +10,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import InfoButton from '@/components/InfoButton';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import LogarithmicSlider, { SliderMarker } from './LogarithmicSlider';
 import PriceOverview from './PriceOverview';
 import ResourceTierSelector from './ResourceTierSelector';
 import type { HardwareRecommendationSlim, ResourceTierDisplay } from '@/models/prisma';
 import { ORDER_DURATIONS } from '@/lib/validation/common';
 import { performanceConfiguratorQuerySchema } from '@/lib/validation/order';
+import { useRouter } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 // ── Logarithmic scales ──────────────────────────────────────────────────
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
@@ -336,7 +338,12 @@ export default function PerformanceConfigurator({
                             <SliderSection
                                 label={formatVCores(cpuCores)}
                                 sublabel={selectedPFGroup.cpu.name}
-                                detail={`${((selectedPFGroup.cpu.pricePerCore / 100 / 30) * days).toFixed(2)} ${tl('perVcore')}`}
+                                detail={
+                                    <Euro
+                                        cents={(selectedPFGroup.cpu.pricePerCore / 30) * days}
+                                        unit={tl('perVcore')}
+                                    />
+                                }
                             >
                                 <LogarithmicSlider
                                     stops={availableCpuStops}
@@ -350,7 +357,12 @@ export default function PerformanceConfigurator({
                             {/* RAM */}
                             <SliderSection
                                 label={`${ramGb} ${tl('ramUnit')}`}
-                                detail={`${((selectedPFGroup.ram.pricePerGb / 100 / 30) * days).toFixed(2)} ${tl('perGiB')}`}
+                                detail={
+                                    <Euro
+                                        cents={(selectedPFGroup.ram.pricePerGb / 30) * days}
+                                        unit={tl('perGiB')}
+                                    />
+                                }
                             >
                                 <LogarithmicSlider
                                     stops={availableRamStops}
@@ -435,7 +447,7 @@ function SliderSection({
 }: {
     label: string;
     sublabel?: string;
-    detail?: string;
+    detail?: React.ReactNode;
     children: React.ReactNode;
 }) {
     return (

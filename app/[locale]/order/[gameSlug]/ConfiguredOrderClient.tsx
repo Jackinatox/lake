@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { HardwareRecommendationSlim, PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface ConfiguredOrderClientProps {
     performanceGroups: PerformanceGroup[];
@@ -15,6 +16,8 @@ interface ConfiguredOrderClientProps {
     game: { id: number; name: string; slug: string };
     hasFreeServers: boolean;
     hardwareRecommendations: HardwareRecommendationSlim[];
+    /** Server-rendered text below the configurator, see GameDetails */
+    detailsSlot?: ReactNode;
 }
 
 interface PriceInfo {
@@ -28,6 +31,7 @@ export default function ConfiguredOrderClient({
     resourceTiers,
     game,
     hardwareRecommendations,
+    detailsSlot,
 }: ConfiguredOrderClientProps) {
     const t = useTranslations('orderFlow');
     const imgPath = `/images/games/icons/${game.name.toLowerCase()}.webp`;
@@ -59,7 +63,7 @@ export default function ConfiguredOrderClient({
                         </div>
                         <div className="flex-1 min-w-0">
                             <h1 className="text-base sm:text-lg font-bold leading-tight">
-                                {game.name}
+                                {t('configuredOrder.heading', { game: game.name })}
                             </h1>
                             <p className="text-xs text-muted-foreground hidden sm:block">
                                 {t('configuredOrder.subtitle')}
@@ -69,7 +73,7 @@ export default function ConfiguredOrderClient({
                         {priceInfo && (
                             <div className="text-right shrink-0">
                                 <div className="text-xl font-bold text-primary">
-                                    {(priceInfo.totalCents / 100).toFixed(2)} €
+                                    <Euro cents={priceInfo.totalCents} />
                                 </div>
                                 <div className="text-xs text-muted-foreground">{t('total')}</div>
                             </div>
@@ -97,13 +101,15 @@ export default function ConfiguredOrderClient({
                 />
             </div>
 
+            {detailsSlot}
+
             {/* Sticky bottom bar — mobile only */}
             {priceInfo && (
                 <div className="lg:hidden sticky bottom-0 z-20 bg-background/95 backdrop-blur-md border-t p-3 flex items-center gap-3">
                     <div className="flex-1">
                         <div className="text-xs text-muted-foreground">{t('total')}</div>
                         <div className="text-2xl font-bold text-primary">
-                            {(priceInfo.totalCents / 100).toFixed(2)} €
+                            <Euro cents={priceInfo.totalCents} />
                         </div>
                     </div>
                     <Button

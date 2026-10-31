@@ -1,6 +1,7 @@
 import { Heading, Hr, Section, Text } from '@react-email/components';
 import { formatDate } from '../../formatDate';
 import { OrderType, RefundServerAction } from '@/app/client/generated/enums';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 import {
     EmailButton,
     EmailCard,
@@ -24,13 +25,6 @@ interface RefundTemplateProps {
     reason?: string;
     serverAction?: RefundServerAction;
 }
-
-const formatPrice = (cents: number) => {
-    return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(cents / 100);
-};
 
 const getOrderTypeLabel = (type: string) => {
     switch (type) {
@@ -67,7 +61,7 @@ export default function RefundTemplate({
 
     return (
         <EmailLayout
-            preview={`Rückerstattung von ${formatPrice(refundAmountCents)} für deinen ${gameName} Server`}
+            preview={`Rückerstattung von ${formatEuro(refundAmountCents, 'de')} für deinen ${gameName} Server`}
         >
             <Heading style={headingStyle}>Rückerstattung bestätigt</Heading>
 
@@ -134,7 +128,7 @@ export default function RefundTemplate({
                                     fontWeight: 600,
                                 }}
                             >
-                                {formatPrice(originalAmountCents)}
+                                {formatEuro(originalAmountCents, 'de')}
                             </td>
                         </tr>
                         <tr>
@@ -158,7 +152,7 @@ export default function RefundTemplate({
                                     color: '#16a34a',
                                 }}
                             >
-                                {formatPrice(refundAmountCents)}
+                                {formatEuro(refundAmountCents, 'de')}
                             </td>
                         </tr>
                         {!isFullRefund && (
@@ -175,7 +169,7 @@ export default function RefundTemplate({
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {formatPrice(totalRefundedCents)}
+                                    {formatEuro(totalRefundedCents, 'de')}
                                 </td>
                             </tr>
                         )}

@@ -13,9 +13,8 @@ import { Game, GameConfig } from '@/models/config';
 import { ArrowLeft, Gift, Server } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { Link, useRouter } from '@/i18n/navigation';
 
 export interface FreeServerStats {
     currentFreeServers: number;

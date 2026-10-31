@@ -21,7 +21,8 @@ import {
 import { Loader2, FileX2, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface RefundRequestButtonProps {
     orderId: string;
@@ -61,7 +62,9 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                 if (result.success) {
                     toast({
                         title: t('successTitle'),
-                        description: result.message,
+                        description: t.rich('successDescription', {
+                            amount: () => <Euro cents={result.amountCents} />,
+                        }),
                     });
                     setDialogOpen(false);
                     router.refresh();
@@ -127,7 +130,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         <div className="flex justify-between">
                                             <span>{t('originalAmount')}:</span>
                                             <span className="font-medium">
-                                                {(orderAmount / 100).toFixed(2)} €
+                                                <Euro cents={orderAmount} />
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
@@ -140,10 +143,7 @@ export function RefundRequestButton({ orderId, orderAmount }: RefundRequestButto
                                         <div className="flex justify-between font-medium text-green-600 dark:text-green-400">
                                             <span>{t('withdrawalAmount')}:</span>
                                             <span>
-                                                {(eligibility.refundableAmountCents / 100).toFixed(
-                                                    2,
-                                                )}{' '}
-                                                €
+                                                <Euro cents={eligibility.refundableAmountCents} />
                                             </span>
                                         </div>
                                     </div>

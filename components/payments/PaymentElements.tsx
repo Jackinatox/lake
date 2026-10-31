@@ -12,16 +12,16 @@ import type { Appearance } from '@stripe/stripe-js';
 
 const BILLING_ADDRESS_THRESHOLD_CENTS = 5000;
 import { loadStripe } from '@stripe/stripe-js';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Lock, ShoppingCart } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import { useRouter } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function buildAppearance(isDark: boolean): Appearance {
-
     if (isDark) {
         return {
             theme: 'night',
@@ -138,10 +138,8 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
         checkout.total.total.minorUnitsAmount >= BILLING_ADDRESS_THRESHOLD_CENTS;
     const canSubmit = tosAccepted && widerrufsAccepted && checkout.canConfirm && !loading;
 
-    const formattedTotal = new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: checkout.currency.toUpperCase(),
-    }).format(checkout.total.total.minorUnitsAmount / 100);
+    // German like the rest of this form (contract language), also under /en
+    const total = <Euro cents={checkout.total.total.minorUnitsAmount} locale="de" />;
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-6 px-0">
@@ -157,12 +155,12 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
                     <ShoppingCart className="h-4 w-4 shrink-0" />
                     <span>Gesamtbetrag</span>
                 </div>
-                <span className="text-lg font-bold tabular-nums">{formattedTotal}</span>
+                <span className="text-lg font-bold tabular-nums">{total}</span>
             </div>
 
             <Separator />
 
-            <PaymentElement/>
+            <PaymentElement />
 
             {requiresBillingAddress && (
                 <BillingAddressElement
@@ -224,7 +222,7 @@ function CheckoutForm({ sessionId, isDark }: { sessionId: string; isDark: boolea
                 ) : (
                     <span className="flex items-center gap-2">
                         <Lock className="h-4 w-4" />
-                        Jetzt {formattedTotal} bezahlen
+                        Jetzt {total} bezahlen
                     </span>
                 )}
             </Button>

@@ -9,13 +9,12 @@ import { GameConfigComponent } from '@/components/booking2/game-config';
 import { ArrowRight, ArrowLeft, Loader2, Settings2, Trash2, Shield } from 'lucide-react';
 import { changeGame } from './changeGameAction';
 import { ThemeImage } from '@/components/ui/theme-image';
-import Link from 'next/link';
 
 import ChangeInfoBox from './ChangeInfoBox';
 import FilesWarning from './FilesWarning';
 import DeleteFilesCheckbox from './DeleteFilesCheckbox';
 import { notifyReinstallStarted } from '@/components/gameserver/serverEvents';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 
 interface ChangeGameConfigClientProps {
     serverId: string;

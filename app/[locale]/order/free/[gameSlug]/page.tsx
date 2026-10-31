@@ -29,8 +29,10 @@ export async function generateMetadata({
         return createPublicMetadata({
             locale,
             path: '/order/free',
-            title: copy.freeOrderIndexTitle,
-            description: copy.freeOrderIndexDescription,
+            title: copy.freeOrderIndexTitle([]),
+            description: copy.freeOrderIndexDescription([]),
+            // Unknown slug renders GameNotFound with HTTP 200: keep that soft 404 out of the index.
+            noindex: true,
         });
     }
 
@@ -45,6 +47,9 @@ export async function generateMetadata({
             `${game.name} gameserver`,
         ],
         image: gameIconImage(game.name, `Order a free ${game.name} server with Scyed`),
+        // Funnel step (pick version, log in, create), not a landing page: /order/free is the one
+        // that should rank. Links are still followed.
+        noindex: true,
     });
 }
 

@@ -27,11 +27,11 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
+// No maximumScale/userScalable: blocking zoom fails accessibility (WCAG 1.4.4) and Lighthouse.
+// iOS auto-zooms into inputs below 16px, so inputs use text-base on mobile instead.
 export const viewport = {
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
 };
 
 const geistSans = Geist({

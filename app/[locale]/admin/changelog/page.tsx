@@ -5,9 +5,9 @@ import { headers } from 'next/headers';
 import { History, Pencil, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { listChangelogAdmin } from '@/app/actions/changelog/changelogActions';
 import { DeleteChangelogButton } from './ChangelogAdminClient';
+import { Link } from '@/i18n/navigation';
 
 function getStatus(entry: { published: boolean; publishedAt: Date | null }) {
     if (!entry.published) return { label: 'Draft', color: 'text-muted-foreground' };

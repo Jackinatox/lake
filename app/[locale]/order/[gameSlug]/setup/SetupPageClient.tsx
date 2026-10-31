@@ -17,10 +17,11 @@ import { checkoutConfiguredParamsSchema, gameConfigSchema } from '@/lib/validati
 import type { Game, GameConfig } from '@/models/config';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, ArrowRight, Info, Pencil } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface SetupPageClientProps {
     game: Game;
@@ -206,7 +207,7 @@ export default function SetupPageClient({
                                     {t('total')}:
                                 </span>
                                 <span className="text-lg sm:text-xl font-bold text-primary">
-                                    {(price.totalCents / 100).toFixed(2)} €
+                                    <Euro cents={price.totalCents} />
                                 </span>
                             </div>
                         )}

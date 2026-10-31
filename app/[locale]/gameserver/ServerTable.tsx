@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ClientServer } from '@/models/prisma';
 import { Plus, Server } from 'lucide-react';
 import { headers } from 'next/headers';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 const PageHeader = ({ count }: { count: number }) => (
     <div className="mb-8 flex items-start justify-between gap-4">

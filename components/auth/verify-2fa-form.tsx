@@ -8,8 +8,8 @@ import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
+import { useRouter } from '@/i18n/navigation';
 
 export function Verify2FAForm() {
     const t = useTranslations('RegisterLogin.login.twoFactor');

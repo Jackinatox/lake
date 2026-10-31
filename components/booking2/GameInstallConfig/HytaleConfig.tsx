@@ -148,6 +148,8 @@ export const HytaleConfigComponent = forwardRef(function HytaleConfigComponent(
                     }
                 />
             </ConfigSettingItem>
+
+            <p className="text-sm text-muted-foreground">{t('changeableLater')}</p>
         </ConfigContainer>
     );
 });

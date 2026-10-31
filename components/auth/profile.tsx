@@ -14,8 +14,8 @@ import { authClient } from '@/lib/auth-client';
 import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { Laptop, LogOut, Moon, Sun, User, UserRoundCog } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { useSyncExternalStore } from 'react';
+import { Link } from '@/i18n/navigation';
 
 const subscribe = () => () => {};
 
@@ -28,7 +28,9 @@ export default function Profile() {
     );
     const { theme, setTheme } = useTheme();
 
-    if (isPending) {
+    // The session store can already be resolved on the client's first render while the server
+    // always renders the pending state, so keep the placeholder until after hydration.
+    if (!mounted || isPending) {
         return (
             <div className="flex items-center space-x-2">
                 <div className="h-8 w-8 animate-pulse rounded-full bg-muted"></div>
@@ -86,35 +88,33 @@ export default function Profile() {
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                {mounted && (
-                    <div className="flex items-center justify-center gap-1">
-                        <Button
-                            variant={theme === 'light' ? 'default' : 'ghost'}
-                            size="sm"
-                            onClick={() => setTheme('light')}
-                            className="flex-1 cursor-pointer"
-                        >
-                            <Sun className="h-5 w-5" />
-                        </Button>
-                        <Button
-                            variant={theme === 'dark' ? 'default' : 'ghost'}
-                            size="sm"
-                            onClick={() => setTheme('dark')}
-                            className="flex-1 cursor-pointer"
-                        >
-                            <Moon className="h-5 w-5" />
-                        </Button>
-                        <Button
-                            variant={theme === 'system' ? 'default' : 'ghost'}
-                            size="sm"
-                            onClick={() => setTheme('system')}
-                            className="flex-1 cursor-pointer"
-                        >
-                            <Laptop className="h-5 w-5" />
-                        </Button>
-                    </div>
-                )}
-                {(mounted || session?.user.role === 'admin') && <DropdownMenuSeparator />}
+                <div className="flex items-center justify-center gap-1">
+                    <Button
+                        variant={theme === 'light' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setTheme('light')}
+                        className="flex-1 cursor-pointer"
+                    >
+                        <Sun className="h-5 w-5" />
+                    </Button>
+                    <Button
+                        variant={theme === 'dark' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setTheme('dark')}
+                        className="flex-1 cursor-pointer"
+                    >
+                        <Moon className="h-5 w-5" />
+                    </Button>
+                    <Button
+                        variant={theme === 'system' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setTheme('system')}
+                        className="flex-1 cursor-pointer"
+                    >
+                        <Laptop className="h-5 w-5" />
+                    </Button>
+                </div>
+                <DropdownMenuSeparator />
                 {session?.user.role === 'admin' && (
                     <>
                         <DropdownMenuItem asChild>

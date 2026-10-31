@@ -25,7 +25,17 @@ import {
     CommandList,
 } from '@/components/ui/command';
 import { FAQ } from '@/app/client/generated/browser';
+import { useToast } from '@/hooks/use-toast';
 import editFAQ from './editFaq';
+import createFAQ from './createFaq';
+import DeleteFAQButton from './DeleteFAQButton';
+import {
+    FAQ_CONTENT_ERROR,
+    FAQ_SORTING_ERROR,
+    FAQ_SORTING_MAX,
+    hasRequiredFaqContent,
+    isValidFaqSorting,
+} from './faqRules';
 
 // ─── Category multi-select combobox ──────────────────────────────────────────
 
@@ -125,7 +135,8 @@ function CategoryCombobox({
 // ─── Dialog ───────────────────────────────────────────────────────────────────
 
 interface FAQEditDialogProps {
-    faq: FAQ;
+    /** Without a faq the dialog creates a new one */
+    faq?: FAQ;
     categories: string[];
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -133,20 +144,42 @@ interface FAQEditDialogProps {
 }
 
 export default function FAQEditDialog({ faq, categories, open, onOpenChange, onSaved }: FAQEditDialogProps) {
-    const [questionDe, setQuestionDe] = useState(faq.question_de);
-    const [questionEn, setQuestionEn] = useState(faq.question_en);
-    const [answerDe, setAnswerDe] = useState(faq.answer_de);
-    const [answerEn, setAnswerEn] = useState(faq.answer_en);
-    const [enabled, setEnabled] = useState(faq.enabled);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>(faq.category);
-    const [sorting, setSorting] = useState(faq.sorting);
+    const [questionDe, setQuestionDe] = useState(faq?.question_de ?? '');
+    const [questionEn, setQuestionEn] = useState(faq?.question_en ?? '');
+    const [answerDe, setAnswerDe] = useState(faq?.answer_de ?? '');
+    const [answerEn, setAnswerEn] = useState(faq?.answer_en ?? '');
+    const [enabled, setEnabled] = useState(faq?.enabled ?? true);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(faq?.category ?? []);
+    const [sorting, setSorting] = useState(faq?.sorting ?? 0);
     const [isPending, startTransition] = useTransition();
+    const { toast } = useToast();
+
+    const sortingValid = isValidFaqSorting(sorting);
+
+    const isComplete = hasRequiredFaqContent(
+        [questionDe, questionEn, answerDe, answerEn],
+        selectedCategories,
+    );
 
     function handleSave() {
         startTransition(async () => {
-            await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
-            onSaved();
-            onOpenChange(false);
+            // Without the catch React hands the error to global-error.tsx, which replaces the whole
+            // page and loses everything typed in the dialog
+            try {
+                if (faq) {
+                    await editFAQ(faq.id, questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+                } else {
+                    await createFAQ(questionEn, questionDe, answerEn, answerDe, enabled, selectedCategories, sorting);
+                }
+                onSaved();
+                onOpenChange(false);
+            } catch (err) {
+                toast({
+                    title: 'Error',
+                    description: err instanceof Error ? err.message : 'Unknown error',
+                    variant: 'destructive',
+                });
+            }
         });
     }
 
@@ -154,7 +187,7 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
         <Dialog open={open} onOpenChange={(v) => !isPending && onOpenChange(v)}>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>Edit FAQ #{faq.id}</DialogTitle>
+                    <DialogTitle>{faq ? `Edit FAQ #${faq.id}` : 'New FAQ'}</DialogTitle>
                 </DialogHeader>
 
                 <Tabs defaultValue="de">
@@ -206,19 +239,36 @@ export default function FAQEditDialog({ faq, categories, open, onOpenChange, onS
                             <Input
                                 id="sorting"
                                 type="number"
+                                min={0}
+                                max={FAQ_SORTING_MAX}
+                                step={1}
                                 value={sorting}
                                 onChange={(e) => setSorting(Number(e.target.value))}
                                 className="w-24"
                             />
+                            {!sortingValid && (
+                                <p className="text-xs text-destructive">{FAQ_SORTING_ERROR}</p>
+                            )}
                         </div>
                     </div>
                 </div>
 
+                {!isComplete && (
+                    <p className="text-xs text-muted-foreground">
+                        {FAQ_CONTENT_ERROR} (both languages).
+                    </p>
+                )}
+
                 <DialogFooter>
+                    {faq && (
+                        <div className="mr-auto">
+                            <DeleteFAQButton faq={faq} showLabel onDeleted={() => onOpenChange(false)} />
+                        </div>
+                    )}
                     <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={isPending}>
+                    <Button onClick={handleSave} disabled={isPending || !sortingValid || !isComplete}>
                         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save
                     </Button>

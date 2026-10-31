@@ -3,13 +3,14 @@ import { Suspense } from 'react';
 import LogViewer from '@/components/admin/logs/LogViewer';
 import AdminBreadcrumb from '@/components/admin/AdminBreadcrumb';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/navigation';
+import { getLocale } from 'next-intl/server';
 
 export default async function AdminLogsPage() {
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (!session?.user || session.user.role !== 'admin') {
-        redirect('/');
+        redirect({ href: '/', locale: await getLocale() });
     }
 
     return (

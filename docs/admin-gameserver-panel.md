@@ -1,8 +1,7 @@
 # Admin gameserver panel (`/admin/gameservers`)
 
 Dense, URL-driven cockpit for every gameserver. Top to bottom: the filter bar
-(one row of content-width controls, incl. a `created` timespan that defaults to the last
-30 days), six KPI tiles, a row of "needs attention" chips, a
+(one row of content-width controls, incl. a `created` timespan that defaults to "Any time"), six KPI tiles, a row of "needs attention" chips, a
 stacked distribution bar, and a 32px-per-row list with expandable detail. The filters
 come first because **everything below them describes the set they define**. It replaces the old 14-column
 `GameserversTable` and shares its idiom with the log viewer (see
@@ -66,7 +65,7 @@ such a link was followed.
 | `status`               | a `GameServerStatus`, or `ANY` for "incl. deleted"; absent = all but deleted                                                                                 |
 | `attention`            | one `AttentionKey` (see below)                                                                                                                               |
 | `renewal`              | one `RenewalKey` (see below)                                                                                                                                 |
-| `created`              | timespan on `createdAt`: `ALL` / `1d` / `7d` / `30d` / `90d` / `365d`. Absent means `DEFAULT_CREATED_RANGE` (30 d), so it is "Any time" that needs the param |
+| `created`              | timespan on `createdAt`: `ALL` / `1d` / `7d` / `30d` / `90d` / `365d`. Absent means `DEFAULT_CREATED_RANGE` (`ALL`), so it is the narrower ranges that need the param |
 | `sort`, `dir`          | `created` (default, i.e. newest booking first) / `expires` / `name` / `price` / `ram` / `cpu`; `desc` default                                                |
 | `page`, `limit`        | `limit` ∈ {25, 50, 100, 200}, default 50                                                                                                                     |
 | `suspension`           | quarantine scope: `active` (default, hides suspended) / `suspended` / `all`. Absent means `active`, so it is the other two that carry the param              |
@@ -78,7 +77,7 @@ dimension filters — that is what the distribution bars use, so clicking a slic
 _that_ slice instead of intersecting it with whatever was already filtered — and
 `clearAll` backs the Clear button. The difference between the last two is what survives:
 `only` carries `VIEW_PARAMS` (`limit`, `sort`, `dir` **plus `created` and `suspension`**),
-because dropping those would snap the view back to its defaults — the last 30 days, no
+because dropping those would snap the view back to its defaults — any time, no
 suspended servers — and could hide the very servers whose slice was clicked; `clearAll`
 keeps only the layout params, so both scopes are reset along with every other filter. All three push inside a transition, and the `pending` flag dims the
 affected card while the server component re-renders.

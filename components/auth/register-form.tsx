@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { AlertCircle } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin');

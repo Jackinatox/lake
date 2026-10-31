@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/table';
 import { FAQ } from '@/app/client/generated/browser';
 import FAQEditDialog from './FAQEditDialog';
+import DeleteFAQButton from './DeleteFAQButton';
 
 interface FAQEditorProps {
     faqs: FAQ[];
@@ -31,6 +32,7 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
     const router = useRouter();
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
+    const [creating, setCreating] = useState(false);
 
     const filtered =
         categoryFilter === 'all'
@@ -41,19 +43,25 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
         <div className="space-y-4 p-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">FAQ Administration</h1>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger className="w-48">
-                        <SelectValue placeholder="All categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All categories</SelectItem>
-                        {categories.map((cat) => (
-                            <SelectItem key={cat} value={cat}>
-                                {cat}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                        <SelectTrigger className="w-48">
+                            <SelectValue placeholder="All categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All categories</SelectItem>
+                            {categories.map((cat) => (
+                                <SelectItem key={cat} value={cat}>
+                                    {cat}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button onClick={() => setCreating(true)}>
+                        <Plus className="mr-1 h-4 w-4" />
+                        New FAQ
+                    </Button>
+                </div>
             </div>
 
             <Table>
@@ -64,7 +72,7 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
                         <TableHead>Categories</TableHead>
                         <TableHead className="w-20">Enabled</TableHead>
                         <TableHead className="w-20">Sort</TableHead>
-                        <TableHead className="w-16" />
+                        <TableHead className="w-28" />
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -78,9 +86,12 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
                             <TableCell>{faq.enabled ? 'Yes' : 'No'}</TableCell>
                             <TableCell>{faq.sorting}</TableCell>
                             <TableCell>
-                                <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)}>
-                                    <Pencil className="h-3.5 w-3.5" />
-                                </Button>
+                                <div className="flex gap-2">
+                                    <Button size="sm" variant="outline" onClick={() => setEditingFaq(faq)}>
+                                        <Pencil className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <DeleteFAQButton faq={faq} />
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -95,6 +106,18 @@ export default function FAQEditor({ faqs, categories }: FAQEditorProps) {
                     open={true}
                     onOpenChange={(open) => {
                         if (!open) setEditingFaq(null);
+                    }}
+                    onSaved={() => router.refresh()}
+                />
+            )}
+
+            {creating && (
+                <FAQEditDialog
+                    key="new"
+                    categories={categories}
+                    open={true}
+                    onOpenChange={(open) => {
+                        if (!open) setCreating(false);
                     }}
                     onSaved={() => router.refresh()}
                 />

@@ -2,6 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 export default async function ServerDeleted() {
     const t = await getTranslations('ServerDeleted');
@@ -22,10 +23,10 @@ export default async function ServerDeleted() {
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button variant="outline" asChild>
-                        <a href="/support/tickets">{t('contactSupport')}</a>
+                        <Link href="/support/tickets">{t('contactSupport')}</Link>
                     </Button>
                     <Button asChild>
-                        <a href="/">{t('home')}</a>
+                        <Link href="/">{t('home')}</Link>
                     </Button>
                 </CardFooter>
             </Card>
