@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 
 import { headers } from 'next/headers';
 import { InboxIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default async function TicketsPage() {
     const session = await auth.api.getSession({

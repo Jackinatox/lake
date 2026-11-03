@@ -2,6 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 export default async function NotAllowedMessage() {
     const t = await getTranslations('NotAllowed');
@@ -22,7 +23,7 @@ export default async function NotAllowedMessage() {
 
                 <CardFooter className="flex justify-center">
                     <Button asChild>
-                        <a href="/">{t('home')}</a>
+                        <Link href="/">{t('home')}</Link>
                     </Button>
                 </CardFooter>
             </Card>

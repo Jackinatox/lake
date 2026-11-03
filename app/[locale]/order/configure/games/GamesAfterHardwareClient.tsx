@@ -5,11 +5,11 @@ import HardwareChipBar from '@/components/order/HardwareChipBar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { GameData, PerformanceGroup, ResourceTier } from '@/models/prisma';
+import { Link } from '@/i18n/navigation';
 
 type GameCard = Pick<GameData, 'id' | 'name' | 'slug'> & {
     imageSrc: string;

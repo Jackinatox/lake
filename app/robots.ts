@@ -11,6 +11,8 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/api/', '/webhook/'],
         },
-        sitemap: `${SITE_URL}/sitemap.xml`,
+        // The docs (Starlight, Scyed/lake-docs) are a separate static site under /docs/ with
+        // their own sitemap.
+        sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/docs/sitemap-index.xml`],
     };
 }

@@ -98,7 +98,7 @@ export default function LogFilters({ filters, onChange }: LogFiltersProps) {
                         value={filters.search}
                         onChange={(e) => onChange({ search: e.target.value })}
                         maxLength={200}
-                        className="h-8 pl-7 text-xs"
+                        className="h-8 pl-7 text-base md:text-xs"
                     />
                 </div>
             </FilterField>

@@ -33,6 +33,9 @@ import DebugPanel from './DebugPanel';
 import CPUChart from './graphs/CPUChart';
 import RAMChart from './graphs/RAMChart';
 import NetworkManager from '../settings/NetworkManager/NetworkManager';
+import GameConfigAttentionDot from '../gameConfig/GameConfigAttentionDot';
+import GameConfigTab from '../gameConfig/GameConfigTab';
+import { getGameConfig } from '../gameConfig/registry';
 
 interface serverProps {
     server: GameServer;
@@ -57,6 +60,7 @@ function GameDashboard({ server, ptApiKey, features }: serverProps) {
  */
 function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
     const isMobile = useIsMobile();
+    const gameConfig = getGameConfig(server.gameSlug);
 
     // WebSocket hooks - replacing the old useWebSocket hook
     const {
@@ -327,6 +331,24 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                             }
                             networkControlComponent={
                                 <NetworkManager server={server} apiKey={ptApiKey} />
+                            }
+                            configComponent={
+                                gameConfig && (
+                                    <GameConfigTab
+                                        module={gameConfig}
+                                        server={server}
+                                        apiKey={ptApiKey}
+                                    />
+                                )
+                            }
+                            configAttention={
+                                gameConfig?.useAttention && (
+                                    <GameConfigAttentionDot
+                                        useAttention={gameConfig.useAttention}
+                                        server={server}
+                                        apiKey={ptApiKey}
+                                    />
+                                )
                             }
                         />
                     </div>

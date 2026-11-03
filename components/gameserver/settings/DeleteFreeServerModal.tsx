@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
     Dialog,
@@ -18,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Bone, LucideSkull, Skull, SkullIcon, Trash, TriangleAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { deleteFreeServer } from './serverSettingsActions';
+import { useRouter } from '@/i18n/navigation';
 
 interface DeleteFreeServerModalProps {
     ptServerId: string;

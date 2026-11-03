@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import Link from 'next/link';
 import {
     Ban,
     CheckCircle,
@@ -45,6 +44,7 @@ import {
     getPterodactylUserInfo,
 } from '@/app/actions/users/adminUsers';
 import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
+import { Link } from '@/i18n/navigation';
 
 type UserWithCount = User & { _count: { GameServer: number } };
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 import { Loader2 } from 'lucide-react';
@@ -22,6 +21,7 @@ import { createBlogPost, updateBlogPost } from '@/app/actions/blog/blogActions';
 import { MarkdownRenderer } from '@/components/blog/MarkdownRenderer';
 import { blogPostCreateSchema, blogPostUpdateSchema } from '@/lib/validation/adminContent';
 import { getValidationMessage } from '@/lib/validation/common';
+import { useRouter } from '@/i18n/navigation';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react').then((m) => m.default), {
     ssr: false,

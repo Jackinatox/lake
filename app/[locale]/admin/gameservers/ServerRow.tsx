@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import {
     Ban,
     Check,
@@ -36,6 +35,7 @@ import {
 import { GameServerAdminRow } from '@/models/prisma';
 import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { STATUS_META, TYPE_META, expiryTone } from './presentation';
+import { Link } from '@/i18n/navigation';
 
 type ServerRowProps = {
     server: GameServerAdminRow;

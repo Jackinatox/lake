@@ -8,12 +8,11 @@ import prisma from '@/lib/prisma';
 
 import { getTranslations } from 'next-intl/server';
 import { headers } from 'next/headers';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { Link, redirect } from '@/i18n/navigation';
 
 async function page({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
     const awaitedParams = await params;
-    const { server_id } = awaitedParams;
+    const { locale, server_id } = awaitedParams;
     const t = await getTranslations('freeServerUpgrade');
 
     const session = await auth.api.getSession({
@@ -36,7 +35,7 @@ async function page({ params }: { params: Promise<{ locale: string; server_id: s
     }
 
     if (server.type !== 'FREE') {
-        redirect(`/gameserver/${server_id}/upgrade/payedServer`);
+        redirect({ href: `/gameserver/${server_id}/upgrade/payedServer`, locale });
     }
 
     const [performanceOptions, minOptions, fullServer] = await Promise.all([

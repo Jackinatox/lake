@@ -9,8 +9,8 @@ import {
     TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { formatBytes } from '@/lib/GlobalFunctions/ptResourceLogic';
+import { Link } from '@/i18n/navigation';
 
 interface WingsTableProps {
     wings: WingModel[];

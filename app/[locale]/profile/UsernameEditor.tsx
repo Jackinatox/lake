@@ -141,7 +141,7 @@ export default function UsernameEditor({
                             autoCapitalize="none"
                             autoCorrect="off"
                             spellCheck={false}
-                            className="h-8 text-sm flex-1 min-w-0"
+                            className="h-8 text-base md:text-sm flex-1 min-w-0"
                             disabled={saving}
                             autoFocus
                         />

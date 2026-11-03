@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +24,7 @@ import {
     changelogEntryUpdateSchema,
 } from '@/lib/validation/adminContent';
 import { getValidationMessage } from '@/lib/validation/common';
+import { useRouter } from '@/i18n/navigation';
 
 const CHANGELOG_TYPES = ['NEW', 'IMPROVED', 'FIXED', 'SECURITY', 'REMOVED'] as const;
 

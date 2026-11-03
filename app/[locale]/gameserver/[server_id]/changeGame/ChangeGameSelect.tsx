@@ -1,8 +1,8 @@
 import GameCard from '@/components/order/game/gameCard';
 import prisma from '@/lib/prisma';
-import Link from 'next/link';
 import { ArrowLeft, Gamepad2, MousePointerClick } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 interface ChangeGameSelectProps {
     serverId: string;

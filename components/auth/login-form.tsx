@@ -14,9 +14,9 @@ import {
 import { getValidationMessage } from '@/lib/validation/common';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const t = useTranslations('RegisterLogin.login');

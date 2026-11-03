@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import PaymentList from './payments/PaymentList';
 import { Card, CardContent } from '@/components/ui/card';
 import { MessageCircle } from 'lucide-react';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 export default async function PaymentsTab() {
     const t = await getTranslations('payments');

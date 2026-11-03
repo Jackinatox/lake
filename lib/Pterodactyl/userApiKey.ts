@@ -27,7 +27,6 @@ async function createUserApiKey(userId: number): Promise<any> {
         }
 
         const responseData = await response.json();
-        console.log('Response Data:', responseData);
         const { identifier } = responseData.attributes;
         const { secret_token } = responseData.meta;
 

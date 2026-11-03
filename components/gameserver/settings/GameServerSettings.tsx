@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GameServer } from '@/models/gameServerModel';
 import { Gamepad2 } from 'lucide-react';
-import Link from 'next/link';
 import ReinstallDialog from './ReinstallDialog';
 import DeleteFreeServerModal from './DeleteFreeServerModal';
 import GameSpecificSettings from './gameSpecific/settings/GameSpecificSettings';
 import ActionItem from './ActionItem';
 import { useTranslations } from 'next-intl';
 import { GeneralServerSettings } from './generalSettings/GeneralServerSettings';
+import { Link } from '@/i18n/navigation';
 
 interface GameServerSettingsProps {
     server: GameServer;

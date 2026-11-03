@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { expireSessions, deleteOrders } from '@/app/[locale]/admin/sessions/sessions_actions';
 import { useToast } from '@/hooks/use-toast';
 import { DbSession } from '@/models/prisma';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 type Props = { sessions: DbSession[] };
 
@@ -171,7 +172,8 @@ const SessionsTable: React.FC<Props> = ({ sessions }) => {
                                 <TableCell>{s.id}</TableCell>
                                 <TableCell className="uppercase">{s.status}</TableCell>
                                 <TableCell>{s.type}</TableCell>
-                                <TableCell>{s.price.toFixed(2)}</TableCell>
+                                {/* price is in cents, like every GameServerOrder.price */}
+                                <TableCell>{formatEuro(s.price, 'de')}</TableCell>
                                 <TableCell>{s.user.email ?? '-'}</TableCell>
                                 <TableCell>{formatUtc(s.createdAt)}</TableCell>
                                 <TableCell>{formatUtc(s.expiresAt)}</TableCell>

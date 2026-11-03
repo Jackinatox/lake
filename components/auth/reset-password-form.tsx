@@ -8,13 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import {
     AUTH_PASSWORD_MAX_LENGTH,
     AUTH_PASSWORD_MIN_LENGTH,
     resetPasswordSchema,
 } from '@/lib/validation/auth';
 import { getValidationMessage } from '@/lib/validation/common';
+import { Link } from '@/i18n/navigation';
 
 interface ResetPasswordFormProps extends React.ComponentProps<'div'> {
     token?: string | null;

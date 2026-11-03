@@ -5,10 +5,10 @@ import { headers } from 'next/headers';
 import { BookOpen, Pencil, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { listBlogPostsAdmin } from '@/app/actions/blog/blogActions';
 import { DeleteBlogPostButton } from './BlogAdminClient';
 import formatDate from '@/lib/formatDate';
+import { Link } from '@/i18n/navigation';
 
 function getStatus(post: { published: boolean; listed: boolean; publishedAt: Date }) {
     if (!post.published) return { label: 'Draft', color: 'text-muted-foreground' };

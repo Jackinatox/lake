@@ -1,4 +1,5 @@
 import { apiKey } from '@better-auth/api-key';
+import { randomBytes } from 'node:crypto';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, captcha, lastLoginMethod, twoFactor, username } from 'better-auth/plugins';
@@ -30,7 +31,7 @@ function extractUserAgent(request?: Request | null): string | undefined {
 }
 
 function generateRandomPassword(length: number = 32): string {
-    return Array.from({ length }, () => Math.floor(Math.random() * 36).toString(36)).join('');
+    return randomBytes(length).toString('base64url').slice(0, length);
 }
 
 export const auth = betterAuth({

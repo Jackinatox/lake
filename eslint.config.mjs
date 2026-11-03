@@ -10,6 +10,9 @@ const eslintConfig = defineConfig([
         'out/**',
         'build/**',
         'next-env.d.ts',
+        // Separate repos checked out inside lake (excluded via .git/info/exclude)
+        'lake-docs/**',
+        'blog-posts/**',
     ]),
 ]);
 

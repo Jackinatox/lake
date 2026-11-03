@@ -2,8 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { isMaintenanceMode } from '@/lib/maintenance';
 import { ShieldAlert } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { Link, redirect } from '@/i18n/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function generateMetadata() {
 }
 
 export default async function MaintenancePage() {
-    if (!isMaintenanceMode()) redirect('/');
+    if (!isMaintenanceMode()) redirect({ href: '/', locale: await getLocale() });
 
     const t = await getTranslations('Maintenance');
 
@@ -36,10 +36,10 @@ export default async function MaintenancePage() {
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button asChild>
-                        <a href="/support">{t('contactSupport')}</a>
+                        <Link href="/support">{t('contactSupport')}</Link>
                     </Button>
                     <Button variant="outline" asChild>
-                        <a href="/">{t('home')}</a>
+                        <Link href="/">{t('home')}</Link>
                     </Button>
                 </CardFooter>
             </Card>

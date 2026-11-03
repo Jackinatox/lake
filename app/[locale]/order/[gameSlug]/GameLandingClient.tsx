@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ThemeImage } from '@/components/ui/theme-image';
 import PackageCard, { PackageDisplay } from '@/components/order/PackageCard';
 import { ArrowLeft, ArrowRight, Gift, Wrench } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 interface GameLandingProps {
     game: { id: number; name: string; slug: string };

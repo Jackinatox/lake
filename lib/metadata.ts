@@ -29,6 +29,9 @@ export function gameIconImage(gameName: string, alt: string): MetaImage {
 }
 
 type SupportedLocale = (typeof routing.locales)[number];
+
+/** `BlogPost` has no language field: every post is written in German, also under /en/blog. */
+export const BLOG_CONTENT_LOCALE: SupportedLocale = 'de';
 type SearchParamValue = string | string[] | undefined;
 type SearchParamRecord = Record<string, SearchParamValue>;
 
@@ -63,9 +66,18 @@ const metadataCopy = {
             summary ? `Spiel wählen - ${summary}` : 'Spiel wählen',
         orderConfigureGamesDescription:
             'Wähle ein Spiel für Deine konfigurierte Hardware und fahre mit dem Setup fort.',
-        freeOrderIndexTitle: 'Kostenlose Gameserver',
-        freeOrderIndexDescription:
-            'Wähle ein unterstütztes Spiel und starte einen kostenlosen Gameserver ohne Kreditkarte.',
+        // Game names in title and description: searches name the game ("kostenloser Minecraft
+        // Server"), and without them the per-game funnel pages outranked this overview.
+        freeOrderIndexTitle: (games: string[]) =>
+            games.length === 0
+                ? 'Kostenlose Gameserver'
+                : games.length <= 2
+                  ? `Kostenlose Gameserver für ${new Intl.ListFormat('de', { type: 'conjunction' }).format(games)}`
+                  : `Kostenlose Gameserver für ${games.slice(0, 2).join(', ')} & mehr`,
+        freeOrderIndexDescription: (games: string[]) =>
+            games.length === 0
+                ? 'Starte einen kostenlosen Gameserver, ohne Zahlungsdaten und ohne Abo.'
+                : `Kostenlose Gameserver für ${new Intl.ListFormat('de', { type: 'conjunction' }).format(games)}: ohne Zahlungsdaten und ohne Abo, kostenlos verlängerbar.`,
         orderCheckoutTitle: 'Checkout',
         orderCheckoutDescription:
             'Schließe den sicheren Checkout für Deine Gameserver-Bestellung ab.',
@@ -155,9 +167,16 @@ const metadataCopy = {
             summary ? `Choose a Game - ${summary}` : 'Choose a Game',
         orderConfigureGamesDescription:
             'Pick a game for your configured hardware and continue to setup.',
-        freeOrderIndexTitle: 'Free Game Servers',
-        freeOrderIndexDescription:
-            'Choose a supported game and launch a free game server with no credit card required.',
+        freeOrderIndexTitle: (games: string[]) =>
+            games.length === 0
+                ? 'Free Game Servers'
+                : games.length <= 2
+                  ? `Free Game Servers for ${new Intl.ListFormat('en', { type: 'conjunction' }).format(games)}`
+                  : `Free Game Servers for ${games.slice(0, 2).join(', ')} & More`,
+        freeOrderIndexDescription: (games: string[]) =>
+            games.length === 0
+                ? 'Launch a free game server, with no payment details and no subscription.'
+                : `Free game servers for ${new Intl.ListFormat('en', { type: 'conjunction' }).format(games)}: no payment details, no subscription, free to extend.`,
         orderCheckoutTitle: 'Checkout',
         orderCheckoutDescription: 'Complete secure checkout for your game server order.',
         gameserversTitle: 'Gameservers',
@@ -240,8 +259,8 @@ const metadataCopy = {
         orderConfigureDescription: string;
         orderConfigureGamesTitle: (summary?: string) => string;
         orderConfigureGamesDescription: string;
-        freeOrderIndexTitle: string;
-        freeOrderIndexDescription: string;
+        freeOrderIndexTitle: (games: string[]) => string;
+        freeOrderIndexDescription: (games: string[]) => string;
         orderCheckoutTitle: string;
         orderCheckoutDescription: string;
         gameserversTitle: string;
@@ -383,6 +402,7 @@ export function createPublicMetadata({
     image,
     article,
     noindex,
+    contentLocale,
 }: {
     locale: string;
     path: string;
@@ -395,10 +415,17 @@ export function createPublicMetadata({
     /** Order funnel steps: keep title and link preview, but stay out of the index (links are
      *  still followed). */
     noindex?: boolean;
+    /** The content exists in this language only (blog posts). Every locale's URL then points its
+     *  canonical at this one and hreflang lists only it, so the German text under /en is not a
+     *  duplicate. */
+    contentLocale?: SupportedLocale;
 }): Metadata {
-    const normalizedLocale = normalizeLocale(locale);
+    const normalizedLocale = contentLocale ?? normalizeLocale(locale);
     const languages = Object.fromEntries(
-        routing.locales.map((currentLocale) => [currentLocale, localizedPath(currentLocale, path)]),
+        (contentLocale ? [contentLocale] : routing.locales).map((currentLocale) => [
+            currentLocale,
+            localizedPath(currentLocale, path),
+        ]),
     );
 
     const ogImage = image ?? DEFAULT_OG_IMAGE;
@@ -413,7 +440,7 @@ export function createPublicMetadata({
             canonical: localizedPath(normalizedLocale, path),
             languages: {
                 ...languages,
-                'x-default': localizedPath(routing.defaultLocale, path),
+                'x-default': localizedPath(contentLocale ?? routing.defaultLocale, path),
             },
         },
         openGraph: {

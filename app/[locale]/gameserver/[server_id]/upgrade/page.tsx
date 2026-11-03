@@ -5,7 +5,7 @@ import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,
@@ -57,7 +57,7 @@ async function UpgradePage({
     searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
     const awaitedParams = await params;
-    const { server_id } = awaitedParams;
+    const { locale, server_id } = awaitedParams;
     const awaitedSearch = await searchParams;
     const query = new URLSearchParams(
         Object.entries(awaitedSearch).flatMap(([k, v]) =>
@@ -82,7 +82,7 @@ async function UpgradePage({
 
     const direction = server.type === 'FREE' ? 'freeServer' : 'payedServer';
 
-    redirect(`/gameserver/${server_id}/upgrade/${direction}${queryString}`);
+    redirect({ href: `/gameserver/${server_id}/upgrade/${direction}${queryString}`, locale });
 }
 
 export default UpgradePage;

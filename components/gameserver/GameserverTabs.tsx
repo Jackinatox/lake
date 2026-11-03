@@ -3,7 +3,8 @@
 import type React from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, HardDrive, Network, Settings } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { FileText, HardDrive, Network, Settings, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -13,6 +14,10 @@ interface TabsComponentProps {
     networkControlComponent?: React.ReactNode;
     backupManagerComponent?: React.ReactNode;
     settingsComponent?: React.ReactNode;
+    /** Game-specific config tab; the tab only exists when this is set. */
+    configComponent?: React.ReactNode;
+    /** Rendered inside the config tab trigger (the attention dot). */
+    configAttention?: React.ReactNode;
 }
 
 export function TabsComponent({
@@ -21,13 +26,20 @@ export function TabsComponent({
     networkControlComponent,
     backupManagerComponent,
     settingsComponent,
+    configComponent,
+    configAttention,
 }: TabsComponentProps) {
     const [activeTab, setActiveTab] = useState('console');
     const t = useTranslations();
 
     return (
         <Tabs defaultValue="console" onValueChange={setActiveTab} className="h-full">
-            <TabsList className="grid w-full grid-cols-5 min-w-0 shrink-0">
+            <TabsList
+                className={cn(
+                    'grid w-full min-w-0 shrink-0',
+                    configComponent ? 'grid-cols-6' : 'grid-cols-5',
+                )}
+            >
                 <TabsTrigger value="console" className="flex items-center gap-2">
                     <HardDrive className="h-4 w-4" />
                     <span className="hidden sm:inline">{t('gameserver.tabs.console')}</span>
@@ -36,6 +48,13 @@ export function TabsComponent({
                     <FileText className="h-4 w-4" />
                     <span className="hidden sm:inline">{t('gameserver.tabs.files')}</span>
                 </TabsTrigger>
+                {configComponent && (
+                    <TabsTrigger value="config" className="relative flex items-center gap-2">
+                        <SlidersHorizontal className="h-4 w-4" />
+                        <span className="hidden sm:inline">{t('gameserver.tabs.config')}</span>
+                        {configAttention}
+                    </TabsTrigger>
+                )}
                 <TabsTrigger
                     value="network"
                     className="flex items-center gap-2"
@@ -87,6 +106,11 @@ export function TabsComponent({
             <TabsContent value="files" className="mt-3">
                 <div className="w-full min-w-0 h-full">{fileManagerComponent}</div>
             </TabsContent>
+            {configComponent && (
+                <TabsContent value="config" className="mt-3">
+                    <div className="w-full min-w-0 h-full">{configComponent}</div>
+                </TabsContent>
+            )}
             <TabsContent value="network" className="mt-3">
                 <div className="w-full min-w-0 h-full">
                     {networkControlComponent || (

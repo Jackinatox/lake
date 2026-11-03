@@ -3,10 +3,10 @@ import { Card } from '@/components/ui/card';
 import formatDate from '@/lib/formatDate';
 import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
 import { stripMarkdown } from '@/lib/markdownExcerpt';
+import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,

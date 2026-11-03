@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth/requireAdmin';
 import { sendTicketReplyEmail, sendTicketResolvedEmail } from '@/lib/email/sendEmailEmailsFromLake';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
+import { logTicketEvent } from '@/lib/tickets/log';
 import { staffDisplayName } from '@/lib/tickets/presentation';
 import type { TicketActionError, TicketActionResult } from '@/lib/tickets/types';
 import { customerTicketUrl } from '@/lib/tickets/urls';
@@ -38,6 +39,26 @@ function logFailure(error: unknown, adminId: string, action: string, details: ob
     return logger.logError(error, 'SUPPORT_TICKET', {
         userId: adminId,
         details: { action, ...details },
+    });
+}
+
+/** What `logTicketEvent` needs to bind a note log to the ticket's customer and server. */
+const ticketLogSelect = { id: true, number: true, userId: true, gameServerId: true } as const;
+
+function logNoteEvent(
+    level: 'TRACE' | 'INFO',
+    message: string,
+    ticket: { id: string; number: number; userId: string | null; gameServerId: string | null },
+    adminId: string,
+    details: Record<string, unknown>,
+) {
+    return logTicketEvent(level, message, {
+        ticket,
+        customerId: ticket.userId,
+        gameServerId: ticket.gameServerId,
+        actorId: adminId,
+        actorRole: 'ADMIN',
+        details,
     });
 }
 
@@ -77,6 +98,7 @@ export async function adminReplyToTicketAction(
                     assigneeId: true,
                     firstResponseAt: true,
                     gameServerId: true,
+                    userId: true,
                     user: { select: customerSelect },
                 },
             });
@@ -88,7 +110,11 @@ export async function adminReplyToTicketAction(
                 select: { id: true },
             });
             if (latest && latest.id > lastSeenMessageId) {
-                return fail('conflict', 'A new message arrived while you were writing.');
+                return {
+                    ...fail('conflict', 'A new message arrived while you were writing.'),
+                    ticket,
+                    latestMessageId: latest.id,
+                };
             }
 
             const now = new Date();
@@ -144,9 +170,43 @@ export async function adminReplyToTicketAction(
             return { success: true as const, ticket, nextStatus };
         });
 
-        if (!result.success) return result;
+        if (!result.success) {
+            if ('ticket' in result) {
+                await logTicketEvent('TRACE', 'staff reply rejected, newer message arrived', {
+                    ticket: result.ticket,
+                    customerId: result.ticket.userId,
+                    gameServerId: result.ticket.gameServerId,
+                    actorId: adminId,
+                    actorRole: 'ADMIN',
+                    details: { lastSeenMessageId, latestMessageId: result.latestMessageId },
+                });
+            }
+            return fail(result.error, result.message);
+        }
 
         const { ticket, nextStatus } = result;
+        const statusChanged = nextStatus !== ticket.status;
+        await logTicketEvent(
+            'INFO',
+            `staff reply by ${adminName}` +
+                (statusChanged ? `, status ${ticket.status} → ${nextStatus}` : '') +
+                (!ticket.assigneeId ? ', self-assigned' : ''),
+            {
+                ticket,
+                customerId: ticket.userId,
+                gameServerId: ticket.gameServerId,
+                actorId: adminId,
+                actorRole: 'ADMIN',
+                details: {
+                    messageLength: message.length,
+                    statusAfter,
+                    ...(statusChanged && { fromStatus: ticket.status, toStatus: nextStatus }),
+                    ...(!ticket.assigneeId && { assignedTo: adminId }),
+                    firstResponse: !ticket.firstResponseAt,
+                },
+            },
+        );
+
         if (ticket.user?.email) {
             sendTicketReplyEmail({
                 to: ticket.user.email,
@@ -160,8 +220,13 @@ export async function adminReplyToTicketAction(
                 gameServerId: ticket.gameServerId,
             }).catch((error) => {
                 logger.logError(error, 'EMAIL', {
-                    userId: adminId,
-                    details: { context: 'ticket reply email', ticketNumber: ticket.number },
+                    userId: ticket.userId ?? undefined,
+                    gameServerId: ticket.gameServerId ?? undefined,
+                    details: {
+                        context: 'ticket reply email',
+                        ticketNumber: ticket.number,
+                        actorId: adminId,
+                    },
                 });
             });
         }
@@ -211,6 +276,7 @@ export async function adminUpdateTicketAction(
         const now = new Date();
         const data: Prisma.TicketUpdateInput = {};
         const events: Prisma.TicketEventCreateWithoutTicketInput[] = [];
+        let newGameServerId = ticket.gameServerId;
         const addEvent = (
             type: Prisma.TicketEventCreateWithoutTicketInput['type'],
             fromValue: string | null,
@@ -271,6 +337,7 @@ export async function adminUpdateTicketAction(
                 );
             }
             data.gameServer = server ? { connect: { id: server.id } } : { disconnect: true };
+            newGameServerId = server?.id ?? null;
             addEvent('SERVER_CHANGED', ticket.gameServer?.name ?? null, server?.name ?? null);
         }
 
@@ -281,6 +348,23 @@ export async function adminUpdateTicketAction(
             data: { ...data, events: { create: events } },
         });
 
+        // Bound to the new server, or the old one when it was unlinked, so the change shows up
+        // under that server in the log viewer.
+        const changes = events.map((e) => ({ field: e.type, from: e.fromValue, to: e.toValue }));
+        await logTicketEvent(
+            'INFO',
+            `updated by ${staffDisplayName(session.user) ?? 'admin'}: ` +
+                changes.map((c) => `${c.field} ${c.from ?? '—'} → ${c.to ?? '—'}`).join(', '),
+            {
+                ticket,
+                customerId: ticket.userId,
+                gameServerId: newGameServerId ?? ticket.gameServerId,
+                actorId: adminId,
+                actorRole: 'ADMIN',
+                details: { changes },
+            },
+        );
+
         if (data.status === 'RESOLVED' && ticket.user?.email) {
             sendTicketResolvedEmail({
                 to: ticket.user.email,
@@ -288,11 +372,16 @@ export async function adminUpdateTicketAction(
                 ticketNumber: ticket.number,
                 subject: subject ?? ticket.subject,
                 ticketUrl: customerTicketUrl(ticket.id),
-                gameServerId: gameServerId === undefined ? ticket.gameServerId : gameServerId,
+                gameServerId: newGameServerId,
             }).catch((error) => {
                 logger.logError(error, 'EMAIL', {
-                    userId: adminId,
-                    details: { context: 'ticket resolved email', ticketNumber: ticket.number },
+                    userId: ticket.userId ?? undefined,
+                    gameServerId: newGameServerId ?? undefined,
+                    details: {
+                        context: 'ticket resolved email',
+                        ticketNumber: ticket.number,
+                        actorId: adminId,
+                    },
                 });
             });
         }
@@ -319,11 +408,30 @@ export async function adminDeleteTicketAction(input: {
     try {
         const deleted = await prisma.ticket.delete({
             where: { id: ticketId },
-            select: { number: true, subject: true, userId: true },
+            select: {
+                id: true,
+                number: true,
+                subject: true,
+                category: true,
+                status: true,
+                userId: true,
+                gameServerId: true,
+                _count: { select: { messages: true, notes: true } },
+            },
         });
-        await logger.info(`Ticket #${deleted.number} deleted`, 'SUPPORT_TICKET', {
-            userId: adminId,
-            details: { ticketId, ...deleted },
+        await logTicketEvent('WARN', `deleted by ${staffDisplayName(session.user) ?? 'admin'}`, {
+            ticket: deleted,
+            customerId: deleted.userId,
+            gameServerId: deleted.gameServerId,
+            actorId: adminId,
+            actorRole: 'ADMIN',
+            details: {
+                subject: deleted.subject,
+                category: deleted.category,
+                status: deleted.status,
+                messageCount: deleted._count.messages,
+                noteCount: deleted._count.notes,
+            },
         });
         return { success: true };
     } catch (error) {
@@ -347,11 +455,18 @@ export async function addTicketNoteAction(input: {
     try {
         const ticket = await prisma.ticket.findUnique({
             where: { id: ticketId },
-            select: { id: true },
+            select: ticketLogSelect,
         });
         if (!ticket) return fail('notFound', 'Ticket not found.');
 
-        await prisma.ticketNote.create({ data: { ticketId, authorId: adminId, body } });
+        const note = await prisma.ticketNote.create({
+            data: { ticketId, authorId: adminId, body },
+            select: { id: true },
+        });
+        await logNoteEvent('INFO', 'internal note added', ticket, adminId, {
+            noteId: note.id,
+            noteLength: body.length,
+        });
         return { success: true };
     } catch (error) {
         await logFailure(error, adminId, 'addTicketNoteAction', { ticketId });
@@ -363,7 +478,7 @@ export async function addTicketNoteAction(input: {
 async function findOwnNote(noteId: number, adminId: string) {
     return prisma.ticketNote.findFirst({
         where: { id: noteId, authorId: adminId },
-        select: { id: true },
+        select: { id: true, ticket: { select: ticketLogSelect } },
     });
 }
 
@@ -380,10 +495,13 @@ export async function updateTicketNoteAction(input: {
     const adminId = session.user.id;
 
     try {
-        if (!(await findOwnNote(noteId, adminId))) {
-            return fail('notFound', 'You can only edit your own notes.');
-        }
+        const note = await findOwnNote(noteId, adminId);
+        if (!note) return fail('notFound', 'You can only edit your own notes.');
         await prisma.ticketNote.update({ where: { id: noteId }, data: { body } });
+        await logNoteEvent('TRACE', 'internal note edited', note.ticket, adminId, {
+            noteId,
+            noteLength: body.length,
+        });
         return { success: true };
     } catch (error) {
         await logFailure(error, adminId, 'updateTicketNoteAction', { noteId });
@@ -403,10 +521,10 @@ export async function deleteTicketNoteAction(input: {
     const adminId = session.user.id;
 
     try {
-        if (!(await findOwnNote(noteId, adminId))) {
-            return fail('notFound', 'You can only delete your own notes.');
-        }
+        const note = await findOwnNote(noteId, adminId);
+        if (!note) return fail('notFound', 'You can only delete your own notes.');
         await prisma.ticketNote.delete({ where: { id: noteId } });
+        await logNoteEvent('INFO', 'internal note deleted', note.ticket, adminId, { noteId });
         return { success: true };
     } catch (error) {
         await logFailure(error, adminId, 'deleteTicketNoteAction', { noteId });
@@ -428,7 +546,18 @@ export async function setTicketNotePinnedAction(input: {
     const adminId = session.user.id;
 
     try {
-        await prisma.ticketNote.update({ where: { id: noteId }, data: { pinned } });
+        const note = await prisma.ticketNote.update({
+            where: { id: noteId },
+            data: { pinned },
+            select: { ticket: { select: ticketLogSelect } },
+        });
+        await logNoteEvent(
+            'TRACE',
+            pinned ? 'internal note pinned' : 'internal note unpinned',
+            note.ticket,
+            adminId,
+            { noteId, pinned },
+        );
         return { success: true };
     } catch (error) {
         await logFailure(error, adminId, 'setTicketNotePinnedAction', { noteId });

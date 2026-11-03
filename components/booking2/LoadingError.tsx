@@ -1,8 +1,8 @@
 import { AlertCircle, Home, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from '@/i18n/navigation';
 
 export default function LoadingError() {
     const t = useTranslations('buyGameServer.errors');

@@ -18,10 +18,11 @@ import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useState } from 'react';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import formatVCores from '@/lib/GlobalFunctions/formatVCores';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface FreeServerUpgradeClientProps {
     server: ClientServer;
@@ -237,7 +238,9 @@ export default function FreeServerUpgradeClient({
                                 </p>
                             </div>
                             <p className="text-xs text-muted-foreground">
-                                {t('upgrade.pricing.description')}
+                                {t.rich('upgrade.pricing.description', {
+                                    amount: () => <Euro cents={100} />,
+                                })}
                             </p>
                         </div>
                     </CardContent>

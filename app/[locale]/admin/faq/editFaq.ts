@@ -5,6 +5,12 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { revalidateTag } from 'next/cache';
+import {
+    FAQ_CONTENT_ERROR,
+    FAQ_SORTING_ERROR,
+    hasRequiredFaqContent,
+    isValidFaqSorting,
+} from './faqRules';
 
 export default async function editFAQ(
     id: number,
@@ -18,6 +24,11 @@ export default async function editFAQ(
 ) {
     const session = await auth.api.getSession({ headers: await headers() });
     if (session?.user.role !== 'admin') throw new Error('Unauthorized');
+
+    if (!isValidFaqSorting(sorting)) throw new Error(FAQ_SORTING_ERROR);
+    if (!hasRequiredFaqContent([question_en, question_de, answer_en, answer_de], categories)) {
+        throw new Error(FAQ_CONTENT_ERROR);
+    }
 
     const updatedFAQ = await prisma.fAQ.update({
         where: { id },

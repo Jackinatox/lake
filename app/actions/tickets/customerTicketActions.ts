@@ -15,6 +15,7 @@ import {
     MAX_TICKETS_PER_USER_PER_DAY,
 } from '@/lib/tickets/constants';
 import type { TicketActionError, TicketActionResult } from '@/lib/tickets/types';
+import { logTicketEvent } from '@/lib/tickets/log';
 import { adminTicketUrl, customerTicketUrl } from '@/lib/tickets/urls';
 import { getValidationMessage } from '@/lib/validation/common';
 import {
@@ -69,10 +70,33 @@ export async function createTicketAction(
                   })
                 : null,
         ]);
-        if (openCount >= MAX_OPEN_TICKETS_PER_USER) return fail('openLimit');
-        if (todayCount >= MAX_TICKETS_PER_USER_PER_DAY) return fail('dailyLimit');
-        if (recentMessages >= MAX_MESSAGES_PER_USER_PER_HOUR) return fail('messageLimit');
-        if (gameServerId && !server) return fail('serverNotFound');
+        const limitHit =
+            openCount >= MAX_OPEN_TICKETS_PER_USER
+                ? 'openLimit'
+                : todayCount >= MAX_TICKETS_PER_USER_PER_DAY
+                  ? 'dailyLimit'
+                  : recentMessages >= MAX_MESSAGES_PER_USER_PER_HOUR
+                    ? 'messageLimit'
+                    : null;
+        if (limitHit) {
+            await logTicketEvent('WARN', `Ticket creation blocked by abuse limit (${limitHit})`, {
+                customerId: userId,
+                gameServerId: server?.id,
+                actorId: userId,
+                actorRole: 'CUSTOMER',
+                details: { limit: limitHit, openCount, todayCount, recentMessages, category },
+            });
+            return fail(limitHit);
+        }
+        if (gameServerId && !server) {
+            await logTicketEvent('WARN', 'Ticket creation with a server the user does not own', {
+                customerId: userId,
+                actorId: userId,
+                actorRole: 'CUSTOMER',
+                details: { requestedGameServerId: gameServerId, category },
+            });
+            return fail('serverNotFound');
+        }
 
         const now = new Date();
         const ticket = await prisma.ticket.create({
@@ -98,6 +122,15 @@ export async function createTicketAction(
             select: { id: true, number: true, gameServerId: true },
         });
 
+        await logTicketEvent('INFO', `created (${category})`, {
+            ticket,
+            customerId: userId,
+            gameServerId: ticket.gameServerId,
+            actorId: userId,
+            actorRole: 'CUSTOMER',
+            details: { category, subject, messageLength: message.length },
+        });
+
         sendTicketOpenedEmail({
             to: session.user.email,
             userName: getUserDisplayName(session.user),
@@ -111,6 +144,7 @@ export async function createTicketAction(
         }).catch((error) => {
             logger.logError(error, 'EMAIL', {
                 userId,
+                gameServerId: ticket.gameServerId ?? undefined,
                 details: { context: 'ticket opened email', ticketNumber: ticket.number },
             });
         });
@@ -146,17 +180,30 @@ export async function replyToTicketAction(input: {
     const userId = session.user.id;
 
     try {
-        if ((await messagesSentInLastHour(userId)) >= MAX_MESSAGES_PER_USER_PER_HOUR) {
+        const recentMessages = await messagesSentInLastHour(userId);
+        if (recentMessages >= MAX_MESSAGES_PER_USER_PER_HOUR) {
+            await logTicketEvent('WARN', 'Ticket reply blocked by abuse limit (messageLimit)', {
+                customerId: userId,
+                actorId: userId,
+                actorRole: 'CUSTOMER',
+                details: { ticketId, limit: 'messageLimit', recentMessages },
+            });
             return fail('messageLimit');
         }
 
         const result = await prisma.$transaction(async (tx) => {
             const ticket = await tx.ticket.findFirst({
                 where: { id: ticketId, userId },
-                select: { id: true, number: true, subject: true, status: true },
+                select: {
+                    id: true,
+                    number: true,
+                    subject: true,
+                    status: true,
+                    gameServerId: true,
+                },
             });
             if (!ticket) return fail('notFound');
-            if (ticket.status === 'CLOSED') return fail('closed');
+            if (ticket.status === 'CLOSED') return { ...fail('closed'), ticket };
 
             const now = new Date();
             const statusChanged = ticket.status !== 'OPEN';
@@ -196,7 +243,48 @@ export async function replyToTicketAction(input: {
             return { success: true as const, ticket };
         });
 
-        if (!result.success) return result;
+        if (!result.success) {
+            if (result.error === 'notFound') {
+                await logTicketEvent(
+                    'WARN',
+                    'Reply to a ticket that does not exist or is not theirs',
+                    {
+                        customerId: userId,
+                        actorId: userId,
+                        actorRole: 'CUSTOMER',
+                        details: { ticketId },
+                    },
+                );
+            } else if ('ticket' in result) {
+                await logTicketEvent('INFO', 'customer reply rejected, ticket is closed', {
+                    ticket: result.ticket,
+                    customerId: userId,
+                    gameServerId: result.ticket.gameServerId,
+                    actorId: userId,
+                    actorRole: 'CUSTOMER',
+                });
+            }
+            return fail(result.error);
+        }
+
+        const reopened = result.ticket.status !== 'OPEN';
+        await logTicketEvent(
+            'INFO',
+            reopened
+                ? `customer replied, reopened from ${result.ticket.status}`
+                : 'customer replied',
+            {
+                ticket: result.ticket,
+                customerId: userId,
+                gameServerId: result.ticket.gameServerId,
+                actorId: userId,
+                actorRole: 'CUSTOMER',
+                details: {
+                    messageLength: message.length,
+                    ...(reopened && { fromStatus: result.ticket.status, toStatus: 'OPEN' }),
+                },
+            },
+        );
 
         sendTicketReplyNotification({
             ticketNumber: result.ticket.number,
@@ -230,9 +318,17 @@ export async function closeTicketAction(input: { ticketId: string }): Promise<Ti
     try {
         const ticket = await prisma.ticket.findFirst({
             where: { id: ticketId, userId },
-            select: { status: true },
+            select: { id: true, number: true, status: true, gameServerId: true },
         });
-        if (!ticket) return fail('notFound');
+        if (!ticket) {
+            await logTicketEvent('WARN', 'Close of a ticket that does not exist or is not theirs', {
+                customerId: userId,
+                actorId: userId,
+                actorRole: 'CUSTOMER',
+                details: { ticketId },
+            });
+            return fail('notFound');
+        }
         if (ticket.status === 'CLOSED') return { success: true };
 
         const now = new Date();
@@ -251,6 +347,14 @@ export async function closeTicketAction(input: { ticketId: string }): Promise<Ti
                     },
                 },
             },
+        });
+        await logTicketEvent('INFO', `closed by customer (was ${ticket.status})`, {
+            ticket,
+            customerId: userId,
+            gameServerId: ticket.gameServerId,
+            actorId: userId,
+            actorRole: 'CUSTOMER',
+            details: { fromStatus: ticket.status, toStatus: 'CLOSED' },
         });
         return { success: true };
     } catch (error) {

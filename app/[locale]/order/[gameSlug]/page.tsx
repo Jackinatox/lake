@@ -4,7 +4,8 @@ import { createPublicMetadata, gameIconImage, getMetadataCopy } from '@/lib/meta
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ConfiguredOrderClient from './ConfiguredOrderClient';
-import { Suspense, cache } from 'react';
+import { GameDetails } from '@/components/order/GameDetails';
+import { cache } from 'react';
 
 // Old imports — kept so the file is easy to restore
 // import GameLandingClient from './GameLandingClient';
@@ -104,15 +105,19 @@ export default async function GameLandingPage({
         );
     }
 
+    // No <Suspense> around the client: it would stream the whole page into a hidden <div> at the
+    // end of the HTML, which crawlers that do not run JS read poorly. Every route renders
+    // dynamically (root layout reads the locale from the request), so useSearchParams needs none.
     return (
-        <Suspense>
-            <ConfiguredOrderClient
-                performanceGroups={performanceGroups}
-                resourceTiers={resourceTiers}
-                game={game}
-                hasFreeServers={freeLocations.length > 0}
-                hardwareRecommendations={game.hardwareRecommendations}
-            />
-        </Suspense>
+        <ConfiguredOrderClient
+            performanceGroups={performanceGroups}
+            resourceTiers={resourceTiers}
+            // Not the whole game: hardwareRecommendations are passed separately, so they are not
+            // serialized to the client twice
+            game={{ id: game.id, name: game.name, slug: game.slug }}
+            hasFreeServers={freeLocations.length > 0}
+            hardwareRecommendations={game.hardwareRecommendations}
+            detailsSlot={<GameDetails game={game} hasFreeServers={freeLocations.length > 0} />}
+        />
     );
 }

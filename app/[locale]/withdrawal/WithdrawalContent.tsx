@@ -5,11 +5,12 @@ import prisma from '@/lib/prisma';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileX2, History } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Euro } from '@/components/Euro';
 import { Separator } from '@/components/ui/separator';
 import { WithdrawableOrderItem } from './WithdrawableOrderItem';
 import { RefundHistoryItem } from './RefundHistoryItem';
 import { WITHDRAWAL_WINDOW_DAYS } from '@/lib/refund/refundLogic';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export async function WithdrawalContent() {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -141,7 +142,7 @@ export async function WithdrawalContent() {
                                         {t('history.totalRefunded')}:
                                     </span>
                                     <span className="font-medium text-sm">
-                                        {(totalRefunded / 100).toFixed(2)} €
+                                        <Euro cents={totalRefunded} />
                                     </span>
                                 </div>
                                 <Separator />

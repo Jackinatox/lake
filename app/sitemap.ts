@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 import { routing } from '@/i18n/routing';
-import { SITE_URL } from '@/lib/metadata';
+import { BLOG_CONTENT_LOCALE, SITE_URL } from '@/lib/metadata';
 
 // Rendered per request instead of once at build time, so new blog posts and games show up without
 // a deploy. Not ISR: its cache would live per instance. Crawlers fetch it rarely, and the two
@@ -20,15 +20,18 @@ function localeUrls(
     priority: number,
     changeFrequency: SitemapEntry['changeFrequency'],
     extra: Pick<SitemapEntry, 'images' | 'lastModified'> = {},
+    /** Only these language versions exist (blog posts are German only, see BLOG_CONTENT_LOCALE). */
+    locales: readonly string[] = routing.locales,
 ): MetadataRoute.Sitemap {
     const languages = {
-        ...Object.fromEntries(
-            routing.locales.map((locale) => [locale, localizedUrl(locale, path)]),
+        ...Object.fromEntries(locales.map((locale) => [locale, localizedUrl(locale, path)])),
+        'x-default': localizedUrl(
+            locales.includes(routing.defaultLocale) ? routing.defaultLocale : locales[0],
+            path,
         ),
-        'x-default': localizedUrl(routing.defaultLocale, path),
     };
 
-    return routing.locales.map((locale) => ({
+    return locales.map((locale) => ({
         url: localizedUrl(locale, path),
         priority,
         changeFrequency,
@@ -70,28 +73,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const staticOrderPages: MetadataRoute.Sitemap = [
         ...localeUrls('/order', 0.9, 'weekly'),
-        ...localeUrls('/order/configure', 0.8, 'weekly'),
         ...localeUrls('/order/free', 0.8, 'weekly'),
     ];
 
-    // Funnel steps (/order/[game]/setup, /order/configure/games) are noindex and not listed.
+    // Funnel steps (/order/[game]/setup, /order/configure, /order/configure/games,
+    // /order/free/[game]) are noindex and not listed.
     const gameOrderPages: MetadataRoute.Sitemap = games.flatMap(({ slug, name }) =>
         localeUrls(`/order/${slug}`, 0.85, 'weekly', { images: gameImageUrls(name) }),
     );
 
-    const freeGamePages: MetadataRoute.Sitemap = games.flatMap(({ slug, name }) =>
-        localeUrls(`/order/free/${slug}`, 0.7, 'weekly', { images: gameImageUrls(name) }),
-    );
-
     const blogPostPages: MetadataRoute.Sitemap = blogPosts.flatMap(({ slug, updatedAt }) =>
-        localeUrls(`/blog/${slug}`, 0.5, 'monthly', { lastModified: updatedAt }),
+        localeUrls(`/blog/${slug}`, 0.5, 'monthly', { lastModified: updatedAt }, [
+            BLOG_CONTENT_LOCALE,
+        ]),
     );
 
     return [
         ...staticPages,
         ...staticOrderPages,
         ...gameOrderPages,
-        ...freeGamePages,
         ...blogPostPages,
     ];
 }

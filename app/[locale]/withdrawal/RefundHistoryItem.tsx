@@ -19,7 +19,8 @@ import {
     Undo2,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 interface RefundHistoryItemProps {
     refundId: string;
@@ -151,10 +152,10 @@ export function RefundHistoryItem({
                 {/* Amounts */}
                 <div className="flex items-center gap-3 text-xs flex-wrap">
                     <span className="font-medium text-green-600 dark:text-green-400">
-                        {t('refundedAmount')}: {(amount / 100).toFixed(2)} €
+                        {t('refundedAmount')}: <Euro cents={amount} />
                     </span>
                     <span className="text-muted-foreground">
-                        {t('ofOriginal')}: {(originalPrice / 100).toFixed(2)} €
+                        {t('ofOriginal')}: <Euro cents={originalPrice} />
                     </span>
                 </div>
 

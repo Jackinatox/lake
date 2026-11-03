@@ -6,6 +6,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Euro amounts (components/Euro.tsx): never wrap, and narrow the no-break space before the €
+   from a full space (Inter 0.28em, Geist 0.25em) to about a thin space (Inter's is 0.18em).
+   word-spacing applies to U+00A0 too; a browser that ignored it would just show the full space. */
+@utility euro {
+    white-space: nowrap;
+    word-spacing: -0.1em;
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);

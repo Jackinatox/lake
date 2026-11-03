@@ -28,6 +28,7 @@ import {
     CONFIG_KEY_SUPPORT_EMAIL,
     SUSPENSION_DEFAULT_REASON,
 } from '../app/GlobalConstants';
+import { FAQ_SEED } from './faqSeed';
 
 async function main() {
     await prisma.gameData.create({
@@ -385,6 +386,11 @@ async function main() {
             ports: 2,
         },
     });
+
+    // Only into an empty table, so running the seed again cannot duplicate the FAQ
+    if ((await prisma.fAQ.count()) === 0) {
+        await prisma.fAQ.createMany({ data: FAQ_SEED });
+    }
 }
 
 main()

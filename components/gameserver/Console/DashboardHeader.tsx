@@ -23,12 +23,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { GameServer } from '@/models/gameServerModel';
 import { ChevronDown, Gauge, Play, Power, RefreshCw, Skull } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
 import { StatusIndicator } from './StatusIndicator';
 import { ServerAddress } from './ServerAddress';
 import GameInfo from '../settings/gameSpecific/info/GameInfo';
+import { Link, usePathname } from '@/i18n/navigation';
 
 interface DashboardHeaderProps {
     server: GameServer;

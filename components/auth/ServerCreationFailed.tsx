@@ -2,6 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Clock } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 interface ServerCreationFailedProps {
     serverId: string;
@@ -26,10 +27,10 @@ export default async function ServerCreationFailed({ serverId }: ServerCreationF
 
                 <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button asChild>
-                        <a href="/support/tickets">{t('contactSupport')}</a>
+                        <Link href="/support/tickets">{t('contactSupport')}</Link>
                     </Button>
                     <Button variant="outline" asChild>
-                        <a href="/">{t('home')}</a>
+                        <Link href="/">{t('home')}</Link>
                     </Button>
                 </CardFooter>
             </Card>

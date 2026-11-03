@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import formatDate from '@/lib/formatDate';
 import { ArrowUpCircle, Calendar } from 'lucide-react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface ServerExpiersDisplayProps {
     ptServerId: string;

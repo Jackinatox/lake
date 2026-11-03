@@ -25,7 +25,13 @@ const nextConfig: NextConfig = {
         //   ),
         // ],
     },
-    allowedDevOrigins: ['localhost:3000', 'localhost:3001', 'scyed.com', 'devlake.scyed.com'],
+    allowedDevOrigins: [
+        'localhost:3000',
+        'localhost:3001',
+        'scyed.com',
+        'devlake.scyed.com',
+        'devlakelars.scyed.com',
+    ],
 };
 
 function sh(cmd: string, fallback: string = 'unknown') {

@@ -9,7 +9,7 @@ import { authClient } from '@/lib/auth-client';
 import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 function ProfileInfo() {
     const session = authClient.useSession();

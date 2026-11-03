@@ -81,7 +81,8 @@ export default function CreateUserDialog({ onCreated }: CreateUserDialogProps) {
                         <DialogTitle>Create User</DialogTitle>
                         <DialogDescription>
                             Creates an email/password account. The user logs in with the email and
-                            the password set here.
+                            the password set here. Anyone who later signs in with Google or Discord
+                            using this email gets access to this account.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-2">

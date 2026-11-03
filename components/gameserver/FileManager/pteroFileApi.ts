@@ -21,6 +21,14 @@ export class UploadAbortedError extends Error {
     }
 }
 
+/** Thrown by `readFile` when the file does not exist (HTTP 404). */
+export class FileNotFoundError extends Error {
+    constructor(filePath: string) {
+        super(`File not found: ${filePath}`);
+        this.name = 'FileNotFoundError';
+    }
+}
+
 export type UploadRequest = {
     promise: Promise<void>;
     abort: () => void;
@@ -92,6 +100,23 @@ export async function listDirectory(
     return { data };
 }
 
+/**
+ * False only when the parent directory could be listed and does not contain the file;
+ * a failing listing counts as "exists" so the caller keeps reporting the original error.
+ */
+async function fileExists(serverId: string, filePath: string, apiKey: string): Promise<boolean> {
+    const path = ensureLeadingSlash(filePath);
+    const slash = path.lastIndexOf('/');
+    const directory = path.slice(0, slash) || '/';
+    const name = path.slice(slash + 1);
+    try {
+        const { data } = await listDirectory(serverId, directory, apiKey);
+        return data.some((entry) => entry.isFile && entry.name === name);
+    } catch {
+        return true;
+    }
+}
+
 export async function readFile(
     serverId: string,
     filePath: string,
@@ -110,8 +135,17 @@ export async function readFile(
         },
     );
 
+    if (response.status === 404) {
+        throw new FileNotFoundError(filePath);
+    }
+
     if (!response.ok) {
         const message = await response.text();
+        // The panel answers a missing file with a 500 (DaemonConnectionException), so the status
+        // alone can't tell "missing" from a real daemon failure: ask the directory listing.
+        if (!(await fileExists(serverId, filePath, apiKey))) {
+            throw new FileNotFoundError(filePath);
+        }
         throw new Error(message || `Failed to read file: ${response.status}`);
     }
 

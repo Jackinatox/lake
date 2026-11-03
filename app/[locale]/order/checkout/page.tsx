@@ -7,9 +7,9 @@ import prisma from '@/lib/prisma';
 import { orderCheckoutSearchParamsSchema } from '@/lib/validation/order';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import { Link } from '@/i18n/navigation';
 
 const getCheckoutOrder = cache(async (userId: string, orderId: string) => {
     return prisma.gameServerOrder.findFirst({

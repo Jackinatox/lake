@@ -4,12 +4,14 @@ import { cn } from '@/lib/utils';
 import { ResourceTierDisplay } from '@/models/prisma';
 import { Archive, HardDrive, Network } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Euro } from '@/components/Euro';
 
 interface ResourceTierSelectorProps {
     tiers: ResourceTierDisplay[];
     selectedId: number | null;
     onSelect: (id: number) => void;
-    /** Selected duration in days — used to prorate the displayed price */
+    /** Selected duration in days, used to prorate the displayed price. Without it the cards show
+     *  the monthly price with "/Mon." (pricing page) */
     days?: number;
     currentDiskUsageMb?: number;
     persistedTierId?: number | null;
@@ -19,11 +21,13 @@ export default function ResourceTierSelector({
     tiers,
     selectedId,
     onSelect,
-    days = 30,
+    days,
     currentDiskUsageMb = 0,
     persistedTierId = null,
 }: ResourceTierSelectorProps) {
     const t = useTranslations('order.resourceTier');
+    const perMonth = days === undefined;
+    const priceDays = days ?? 30;
     if (tiers.length === 0) return null;
 
     return (
@@ -67,10 +71,15 @@ export default function ResourceTierSelector({
                             <div className="shrink-0 w-16 text-center">
                                 {tier.priceCents > 0 ? (
                                     <span className="text-sm font-semibold tabular-nums">
-                                        {(Math.round((tier.priceCents / 30) * days) / 100).toFixed(
-                                            2,
-                                        )}{' '}
-                                        €
+                                        <Euro
+                                            cents={Math.round((tier.priceCents / 30) * priceDays)}
+                                        />
+                                        {/* Own line: the 64px price box is too narrow for both */}
+                                        {perMonth && (
+                                            <span className="block text-xs font-normal text-muted-foreground">
+                                                {t('perMonth')}
+                                            </span>
+                                        )}
                                     </span>
                                 ) : (
                                     <span className="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -148,10 +157,14 @@ export default function ResourceTierSelector({
                             <div className="mt-3 pt-3 border-t border-border">
                                 {tier.priceCents > 0 ? (
                                     <span className="text-base font-semibold tabular-nums">
-                                        {(Math.round((tier.priceCents / 30) * days) / 100).toFixed(
-                                            2,
-                                        )}{' '}
-                                        €
+                                        <Euro
+                                            cents={Math.round((tier.priceCents / 30) * priceDays)}
+                                        />
+                                        {perMonth && (
+                                            <span className="text-xs font-normal text-muted-foreground">
+                                                {t('perMonth')}
+                                            </span>
+                                        )}
                                     </span>
                                 ) : (
                                     <span className="text-base font-semibold text-green-600 dark:text-green-400">

@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ThemeImage } from '@/components/ui/theme-image';
 import { ClientServer } from '@/models/prisma';
 import { AlertTriangle, Calendar, Cpu, HardDrive, MemoryStick, ShieldAlert } from 'lucide-react';
-import Link from 'next/link';
 import GameServerStatus from './GameServerStatus';
 import { useTranslations } from 'next-intl';
 import { formatBytes, formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
@@ -12,6 +11,7 @@ import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import formatDate from '@/lib/formatDate';
 import { Button } from '@/components/ui/button';
 import { getActiveSuspension, isSuspensionProcessing } from '@/lib/gameserver/suspension';
+import { Link } from '@/i18n/navigation';
 
 type ExpirationUrgency = 'ok' | 'warn' | 'urgent' | 'expired';
 

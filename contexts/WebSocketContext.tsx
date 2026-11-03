@@ -122,12 +122,18 @@ export const MAX_CONSOLE_HISTORY = 1000;
 // Let the history buffer overshoot the cap by this many lines before a bulk trim, so
 // the per-line hot path is an O(1) push instead of copying the whole array each time.
 const HISTORY_SLACK = 200;
+const CREDENTIALS_TIMEOUT_MS = 10000;
 
 class ServerConnectionManager {
     private ws: WebSocket | null = null;
     private subscriberCount = 0;
     private reconnectTimeout: NodeJS.Timeout | null = null;
     private maxReconnectAttempts = 10;
+    // True while a connect attempt is fetching credentials, so overlapping triggers
+    // (visibility change, reconnect timer) never start a second attempt in parallel.
+    private connecting = false;
+    // Bumped on disconnect so an attempt that resolves afterwards is discarded.
+    private generation = 0;
     private debug = false;
     private onCleanup?: () => void;
 
@@ -180,7 +186,9 @@ class ServerConnectionManager {
     }
 
     private async connect(): Promise<void> {
-        if (this.state.isReconnecting) return;
+        if (this.state.isReconnecting || this.connecting) return;
+        this.connecting = true;
+        const generation = this.generation;
 
         // Cleanup existing connection
         this.cleanupWebSocket();
@@ -193,6 +201,7 @@ class ServerConnectionManager {
             }
 
             const { socket, token } = await this.fetchCredentials();
+            if (generation !== this.generation) return;
 
             if (this.debug) {
                 console.log(`[WS ${this.serverId}] Connecting to WebSocket...`);
@@ -242,6 +251,7 @@ class ServerConnectionManager {
                 this.updateState({ wsState: 'CLOSED' });
             };
         } catch (error) {
+            if (generation !== this.generation) return;
             if (this.debug) {
                 console.error(`[WS ${this.serverId}] Connection failed:`, error);
             }
@@ -254,6 +264,8 @@ class ServerConnectionManager {
             ) {
                 this.scheduleReconnect();
             }
+        } finally {
+            if (generation === this.generation) this.connecting = false;
         }
     }
 
@@ -403,6 +415,8 @@ class ServerConnectionManager {
             console.log(`[WS ${this.serverId}] Disconnecting (no subscribers)`);
         }
 
+        this.generation++;
+        this.connecting = false;
         this.clearReconnectTimeout();
         this.cleanupWebSocket();
         this.emitter.clear();
@@ -450,6 +464,7 @@ class ServerConnectionManager {
         const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
         const response = await fetch(`${ptUrl}/api/client/servers/${this.serverId}/websocket`, {
             method: 'GET',
+            signal: AbortSignal.timeout(CREDENTIALS_TIMEOUT_MS),
             headers: {
                 Authorization: `Bearer ${this.apiKey}`,
                 'Content-Type': 'application/json',
@@ -521,7 +536,8 @@ class ServerConnectionManager {
             this.subscriberCount > 0 &&
             this.ws?.readyState !== WebSocket.OPEN &&
             this.ws?.readyState !== WebSocket.CONNECTING &&
-            !this.state.isReconnecting
+            !this.state.isReconnecting &&
+            !this.connecting
         ) {
             if (this.debug) {
                 console.log(`[WS ${this.serverId}] Page visible, reconnecting...`);

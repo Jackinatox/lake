@@ -1,13 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import ResourceTierSelector from '@/components/order/ResourceTierSelector';
 import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
 import { cn } from '@/lib/utils';
@@ -24,9 +18,10 @@ import {
     Tag,
     TrendingUp,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useRouter } from '@/i18n/navigation';
+import { Euro } from '@/components/Euro';
 
 const CPU_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20, 32];
 const RAM_SCALE = [1, 2, 3, 4, 6, 8, 10, 14, 20];
@@ -240,6 +235,23 @@ export default function PricingClient({
                                         <div className="text-xs text-muted-foreground truncate">
                                             {p.cpu.name}
                                         </div>
+                                        {/* Every group's prices in the HTML, not only the selected one's.
+                                            One price per line on phones, the cards are narrow there */}
+                                        <div className="text-xs text-muted-foreground tabular-nums">
+                                            <span className="block whitespace-nowrap sm:inline">
+                                                <Euro
+                                                    cents={p.cpu.pricePerCore}
+                                                    unit={t('table.perVCore')}
+                                                />
+                                            </span>
+                                            <span className="hidden sm:inline"> · </span>
+                                            <span className="block whitespace-nowrap sm:inline">
+                                                <Euro
+                                                    cents={p.ram.pricePerGb}
+                                                    unit={t('table.perGiB')}
+                                                />
+                                            </span>
+                                        </div>
                                     </div>
                                     <ChevronRight
                                         className={cn(
@@ -269,8 +281,8 @@ export default function PricingClient({
                         icon={Cpu}
                         label={t('table.cpu')}
                         sublabel={pf.cpu.name}
-                        unit={`${(pf.cpu.pricePerCore / 100).toFixed(2)} ${t('table.perVCore')}`}
-                        subtotal={`${(price.cents.cpu / 100).toFixed(2)} €`}
+                        unit={<Euro cents={pf.cpu.pricePerCore} unit={t('table.perVCore')} />}
+                        subtotal={<Euro cents={price.cents.cpu} />}
                     >
                         <Stepper
                             value={cpuValue}
@@ -287,8 +299,8 @@ export default function PricingClient({
                         icon={MemoryStick}
                         label={t('table.ram')}
                         sublabel={pf.ram.name}
-                        unit={`${(pf.ram.pricePerGb / 100).toFixed(2)} ${t('table.perGiB')}`}
-                        subtotal={`${(price.cents.ram / 100).toFixed(2)} €`}
+                        unit={<Euro cents={pf.ram.pricePerGb} unit={t('table.perGiB')} />}
+                        subtotal={<Euro cents={price.cents.ram} />}
                     >
                         <Stepper
                             value={ramValue}
@@ -300,46 +312,31 @@ export default function PricingClient({
                         />
                     </Row>
 
-                    {/* Resource package row */}
+                    {/* Resource package row. Cards instead of a dropdown: a closed dropdown's
+                        options (and their prices) are not in the server HTML */}
                     {resourceTiers.length > 0 && (
-                        <Row
-                            icon={HardDrive}
-                            label={t('table.resources')}
-                            stretchControl
-                            unit={
-                                tier && tier.priceCents > 0
-                                    ? `${(tier.priceCents / 100).toFixed(2)} ${t('table.perMonth')}`
-                                    : t('table.free')
-                            }
-                            subtotal={`${(price.tierPriceCents / 100).toFixed(2)} €`}
-                        >
-                            <Select
-                                value={tier ? String(tier.id) : ''}
-                                onValueChange={(v) => setTierId(Number(v))}
-                            >
-                                <SelectTrigger className="h-9 w-full sm:w-auto">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="min-w-[280px]">
-                                    {resourceTiers.map((rt) => (
-                                        <SelectItem key={rt.id} value={String(rt.id)}>
-                                            <span className="flex items-center gap-2 whitespace-nowrap">
-                                                <span className="font-medium">
-                                                    {rt.name || `Tier ${rt.id}`}
-                                                </span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {t('table.tierSummary', {
-                                                        disk: rt.diskMB / 1024,
-                                                        backups: rt.backups,
-                                                        ports: rt.ports,
-                                                    })}
-                                                </span>
-                                            </span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </Row>
+                        <>
+                            <Row
+                                icon={HardDrive}
+                                label={t('table.resources')}
+                                unit={
+                                    tier && tier.priceCents > 0 ? (
+                                        <Euro cents={tier.priceCents} unit={t('table.perMonth')} />
+                                    ) : (
+                                        t('table.free')
+                                    )
+                                }
+                                subtotal={<Euro cents={price.tierPriceCents} />}
+                                isLast
+                            />
+                            <div className="px-4 pb-3 border-b">
+                                <ResourceTierSelector
+                                    tiers={resourceTiers}
+                                    selectedId={tier?.id ?? null}
+                                    onSelect={setTierId}
+                                />
+                            </div>
+                        </>
                     )}
 
                     {/* Duration — horizontal timeline track */}
@@ -482,7 +479,7 @@ export default function PricingClient({
                             </span>
                             <span className="font-medium tabular-nums">
                                 {price.discount.cents > 0 ? '−' : '+'}
-                                {(Math.abs(price.discount.cents) / 100).toFixed(2)} €
+                                <Euro cents={Math.abs(price.discount.cents)} />
                             </span>
                         </div>
                     )}
@@ -496,7 +493,7 @@ export default function PricingClient({
                             </div>
                         </div>
                         <div className="text-2xl md:text-3xl font-bold tabular-nums">
-                            {(price.totalCents / 100).toFixed(2)} €
+                            <Euro cents={price.totalCents} />
                         </div>
                     </div>
                 </div>
@@ -505,7 +502,7 @@ export default function PricingClient({
                 <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
                     {priceTooSmall && (
                         <span className="text-xs text-red-500 sm:mr-auto">
-                            {t('table.minOrderHint')}
+                            {t.rich('table.minOrderHint', { amount: () => <Euro cents={100} /> })}
                         </span>
                     )}
                     <Button
@@ -520,11 +517,8 @@ export default function PricingClient({
                 </div>
             </section>
 
-            {/* ── FAQ ─────────────────────────────────────────────────── */}
-            <section className="max-w-3xl mx-auto w-full pb-4 md:pb-8">
-                <h2 className="text-lg md:text-xl font-semibold mb-3">{t('faq.title')}</h2>
-                {faqSlot}
-            </section>
+            {/* ── FAQ ─── heading and wrapper come with the slot, so nothing shows without entries */}
+            {faqSlot}
         </div>
     );
 }
@@ -547,16 +541,15 @@ function Row({
     subtotal,
     children,
     isLast,
-    stretchControl,
 }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     sublabel?: string;
-    unit: string;
-    subtotal: string;
-    children: React.ReactNode;
+    unit: React.ReactNode;
+    subtotal: React.ReactNode;
+    /** The control (stepper); the resource row has none, its cards follow below the row */
+    children?: React.ReactNode;
     isLast?: boolean;
-    stretchControl?: boolean;
 }) {
     return (
         <div
@@ -581,14 +574,7 @@ function Row({
                 </div>
 
                 {/* Control */}
-                <div
-                    className={cn(
-                        'max-w-full min-w-0 sm:ml-0 sm:flex-initial',
-                        stretchControl ? 'basis-full w-full sm:basis-auto sm:w-auto' : 'ml-auto',
-                    )}
-                >
-                    {children}
-                </div>
+                <div className="max-w-full min-w-0 ml-auto sm:ml-0 sm:flex-initial">{children}</div>
             </div>
 
             {/* Unit price (sm+ third column) */}

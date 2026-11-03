@@ -27,7 +27,7 @@ import { useTranslations } from 'next-intl';
 import { authClient } from '@/lib/auth-client';
 import { supportTicketSchema } from '@/lib/validation/order';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default function ContactForm() {
     const session = authClient.useSession();

@@ -3,7 +3,6 @@
 import { useCreds } from '@/contexts/WebSocketContext';
 import { useCustomEvent, useSendCommand } from '@/hooks/useServerWebSocket';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '../../ui/button';
 import {
@@ -16,6 +15,7 @@ import {
 } from '../../ui/dialog';
 import { writeFile } from '../FileManager/pteroFileApi';
 import { Spinner } from '@/components/ui/spinner';
+import { Link } from '@/i18n/navigation';
 
 /**
  * EulaDialog - Self-contained Minecraft EULA acceptance feature

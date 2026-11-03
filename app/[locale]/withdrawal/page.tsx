@@ -23,7 +23,11 @@ export default async function WithdrawalPage() {
                 <p className="text-muted-foreground text-sm mt-1">{t('subtitle')}</p>
             </div>
             <WithdrawalContent />
-            <FaqSection categories={['refunds']} heading={t('faqHeading')} className="px-1 pt-10" />
+            <FaqSection
+                categories={['refunds']}
+                heading={t('faqHeading')}
+                className="px-1 pt-6 md:pt-8"
+            />
         </div>
     );
 }

@@ -1,9 +1,9 @@
 import prisma from '@/lib/prisma';
 import { createPublicMetadata, getMetadataCopy } from '@/lib/metadata';
 import GameCard from '@/components/order/game/gameCard';
-import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import { Link } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,

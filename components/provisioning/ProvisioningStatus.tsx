@@ -6,10 +6,10 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import type { JobStatusResponse } from '@/app/api/provisioning/[jobId]/route';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle2, Clock, Loader2, XCircle } from 'lucide-react';
+import { useRouter } from '@/i18n/navigation';
 
 interface ProvisioningStatusProps {
     jobId: string;

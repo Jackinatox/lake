@@ -7,8 +7,8 @@ import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
+import { redirect } from '@/i18n/navigation';
 
 export async function generateMetadata({
     params,
@@ -45,7 +45,7 @@ export async function generateMetadata({
 
 async function UpgradePage({ params }: { params: Promise<{ locale: string; server_id: string }> }) {
     const awaitedParams = await params;
-    const { server_id } = awaitedParams;
+    const { locale, server_id } = awaitedParams;
 
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -62,7 +62,7 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
     }
 
     if (server.type === 'FREE') {
-        redirect(`/gameserver/${server_id}/upgrade/freeServer`);
+        redirect({ href: `/gameserver/${server_id}/upgrade/freeServer`, locale });
     }
 
     return (

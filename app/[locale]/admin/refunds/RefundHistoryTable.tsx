@@ -10,6 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { formatEuro } from '@/lib/GlobalFunctions/formatEuro';
 
 type RefundEntry = {
     id: string;
@@ -94,10 +95,10 @@ export function RefundHistoryTable({ refunds }: RefundHistoryTableProps) {
                                 {refund.order.creationGameData.name}
                             </TableCell>
                             <TableCell className="text-right text-sm">
-                                {(refund.order.price / 100).toFixed(2)} €
+                                {formatEuro(refund.order.price, 'de')}
                             </TableCell>
                             <TableCell className="text-right text-sm font-medium">
-                                {(refund.amount / 100).toFixed(2)} €
+                                {formatEuro(refund.amount, 'de')}
                             </TableCell>
                             <TableCell>
                                 <Badge

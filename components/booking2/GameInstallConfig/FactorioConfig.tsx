@@ -259,6 +259,8 @@ export const FactorioConfigComponent = forwardRef(function FactorioConfig(
                     </DropdownMenuContent>
                 </DropdownMenu>
             </ConfigSettingItem>
+
+            <p className="text-sm text-muted-foreground">{t('changeableLater')}</p>
         </ConfigContainer>
     );
 });

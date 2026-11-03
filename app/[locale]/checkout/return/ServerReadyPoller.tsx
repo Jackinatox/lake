@@ -2,8 +2,6 @@
 
 import { AlertTriangle, CheckCircle2, CreditCard, Loader2, WifiOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -11,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import checkPaymentStatus from './checkPaymentStatus';
 import { OrderStatus, OrderType } from '@/app/client/generated/enums';
+import { Link, useRouter } from '@/i18n/navigation';
 
 export default function ServerReadyPoller({ sessionId }: { sessionId: string }) {
     const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null);

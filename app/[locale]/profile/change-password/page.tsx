@@ -5,9 +5,9 @@ import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShieldAlert } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 export default async function ChangePasswordPage() {
     const session = await auth.api.getSession({

@@ -12,20 +12,28 @@ import {
 import { getValidationMessage } from '@/lib/validation/common';
 import prisma from '@/lib/prisma';
 import { createPtClient } from '@/lib/Pterodactyl/ptAdminClient';
+import deletePtUser from '@/lib/Pterodactyl/deletePtUser';
 import { logger } from '@/lib/logger';
 import { headers } from 'next/headers';
 import formatDate from '@/lib/formatDate';
 
-async function requireAdmin() {
-    const session = await auth.api.getSession({ headers: await headers() });
+async function requireAdmin(action: string) {
+    const requestHeaders = await headers();
+    const session = await auth.api.getSession({ headers: requestHeaders });
     if (session?.user.role !== 'admin') {
+        await logger.warn(`Unauthorized attempt to call admin action ${action}`, 'SYSTEM', {
+            userId: session?.user.id,
+            ipAddress: requestHeaders.get('x-forwarded-for')?.split(',')[0].trim() || undefined,
+            userAgent: requestHeaders.get('user-agent') || undefined,
+            details: { action },
+        });
         throw new Error('Unauthorized');
     }
     return session;
 }
 
 export async function searchUsers(query: string) {
-    await requireAdmin();
+    await requireAdmin('searchUsers');
     const parsed = (() => {
         try {
             return adminUserSearchSchema.parse({ query });
@@ -78,13 +86,23 @@ export async function createUserAsAdmin(input: {
     password: string;
     emailVerified: boolean;
 }): Promise<{ success: true } | { success: false; error: string }> {
-    const session = await requireAdmin();
+    const session = await requireAdmin('createUserAsAdmin');
     const parsed = adminCreateUserSchema.safeParse(input);
     if (!parsed.success) {
         return { success: false, error: getValidationMessage(parsed.error) };
     }
     const { email, password, emailVerified } = parsed.data;
     const name = parsed.data.name || email.split('@')[0];
+
+    // Checked up front so the rollback below can safely assume any user with this email is
+    // the one this call created.
+    const existing = await prisma.user.findFirst({
+        where: { email: { equals: email, mode: 'insensitive' } },
+        select: { id: true },
+    });
+    if (existing) {
+        return { success: false, error: 'A user with this email already exists' };
+    }
 
     let userId: string;
     try {
@@ -96,6 +114,11 @@ export async function createUserAsAdmin(input: {
         });
         userId = user.id;
     } catch (error) {
+        await logger.error(`Admin ${session.user.email} failed to create user ${email}`, 'SYSTEM', {
+            userId: session.user.id,
+            details: { error: error instanceof Error ? error.message : String(error) },
+        });
+        await rollbackFailedUserCreation(email, session.user.id);
         return {
             success: false,
             error: error instanceof APIError ? error.message : 'Failed to create user',
@@ -131,8 +154,46 @@ export async function createUserAsAdmin(input: {
     return { success: true };
 }
 
+/**
+ * Cleans up after a failed `auth.api.createUser`. Creation is not atomic: the Pterodactyl
+ * account is provisioned in a hook before the DB insert, and the credential account is linked
+ * after it, so a failure can leave a user without a password or a panel user without a row.
+ */
+async function rollbackFailedUserCreation(email: string, adminId: string) {
+    try {
+        const leftover = await prisma.user.findFirst({
+            where: { email: { equals: email, mode: 'insensitive' } },
+            select: { id: true, ptUserId: true },
+        });
+        if (!leftover) {
+            // The DB insert failed; any panel user created by the hook can't be matched to this
+            // call, so it is left for manual cleanup instead of risking deleting someone else's.
+            await logger.warn(
+                `No user row left after failed creation of ${email}; check the panel for an orphaned user`,
+                'SYSTEM',
+                { userId: adminId, details: { email } },
+            );
+            return;
+        }
+
+        if (leftover.ptUserId) {
+            await deletePtUser(leftover.ptUserId);
+        }
+        await prisma.user.delete({ where: { id: leftover.id } });
+        await logger.info(`Rolled back partially created user ${email}`, 'SYSTEM', {
+            userId: adminId,
+            details: { targetUserId: leftover.id, ptUserId: leftover.ptUserId },
+        });
+    } catch (error) {
+        await logger.error(`Rollback of failed user creation for ${email} failed`, 'SYSTEM', {
+            userId: adminId,
+            details: { error: error instanceof Error ? error.message : String(error) },
+        });
+    }
+}
+
 export async function verifyUserEmail(userId: string) {
-    const session = await requireAdmin();
+    const session = await requireAdmin('verifyUserEmail');
     const parsed = (() => {
         try {
             return verifyUserEmailSchema.parse({ userId });
@@ -159,7 +220,7 @@ export async function verifyUserEmail(userId: string) {
 }
 
 export async function toggleBanUser(userId: string, ban: boolean, reason?: string) {
-    const session = await requireAdmin();
+    const session = await requireAdmin('toggleBanUser');
     const parsed = (() => {
         try {
             return toggleBanUserSchema.parse({ userId, ban, reason });
@@ -189,7 +250,7 @@ export async function toggleBanUser(userId: string, ban: boolean, reason?: strin
 }
 
 export async function getPterodactylUserInfo(ptUserId: number) {
-    await requireAdmin();
+    await requireAdmin('getPterodactylUserInfo');
     const parsed = (() => {
         try {
             return pterodactylUserInfoSchema.parse({ ptUserId });

@@ -1,8 +1,8 @@
 import { ThemeImage } from '@/components/ui/theme-image';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 
 export type Game = {
     id: string;

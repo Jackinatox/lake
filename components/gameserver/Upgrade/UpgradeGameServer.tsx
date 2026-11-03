@@ -9,12 +9,12 @@ import { checkoutUpgradeParamsSchema } from '@/lib/validation/order';
 import { HardwareConfig, UpgradeBaseConfig } from '@/models/config';
 import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
-import Link from 'next/link';
 import React from 'react';
 import { UpgradeHardwareConfig } from './UpgradeHardwareConfig';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface UpgradeGameServerProps {
     serverId: string;
