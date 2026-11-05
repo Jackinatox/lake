@@ -5,7 +5,6 @@ import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
 import { Stripe } from 'stripe';
-import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
 const PROVISION_RETRIES = 2;
 const RETRY_DELAY_MS = 10_000;
@@ -144,8 +143,6 @@ export async function provisionCheckoutSession(
                     break;
                 case 'TO_PAYED':
                     throw new Error('Feature not implemented yet.');
-                    await upgradeFromFreeGameServer(order);
-                    break;
                 default:
                     logger.fatal(`Unhandled server order type: ${order.type}`, 'SYSTEM', {
                         userId: order.userId,

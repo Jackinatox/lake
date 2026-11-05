@@ -139,8 +139,9 @@ export async function updateGameServer(input: UpdateGameServerInput) {
     } catch (error: any) {
         await logger.error('Failed to update server hardware resources', 'GAME_SERVER', {
             userId: ownerId,
-            gameServerId: id,
-            details: { adminUserId: session?.user.id, error: error.message },
+            // Only set once the lookup found the server: an unknown id would fail the foreign key.
+            gameServerId: ownerId ? id : undefined,
+            details: { adminUserId: session?.user.id, gameServerId: id, error: error.message },
         });
         return {
             success: false,

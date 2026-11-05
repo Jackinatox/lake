@@ -6,7 +6,6 @@ import prisma from '@/lib/prisma';
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import ReinstallPTServerClient from '@/lib/Pterodactyl/Functions/ReinstallPTUserServer';
 import {
-    MAXSTARTUP_COMMAND_LENGTH,
     reinstallServerSchema,
     renameServerSchema,
     serverStartupSchema,
@@ -138,7 +137,7 @@ export async function reinstallServer(server: string, deleteAllFiles = false): P
     });
 
     if (!serverRecord) {
-        logger.error(
+        logger.warn(
             `Reinstall attempt for unknown or unowned server ${parsed.ptServerId}`,
             'GAME_SERVER',
             {
@@ -226,21 +225,6 @@ export async function updateStartupCommand(
         return false;
     }
 
-    if (parsed.startupCommand.length > MAXSTARTUP_COMMAND_LENGTH) {
-        logger.warn(
-            `Startup command update attempt with too long command for server ${parsed.ptServerId}`,
-            'GAME_SERVER',
-            {
-                userId: session.user.id,
-                details: {
-                    ptServerId: parsed.ptServerId,
-                    length: parsed.startupCommand.length,
-                },
-            },
-        );
-        return false;
-    }
-
     const server = await prisma.gameServer.findFirstOrThrow({
         where: { ptServerId: parsed.ptServerId, userId: session.user.id },
         select: { id: true, ptAdminId: true, ptServerId: true },
@@ -248,7 +232,7 @@ export async function updateStartupCommand(
 
     if (!server?.ptAdminId || !server.ptServerId) {
         logger.warn(
-            `Startup command update attempt for unknown or unowned server ${parsed.ptServerId}`,
+            `Startup command update attempt for server without Pterodactyl ids ${parsed.ptServerId}`,
             'GAME_SERVER',
             {
                 userId: session.user.id,
@@ -407,7 +391,6 @@ export async function changeServerStartup(server: string, docker_image: string):
     return await changeServerDockerImageInternal(
         ptServer.ptAdminId.toString(),
         parsed.dockerImage,
-        false,
         logBinding,
     );
 }
@@ -453,16 +436,14 @@ async function fetchAllowedDockerImages(
  * This function uses admin API key and should NEVER be exposed to client-side code.
  *
  * @param ptAdminId - Pterodactyl admin server ID
- * @param docker_image - Docker image to set (null to keep existing)
- * @param skipScripts - Whether to skip install scripts
- * @param logBinding - User and gameserver to bind failure logs to, if the caller has them
+ * @param docker_image - Docker image to set
+ * @param logBinding - User and gameserver to bind failure logs to
  * @returns true if successful, false otherwise
  */
 async function changeServerDockerImageInternal(
     ptAdminId: string,
-    docker_image: string | null,
-    skipScripts: boolean = false,
-    logBinding?: LogBinding,
+    docker_image: string,
+    logBinding: LogBinding,
 ): Promise<boolean> {
     const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const ptAdminKey = process.env.PTERODACTYL_API_KEY;
@@ -480,11 +461,11 @@ async function changeServerDockerImageInternal(
             .then((server) => server.attributes);
 
         const body = JSON.stringify({
-            skip_scripts: skipScripts,
+            skip_scripts: false,
             egg: adminServer.egg,
             environment: adminServer.container.environment,
             startup: adminServer.container.startup_command,
-            image: docker_image || adminServer.container.image,
+            image: docker_image,
         });
 
         // Update the server Configuration
@@ -517,30 +498,6 @@ async function changeServerDockerImageInternal(
 }
 
 /**
- * Server-only function to enable install scripts after initial server creation.
- * This is used during provisioning to re-enable scripts after creating server with skipScripts: true.
- * Should only be called from server-side code like provisionServer.ts
- *
- * @param ptAdminId - Pterodactyl admin server ID
- * @returns true if successful, false otherwise
- */
-export async function enableServerInstallScripts(ptAdminId: number): Promise<boolean> {
-    logger.info(`Enabling install scripts for server ${ptAdminId}`, 'GAME_SERVER', {
-        details: { ptAdminId },
-    });
-
-    const success = await changeServerDockerImageInternal(ptAdminId.toString(), null, false);
-
-    if (!success) {
-        logger.error(`Failed to enable install scripts for server ${ptAdminId}`, 'GAME_SERVER', {
-            details: { ptAdminId },
-        });
-    }
-
-    return success;
-}
-
-/**
  * This currently verifies ownership and that the server is FREE and then returns true.
  */
 export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
@@ -569,7 +526,7 @@ export async function deleteFreeServer(ptServerId: string): Promise<boolean> {
 
     if (!server || !server.ptAdminId) {
         logger.warn(
-            `Delete attempt for unknown server ${validatedServerId} by user ${session.user.id}`,
+            `Delete attempt for unknown server or server without ptAdminId ${validatedServerId} by user ${session.user.id}`,
             'GAME_SERVER',
             {
                 userId: session.user.id,

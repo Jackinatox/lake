@@ -165,7 +165,8 @@ class Logger {
     }
 
     private shouldNotifyTelegram(type: LogType): boolean {
-        return type !== 'AUTHENTICATION';
+        // TELEGRAM logs report a failed send, so notifying about them would send and fail again.
+        return type !== 'AUTHENTICATION' && type !== 'TELEGRAM';
     }
 
     /**
