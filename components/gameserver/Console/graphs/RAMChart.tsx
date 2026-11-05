@@ -153,7 +153,7 @@ export default function RAMChart({ newData, memoryLimit }: RAMChartProps) {
                             labelFormatter={(_, p) =>
                                 p?.[0] ? formatTime(p[0].payload.timestamp) : ''
                             }
-                            formatter={(v) => [formatGiBValue(Number(v)), 'RAM']}
+                            formatter={(v) => `${formatGiBValue(Number(v))} RAM`}
                         />
                     }
                 />
