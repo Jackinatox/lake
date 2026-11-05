@@ -255,7 +255,13 @@ export async function extendGameServerSuspension(
 
         const suspension = await prisma.gameServerSuspension.findUnique({
             where: { id: suspensionId },
-            select: { id: true, gameServerId: true, expiresAt: true, liftedAt: true },
+            select: {
+                id: true,
+                gameServerId: true,
+                expiresAt: true,
+                liftedAt: true,
+                gameServer: { select: { userId: true } },
+            },
         });
         if (!suspension) return { success: false, error: 'Suspension not found' };
         if (suspension.liftedAt)
@@ -269,6 +275,7 @@ export async function extendGameServerSuspension(
         });
 
         await logger.info('Gameserver suspension extended by admin', 'GAME_SERVER', {
+            userId: suspension.gameServer.userId,
             gameServerId: suspension.gameServerId,
             details: {
                 event: `${SUSPENSION_EVENT_PREFIX}EXTENDED`,

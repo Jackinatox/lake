@@ -171,7 +171,7 @@ export default function CPUChart({ newData, cpuLimit }: CPUChartProps) {
                             labelFormatter={(_, p) =>
                                 p?.[0] ? formatTime(p[0].payload.timestamp) : ''
                             }
-                            formatter={(v) => [`${Number(v).toFixed(0)}%`, 'CPU']}
+                            formatter={(v) => `${Number(v).toFixed(0)}% CPU`}
                         />
                     }
                 />

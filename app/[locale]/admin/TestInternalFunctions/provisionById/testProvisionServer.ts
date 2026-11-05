@@ -27,6 +27,7 @@ export async function testProvisionServer(orderId: string) {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
             details: {
+                adminUserId: session.user.id,
                 orderId: order.id,
                 jobId: id,
             },

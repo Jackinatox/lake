@@ -1,7 +1,11 @@
-import { describeResponse, logger } from '@/lib/logger';
+import { describeResponse, logger, type LogBinding } from '@/lib/logger';
 import PTUserServerPowerAction from './StopPTUserServer';
 
-export default async function DeleteAllFilesUserServer(server: string, apiKey: string) {
+export default async function DeleteAllFilesUserServer(
+    server: string,
+    apiKey: string,
+    logBinding: LogBinding,
+) {
     await PTUserServerPowerAction(server, apiKey, 'kill');
     await new Promise((resolve) => setTimeout(resolve, 200));
     const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
@@ -44,6 +48,7 @@ export default async function DeleteAllFilesUserServer(server: string, apiKey: s
         // Not fatal: the caller continues with the reinstall, but a failed wipe is
         // the most likely reason a reinstall afterwards misbehaves.
         await logger.warn(`Deleting all files failed for server ${server}`, 'GAME_SERVER', {
+            ...logBinding,
             details: { ptServerId: server, ...(await describeResponse(deleted)) },
         });
     }

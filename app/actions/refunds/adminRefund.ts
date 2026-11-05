@@ -133,9 +133,10 @@ export async function adminRefund(
         });
 
         logger.info(`Admin ${typeLabel} created`, 'PAYMENT', {
-            userId: session.user.id,
+            userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
             details: {
+                adminUserId: session.user.id,
                 orderId: order.id,
                 refundId: refundRecord.id,
                 stripeRefundId: stripeRefund.id,
@@ -154,9 +155,16 @@ export async function adminRefund(
         };
     } catch (error) {
         logger.error(`Failed to create admin ${typeLabel}`, 'PAYMENT', {
-            userId: session.user.id,
+            userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
-            details: { orderId: order.id, amountCents, type, serverAction, error },
+            details: {
+                adminUserId: session.user.id,
+                orderId: order.id,
+                amountCents,
+                type,
+                serverAction,
+                error,
+            },
         });
 
         if (error instanceof stripe.errors.StripeError) {

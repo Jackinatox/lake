@@ -451,7 +451,7 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
         const jobId = await provisionServerWithWorker(order);
         // notify via lib helper (handles its own logging/errors)
         try {
-            await notifyFreeServerCreated(order.id);
+            await notifyFreeServerCreated(order.id, user.id);
         } catch (notifyErr) {
             logger.error('Failed to run free server notification helper', 'EMAIL', {
                 userId: user.id,
