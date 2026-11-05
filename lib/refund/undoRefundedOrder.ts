@@ -169,6 +169,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             'revertToPreviousOrder: THIS IS A CASE THAT SHOULD NEVER HAPPEN!!!! DEBUG THIS - No previous order found, expiring server',
             'PAYMENT',
             {
+                userId: refundedOrder.userId,
                 gameServerId: gameServerId,
                 details: { refundedOrderId, gameServerId },
             },
@@ -213,6 +214,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
                 'revertToPreviousOrder: Failed to get current server info from PT',
                 'PAYMENT',
                 {
+                    userId: refundedOrder.userId,
                     gameServerId: gameServerId,
                     details: { gameServerId, ptAdminId: gameServer.ptAdminId },
                 },
@@ -249,6 +251,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             logger.error('revertToPreviousOrder: Failed to revert server build in PT', 'PAYMENT', {
+                userId: refundedOrder.userId,
                 gameServerId: gameServerId,
                 details: {
                     gameServerId,
@@ -289,6 +292,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
                 'revertToPreviousOrder: Failed to suspend expired server in PT',
                 'PAYMENT',
                 {
+                    userId: refundedOrder.userId,
                     gameServerId: gameServerId,
                     details: {
                         gameServerId,
@@ -305,6 +309,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         'revertToPreviousOrder: Successfully reverted server to previous order state',
         'PAYMENT',
         {
+            userId: refundedOrder.userId,
             gameServerId: gameServerId,
             details: {
                 refundedOrderId,

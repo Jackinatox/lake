@@ -14,6 +14,9 @@ import { GameServer } from '@/app/client/generated/browser';
 export async function extendFreeServer(
     serverId: string,
 ): Promise<{ success: boolean; newExpiry?: Date; error?: string; canExtendAt?: Date }> {
+    let userId: string | undefined;
+    let gameServerId: string | undefined;
+
     try {
         const session = await auth.api.getSession({
             headers: await headers(),
@@ -25,6 +28,7 @@ export async function extendFreeServer(
             });
             return { success: false, error: 'Not authenticated' };
         }
+        userId = session.user.id;
 
         const server = await prisma.gameServer.findFirst({
             where: {
@@ -44,6 +48,7 @@ export async function extendFreeServer(
             });
             return { success: false, error: 'Server not found or not eligible for free extension' };
         }
+        gameServerId = server.id;
 
         // Refuse before the cooldown is consumed: extending a quarantined server buys days the
         // user cannot use, and the unsuspend below would be refused anyway.
@@ -116,6 +121,8 @@ export async function extendFreeServer(
         return { success: true, newExpiry: updatedServer.expires };
     } catch (error) {
         logger.error('Failed to extend free server', 'FREE_SERVER_EXTEND', {
+            userId,
+            gameServerId,
             details: {
                 serverId,
                 error: error instanceof Error ? error.message : String(error),

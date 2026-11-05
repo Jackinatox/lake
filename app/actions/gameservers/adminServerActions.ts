@@ -45,9 +45,9 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
                 await deleteServerAdmin(gameServer, gameServer.userId); // in the log viewer i want too see the server owner, not dem admin
             } catch (error) {
                 logger.warn('hardDeleteGameServer: Failed to delete from PT', 'SYSTEM', {
-                    userId: session.user.id,
+                    userId: gameServer.userId,
                     gameServerId: id,
-                    details: { error },
+                    details: { adminUserId: session.user.id, error },
                 });
             }
         }
@@ -58,10 +58,9 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
 
         await prisma.gameServer.delete({ where: { id } });
 
-        logger.info('hardDeleteGameServer: Server hard deleted', 'SYSTEM', {
-            userId: session.user.id,
-            gameServerId: id,
-            details: { deleteOrders },
+        logger.info('hardDeleteGameServer: Server hard deleted from database', 'SYSTEM', {
+            userId: gameServer.userId,
+            details: { adminUserId: session.user.id, deleteOrders, gameServerId: id },
         });
 
         return { success: true };

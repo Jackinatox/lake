@@ -37,6 +37,7 @@ export async function reassignPortsAction(
 
     logger.info(`Reassigning ports for server ${ptServerId}`, 'GAME_SERVER', {
         userId: session.user.id,
+        gameServerId: server.id,
         details: { ptServerId },
     });
 
@@ -51,6 +52,7 @@ export async function reassignPortsAction(
             const errorText = await response.text();
             logger.error('Worker returned error during port reassignment', 'GAME_SERVER', {
                 userId: session.user.id,
+                gameServerId: server.id,
                 details: { ptServerId, status: response.status, error: errorText },
             });
             return { success: false, message: errorText || `Worker error: ${response.status}` };
@@ -58,6 +60,7 @@ export async function reassignPortsAction(
 
         logger.info(`Ports reassigned successfully for server ${ptServerId}`, 'GAME_SERVER', {
             userId: session.user.id,
+            gameServerId: server.id,
             details: { ptServerId },
         });
 
@@ -66,6 +69,7 @@ export async function reassignPortsAction(
         const message = error instanceof Error ? error.message : String(error);
         logger.error('Network error during port reassignment', 'GAME_SERVER', {
             userId: session.user.id,
+            gameServerId: server.id,
             details: { ptServerId, error: message },
         });
         return { success: false, message };

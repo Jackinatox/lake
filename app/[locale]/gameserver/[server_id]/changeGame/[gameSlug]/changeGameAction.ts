@@ -64,7 +64,7 @@ export async function changeGame({
         `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameSlug}`,
         'GAME_SERVER',
         {
-            gameServerId: parsed.ptServerId,
+            gameServerId: server.id,
             userId: session.user.id,
             details: {
                 gameSlug: parsed.gameSlug,
@@ -90,7 +90,7 @@ export async function changeGame({
     if (!response.ok) {
         const errorData = await response.json();
         logger.error('Error response from worker:', 'GAME_SERVER', {
-            gameServerId: parsed.ptServerId,
+            gameServerId: server.id,
             userId: session.user.id,
             details: {
                 gameSlug: parsed.gameSlug,

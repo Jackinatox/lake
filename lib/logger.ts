@@ -34,6 +34,9 @@ export interface LogContext {
     details?: Record<string, any>;
 }
 
+/** The ids a helper needs from its caller to bind its log lines to a user and gameserver. */
+export type LogBinding = Pick<LogContext, 'userId' | 'gameServerId'>;
+
 export interface LogEntry extends LogContext {
     message: string;
     level: LogLevel;

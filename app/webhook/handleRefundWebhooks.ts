@@ -19,6 +19,9 @@ import Stripe from 'stripe';
  * (prev !== SUCCEEDED → SUCCEEDED) so replays are idempotent.
  */
 export async function handleRefundUpdated(refund: Stripe.Refund) {
+    let userId: string | undefined;
+    let gameServerId: string | undefined;
+
     try {
         const refundRecord = await prisma.refund.findUnique({
             where: { stripeRefundId: refund.id },
@@ -38,6 +41,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             await reconcileExternalRefund(refund);
             return;
         }
+        userId = refundRecord.order.userId;
+        gameServerId = refundRecord.order.gameServerId ?? undefined;
 
         // Map Stripe status to our enum
         const statusMap: Record<string, 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'CANCELED'> = {
@@ -201,6 +206,8 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
         }
     } catch (error) {
         logger.error('Error handling refund.updated', 'PAYMENT_LOG', {
+            userId,
+            gameServerId,
             details: { stripeRefundId: refund.id, error },
         });
     }
@@ -251,6 +258,9 @@ export async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
  * Creates a Refund record in our DB to keep state in sync.
  */
 async function reconcileExternalRefund(refund: Stripe.Refund) {
+    let userId: string | undefined;
+    let gameServerId: string | undefined;
+
     try {
         const paymentIntentId =
             typeof refund.payment_intent === 'string'
@@ -278,6 +288,8 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
             });
             return;
         }
+        userId = order.userId;
+        gameServerId = order.gameServerId ?? undefined;
 
         const statusMap: Record<string, 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'CANCELED'> = {
             pending: 'PENDING',
@@ -336,12 +348,17 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
         });
     } catch (error) {
         logger.error('Error reconciling external refund', 'PAYMENT_LOG', {
+            userId,
+            gameServerId,
             details: { stripeRefundId: refund.id, error },
         });
     }
 }
 
 export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
+    let userId: string | undefined;
+    let gameServerId: string | undefined;
+
     try {
         if (!invoice.invoice_pdf) {
             logger.error('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
@@ -379,6 +396,8 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             );
             return;
         }
+        userId = order.userId;
+        gameServerId = order.gameServerId ?? undefined;
 
         // Download the PDF from Stripe and persist it in our DB so we are not
         // dependent on Stripe's hosted URL. invoicePdfUrl points at our own
@@ -451,6 +470,8 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
         }
     } catch (error) {
         logger.error('Error handling invoice.payment_succeeded', 'PAYMENT_LOG', {
+            userId,
+            gameServerId,
             details: { invoiceId: invoice.id, error },
         });
     }

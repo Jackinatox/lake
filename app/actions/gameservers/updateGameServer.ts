@@ -57,10 +57,13 @@ export async function updateGameServer(input: UpdateGameServerInput) {
         };
     }
 
+    let ownerId: string | undefined;
+
     try {
         const gameServer = await prisma.gameServer.findUniqueOrThrow({
             where: { id },
         });
+        ownerId = gameServer.userId;
 
         if (!gameServer.ptAdminId) {
             return {
@@ -118,9 +121,10 @@ export async function updateGameServer(input: UpdateGameServerInput) {
         });
 
         await logger.info('Admin updated server hardware resources', 'GAME_SERVER', {
-            userId: session.user.id,
+            userId: gameServer.userId,
             gameServerId: id,
             details: {
+                adminUserId: session.user.id,
                 before: {
                     cpuPercent: gameServer.cpuPercent,
                     ramMB: gameServer.ramMB,
@@ -134,9 +138,9 @@ export async function updateGameServer(input: UpdateGameServerInput) {
         return { success: true };
     } catch (error: any) {
         await logger.error('Failed to update server hardware resources', 'GAME_SERVER', {
-            userId: session?.user.id,
+            userId: ownerId,
             gameServerId: id,
-            details: { error: error.message },
+            details: { adminUserId: session?.user.id, error: error.message },
         });
         return {
             success: false,
