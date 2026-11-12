@@ -2,29 +2,35 @@
 
 import LogRow from './LogRow';
 import { Button } from '@/components/ui/button';
-import { ApplicationLogWithRelations } from '@/models/prisma';
+import type { LogWithRelations } from '@/models/prisma';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 type LogListProps = {
-    logs: ApplicationLogWithRelations[];
+    logs: LogWithRelations[];
     total: number;
+    appTotal: number;
+    workerTotal: number;
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
     onFilterUser: (userId: string) => void;
     onFilterServer: (serverId: string, ownerId: string | null) => void;
+    onFilterJobRun: (jobRunId: string) => void;
     isLoading?: boolean;
 };
 
 export default function LogList({
     logs,
     total,
+    appTotal,
+    workerTotal,
     page,
     totalPages,
     onPageChange,
     onFilterUser,
     onFilterServer,
+    onFilterJobRun,
     isLoading,
 }: LogListProps) {
     const t = useTranslations('adminLogs.list');
@@ -35,9 +41,10 @@ export default function LogList({
                 {/* Column header — mirrors the columns of LogRow */}
                 <div className="flex h-7 items-center gap-2 border-b border-l-2 border-l-transparent bg-muted/50 px-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground md:gap-3">
                     <span className="w-3 shrink-0" />
+                    <span className="w-3.5 shrink-0" />
                     <span className="w-[110px] shrink-0">{t('columnTime')}</span>
                     <span className="w-10 shrink-0">{t('columnLevel')}</span>
-                    <span className="hidden w-32 shrink-0 lg:block">{t('columnType')}</span>
+                    <span className="hidden w-36 shrink-0 lg:block">{t('columnType')}</span>
                     <span className="min-w-0 flex-1">{t('columnMessage')}</span>
                     <span className="hidden w-36 shrink-0 md:block">{t('columnUser')}</span>
                     <span className="hidden w-36 shrink-0 md:block">{t('columnServer')}</span>
@@ -60,6 +67,7 @@ export default function LogList({
                             log={log}
                             onFilterUser={onFilterUser}
                             onFilterServer={onFilterServer}
+                            onFilterJobRun={onFilterJobRun}
                         />
                     ))
                 )}
@@ -67,7 +75,8 @@ export default function LogList({
 
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs text-muted-foreground">
-                    {t('showing', { count: logs.length, total, page, totalPages })}
+                    {t('showing', { count: logs.length, total, page, totalPages })}{' '}
+                    {t('sourceSplit', { app: appTotal, worker: workerTotal })}
                 </span>
 
                 {totalPages > 1 && (

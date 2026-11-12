@@ -28,10 +28,11 @@ markdown files under `docs/`, NOT in this file. How to use it:
 
 ## Docs index (`docs/`)
 
-- `admin-log-viewer.md` — The `/admin/logs` viewer: dense log rows, the filter
-  set and its URL params, the links from a log row into the admin gameserver
-  list, and the `serverId` filter on that list. Read when touching the log
-  viewer, `getApplicationLogs`, or the gameserver admin filters.
+- `admin-log-viewer.md` — The unified `Log` table (lake `APP` + worker `WORKER` lines, its
+  column contract with the worker) and the `/admin/logs` viewer on it: dense log rows, the
+  filter set and its URL params, the links from a log row into the admin gameserver list,
+  and the `serverId` filter on that list. Read when writing logs, touching the log viewer,
+  `getLogs`, or the gameserver admin filters.
 - `admin-gameserver-panel.md` — The `/admin/gameservers` panel: the summary tiles, the
   "needs attention" chips, the distribution card, the dense server rows and every
   URL param. Read when touching the gameserver admin screen, its filters, or the
@@ -41,7 +42,7 @@ markdown files under `docs/`, NOT in this file. How to use it:
   `ThemeImage` picks the themed one, and `hasGameIcon()` for games without art. Read when
   showing a game icon anywhere or adding a game.
 - `admin-job-status.md` — The `/admin/jobStatus` dashboard: how the jobs the
-  worker reports are joined with the `JobRun`/`WorkerLog` tables, the
+  worker reports are joined with the `JobRun`/`Log` tables, the
   Prisma-derived types in `types/jobs.ts`, and the job-name ↔ `WorkerJobType`
   bridge in `lib/jobs/workerJobs.ts`. Read when adding a worker job or touching
   the job API routes.

@@ -12,7 +12,7 @@ import {
     CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { searchLogUsers, LogUserOption } from '@/app/actions/logs/getApplicationLogs';
+import { searchLogUsers, LogUserOption } from '@/app/actions/logs/getLogs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getUserDisplayName, getUserInitials } from '@/lib/auth/getUserDisplayName';
 import { useDebounce } from '@/hooks/use-debounce';

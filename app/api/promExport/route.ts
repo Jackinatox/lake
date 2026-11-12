@@ -221,9 +221,9 @@ const collectors: Metric[] = [
         type: 'gauge',
         collect: async () => {
             const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            const rows = await prisma.applicationLog.groupBy({
+            const rows = await prisma.log.groupBy({
                 by: ['level'],
-                where: { createdAt: { gte: since } },
+                where: { source: 'APP', createdAt: { gte: since } },
                 _count: { _all: true },
             });
             return rows.map((r) => `lake_app_logs_24h_total{level="${r.level}"} ${r._count._all}`);
@@ -675,9 +675,9 @@ const collectors: Metric[] = [
         type: 'gauge',
         collect: async () => {
             const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            const rows = await prisma.applicationLog.groupBy({
+            const rows = await prisma.log.groupBy({
                 by: ['type'],
-                where: { createdAt: { gte: since } },
+                where: { source: 'APP', createdAt: { gte: since } },
                 _count: { _all: true },
             });
             return rows.map(
