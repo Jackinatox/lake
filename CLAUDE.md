@@ -28,6 +28,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
 
 ## Docs index (`docs/`)
 
+- `dev-agent-login.md` — **Agents testing in the browser: start here.** `GET /api/dev/login`
+  (`?role=admin`, `?user=<slug>`, `?redirect=`) logs in as an auto-created test user, and the
+  Turnstile captcha is off. Both work only under `next dev` (`lib/devMode.ts`). Read when you
+  need to log in to test something, or when touching captcha/auth dev behavior.
 - `admin-log-viewer.md` — The unified `Log` table (lake `APP` + worker `WORKER` lines, its
   column contract with the worker) and the `/admin/logs` viewer on it: dense log rows, the
   filter set and its URL params, the links from a log row into the admin gameserver list,
