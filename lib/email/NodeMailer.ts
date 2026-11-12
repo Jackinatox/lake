@@ -90,6 +90,7 @@ export async function sendMail(
             .catch(() => {});
 
         await logger.error(`Failed to send: ${subject}`, 'EMAIL', {
+            gameServerId: gameServerId ?? undefined,
             details: { error: (error as Error)?.message, to },
         });
     }

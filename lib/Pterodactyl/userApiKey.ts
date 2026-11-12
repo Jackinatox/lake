@@ -1,6 +1,10 @@
 import { describeResponse, logger } from '../logger';
 
-async function createUserApiKey(userId: number): Promise<any> {
+/**
+ * @param userId - Pterodactyl user id
+ * @param ownerId - Our user id for the log binding; omit it while the user row doesn't exist yet
+ */
+async function createUserApiKey(userId: number, ownerId?: string): Promise<any> {
     const pturl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const apiKey = process.env.PTERODACTYL_API_KEY;
     const url = `${pturl}/api/application/users/${userId}/api-keys`;
@@ -35,6 +39,7 @@ async function createUserApiKey(userId: number): Promise<any> {
         return key;
     } catch (e) {
         logger.fatal('PTUser API-Key Creation: ', 'SYSTEM', {
+            userId: ownerId,
             details: { error: (e as Error).message, ptUserId: userId },
         });
     }

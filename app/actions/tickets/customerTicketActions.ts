@@ -55,6 +55,8 @@ export async function createTicketAction(
     if (!parsed.success) return fail('invalid', getValidationMessage(parsed.error));
     const { category, subject, message, gameServerId } = parsed.data;
     const userId = session.user.id;
+    // Not the raw input: it is unverified until the ownership lookup below has passed.
+    let verifiedServerId: string | undefined;
 
     try {
         const [openCount, todayCount, recentMessages, server] = await Promise.all([
@@ -70,6 +72,7 @@ export async function createTicketAction(
                   })
                 : null,
         ]);
+        verifiedServerId = server?.id;
         const limitHit =
             openCount >= MAX_OPEN_TICKETS_PER_USER
                 ? 'openLimit'
@@ -161,6 +164,7 @@ export async function createTicketAction(
     } catch (error) {
         await logger.logError(error, 'SUPPORT_TICKET', {
             userId,
+            gameServerId: verifiedServerId,
             details: { action: 'createTicketAction' },
         });
         return fail('unknown');
@@ -178,6 +182,7 @@ export async function replyToTicketAction(input: {
     if (!parsed.success) return fail('invalid', getValidationMessage(parsed.error));
     const { ticketId, message } = parsed.data;
     const userId = session.user.id;
+    let gameServerId: string | undefined;
 
     try {
         const recentMessages = await messagesSentInLastHour(userId);
@@ -242,6 +247,7 @@ export async function replyToTicketAction(input: {
             });
             return { success: true as const, ticket };
         });
+        if ('ticket' in result) gameServerId = result.ticket.gameServerId ?? undefined;
 
         if (!result.success) {
             if (result.error === 'notFound') {
@@ -299,6 +305,7 @@ export async function replyToTicketAction(input: {
     } catch (error) {
         await logger.logError(error, 'SUPPORT_TICKET', {
             userId,
+            gameServerId,
             details: { action: 'replyToTicketAction', ticketId },
         });
         return fail('unknown');
@@ -314,6 +321,7 @@ export async function closeTicketAction(input: { ticketId: string }): Promise<Ti
     if (!parsed.success) return fail('invalid', getValidationMessage(parsed.error));
     const { ticketId } = parsed.data;
     const userId = session.user.id;
+    let gameServerId: string | undefined;
 
     try {
         const ticket = await prisma.ticket.findFirst({
@@ -329,6 +337,7 @@ export async function closeTicketAction(input: { ticketId: string }): Promise<Ti
             });
             return fail('notFound');
         }
+        gameServerId = ticket.gameServerId ?? undefined;
         if (ticket.status === 'CLOSED') return { success: true };
 
         const now = new Date();
@@ -360,6 +369,7 @@ export async function closeTicketAction(input: { ticketId: string }): Promise<Ti
     } catch (error) {
         await logger.logError(error, 'SUPPORT_TICKET', {
             userId,
+            gameServerId,
             details: { action: 'closeTicketAction', ticketId },
         });
         return fail('unknown');

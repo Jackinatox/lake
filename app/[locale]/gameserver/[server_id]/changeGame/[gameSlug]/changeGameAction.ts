@@ -63,6 +63,15 @@ export async function changeGame({
     logger.info(
         `Changing Game for ${parsed.ptServerId} for user ${session.user.id} to game ${parsed.gameSlug}`,
         'GAME_SERVER',
+        {
+            gameServerId: server.id,
+            userId: session.user.id,
+            details: {
+                gameSlug: parsed.gameSlug,
+                deleteFiles: parsed.deleteFiles,
+                gameConfig: parsed.gameConfig,
+            },
+        }
     );
     const response = await fetch(`${workerUrl}/v1/queue/changeGame`, {
         method: 'POST',
@@ -80,7 +89,17 @@ export async function changeGame({
 
     if (!response.ok) {
         const errorData = await response.json();
-        logger.error('Error response from worker:', 'GAME_SERVER', errorData);
+        logger.error('Error response from worker:', 'GAME_SERVER', {
+            gameServerId: server.id,
+            userId: session.user.id,
+            details: {
+                gameSlug: parsed.gameSlug,
+                deleteFiles: parsed.deleteFiles,
+                gameConfig: parsed.gameConfig,
+                responseStatus: response.status,
+                responseBody: errorData,
+            },
+        });
         throw new Error(`Failed to change game: ${response.status} ${JSON.stringify(errorData)}`);
     }
 

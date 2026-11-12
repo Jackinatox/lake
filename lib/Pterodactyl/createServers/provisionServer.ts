@@ -25,6 +25,7 @@ export async function provisionServerWithWorker(order: GameServerOrder): Promise
 
         logger.trace('Queued server provisioning job with worker', 'GAME_SERVER', {
             userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: { jobId },
         });
 
@@ -32,6 +33,7 @@ export async function provisionServerWithWorker(order: GameServerOrder): Promise
     } catch (error) {
         logger.error('Error provisioning server with worker', 'GAME_SERVER', {
             userId: order.userId,
+            gameServerId: order.gameServerId ?? undefined,
             details: { error: error instanceof Error ? error.message : JSON.stringify(error) },
         });
         throw error;

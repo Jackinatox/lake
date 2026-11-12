@@ -11,6 +11,8 @@ import { supportTicketSchema } from '@/lib/validation/order';
 import { getValidationMessage } from '@/lib/validation/common';
 
 export async function POST(req: NextRequest) {
+    let userId: string | undefined;
+
     try {
         const session = await auth.api.getSession({
             headers: await headers(), // you need to pass the headers object.
@@ -19,6 +21,7 @@ export async function POST(req: NextRequest) {
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+        userId = session.user.id;
 
         const data = await req.json();
         const parsed = supportTicketSchema.safeParse({
@@ -69,6 +72,7 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         logger
             .logError(error as Error, 'SUPPORT_TICKET', {
+                userId,
                 method: 'POST',
                 path: '/api/tickets',
             })

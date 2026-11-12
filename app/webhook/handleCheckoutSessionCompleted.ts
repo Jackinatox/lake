@@ -5,7 +5,6 @@ import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
 import { Stripe } from 'stripe';
-import upgradeFromFreeGameServer from '@/lib/Pterodactyl/upgradeFromFree/upgradeFromFree';
 
 const PROVISION_RETRIES = 2;
 const RETRY_DELAY_MS = 10_000;
@@ -88,6 +87,9 @@ export async function provisionCheckoutSession(
     checkoutSession: Stripe.Checkout.Session,
     serverOrderId: string,
 ) {
+    let userId: string | undefined;
+    let gameServerId: string | undefined;
+
     try {
         // Enrich with charge id + authoritative paidAt from Stripe (not race-critical)
         try {
@@ -117,6 +119,8 @@ export async function provisionCheckoutSession(
         const order = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: serverOrderId },
         });
+        userId = order.userId;
+        gameServerId = order.gameServerId ?? undefined;
 
         try {
             switch (order.type) {
@@ -139,8 +143,6 @@ export async function provisionCheckoutSession(
                     break;
                 case 'TO_PAYED':
                     throw new Error('Feature not implemented yet.');
-                    await upgradeFromFreeGameServer(order);
-                    break;
                 default:
                     logger.fatal(`Unhandled server order type: ${order.type}`, 'SYSTEM', {
                         userId: order.userId,
@@ -164,6 +166,8 @@ export async function provisionCheckoutSession(
         }
     } catch (error) {
         logger.fatal('Error provisioning checkout session', 'PAYMENT_LOG', {
+            userId,
+            gameServerId,
             details: { error, serverOrderId },
         });
         await prisma.gameServerOrder.updateMany({

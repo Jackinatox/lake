@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { sendFreeServerCreatedEmail } from './email/sendEmailEmailsFromLake';
 import { logger } from './logger';
 
-export async function notifyFreeServerCreated(orderId: string) {
+export async function notifyFreeServerCreated(orderId: string, userId: string) {
     try {
         const updatedOrder = await prisma.gameServerOrder.findUniqueOrThrow({
             where: { id: orderId },
@@ -47,6 +47,7 @@ export async function notifyFreeServerCreated(orderId: string) {
         }
     } catch (err) {
         logger.error('Failed to fetch order for free server notification', 'GAME_SERVER', {
+            userId,
             details: { error: err, orderId },
         });
     }

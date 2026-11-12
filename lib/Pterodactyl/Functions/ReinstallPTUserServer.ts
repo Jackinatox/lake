@@ -1,14 +1,16 @@
+import type { LogBinding } from '@/lib/logger';
 import DeleteAllFilesUserServer from './DeleteAllFilesUser';
 
 export default async function ReinstallPTServerClient(
     server: string,
     apiKey: string,
     deleteAllFiles: boolean,
+    logBinding: LogBinding,
 ) {
     const ptUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
 
     if (deleteAllFiles) {
-        await DeleteAllFilesUserServer(server, apiKey);
+        await DeleteAllFilesUserServer(server, apiKey, logBinding);
         await new Promise((resolve) => setTimeout(resolve, 500));
     }
 

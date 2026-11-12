@@ -2,15 +2,6 @@ import { Prisma, PrismaClient } from '@/app/client/generated/client';
 import { LogLevel, LogType } from '@/app/client/generated/enums';
 import prisma from '@/lib/prisma';
 import { sendErrorNotification, sendFatalErrorNotification } from './Notifications/telegram';
-import { logs, SeverityNumber } from '@opentelemetry/api-logs';
-
-const SEVERITY_MAP: Record<LogLevel, SeverityNumber> = {
-    TRACE: SeverityNumber.TRACE,
-    INFO: SeverityNumber.INFO,
-    WARN: SeverityNumber.WARN,
-    ERROR: SeverityNumber.ERROR,
-    FATAL: SeverityNumber.FATAL,
-};
 
 /**
  * Unified application logger that writes to the Log table (source APP).
@@ -33,6 +24,9 @@ export interface LogContext {
     // Additional structured data
     details?: Record<string, any>;
 }
+
+/** The ids a helper needs from its caller to bind its log lines to a user and gameserver. */
+export type LogBinding = Pick<LogContext, 'userId' | 'gameServerId'>;
 
 export interface LogEntry extends LogContext {
     message: string;
@@ -162,7 +156,8 @@ class Logger {
     }
 
     private shouldNotifyTelegram(type: LogType): boolean {
-        return type !== 'AUTHENTICATION';
+        // TELEGRAM logs report a failed send, so notifying about them would send and fail again.
+        return type !== 'AUTHENTICATION' && type !== 'TELEGRAM';
     }
 
     /**
@@ -215,28 +210,6 @@ class Logger {
                 ? `[${entry.level}] [${entry.type}] ${entry.message}\n${formattedDetails}\n`
                 : `[${entry.level}] [${entry.type}] ${entry.message}\n`;
             process.stdout.write(line);
-
-            // Emit a clean structured record directly via the OTel logs API so that
-            // PostHog doesn't receive Next.js's %c/%s console styling noise.
-            try {
-                const otelLogger = logs.getLogger('lake-app');
-                otelLogger.emit({
-                    severityNumber: SEVERITY_MAP[entry.level] ?? SeverityNumber.INFO,
-                    severityText: entry.level,
-                    body: entry.message,
-                    attributes: {
-                        'log.type': entry.type,
-                        ...(entry.userId && { 'user.id': entry.userId }),
-                        ...(entry.gameServerId && { 'gameserver.id': entry.gameServerId }),
-                        ...(entry.path && { 'http.path': entry.path }),
-                        ...(entry.method && { 'http.method': entry.method }),
-                        ...(entry.details && { 'log.details': JSON.stringify(entry.details) }),
-                    },
-                });
-            } catch (error) {
-                // OTel not yet initialised (e.g. during build) – safe to ignore
-                console.error('Failed to emit OTel log:', error);
-            }
 
             const sanitizedDetails = entry.details
                 ? JSON.parse(JSON.stringify(entry.details, (_, v) => (v === undefined ? null : v)))

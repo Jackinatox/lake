@@ -42,7 +42,7 @@ export async function GET(
                 workerJobId: parsedJobId.data,
                 userId: session.user.id,
             },
-            select: { id: true },
+            select: { id: true, gameServerId: true },
         });
         if (!order) {
             logger.warn('Job not found or does not belong to user', 'SYSTEM', {
@@ -65,6 +65,7 @@ export async function GET(
             const errorText = await response.text();
             logger.warn(`Failed to fetch job status from worker: ${errorText}`, 'SYSTEM', {
                 userId: session.user.id,
+                gameServerId: order.gameServerId ?? undefined,
                 details: { jobId: parsedJobId.data, workerStatus: response.status },
             });
             return NextResponse.json(

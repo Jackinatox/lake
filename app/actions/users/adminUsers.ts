@@ -126,8 +126,8 @@ export async function createUserAsAdmin(input: {
     }
 
     await logger.info(`Admin ${session.user.email} created user ${email}`, 'SYSTEM', {
-        userId: session.user.id,
-        details: { targetUserId: userId, emailVerified },
+        userId,
+        details: { adminUserId: session.user.id, emailVerified },
     });
 
     // Sign-in rejects unverified emails without resending, so send the link right away.
@@ -138,9 +138,9 @@ export async function createUserAsAdmin(input: {
             });
         } catch (error) {
             await logger.error(`Failed to send verification email to ${email}`, 'SYSTEM', {
-                userId: session.user.id,
+                userId,
                 details: {
-                    targetUserId: userId,
+                    adminUserId: session.user.id,
                     error: error instanceof Error ? error.message : String(error),
                 },
             });
@@ -160,6 +160,8 @@ export async function createUserAsAdmin(input: {
  * after it, so a failure can leave a user without a password or a panel user without a row.
  */
 async function rollbackFailedUserCreation(email: string, adminId: string) {
+    let leftoverId: string | undefined;
+
     try {
         const leftover = await prisma.user.findFirst({
             where: { email: { equals: email, mode: 'insensitive' } },
@@ -175,6 +177,7 @@ async function rollbackFailedUserCreation(email: string, adminId: string) {
             );
             return;
         }
+        leftoverId = leftover.id;
 
         if (leftover.ptUserId) {
             await deletePtUser(leftover.ptUserId);
@@ -186,8 +189,11 @@ async function rollbackFailedUserCreation(email: string, adminId: string) {
         });
     } catch (error) {
         await logger.error(`Rollback of failed user creation for ${email} failed`, 'SYSTEM', {
-            userId: adminId,
-            details: { error: error instanceof Error ? error.message : String(error) },
+            userId: leftoverId ?? adminId,
+            details: {
+                adminUserId: adminId,
+                error: error instanceof Error ? error.message : String(error),
+            },
         });
     }
 }
@@ -211,8 +217,8 @@ export async function verifyUserEmail(userId: string) {
         `Admin ${session.user.email} verified email for user ${parsed.userId}`,
         'SYSTEM',
         {
-            userId: session.user.id,
-            details: { targetUserId: parsed.userId },
+            userId: parsed.userId,
+            details: { adminUserId: session.user.id },
         },
     );
 
@@ -241,8 +247,8 @@ export async function toggleBanUser(userId: string, ban: boolean, reason?: strin
         `Admin ${session.user.email} ${parsed.ban ? 'banned' : 'unbanned'} user ${parsed.userId}`,
         'SYSTEM',
         {
-            userId: session.user.id,
-            details: { targetUserId: parsed.userId, ban: parsed.ban, reason: parsed.reason },
+            userId: parsed.userId,
+            details: { adminUserId: session.user.id, ban: parsed.ban, reason: parsed.reason },
         },
     );
 

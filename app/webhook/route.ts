@@ -67,63 +67,73 @@ export async function POST(req: NextRequest) {
 
         case 'checkout.session.expired':
             const expiredSession = event.data.object as Stripe.Checkout.Session;
-            logger.info('Session expired', 'PAYMENT_LOG', {
-                details: { session: expiredSession },
-            });
-            await prisma.gameServerOrder.updateMany({
+            const expiredOrders = await prisma.gameServerOrder.updateManyAndReturn({
                 where: {
                     stripeSessionId: expiredSession.id,
                 },
                 data: {
                     status: 'EXPIRED',
                 },
+                select: { userId: true, gameServerId: true },
+            });
+            logger.info('Session expired', 'PAYMENT_LOG', {
+                userId: expiredOrders[0]?.userId,
+                gameServerId: expiredOrders[0]?.gameServerId ?? undefined,
+                details: { session: expiredSession },
             });
             break;
 
         case 'checkout.session.async_payment_failed':
             const failedAsyncSession = event.data.object as Stripe.Checkout.Session;
-            logger.error('Async payment failed - Admin attention required', 'PAYMENT_LOG', {
-                details: {
-                    sessionId: failedAsyncSession.id,
-                    paymentIntentId: failedAsyncSession.payment_intent,
-                },
-            });
-            await prisma.gameServerOrder.updateMany({
+            const failedAsyncOrders = await prisma.gameServerOrder.updateManyAndReturn({
                 where: {
                     stripeSessionId: failedAsyncSession.id,
                 },
                 data: {
                     status: 'PAYMENT_FAILED',
                 },
+                select: { userId: true, gameServerId: true },
+            });
+            logger.error('Async payment failed - Admin attention required', 'PAYMENT_LOG', {
+                userId: failedAsyncOrders[0]?.userId,
+                gameServerId: failedAsyncOrders[0]?.gameServerId ?? undefined,
+                details: {
+                    sessionId: failedAsyncSession.id,
+                    paymentIntentId: failedAsyncSession.payment_intent,
+                },
             });
             break;
 
         case 'payment_intent.payment_failed':
             const failedIntent = event.data.object as Stripe.PaymentIntent;
-            logger.error('Payment failed', 'PAYMENT_LOG', {
-                details: {
-                    paymentIntentId: failedIntent.id,
-                    failureCode: failedIntent.last_payment_error?.code,
-                    failureMessage: failedIntent.last_payment_error?.message,
-                },
-            });
-
             // Find and update order by payment intent
             const sessions = await stripe.checkout.sessions.list({
                 payment_intent: failedIntent.id as string,
                 limit: 1,
             });
 
-            if (sessions.data.length > 0) {
-                await prisma.gameServerOrder.updateMany({
-                    where: {
-                        stripeSessionId: sessions.data[0].id,
-                    },
-                    data: {
-                        status: 'PAYMENT_FAILED',
-                    },
-                });
-            }
+            const failedOrders =
+                sessions.data.length > 0
+                    ? await prisma.gameServerOrder.updateManyAndReturn({
+                          where: {
+                              stripeSessionId: sessions.data[0].id,
+                          },
+                          data: {
+                              status: 'PAYMENT_FAILED',
+                          },
+                          select: { userId: true, gameServerId: true },
+                      })
+                    : [];
+
+            logger.error('Payment failed', 'PAYMENT_LOG', {
+                userId: failedOrders[0]?.userId,
+                gameServerId: failedOrders[0]?.gameServerId ?? undefined,
+                details: {
+                    paymentIntentId: failedIntent.id,
+                    failureCode: failedIntent.last_payment_error?.code,
+                    failureMessage: failedIntent.last_payment_error?.message,
+                },
+            });
             break;
 
         // This account's API version delivers the legacy event name

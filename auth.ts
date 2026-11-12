@@ -315,6 +315,7 @@ export const auth = betterAuth({
                             message: `Email: ${user.email} | Method: ${method}`,
                         }).catch((error) => {
                             logger.error('Failed to send Telegram notification:', 'TELEGRAM', {
+                                userId: user.id,
                                 details: { error },
                             });
                         });
@@ -390,7 +391,7 @@ export const auth = betterAuth({
                                 externalId: session.userId,
                             });
 
-                            const newKey = await createUserApiKey(newPTUser.id);
+                            const newKey = await createUserApiKey(newPTUser.id, session.userId);
 
                             await prisma.user.update({
                                 where: { id: session.userId },

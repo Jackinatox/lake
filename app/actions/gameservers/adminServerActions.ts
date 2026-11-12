@@ -30,13 +30,16 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
             where: { id },
         });
 
-        logger.warn(`Deleting server by admin ${session.user.name}`, 'SYSTEM', {
+        // Awaited: the row references the server, so it has to be written before the delete below.
+        await logger.warn(`Deleting server by admin ${session.user.name}`, 'SYSTEM', {
             userId: gameServer.userId,
             gameServerId: id,
             details: {
                 adminUserId: session.user.id,
                 deleteOrders,
                 serverOwnerId: gameServer.userId,
+                // The delete below nulls the gameServerId column on this server's log rows.
+                gameServerId: id,
             },
         });
 
@@ -44,10 +47,10 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
             try {
                 await deleteServerAdmin(gameServer, gameServer.userId); // in the log viewer i want too see the server owner, not dem admin
             } catch (error) {
-                logger.warn('hardDeleteGameServer: Failed to delete from PT', 'SYSTEM', {
-                    userId: session.user.id,
+                await logger.warn('hardDeleteGameServer: Failed to delete from PT', 'SYSTEM', {
+                    userId: gameServer.userId,
                     gameServerId: id,
-                    details: { error },
+                    details: { adminUserId: session.user.id, gameServerId: id, error },
                 });
             }
         }
@@ -58,10 +61,9 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
 
         await prisma.gameServer.delete({ where: { id } });
 
-        logger.info('hardDeleteGameServer: Server hard deleted', 'SYSTEM', {
-            userId: session.user.id,
-            gameServerId: id,
-            details: { deleteOrders },
+        logger.info('hardDeleteGameServer: Server hard deleted from database', 'SYSTEM', {
+            userId: gameServer.userId,
+            details: { adminUserId: session.user.id, deleteOrders, gameServerId: id },
         });
 
         return { success: true };

@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const;
 
+const INITIAL_DIMENSION = { width: 320, height: 200 } as const;
+
 export type ChartConfig = {
     [k in string]: {
         label?: React.ReactNode;
@@ -56,7 +58,7 @@ const ChartContainer = React.forwardRef<
                 {...props}
             >
                 <ChartStyle id={chartId} config={config} />
-                <RechartsPrimitive.ResponsiveContainer>
+                <RechartsPrimitive.ResponsiveContainer initialDimension={INITIAL_DIMENSION}>
                     {children}
                 </RechartsPrimitive.ResponsiveContainer>
             </div>
@@ -106,7 +108,7 @@ const ChartTooltipContent = React.forwardRef<
             indicator?: 'line' | 'dot' | 'dashed';
             nameKey?: string;
             labelKey?: string;
-        }
+        } & Omit<RechartsPrimitive.DefaultTooltipContentProps, 'accessibilityLayer'>
 >(
     (
         {
@@ -181,7 +183,7 @@ const ChartTooltipContent = React.forwardRef<
 
                             return (
                                 <div
-                                    key={item.dataKey}
+                                    key={index}
                                     className={cn(
                                         'flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground',
                                         indicator === 'dot' && 'items-center',
@@ -252,7 +254,7 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
     HTMLDivElement,
     React.ComponentProps<'div'> &
-        Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+        Pick<RechartsPrimitive.DefaultLegendContentProps, 'payload' | 'verticalAlign'> & {
             hideIcon?: boolean;
             nameKey?: string;
         }
