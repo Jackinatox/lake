@@ -1,6 +1,6 @@
 # Application Logger
 
-A unified logging solution for the Lake project that writes to the `ApplicationLog` database table. This logger provides a consistent interface for logging across the entire application and can be easily swapped to different backends (file, cloud logging services, etc.) in the future.
+A unified logging solution for the Lake project that writes to the `Log` database table (with `source: APP`; the worker writes `source: WORKER` rows to the same table). This logger provides a consistent interface for logging across the entire application and can be easily swapped to different backends (file, cloud logging services, etc.) in the future.
 
 ## Features
 
@@ -353,7 +353,7 @@ All existing code using the logger will continue to work unchanged.
 2. **Use appropriate types**: Choose the correct LogType for better filtering
 3. **Include context**: Pass userId, gameServerId when available.
    `gameServerId` **must be the internal `GameServer.id` (cuid)**, never the
-   Pterodactyl id (`GameServer.ptServerId`). `ApplicationLog.gameServerId` is a
+   Pterodactyl id (`GameServer.ptServerId`). `Log.gameServerId` is a
    foreign key to `GameServer.id`; passing a pt id violates the constraint, and
    because `log()` swallows write failures the row is silently dropped — while
    the Telegram notification still fires, so the loss is easy to miss. Put the

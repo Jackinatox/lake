@@ -97,7 +97,7 @@ export function attentionWhere(key: AttentionKey, now: Date = new Date()) {
         },
         overdue: { status: 'ACTIVE', expires: { lt: now } },
         errors: {
-            ApplicationLog: {
+            logs: {
                 some: {
                     level: { in: ['ERROR', 'FATAL'] },
                     createdAt: { gte: errorWindowStart(now) },

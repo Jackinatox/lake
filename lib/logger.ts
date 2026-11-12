@@ -13,7 +13,7 @@ const SEVERITY_MAP: Record<LogLevel, SeverityNumber> = {
 };
 
 /**
- * Unified application logger that writes to ApplicationLog table.
+ * Unified application logger that writes to the Log table (source APP).
  * Can be easily swapped to different backends (file, cloud logging, etc.) later.
  */
 
@@ -242,8 +242,9 @@ class Logger {
                 ? JSON.parse(JSON.stringify(entry.details, (_, v) => (v === undefined ? null : v)))
                 : null;
 
-            await this.prisma.applicationLog.create({
+            await this.prisma.log.create({
                 data: {
+                    source: 'APP',
                     level: entry.level,
                     type: entry.type,
                     message: entry.message,
@@ -260,7 +261,7 @@ class Logger {
                 },
             });
         } catch (error) {
-            console.error('Failed to write to ApplicationLog:', error);
+            console.error('Failed to write to Log:', error);
             console.error('Original log entry:', entry);
         }
     }
@@ -494,7 +495,7 @@ class Logger {
         endDate?: Date;
         limit?: number;
     }) {
-        const where: any = {};
+        const where: any = { source: 'APP' };
 
         if (filters.level) where.level = filters.level;
         if (filters.type) where.type = filters.type;
@@ -506,7 +507,7 @@ class Logger {
             if (filters.endDate) where.createdAt.lte = filters.endDate;
         }
 
-        return await this.prisma.applicationLog.findMany({
+        return await this.prisma.log.findMany({
             where,
             orderBy: { createdAt: 'desc' },
             take: filters.limit || 100,

@@ -109,8 +109,8 @@ const sections: AdminSection[] = [
                 Icon: Activity,
             },
             {
-                name: 'Application Logs',
-                description: 'Server-side log viewer',
+                name: 'Logs',
+                description: 'Application & worker logs',
                 link: '/admin/logs',
                 Icon: FileText,
             },

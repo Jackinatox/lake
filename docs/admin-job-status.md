@@ -2,7 +2,7 @@
 
 The admin job dashboard shows one card per job the external provisioning worker exposes,
 plus the run history Lake stores itself. Neither side hardcodes a job list: cards come from
-whatever the worker reports, run history comes from the `JobRun` / `WorkerLog` tables, and a
+whatever the worker reports, run history comes from the `JobRun` / `Log` tables, and a
 new worker job appears and can be triggered without touching Lake.
 
 ## Where the data comes from
@@ -14,7 +14,7 @@ Two independent sources, joined in the UI by job name:
   `app/api/jobs/trigger/[jobName]/route.ts`, `app/api/jobs/version/route.ts`.
 - **The database**, read directly from `JobRun`: `app/api/jobs/runs/route.ts` returns the
   latest run per `jobType` (`distinct`, minus `errorStack`/`metadata`), and
-  `app/api/jobs/runs/[id]/route.ts` returns one run with its `WorkerLog` rows plus the
+  `app/api/jobs/runs/[id]/route.ts` returns one run with its `Log` rows (`JobRun.logs`) plus the
   related game server / user.
 
 Both DB routes return Prisma rows as-is — `NextResponse.json` serializes `DateTime` columns

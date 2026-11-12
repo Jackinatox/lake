@@ -1,4 +1,4 @@
-import type { GameServer, JobRun, User, WorkerLog } from '@/app/client/generated/browser';
+import type { GameServer, JobRun, Log, User } from '@/app/client/generated/browser';
 
 /**
  * Rows reach the client as JSON, so every `Date` column arrives as an ISO string.
@@ -26,8 +26,8 @@ export interface RecentRunsResponse {
     runs: JobRunSummary[];
 }
 
-/** A `WorkerLog` row with the game server / user context the details endpoint includes. */
-export interface JobRunLog extends Serialized<WorkerLog> {
+/** A `Log` row (source `WORKER`) with the game server / user context the details endpoint includes. */
+export interface JobRunLog extends Serialized<Log> {
     gameServer: Pick<GameServer, 'id' | 'name' | 'status'> | null;
     user: Pick<User, 'id' | 'name' | 'username' | 'email'> | null;
 }

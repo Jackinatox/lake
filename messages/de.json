@@ -1825,7 +1825,17 @@
         "1d": "Letzter Tag",
         "7d": "Letzte Woche",
         "30d": "Letzter Monat"
-      }
+      },
+      "source": "Quelle",
+      "sources": {
+        "ALL": "Alle Quellen",
+        "APP": "Anwendung",
+        "WORKER": "Worker"
+      },
+      "jobRunFilter": "Nur Job-Lauf",
+      "clearJobRun": "Job-Lauf-Filter entfernen",
+      "workerJob": "Worker-Job",
+      "allJobs": "Alle Jobs"
     },
     "list": {
       "noLogs": "Keine Logs gefunden",
@@ -1841,7 +1851,8 @@
       "columnType": "Kategorie",
       "columnMessage": "Nachricht",
       "columnUser": "Benutzer",
-      "columnServer": "Server"
+      "columnServer": "Server",
+      "sourceSplit": "· {app} Anwendung, {worker} Worker"
     },
     "entry": {
       "time": "Zeit",
@@ -1855,7 +1866,13 @@
       "filterByUser": "Logs nach diesem Benutzer filtern",
       "filterByServer": "Logs nach diesem Server filtern",
       "openUserInAdmin": "Server dieses Benutzers im Adminpanel anzeigen",
-      "openServerInAdmin": "Diesen Server im Adminpanel anzeigen"
+      "openServerInAdmin": "Diesen Server im Adminpanel anzeigen",
+      "source": "Quelle",
+      "category": "Kategorie",
+      "jobType": "Job",
+      "jobRun": "Job-Lauf",
+      "filterByJobRun": "Alle Zeilen dieses Job-Laufs anzeigen",
+      "component": "Komponente"
     }
   },
   "order": {

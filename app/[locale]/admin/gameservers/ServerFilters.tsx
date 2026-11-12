@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AdminUserPicker from '@/components/admin/AdminUserPicker';
-import type { LogUserOption } from '@/app/actions/logs/getApplicationLogs';
+import type { LogUserOption } from '@/app/actions/logs/getLogs';
 import { useDebounce } from '@/hooks/use-debounce';
 import { GameServerStatus, GameServerType } from '@/app/client/generated/enums';
 import {

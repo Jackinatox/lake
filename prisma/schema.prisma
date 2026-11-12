@@ -105,14 +105,13 @@ model GameServer {
   updatedAt DateTime @updatedAt
 
   ServerOrder GameServerOrder[]
-  WorkerLogs  WorkerLog[]
+  logs        Log[]
 
   Email Email[]
 
-  ApplicationLog ApplicationLog[]
-  suspensions    GameServerSuspension[]
-  feedbacks      Feedback[]
-  tickets        Ticket[]
+  suspensions GameServerSuspension[]
+  feedbacks   Feedback[]
+  tickets     Ticket[]
 
   @@index([resourceTierId])
 }
@@ -513,7 +512,7 @@ model User {
   SupportTicket   SupportTicket[]
   Feedback        Feedback[]
   GameServer      GameServer[]
-  WorkerLogs      WorkerLog[]
+  logs            Log[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -526,9 +525,8 @@ model User {
 
   lastLoginMethod String?
 
-  ptUsername     String?
-  UserSettings   Json             @default("{}")
-  ApplicationLog ApplicationLog[]
+  ptUsername   String?
+  UserSettings Json    @default("{}")
 
   twoFactorEnabled Boolean?    @default(false)
   twofactors       TwoFactor[]
@@ -633,38 +631,11 @@ model JobRun {
   metadata       Json? // Additional context like thresholds, config used
 
   // Relations
-  logs WorkerLog[]
+  logs Log[]
 
   @@index([jobType, status])
   @@index([startedAt])
   @@index([status])
-}
-
-model WorkerLog {
-  id      Int           @id @default(autoincrement())
-  jobType WorkerJobType
-  jobRun  String? // Unique identifier for each job run
-  level   LogLevel
-  message String
-  details Json? // Store error stack traces, context data, etc.
-
-  // Optional relations for context
-  gameServerId String?
-  gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  // Relation to JobRun
-  jobRunId     String?
-  jobRunRecord JobRun? @relation(fields: [jobRunId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([jobType, level, createdAt])
-  @@index([gameServerId])
-  @@index([userId])
-  @@index([jobRunId])
 }
 
 enum LogType {
@@ -679,35 +650,50 @@ enum LogType {
   TELEGRAM
 }
 
-model ApplicationLog {
-  id         Int      @id @default(autoincrement())
+/// Every log line of lake (`APP`) and the provisioning worker (`WORKER`) in one table.
+model Log {
+  id         Int       @id @default(autoincrement())
+  source     LogSource
   level      LogLevel
   type       LogType
-  instanceId String
   message    String
   details    Json?
+  /// Which lake / worker instance emitted the line.
+  instanceId String
+  /// Emitting service/class (worker), e.g. "PterodactylPortService".
+  component  String?
 
-  // Request context
+  // Request context (APP only)
   method    String?
   path      String?
   userAgent String?
   ipAddress String?
 
-  // User context (optional)
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   gameServerId String?
   gameServer   GameServer? @relation(fields: [gameServerId], references: [id], onDelete: SetNull)
 
+  /// Set for lines of a scheduled worker job; the job type lives on `JobRun`.
+  jobRunId String?
+  jobRun   JobRun? @relation(fields: [jobRunId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 
+  @@index([createdAt])
+  @@index([source, createdAt])
   @@index([level, createdAt])
   @@index([type, createdAt])
   @@index([userId])
   @@index([gameServerId])
+  @@index([jobRunId])
   @@index([path, method])
-  @@index([createdAt])
+}
+
+enum LogSource {
+  APP
+  WORKER
 }
 
 model Email {

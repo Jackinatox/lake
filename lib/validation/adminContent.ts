@@ -2,9 +2,11 @@ import { ApiKeyPermission, ALL_PERMISSIONS } from '@/lib/apiKeyPermissions';
 import {
     KeyValueType,
     LogLevel,
+    LogSource,
     LogType,
     TicketStatus,
     ChangelogEntryType,
+    WorkerJobType,
 } from '@/app/client/generated/enums';
 import {
     dateStringSchema,
@@ -177,10 +179,17 @@ export const pterodactylUserInfoSchema = z.object({
 
 export const LOG_TIME_RANGES = ['ALL', '1m', '10m', '1h', '1d', '7d', '30d'] as const;
 
+export const LOG_SOURCES = ['ALL', ...Object.values(LogSource)] as const;
+
+/** Filters of the log viewer (the `Log` table: lake and worker lines). */
 export const logFiltersSchema = z.object({
     search: z.string().trim().max(200, 'Search is too long').optional(),
     level: z.union([z.literal('ALL'), z.nativeEnum(LogLevel)]).optional(),
+    source: z.union([z.literal('ALL'), z.nativeEnum(LogSource)]).optional(),
     type: z.union([z.literal('ALL'), z.nativeEnum(LogType)]).optional(),
+    /** Worker job, matched through the line's `JobRun`. */
+    jobType: z.union([z.literal('ALL'), z.nativeEnum(WorkerJobType)]).optional(),
+    jobRunId: optionalStringSchema(191),
     timeRange: z.enum(LOG_TIME_RANGES).optional(),
     userId: optionalStringSchema(191),
     gameServerId: optionalStringSchema(191),
