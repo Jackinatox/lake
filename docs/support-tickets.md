@@ -100,7 +100,7 @@ cannot be confused, e.g. `ALTER SEQUENCE "Ticket_number_seq" RESTART WITH 1000;`
 
 ## Application logs
 
-Every ticket action writes a `SUPPORT_TICKET` `ApplicationLog` via `logTicketEvent`
+Every ticket action writes a `SUPPORT_TICKET` `Log` row via `logTicketEvent`
 (`lib/tickets/log.ts`). The log is always bound to the ticket's **customer** (`userId`) and
 **linked server** (`gameServerId`), never to the acting admin, so `/admin/logs?userId=…` or
 `?serverId=…` shows a customer's whole ticket history. The actor is in `details.actorId` /

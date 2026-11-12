@@ -3,16 +3,19 @@
 import { useState } from 'react';
 import { ChevronRight, Filter } from 'lucide-react';
 import { LogLevel } from '@/app/client/generated/enums';
-import { ApplicationLogWithRelations } from '@/models/prisma';
+import type { LogWithRelations } from '@/models/prisma';
 import { cn } from '@/lib/utils';
 import { getUserDisplayName } from '@/lib/auth/getUserDisplayName';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { SOURCE_STYLES } from './sourceStyles';
+import { formatEnum } from './LogFilters';
 
 type LogRowProps = {
-    log: ApplicationLogWithRelations;
+    log: LogWithRelations;
     onFilterUser: (userId: string) => void;
     onFilterServer: (serverId: string, ownerId: string | null) => void;
+    onFilterJobRun: (jobRunId: string) => void;
 };
 
 /** Text + accent colours per level. No badges: the level is just coloured text. */
@@ -41,7 +44,7 @@ function formatLogTime(date: Date) {
     return TIME_FORMAT.format(new Date(date)).replace(',', '');
 }
 
-/** One clickable label plus a funnel button that filters the log list in place. */
+/** A label plus a funnel button that filters the log list in place. */
 function ContextLink({
     label,
     href,
@@ -50,8 +53,8 @@ function ContextLink({
     onFilter,
 }: {
     label: string;
-    href: string;
-    linkTitle: string;
+    href?: string;
+    linkTitle?: string;
     filterTitle: string;
     onFilter: () => void;
 }) {
@@ -69,14 +72,18 @@ function ContextLink({
             >
                 <Filter className="h-3 w-3" />
             </button>
-            <Link
-                href={href}
-                title={linkTitle}
-                onClick={(e) => e.stopPropagation()}
-                className="truncate text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-            >
-                {label}
-            </Link>
+            {href ? (
+                <Link
+                    href={href}
+                    title={linkTitle}
+                    onClick={(e) => e.stopPropagation()}
+                    className="truncate text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                    {label}
+                </Link>
+            ) : (
+                <span className="truncate font-mono text-muted-foreground">{label}</span>
+            )}
         </span>
     );
 }
@@ -90,11 +97,14 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
     );
 }
 
-export default function LogRow({ log, onFilterUser, onFilterServer }: LogRowProps) {
+export default function LogRow({ log, onFilterUser, onFilterServer, onFilterJobRun }: LogRowProps) {
     const [expanded, setExpanded] = useState(false);
     const t = useTranslations('adminLogs.entry');
+    const tSource = useTranslations('adminLogs.filters.sources');
 
     const style = LEVEL_STYLES[log.level] ?? LEVEL_STYLES.TRACE;
+    const sourceStyle = SOURCE_STYLES[log.source];
+    const SourceIcon = sourceStyle.icon;
     const server = log.gameServer;
     const serverOwnerId = server?.userId ?? log.userId ?? null;
 
@@ -128,6 +138,10 @@ export default function LogRow({ log, onFilterUser, onFilterServer }: LogRowProp
                         expanded && 'rotate-90',
                     )}
                 />
+                <span title={tSource(log.source)} className="flex w-3.5 shrink-0 justify-center">
+                    <SourceIcon className={cn('h-3.5 w-3.5', sourceStyle.iconColor)} />
+                    <span className="sr-only">{tSource(log.source)}</span>
+                </span>
                 <time
                     dateTime={new Date(log.createdAt).toISOString()}
                     title={new Date(log.createdAt).toLocaleString()}
@@ -143,8 +157,13 @@ export default function LogRow({ log, onFilterUser, onFilterServer }: LogRowProp
                 >
                     {log.level}
                 </span>
-                <span className="hidden w-32 shrink-0 truncate text-[11px] text-muted-foreground lg:block">
-                    {log.type.replace(/_/g, ' ').toLowerCase()}
+                <span
+                    className={cn(
+                        'hidden w-36 shrink-0 truncate text-[11px] lg:block',
+                        sourceStyle.category,
+                    )}
+                >
+                    {formatEnum(log.type)}
                 </span>
                 <span className="min-w-0 flex-1 truncate" title={log.message}>
                     {log.message}
@@ -176,22 +195,52 @@ export default function LogRow({ log, onFilterUser, onFilterServer }: LogRowProp
             {expanded && (
                 <div className="space-y-2 border-t bg-muted/40 px-3 py-2 text-[11px] md:px-8">
                     <div className="grid gap-x-8 gap-y-1 md:grid-cols-2">
+                        <DetailRow label={t('source')}>
+                            <span className="inline-flex items-center gap-1 font-sans">
+                                <SourceIcon className={cn('h-3 w-3', sourceStyle.iconColor)} />
+                                {tSource(log.source)}
+                            </span>
+                        </DetailRow>
                         <DetailRow label={t('time')}>
                             {new Date(log.createdAt).toLocaleString()}
                         </DetailRow>
                         <DetailRow label={t('logId')}>{log.id}</DetailRow>
+
+                        <DetailRow label={t('category')}>{log.type}</DetailRow>
+                        <DetailRow label={t('instance')}>{log.instanceId}</DetailRow>
+                        {log.component && (
+                            <DetailRow label={t('component')}>{log.component}</DetailRow>
+                        )}
                         {(log.method || log.path) && (
                             <DetailRow label={t('request')}>
                                 {[log.method, log.path].filter(Boolean).join(' ')}
                             </DetailRow>
                         )}
-                        {log.instanceId && (
-                            <DetailRow label={t('instance')}>{log.instanceId}</DetailRow>
-                        )}
                         {log.ipAddress && <DetailRow label={t('ip')}>{log.ipAddress}</DetailRow>}
                         {log.userAgent && (
                             <DetailRow label={t('userAgent')}>{log.userAgent}</DetailRow>
                         )}
+                        {log.jobRun && (
+                            <>
+                                <DetailRow label={t('jobType')}>{log.jobRun.jobType}</DetailRow>
+                                <DetailRow label={t('jobRun')}>
+                                    <button
+                                        type="button"
+                                        onClick={() => onFilterJobRun(log.jobRun!.id)}
+                                        title={t('filterByJobRun')}
+                                        className="inline-flex items-center gap-1 underline underline-offset-2"
+                                    >
+                                        <Filter className="h-3 w-3" />
+                                        {log.jobRun.id}
+                                    </button>
+                                    <span className="ml-2 text-muted-foreground">
+                                        {log.jobRun.status} ·{' '}
+                                        {new Date(log.jobRun.startedAt).toLocaleString()}
+                                    </span>
+                                </DetailRow>
+                            </>
+                        )}
+
                         {log.user && (
                             <DetailRow label={t('user')}>
                                 <Link

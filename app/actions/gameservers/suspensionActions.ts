@@ -21,7 +21,7 @@ import {
 
 type ActionResult = { success: true } | { success: false; error: string };
 
-/** Marker written into ApplicationLog.details so the history can be queried back out. */
+/** Marker written into Log.details so the history can be queried back out. */
 const SUSPENSION_EVENT_PREFIX = 'SUSPENSION_';
 
 function failure(error: unknown): ActionResult {
@@ -240,7 +240,7 @@ export async function liftGameServerSuspension(input: {
  * Pushes the end date of an active suspension further out.
  *
  * Deliberately sends **no** email — this is an internal decision, and the user was already
- * told why their server is suspended. The change is written to ApplicationLog so a later
+ * told why their server is suspended. The change is written to the Log table so a later
  * admin can see that (and why) the date moved.
  */
 export async function extendGameServerSuspension(
@@ -302,13 +302,13 @@ export type SuspensionHistoryEntry = {
     details: Record<string, unknown>;
 };
 
-/** Reads the suspend/extend/lift trail for a server back out of ApplicationLog. */
+/** Reads the suspend/extend/lift trail for a server back out of the Log table. */
 export async function getSuspensionHistory(
     gameServerId: string,
 ): Promise<SuspensionHistoryEntry[]> {
     await requireAdmin();
 
-    const logs = await prisma.applicationLog.findMany({
+    const logs = await prisma.log.findMany({
         where: {
             gameServerId,
             type: 'GAME_SERVER',

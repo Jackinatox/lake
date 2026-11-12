@@ -1813,7 +1813,17 @@
         "1d": "Last Day",
         "7d": "Last Week",
         "30d": "Last Month"
-      }
+      },
+      "source": "Source",
+      "sources": {
+        "ALL": "All sources",
+        "APP": "Application",
+        "WORKER": "Worker"
+      },
+      "jobRunFilter": "Only job run",
+      "clearJobRun": "Clear job run filter",
+      "workerJob": "Worker job",
+      "allJobs": "All jobs"
     },
     "list": {
       "noLogs": "No logs found",
@@ -1829,7 +1839,8 @@
       "columnType": "Category",
       "columnMessage": "Message",
       "columnUser": "User",
-      "columnServer": "Server"
+      "columnServer": "Server",
+      "sourceSplit": "· {app} application, {worker} worker"
     },
     "entry": {
       "time": "Time",
@@ -1843,7 +1854,13 @@
       "filterByUser": "Filter logs by this user",
       "filterByServer": "Filter logs by this server",
       "openUserInAdmin": "Show this user's servers in the admin panel",
-      "openServerInAdmin": "Show this server in the admin panel"
+      "openServerInAdmin": "Show this server in the admin panel",
+      "source": "Source",
+      "category": "Category",
+      "jobType": "Job",
+      "jobRun": "Job run",
+      "filterByJobRun": "Show all lines of this job run",
+      "component": "Component"
     }
   },
   "order": {

@@ -301,7 +301,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     // ---- per-row error badges: closes the loop with /admin/logs ------------------------
     const serverIds = servers.map((server) => server.id);
     const errorGroups = serverIds.length
-        ? await prisma.applicationLog.groupBy({
+        ? await prisma.log.groupBy({
               by: ['gameServerId'],
               where: {
                   gameServerId: { in: serverIds },

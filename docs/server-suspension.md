@@ -163,7 +163,7 @@ worker's queue.
 
 ### History
 
-Every action writes an `ApplicationLog` row with `type: 'GAME_SERVER'` and
+Every action writes a `Log` row (source `APP`) with `type: 'GAME_SERVER'` and
 `details.event` of `SUSPENSION_CREATED` / `SUSPENSION_EXTENDED` / `SUSPENSION_LIFTED`, plus
 the acting admin and (for extensions) `from` / `to` / `note`. `getSuspensionHistory` reads it
 back with a JSON-path filter (`details: { path: ['event'], string_starts_with: 'SUSPENSION_' }`)

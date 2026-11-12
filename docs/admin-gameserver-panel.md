@@ -94,7 +94,7 @@ always lists exactly those 3 servers.
 | `stuck`    | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
 | `orphaned` | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
 | `overdue`  | `ACTIVE` past its expiry — the worker has not caught up                          |
-| `errors`   | ERROR/FATAL `ApplicationLog` rows in the last `ERROR_WINDOW_HOURS` (24)          |
+| `errors`   | ERROR/FATAL `Log` rows (lake or worker) in the last `ERROR_WINDOW_HOURS` (24)   |
 
 ## Distribution card
 
@@ -165,5 +165,5 @@ One `Promise.all` does the page, its count, the selection aggregate, four `group
 renewal-value sum, 6 attention counts, 5 renewal counts and the filter options; a
 second query groups error logs for the ids on the page. ~20 round trips per view —
 fine for an admin screen, but worth folding into fewer statements if the server count (or the
-`ApplicationLog` table) grows a lot. The composite indexes suggested in
+`Log` table) grows a lot. The composite indexes suggested in
 `admin-log-viewer.md` would also help the `errors` chip.

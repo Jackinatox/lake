@@ -52,10 +52,12 @@ export type PackageWithCPURAM = Prisma.PackageGetPayload<{
     include: { location: { include: { cpu: true; ram: true } } };
 }>;
 
-export type ApplicationLogWithRelations = Prisma.ApplicationLogGetPayload<{
+/** A `Log` row as the admin log viewer shows it. */
+export type LogWithRelations = Prisma.LogGetPayload<{
     include: {
         user: { select: { id: true; name: true; username: true; email: true } };
         gameServer: { select: { id: true; name: true; userId: true } };
+        jobRun: { select: { id: true; jobType: true; status: true; startedAt: true } };
     };
 }>;
 

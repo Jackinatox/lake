@@ -15,10 +15,12 @@ export default async function AdminLogsPage() {
 
     return (
         <div className="container mx-auto p-0 md:p-6">
-            <AdminBreadcrumb items={[{ label: 'Application Logs' }]} />
+            <AdminBreadcrumb items={[{ label: 'Logs' }]} />
             <div className="mb-4">
-                <h1 className="text-2xl font-bold md:text-3xl">Application Logs</h1>
-                <p className="mt-1 text-sm text-muted-foreground">View and filter system logs</p>
+                <h1 className="text-2xl font-bold md:text-3xl">Logs</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                    Application and worker logs in one timeline
+                </p>
             </div>
             <Suspense>
                 <LogViewer />
