@@ -22,6 +22,7 @@ state in the query string. There is still no per-server page; the expanded row i
 - `app/[locale]/admin/gameservers/types.ts` — `ServerStats`, `ServerSlice`, filter/sort state.
 - `lib/gameserver/adminServers.ts` — default scope, attention + renewal definitions, formatting.
 - `lib/Pterodactyl/panelUrls.ts` — deep links into the Pterodactyl panel.
+- `lib/Pterodactyl/serverWings.ts` — `fetchServerWings`: wing per row, asked from the worker (2 s cap).
 - `components/admin/AdminUserPicker.tsx` — shared server-side-searching user combobox.
 - `models/prisma.ts` — `GameServerAdminRow` (the row payload).
 - Unchanged and reused: `EditServerDialog`, `AdminServerActionsMenu`, `SuspensionDialogs`.
@@ -137,15 +138,31 @@ Colour rules worth keeping:
 ## Row
 
 One 32px line: status dot, name (+ free marker, suspension, missing-PT-link and error
-badges), owner, game, location, `3t · 3G · 16G` compute, `10b · 2p` backups/ports,
+badges), owner, game, location, wing, `3t · 3G · 16G` compute, `10b · 2p` backups/ports,
 price, the booking date (`createdAt`, absolute — it is matched against invoices; the
 tooltip adds the time and the relative distance), relative expiry (red overdue / amber
 < 24 h), the `ptServerId` (click to copy — it
 is the id that goes into the panel or a ticket; `—` when the server was never
 provisioned), a logs link, a PT-console link and the actions menu. The expanded panel groups into three columns — **identity** (server id, owner, both PT
-ids, all copyable), **setup** (status, game, plan, and one `Resources` line carrying CPU,
+ids, all copyable), **setup** (status, game, wing — linked to `panelAdminWingUrl`, plan, and one `Resources` line carrying CPU,
 RAM, disk, backups, ports and the tier) and **dates** (created, last extended, expires) —
 followed by `errorText`, the full suspension, `gameConfig` JSON and a link row.
+
+## Wing (from the worker)
+
+Lake has no connection to the Pterodactyl database; the worker has. So the wing column comes
+from the worker: `fetchServerWings` posts the page's `ptAdminId`s to
+`POST {WORKER_IP}/v1/servers/wings` (`{ ptAdminIds: number[] }`, max 500) and gets
+`{ wings: { [ptAdminId]: { id, name } } }` back (ids unknown to the panel are absent). The
+worker side is `src/modules/pterodactyl/Wings/` in `lake-worker`.
+
+It is a live lookup, not a stored column, so the wing can be **shown but not filtered or
+charted**. It is capped at `SERVER_WINGS_TIMEOUT_MS` (2 s, `AbortSignal.timeout`): when the
+worker is slow, down or errors, the page still renders, the toolbar shows "Wing lookup
+failed: …" in red, the column shows `error` and the expanded row the reason. Unprovisioned
+servers (no `ptAdminId`) show `—`, even when the lookup fails. Every failure is also
+logged as `WARN` / `SYSTEM` ("Wing lookup failed: …"). Filtering by wing would need a
+`ptWingId` column kept in sync by the worker.
 
 ## Links out — and back in
 
@@ -163,7 +180,7 @@ followed by `errorText`, the full suspension, `gameConfig` JSON and a link row.
 
 One `Promise.all` does the page, its count, the selection aggregate, four `groupBy`s, the
 renewal-value sum, 6 attention counts, 5 renewal counts and the filter options; a
-second query groups error logs for the ids on the page. ~20 round trips per view —
+second round groups error logs for the ids on the page, in parallel with the worker wing lookup (≤ 2 s). ~20 round trips per view —
 fine for an admin screen, but worth folding into fewer statements if the server count (or the
 `Log` table) grows a lot. The composite indexes suggested in
 `admin-log-viewer.md` would also help the `errors` chip.

@@ -23,7 +23,7 @@ export function panelServerUrl(ptServerId: string | null | undefined): string | 
     return base && ptServerId ? `${base}/server/${ptServerId}` : null;
 }
 
-/** Admin view of the server (build config, startup, node) — `{panel}/admin/servers/view/{ptAdminId}`. */
+/** Admin view of the server (build config, startup, wing) — `{panel}/admin/servers/view/{ptAdminId}`. */
 export function panelAdminServerUrl(ptAdminId: number | null | undefined): string | null {
     const base = panelBase();
     return base && ptAdminId ? `${base}/admin/servers/view/${ptAdminId}` : null;
@@ -33,4 +33,10 @@ export function panelAdminServerUrl(ptAdminId: number | null | undefined): strin
 export function panelAdminUserUrl(ptUserId: number | null | undefined): string | null {
     const base = panelBase();
     return base && ptUserId ? `${base}/admin/users/view/${ptUserId}` : null;
+}
+
+/** Admin view of a wing (Pterodactyl calls it a node) — `{panel}/admin/nodes/view/{wingId}`. */
+export function panelAdminWingUrl(wingId: number | null | undefined): string | null {
+    const base = panelBase();
+    return base && wingId ? `${base}/admin/nodes/view/${wingId}` : null;
 }
