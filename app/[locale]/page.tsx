@@ -47,8 +47,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
             title: t('panelTitle'),
             desc: t('panelDesc'),
             imageSrc: '/images/home/panel.webp',
-            width: 2062,
-            height: 1399,
+            width: 2074,
+            height: 1412,
             alt: t('panelImageAlt'),
         },
         {
@@ -184,8 +184,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                                 <ThemeImage
                                     src="/images/home/panel.webp"
                                     alt={t('panelImageAlt')}
-                                    width={2062}
-                                    height={1399}
+                                    width={2074}
+                                    height={1412}
                                     className="w-full h-auto"
                                     priority
                                 />
@@ -199,8 +199,8 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                                     <ThemeImage
                                         src="/images/home/panel.webp"
                                         alt={t('panelImageAlt')}
-                                        width={2062}
-                                        height={1399}
+                                        width={2074}
+                                        height={1412}
                                         className="w-full h-auto"
                                         priority
                                     />
