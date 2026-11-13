@@ -1,4 +1,5 @@
 import 'server-only';
+import { logger } from '@/lib/logger';
 
 /**
  * Which wing each server runs on, asked from the worker (`POST /v1/servers/wings`),
@@ -25,28 +26,47 @@ export async function fetchServerWings(ptAdminIds: number[]): Promise<ServerWing
     const workerUrl = process.env.WORKER_IP;
     if (!workerUrl) return { ok: false, error: 'WORKER_IP is not set' };
 
+    let response: Response;
     try {
-        const response = await fetch(`${workerUrl}/v1/servers/wings`, {
+        response = await fetch(`${workerUrl}/v1/servers/wings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ptAdminIds: ids }),
             cache: 'no-store',
             signal: AbortSignal.timeout(SERVER_WINGS_TIMEOUT_MS),
         });
+    } catch (error) {
+        const timedOut = error instanceof Error && error.name === 'TimeoutError';
+        return fail(
+            timedOut
+                ? `Worker did not answer within ${SERVER_WINGS_TIMEOUT_MS / 1000} s`
+                : 'Worker unreachable',
+            error,
+        );
+    }
 
-        if (!response.ok) {
-            return { ok: false, error: `Worker answered ${response.status}` };
-        }
+    if (!response.ok) {
+        return fail(`Worker answered ${response.status}`);
+    }
 
+    // The timeout signal also covers reading the body, so a stalled body ends up here too.
+    try {
         const data = (await response.json()) as { wings?: Record<number, ServerWing> };
         return { ok: true, wings: data.wings ?? {} };
     } catch (error) {
         const timedOut = error instanceof Error && error.name === 'TimeoutError';
-        return {
-            ok: false,
-            error: timedOut
-                ? `Worker did not answer within ${SERVER_WINGS_TIMEOUT_MS / 1000} s`
-                : 'Worker unreachable',
-        };
+        return fail(
+            timedOut
+                ? `Worker did not finish answering within ${SERVER_WINGS_TIMEOUT_MS / 1000} s`
+                : 'Worker sent an unreadable answer',
+            error,
+        );
     }
+}
+
+function fail(message: string, error?: unknown): ServerWingsResult {
+    logger.warn(`Wing lookup failed: ${message}`, 'SYSTEM', {
+        details: error instanceof Error ? { error: error.message } : undefined,
+    });
+    return { ok: false, error: message };
 }

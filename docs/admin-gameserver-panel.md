@@ -160,8 +160,9 @@ It is a live lookup, not a stored column, so the wing can be **shown but not fil
 charted**. It is capped at `SERVER_WINGS_TIMEOUT_MS` (2 s, `AbortSignal.timeout`): when the
 worker is slow, down or errors, the page still renders, the toolbar shows "Wing lookup
 failed: …" in red, the column shows `error` and the expanded row the reason. Unprovisioned
-servers (no `ptAdminId`) show `—`. Filtering by wing would need a `ptWingId` column kept in
-sync by the worker.
+servers (no `ptAdminId`) show `—`, even when the lookup fails. Every failure is also
+logged as `WARN` / `SYSTEM` ("Wing lookup failed: …"). Filtering by wing would need a
+`ptWingId` column kept in sync by the worker.
 
 ## Links out — and back in
 

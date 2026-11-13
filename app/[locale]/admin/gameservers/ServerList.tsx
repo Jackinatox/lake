@@ -251,7 +251,9 @@ export default function ServerList({
                                     ? (serverWings.wings[server.ptAdminId] ?? null)
                                     : null
                             }
-                            wingError={serverWings.ok ? null : serverWings.error}
+                            wingError={
+                                serverWings.ok || !server.ptAdminId ? null : serverWings.error
+                            }
                             selected={selectedIds.includes(server.id)}
                             onSelect={(checked) =>
                                 setSelectedIds((previous) =>
