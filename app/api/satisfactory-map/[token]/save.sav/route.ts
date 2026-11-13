@@ -3,6 +3,11 @@ import { suspensionActiveCutoff } from '@/lib/gameserver/suspension';
 import { describeFetchError, logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { listSaves, SATISFACTORY_SAVE_DIR } from '@/lib/satisfactoryMap/saves';
+import {
+    resolveShareLink,
+    takeShareDownload,
+    touchShareLink,
+} from '@/lib/satisfactoryMap/shareLink';
 import { MAP_ORIGINS, verifyMapToken } from '@/lib/satisfactoryMap/token';
 import type { NextRequest } from 'next/server';
 
@@ -24,7 +29,8 @@ function corsHeaders(req: NextRequest): Record<string, string> {
     return {
         'Access-Control-Allow-Origin':
             origin && MAP_ORIGINS.includes(origin) ? origin : MAP_ORIGINS[0],
-        'Access-Control-Expose-Headers': 'Last-Modified, Content-Length, Content-Disposition',
+        'Access-Control-Expose-Headers':
+            'Last-Modified, Content-Length, Content-Disposition, Retry-After',
         Vary: 'Origin',
         'X-Robots-Tag': 'noindex',
     };
@@ -41,15 +47,48 @@ function errorResponse(req: NextRequest, status: number, message: string) {
     });
 }
 
-/** Resolves the token to its save, or to the error response to send instead. */
-async function resolveSave(req: NextRequest, { params }: RouteContext) {
-    const { token } = await params;
+type SaveSource = {
+    ptServerId: string;
+    apiKey: string;
+    /** A specific save, or null for the newest one. */
+    file: string | null;
+    /** Set for share links: rate limited, and their use is recorded. */
+    shareLinkId: string | null;
+    logContext: { gameServerId: string; userId: string };
+};
+
+/** Resolves the token to the server and save it may read, or to the error response instead. */
+async function resolveSource(
+    req: NextRequest,
+    token: string,
+): Promise<{ source: SaveSource } | { error: Response }> {
     const verified = verifyMapToken(token);
     if (verified.status === 'expired') {
         return { error: errorResponse(req, 410, 'This map link has expired.') };
     }
     if (verified.status !== 'ok') {
         return { error: errorResponse(req, 404, 'Not found.') };
+    }
+
+    if (verified.kind === 'share') {
+        const target = await resolveShareLink(verified.linkId);
+        if (target.status === 'disabled') {
+            return {
+                error: errorResponse(req, 410, 'This map link was disabled by the server owner.'),
+            };
+        }
+        if (target.status !== 'ok') {
+            return { error: errorResponse(req, 404, 'Not found.') };
+        }
+        return {
+            source: {
+                ptServerId: target.ptServerId,
+                apiKey: target.ptKey,
+                file: null,
+                shareLinkId: target.linkId,
+                logContext: { gameServerId: target.gameServerId, userId: target.userId },
+            },
+        };
     }
 
     const server = await prisma.gameServer.findFirst({
@@ -66,11 +105,27 @@ async function resolveSave(req: NextRequest, { params }: RouteContext) {
     if (!server?.user.ptKey) {
         return { error: errorResponse(req, 404, 'Not found.') };
     }
+    return {
+        source: {
+            ptServerId: verified.ptServerId,
+            apiKey: server.user.ptKey,
+            file: verified.file,
+            shareLinkId: null,
+            logContext: { gameServerId: server.id, userId: server.userId },
+        },
+    };
+}
 
-    const logContext = { gameServerId: server.id, userId: server.userId };
+/** Resolves the token to its save, or to the error response to send instead. */
+async function resolveSave(req: NextRequest, { params }: RouteContext) {
+    const { token } = await params;
+    const resolved = await resolveSource(req, token);
+    if ('error' in resolved) return resolved;
+    const { source } = resolved;
+
     try {
-        const saves = await listSaves(verified.ptServerId, server.user.ptKey);
-        const { file } = verified;
+        const saves = await listSaves(source.ptServerId, source.apiKey);
+        const { file } = source;
         // A specific save must still be in the listing, which also keeps the name inside the folder.
         const save = file === null ? saves[0] : saves.find((entry) => entry.name === file);
         if (!save) {
@@ -82,16 +137,10 @@ async function resolveSave(req: NextRequest, { params }: RouteContext) {
                 ),
             };
         }
-        return {
-            save,
-            file,
-            ptServerId: verified.ptServerId,
-            apiKey: server.user.ptKey,
-            logContext,
-        };
+        return { save, source };
     } catch (error) {
         logger.warn('Satisfactory map: listing the save folder failed', 'GAME_SERVER', {
-            ...logContext,
+            ...source.logContext,
             details: describeFetchError(error),
         });
         return { error: errorResponse(req, 502, 'The server could not be reached.') };
@@ -128,7 +177,8 @@ async function handle(req: NextRequest, context: RouteContext, withBody: boolean
     const resolved = await resolveSave(req, context);
     if ('error' in resolved) return resolved.error;
 
-    const { save, ptServerId, apiKey, logContext } = resolved;
+    const { save, source } = resolved;
+    const { ptServerId, apiKey, logContext, shareLinkId } = source;
     const lastModified = new Date(save.modifiedAt);
     const headers = saveHeaders(req, save.name, save.size, lastModified);
 
@@ -137,6 +187,20 @@ async function handle(req: NextRequest, context: RouteContext, withBody: boolean
         return new Response(null, { status: 304, headers: notModifiedHeaders });
     }
     if (!withBody) return new Response(null, { status: 200, headers });
+
+    // Share links are public for good, so cap full downloads (304s and HEADs are cheap).
+    if (shareLinkId) {
+        const retryAfter = takeShareDownload(shareLinkId);
+        if (retryAfter !== null) {
+            const response = errorResponse(
+                req,
+                429,
+                'Too many downloads of this save right now. Try again in a minute.',
+            );
+            response.headers.set('Retry-After', String(retryAfter));
+            return response;
+        }
+    }
 
     try {
         // A fresh single-use Wings link per request, fetched server-side and streamed through.
@@ -154,12 +218,21 @@ async function handle(req: NextRequest, context: RouteContext, withBody: boolean
         void logger.info('Satisfactory map: save served', 'GAME_SERVER', {
             ...logContext,
             details: {
-                target: resolved.file === null ? 'newest' : 'file',
+                target: shareLinkId ? 'share' : source.file === null ? 'newest' : 'file',
                 file: save.name,
+                shareLinkId,
                 size: save.size,
                 origin: req.headers.get('origin'),
             },
         });
+        if (shareLinkId) {
+            touchShareLink(shareLinkId).catch((error: unknown) =>
+                logger.warn('Satisfactory map: recording share link use failed', 'GAME_SERVER', {
+                    ...logContext,
+                    details: { shareLinkId, error: String(error) },
+                }),
+            );
+        }
         const length = upstream.headers.get('content-length');
         return new Response(upstream.body, {
             status: 200,

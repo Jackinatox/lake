@@ -75,8 +75,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
   attention dot. Read when touching game config files or adding a game's config panels.
 - `satisfactory-interactive-map.md` — "Open in interactive map" for Satisfactory servers: the
-  verified save folder, the signed 24-hour token, and the public CORS route that streams the newest
-  save to satisfactory-calculator.com. Read when touching Satisfactory saves or that route.
+  verified save folder, the signed 24-hour token, the per-server share link for players
+  (`MapShareLink`, `MAP_SHARE_SECRET`, rate limit), and the public CORS route that streams the
+  newest save to satisfactory-calculator.com. Read when touching Satisfactory saves or that route.
 - `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
   redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
   go offline or when touching `proxy.ts`.

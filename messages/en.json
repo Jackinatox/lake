@@ -1262,9 +1262,29 @@
           "allSaves": "All saves ({count})",
           "openSave": "Open",
           "openSaveLabel": "Open {name} in the interactive map",
-          "linkHint": "Opens satisfactory-calculator.com, an independent site, in a new tab. The link works for 24 hours, and anyone who has it can download this save, so only share it with people you trust.",
+          "linkHint": "Opens satisfactory-calculator.com, an independent site, in a new tab. These links work for 24 hours. For a lasting link for your players, use \"Share with your players\" below.",
           "openFailedTitle": "Could not open the map",
           "openFailedDescription": "Please try again in a moment."
+        },
+        "share": {
+          "title": "Share with your players",
+          "description": "One link for everyone on your server. It opens the interactive map with the newest save, needs no account and works until you turn it off.",
+          "enabledLabel": "Share link enabled",
+          "linkLabel": "Share link",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Could not copy the link",
+          "lastUsed": "Last opened {time}",
+          "neverUsed": "Not opened yet",
+          "regenerate": "Generate new link",
+          "regenerateTitle": "Generate a new link?",
+          "regenerateDescription": "The current link stops working right away. Everyone you shared it with needs the new one.",
+          "regenerateConfirm": "Generate new link",
+          "cancel": "Cancel",
+          "loadFailed": "The share link could not be loaded. Try again in a moment.",
+          "actionFailedTitle": "Could not change the share link",
+          "actionFailedDescription": "Please try again in a moment.",
+          "warning": "Anyone with this link can download your newest save. If it reaches the wrong people, generate a new link or turn it off."
         }
       }
     },
@@ -2270,5 +2290,21 @@
     "bannerTitle": "Maintenance: game servers are temporarily offline",
     "bannerDescription": "Due to a critical security vulnerability in PHP we have taken our game server panel offline as a precaution.",
     "bannerLink": "Learn more"
+  },
+  "SatisfactoryMapShare": {
+    "title": "Interactive map",
+    "invalid": {
+      "title": "This map link doesn't exist",
+      "description": "Check that you copied the whole link, or ask the server owner for a new one."
+    },
+    "disabled": {
+      "title": "This map link is turned off",
+      "description": "The server owner turned this link off. Ask them for a new one."
+    },
+    "unavailable": {
+      "title": "The server isn't available",
+      "description": "The map can't load while the server is offline in our system, for example because it expired. Ask the server owner."
+    },
+    "home": "Go to the homepage"
   }
 }

@@ -55,7 +55,8 @@ fetched, so crawlers would never see its noindex and could still index the bare 
 - Layouts exporting `metadata = { robots: PRIVATE_ROBOTS }`: `app/[locale]/admin/layout.tsx`,
   `app/[locale]/profile/layout.tsx`, `app/[locale]/(auth-pages)/layout.tsx`.
 - Per page via `createPrivateMetadata`: `/gameserver/*`, `/order/checkout`,
-  `/support/tickets/new`, `/support/tickets/[ticketId]`, `/products/wait/[jobId]`, and the legacy
+  `/support/tickets/new`, `/support/tickets/[ticketId]`, `/products/wait/[jobId]`,
+  `/satisfactory-calculator-map/[token]` (map share links), and the legacy
   `/support` form (duplicate of `/support/tickets` until it is removed).
 - Unlisted blog posts (`listed = false`) get `createPublicMetadata({ noindex: true })`: reachable
   by link, but neither in the sitemap nor in search results.
