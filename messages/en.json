@@ -978,6 +978,7 @@
       "console": "Console",
       "files": "Files",
       "config": "Config",
+      "map": "Map",
       "network": "Network",
       "backups": "Backups",
       "settings": "Settings",
@@ -1244,6 +1245,26 @@
               "description": "Set by your server allocation."
             }
           }
+        }
+      },
+      "satisfactory": {
+        "map": {
+          "title": "Interactive map",
+          "description": "View your factory on the interactive map of satisfactory-calculator.com. It always loads the newest save of this server.",
+          "refresh": "Check for a newer save",
+          "latestSave": "Newest save",
+          "savedAt": "Saved {time} · {size}",
+          "noSaveTitle": "No save yet",
+          "noSaveDescription": "Start the server, create a session and wait for the first autosave. Then you can open it on the map.",
+          "loadFailed": "The save folder could not be read. Try again in a moment.",
+          "openLatest": "Open newest save",
+          "latestHint": "This link always loads the newest save, so reloading the map later shows your latest progress.",
+          "allSaves": "All saves ({count})",
+          "openSave": "Open",
+          "openSaveLabel": "Open {name} in the interactive map",
+          "linkHint": "Opens satisfactory-calculator.com, an independent site, in a new tab. The link works for 24 hours, and anyone who has it can download this save, so only share it with people you trust.",
+          "openFailedTitle": "Could not open the map",
+          "openFailedDescription": "Please try again in a moment."
         }
       }
     },

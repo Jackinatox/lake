@@ -990,6 +990,7 @@
       "console": "Konsole",
       "files": "Dateien",
       "config": "Konfiguration",
+      "map": "Karte",
       "network": "Netzwerk",
       "backups": "Backups",
       "settings": "Einstellungen",
@@ -1256,6 +1257,26 @@
               "description": "Wird durch Deine Server-Zuweisung festgelegt."
             }
           }
+        }
+      },
+      "satisfactory": {
+        "map": {
+          "title": "Interaktive Karte",
+          "description": "Sieh dir deine Fabrik auf der interaktiven Karte von satisfactory-calculator.com an. Sie lädt immer den neuesten Spielstand dieses Servers.",
+          "refresh": "Nach neuerem Spielstand suchen",
+          "latestSave": "Neuester Spielstand",
+          "savedAt": "Gespeichert {time} · {size}",
+          "noSaveTitle": "Noch kein Spielstand",
+          "noSaveDescription": "Starte den Server, erstelle eine Sitzung und warte auf das erste Autosave. Danach kannst du es auf der Karte öffnen.",
+          "loadFailed": "Der Speicherordner konnte nicht gelesen werden. Versuche es gleich noch einmal.",
+          "openLatest": "Neuesten Spielstand öffnen",
+          "latestHint": "Dieser Link lädt immer den neuesten Spielstand. Wenn du die Karte später neu lädst, siehst du deinen aktuellen Fortschritt.",
+          "allSaves": "Alle Spielstände ({count})",
+          "openSave": "Öffnen",
+          "openSaveLabel": "{name} in der interaktiven Karte öffnen",
+          "linkHint": "Öffnet satisfactory-calculator.com, eine unabhängige Seite, in einem neuen Tab. Der Link gilt 24 Stunden, und jeder, der ihn hat, kann diesen Spielstand herunterladen. Teile ihn also nur mit Leuten, denen du vertraust.",
+          "openFailedTitle": "Karte konnte nicht geöffnet werden",
+          "openFailedDescription": "Bitte versuche es gleich noch einmal."
         }
       }
     },

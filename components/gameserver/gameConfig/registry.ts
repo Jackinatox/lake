@@ -1,4 +1,5 @@
 import { minecraftConfig } from './minecraft';
+import { satisfactoryConfig } from './satisfactory';
 import type { GameConfigModule } from './types';
 
 /**
@@ -17,6 +18,7 @@ import type { GameConfigModule } from './types';
  */
 export const GAME_CONFIG_REGISTRY: Record<string, GameConfigModule> = {
     minecraft: minecraftConfig,
+    satisfactory: satisfactoryConfig,
 };
 
 export function getGameConfig(gameSlug: string): GameConfigModule | undefined {
