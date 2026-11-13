@@ -2,6 +2,7 @@ import { getUserServer } from '@/app/data-access-layer/clientServers/getUsersSer
 import { auth } from '@/auth';
 import NotLoggedIn from '@/components/auth/NoAuthMessage';
 import { ServerCard } from '@/components/gameserver/GameServerList/GameServerCard';
+import AutoRefresh from '@/components/gameserver/GameServerList/AutoRefresh';
 import { Button } from '@/components/ui/button';
 import { ClientServer } from '@/models/prisma';
 import { Plus, Server } from 'lucide-react';
@@ -73,6 +74,7 @@ export default async function GameServersPage() {
 
     return (
         <div className="min-h-screen">
+            <AutoRefresh />
             <div className="container mx-auto px-0 max-w-6xl">
                 <PageHeader count={clientServers.length} />
                 {clientServers.length > 0 ? (
