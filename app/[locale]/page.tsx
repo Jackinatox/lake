@@ -206,8 +206,6 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                                     />
                                 </div>
                             </div>
-                            {/* Fade the right bleed */}
-                            <div className="absolute top-0 bottom-0 right-[-12vw] w-[15vw] bg-linear-to-l from-background to-transparent pointer-events-none z-10" />
                         </div>
                     </div>
                 </div>
