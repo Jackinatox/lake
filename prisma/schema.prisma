@@ -642,7 +642,9 @@ enum LogType {
   SYSTEM
   AUTHENTICATION
   PAYMENT
-  PAYMENT_LOG
+  // PAYMENT_LOG was merged into PAYMENT. The migration that drops it must run
+  //   UPDATE "Log" SET "type" = 'PAYMENT' WHERE "type" = 'PAYMENT_LOG';
+  // BEFORE recreating the enum, or existing rows block the change.
   GAME_SERVER
   EMAIL
   SUPPORT_TICKET

@@ -33,7 +33,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             // Try to find the order by payment_intent or charge
             logger.warn(
                 'refund.updated: No refund record found, attempting to reconcile',
-                'PAYMENT_LOG',
+                'PAYMENT',
                 {
                     details: { stripeRefundId: refund.id },
                 },
@@ -98,7 +98,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             },
         });
 
-        logger.info('refund.updated processed', 'PAYMENT_LOG', {
+        logger.info('refund.updated processed', 'PAYMENT', {
             userId: refundRecord.order.userId,
             gameServerId: refundRecord.order.gameServerId ?? undefined,
             details: {
@@ -112,7 +112,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
 
         // If refund failed, alert via logging
         if (newStatus === 'FAILED') {
-            logger.error('Refund FAILED - manual intervention required', 'PAYMENT_LOG', {
+            logger.error('Refund FAILED - manual intervention required', 'PAYMENT', {
                 userId: refundRecord.order.userId,
                 gameServerId: refundRecord.order.gameServerId ?? undefined,
                 details: {
@@ -131,7 +131,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             try {
                 await undoRefundedOrder(refundRecord.orderId, refundRecord.serverAction);
             } catch (undoError) {
-                logger.error('Failed to undo refunded order', 'PAYMENT_LOG', {
+                logger.error('Failed to undo refunded order', 'PAYMENT', {
                     userId: refundRecord.order.userId,
                     gameServerId: refundRecord.order.gameServerId ?? undefined,
                     details: {
@@ -192,7 +192,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
                     });
                 }
             } catch (emailError) {
-                logger.error('Failed to send refund/withdrawal confirmation email', 'PAYMENT_LOG', {
+                logger.error('Failed to send refund/withdrawal confirmation email', 'PAYMENT', {
                     userId: refundRecord.order.userId,
                     gameServerId: refundRecord.order.gameServerId ?? undefined,
                     details: {
@@ -205,7 +205,7 @@ export async function handleRefundUpdated(refund: Stripe.Refund) {
             }
         }
     } catch (error) {
-        logger.error('Error handling refund.updated', 'PAYMENT_LOG', {
+        logger.error('Error handling refund.updated', 'PAYMENT', {
             userId,
             gameServerId,
             details: { stripeRefundId: refund.id, error },
@@ -227,13 +227,13 @@ export async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
         });
 
         if (!order) {
-            logger.warn('charge.dispute.created: No order found for charge', 'PAYMENT_LOG', {
+            logger.warn('charge.dispute.created: No order found for charge', 'PAYMENT', {
                 details: { chargeId, disputeId: dispute.id },
             });
             return;
         }
 
-        logger.error('DISPUTE OPENED - Immediate admin attention required', 'PAYMENT_LOG', {
+        logger.error('DISPUTE OPENED - Immediate admin attention required', 'PAYMENT', {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
             details: {
@@ -247,7 +247,7 @@ export async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
             },
         });
     } catch (error) {
-        logger.error('Error handling charge.dispute.created', 'PAYMENT_LOG', {
+        logger.error('Error handling charge.dispute.created', 'PAYMENT', {
             details: { disputeId: dispute.id, error },
         });
     }
@@ -283,7 +283,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
         }
 
         if (!order) {
-            logger.warn('reconcileExternalRefund: Could not find matching order', 'PAYMENT_LOG', {
+            logger.warn('reconcileExternalRefund: Could not find matching order', 'PAYMENT', {
                 details: { stripeRefundId: refund.id, paymentIntentId, chargeId },
             });
             return;
@@ -337,7 +337,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
             },
         });
 
-        logger.info('External refund reconciled', 'PAYMENT_LOG', {
+        logger.info('External refund reconciled', 'PAYMENT', {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
             details: {
@@ -347,7 +347,7 @@ async function reconcileExternalRefund(refund: Stripe.Refund) {
             },
         });
     } catch (error) {
-        logger.error('Error reconciling external refund', 'PAYMENT_LOG', {
+        logger.error('Error reconciling external refund', 'PAYMENT', {
             userId,
             gameServerId,
             details: { stripeRefundId: refund.id, error },
@@ -361,7 +361,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
 
     try {
         if (!invoice.invoice_pdf) {
-            logger.error('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT_LOG', {
+            logger.error('invoice.payment_succeeded: no PDF yet, skipping', 'PAYMENT', {
                 details: { invoiceId: invoice.id },
             });
             return;
@@ -391,7 +391,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
         if (!order) {
             logger.error(
                 'invoice.payment_succeeded: No order found for invoice after retries',
-                'PAYMENT_LOG',
+                'PAYMENT',
                 { details: { invoiceId: invoice.id, retries: LOOKUP_RETRIES } },
             );
             return;
@@ -417,7 +417,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             });
             ownInvoiceUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invoice/${order.id}`;
         } catch (downloadError) {
-            logger.error('Failed to download/store Stripe invoice PDF', 'PAYMENT_LOG', {
+            logger.error('Failed to download/store Stripe invoice PDF', 'PAYMENT', {
                 userId: order.userId,
                 gameServerId: order.gameServerId ?? undefined,
                 details: { orderId: order.id, invoiceId: invoice.id, error: downloadError },
@@ -432,7 +432,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             },
         });
 
-        logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT_LOG', {
+        logger.info('invoice.payment_succeeded: invoicePdfUrl saved', 'PAYMENT', {
             userId: order.userId,
             gameServerId: order.gameServerId ?? undefined,
             details: {
@@ -469,7 +469,7 @@ export async function handlePaymentSucceded(invoice: Stripe.Invoice) {
             });
         }
     } catch (error) {
-        logger.error('Error handling invoice.payment_succeeded', 'PAYMENT_LOG', {
+        logger.error('Error handling invoice.payment_succeeded', 'PAYMENT', {
             userId,
             gameServerId,
             details: { invoiceId: invoice.id, error },
