@@ -22,6 +22,7 @@ import {
     FREE_SERVER_CREATION_ENABLED,
     MINECRAFT_MODPACKS_ENABLED,
 } from '@/app/GlobalConstants';
+import { isDevServer } from './devMode';
 import prisma from './prisma';
 
 /**
@@ -57,6 +58,7 @@ const REQUIRED_DB_CONSTANTS = [
 const ENV_VARS_REQUIRED = [
     'NEXT_PUBLIC_APP_URL',
     'BETTER_AUTH_SECRET',
+    'MAP_SHARE_SECRET',
     'BETTER_AUTH_URL',
     'DISCORD_CLIENT_ID',
     'DISCORD_CLIENT_SECRET',
@@ -83,8 +85,8 @@ const ENV_VARS_REQUIRED = [
     'NEXT_PUBLIC_POSTHOG_HOST',
     'INSTANCE_ID',
     'DEPLOYMENT_ENV',
-    'NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY',
-    'CF_TURNSTILE_SECRET_KEY',
+    // Captcha is disabled under `next dev` (lib/devMode.ts), so the keys are only needed in builds.
+    ...(isDevServer ? [] : ['NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY', 'CF_TURNSTILE_SECRET_KEY']),
 ];
 
 export async function performVerification(): Promise<void> {

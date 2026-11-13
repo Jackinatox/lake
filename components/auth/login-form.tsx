@@ -15,6 +15,7 @@ import { getValidationMessage } from '@/lib/validation/common';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
+import { isDevServer } from '@/lib/devMode';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 
@@ -198,18 +199,20 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                                     </div>
                                 </div>
 
-                                <Turnstile
-                                    ref={turnstileRef}
-                                    siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
-                                    onSuccess={setTurnstileToken}
-                                    onError={() => setTurnstileToken('')}
-                                    onExpire={() => setTurnstileToken('')}
-                                />
+                                {!isDevServer && (
+                                    <Turnstile
+                                        ref={turnstileRef}
+                                        siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
+                                        onSuccess={setTurnstileToken}
+                                        onError={() => setTurnstileToken('')}
+                                        onExpire={() => setTurnstileToken('')}
+                                    />
+                                )}
 
                                 <Button
                                     type="submit"
                                     className="w-full h-11"
-                                    disabled={loading || !turnstileToken}
+                                    disabled={loading || (!isDevServer && !turnstileToken)}
                                 >
                                     {loading ? t('button.loggingIn') : t('button.login')}
                                 </Button>

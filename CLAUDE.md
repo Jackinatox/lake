@@ -28,6 +28,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
 
 ## Docs index (`docs/`)
 
+- `dev-agent-login.md` — **Agents testing in the browser: start here.** `GET /api/dev/login`
+  (`?role=admin`, `?user=<slug>`, `?redirect=`) logs in as an auto-created test user, and the
+  Turnstile captcha is off. Both work only under `next dev` (`lib/devMode.ts`). Read when you
+  need to log in to test something, or when touching captcha/auth dev behavior.
 - `admin-log-viewer.md` — The unified `Log` table (lake `APP` + worker `WORKER` lines, its
   column contract with the worker) and the `/admin/logs` viewer on it: dense log rows, the
   filter set and its URL params, the links from a log row into the admin gameserver list,
@@ -70,6 +74,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   registry, the generic form editor and `.properties` format, the shared file cache
   (`useServerFile`), and the Minecraft whitelist + `server.properties` panels with their
   attention dot. Read when touching game config files or adding a game's config panels.
+- `satisfactory-interactive-map.md` — "Open in interactive map" for Satisfactory servers: the
+  verified save folder, the signed 24-hour token, the per-server share link for players
+  (`MapShareLink`, `MAP_SHARE_SECRET`, rate limit), and the public CORS route that streams the
+  newest save to satisfactory-calculator.com. Read when touching Satisfactory saves or that route.
 - `maintenance-mode.md` — The `MAINTENANCE_MODE` env switch: site banner, the proxy
   redirect of `/gameserver/**` + `/order/**` to `/maintenance`. Read when the panels must
   go offline or when touching `proxy.ts`.

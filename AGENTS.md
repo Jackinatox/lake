@@ -6,7 +6,7 @@ This file is the repository-level instruction source for Codex-compatible agents
 
 - **Runtime** Next.js 16 App Router. Locale-prefixed pages live under `app/[locale]`; the root shell is `app/layout.tsx`. Locale handling uses `proxy.ts`, `i18n/routing.ts`, and `i18n/request.ts` for `de`/`en`.
 - **Startup & Observability** `instrumentation.ts` runs `performVerification()` on Node startup and hard-fails if required env vars or seeded DB constants/resources are missing. Prefer `logger` for new server code; some startup/infra paths still use `console.*`.
-- **Auth** `auth.ts` configures Better Auth with Prisma adapter, Discord + Google OAuth, email/password with required verification, 2FA, API keys, usernames, admin plugin, last-login tracking, and Turnstile captcha. Social signups provision a Pterodactyl user immediately; email/password signups defer PT provisioning until the first verified session. The auth route lives at `app/api/auth/[...all]/route.ts`; client helpers live in `lib/auth-client.ts`.
+- **Auth** `auth.ts` configures Better Auth with Prisma adapter, Discord + Google OAuth, email/password with required verification, 2FA, API keys, usernames, admin plugin, last-login tracking, and Turnstile captcha (off under `next dev`). **To log in for browser testing, open `/api/dev/login` (`?role=admin` for an admin) on the dev server — see `docs/dev-agent-login.md`.** Social signups provision a Pterodactyl user immediately; email/password signups defer PT provisioning until the first verified session. The auth route lives at `app/api/auth/[...all]/route.ts`; client helpers live in `lib/auth-client.ts`.
 - **Database** Prisma schema lives in `prisma/schema.prisma`; the generated client is emitted to `app/client/generated` and wrapped by `lib/prisma.ts` with `PrismaPg`. In application code always import the shared client from `@/lib/prisma`.
 - **Domain Models** Important tables include `GameServer`, `GameServerOrder`, `GameData`, `Location`, `CPU`, `RAM`, `Package`, `ResourceTier`, `HardwareRecommendation`, `Refund`, `SupportTicket`, `JobRun`, `Log`, `Email`, `KeyValue`, `BlogPost`, `ChangelogEntry`, and `Verification`. Key enums include `OrderType`, `ProvisioningStatus`, `RefundStatus`, `RefundType`, `RefundServerAction`, `TicketStatus`, `WorkerJobType`, `LogType`, `LogSource`, and `LogLevel`.
 - **Pterodactyl Integration** Admin API helpers live under `lib/Pterodactyl/ptAdminClient.ts`; user API helpers in `lib/Pterodactyl/ptUserClient.ts`; websocket helpers in `lib/Pterodactyl/webSocket.ts`; lifecycle helpers live under `lib/Pterodactyl/**`. `NEXT_PUBLIC_PTERODACTYL_URL` and per-user `session.user.ptKey` are used widely in the dashboard, file manager, console, and server actions.
@@ -37,7 +37,7 @@ This file is the repository-level instruction source for Codex-compatible agents
 - **Package Manager** Use Bun only: `bun install`, `bun dev`, `bun build`, `bun start`, `bunx ...`.
 - **Database & Prisma** Start Postgres with `docker compose up db`. After schema changes run `bunx prisma migrate dev --name <desc>`, `bunx prisma generate`, and `bunx prisma db seed` as needed.
 - **Worker Dependency** The app expects an external worker reachable via `WORKER_IP`. `package.json` still contains `bun run worker`, but the checked-out repo currently does not include a `worker/` directory, so treat that script as external/missing unless the user provides it.
-- **Required Secrets** Core runtime needs `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `DATABASE_URL`, Discord and Google OAuth creds, Stripe keys plus `webhookSecret`, `NEXT_PUBLIC_PTERODACTYL_URL`, `PTERODACTYL_API_KEY`, `WORKER_IP`, mail/Telegram/PostHog envs, and Turnstile keys. `instrumentation.ts` and `lib/startup.ts` fail fast if required values or seeded KeyValue records are missing.
+- **Required Secrets** Core runtime needs `BETTER_AUTH_SECRET`, `MAP_SHARE_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `DATABASE_URL`, Discord and Google OAuth creds, Stripe keys plus `webhookSecret`, `NEXT_PUBLIC_PTERODACTYL_URL`, `PTERODACTYL_API_KEY`, `WORKER_IP`, mail/Telegram/PostHog envs, and Turnstile keys (not required under `next dev`). `instrumentation.ts` and `lib/startup.ts` fail fast if required values or seeded KeyValue records are missing.
 - **Formatting** Follow the existing alias imports from `tsconfig.json` (`@/`). The repo uses Prettier, ESLint, Next.js, and Tailwind 4-era packages; prefer targeted checks for touched files before broad repo-wide commands.
 
 ## Agent Workflow
@@ -49,7 +49,7 @@ This file is the repository-level instruction source for Codex-compatible agents
 
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 

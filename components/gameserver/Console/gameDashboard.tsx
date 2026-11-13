@@ -341,6 +341,7 @@ function GameDashboardContent({ server, ptApiKey, features }: serverProps) {
                                     />
                                 )
                             }
+                            configTab={gameConfig?.tab}
                             configAttention={
                                 gameConfig?.useAttention && (
                                     <GameConfigAttentionDot

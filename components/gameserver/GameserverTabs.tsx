@@ -2,6 +2,7 @@
 
 import type React from 'react';
 
+import type { GameConfigTabInfo } from '@/components/gameserver/gameConfig/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { FileText, HardDrive, Network, Settings, SlidersHorizontal } from 'lucide-react';
@@ -18,6 +19,8 @@ interface TabsComponentProps {
     configComponent?: React.ReactNode;
     /** Rendered inside the config tab trigger (the attention dot). */
     configAttention?: React.ReactNode;
+    /** Label and icon of the config tab; "Config" when not set. */
+    configTab?: GameConfigTabInfo;
 }
 
 export function TabsComponent({
@@ -28,9 +31,11 @@ export function TabsComponent({
     settingsComponent,
     configComponent,
     configAttention,
+    configTab,
 }: TabsComponentProps) {
     const [activeTab, setActiveTab] = useState('console');
     const t = useTranslations();
+    const ConfigIcon = configTab?.icon ?? SlidersHorizontal;
 
     return (
         <Tabs defaultValue="console" onValueChange={setActiveTab} className="h-full">
@@ -50,8 +55,10 @@ export function TabsComponent({
                 </TabsTrigger>
                 {configComponent && (
                     <TabsTrigger value="config" className="relative flex items-center gap-2">
-                        <SlidersHorizontal className="h-4 w-4" />
-                        <span className="hidden sm:inline">{t('gameserver.tabs.config')}</span>
+                        <ConfigIcon className="h-4 w-4" />
+                        <span className="hidden sm:inline">
+                            {t(`gameserver.tabs.${configTab?.labelKey ?? 'config'}`)}
+                        </span>
                         {configAttention}
                     </TabsTrigger>
                 )}

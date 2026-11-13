@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { AUTH_EMAIL_MAX_LENGTH, forgotPasswordSchema } from '@/lib/validation/auth';
 import { getValidationMessage } from '@/lib/validation/common';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
+import { isDevServer } from '@/lib/devMode';
 
 interface ForgotPasswordFormProps extends React.ComponentProps<'div'> {
     initialEmail?: string;
@@ -108,17 +109,19 @@ export function ForgotPasswordForm({ className, initialEmail, ...props }: Forgot
                                     {success}
                                 </div>
                             )}
-                            <Turnstile
-                                ref={turnstileRef}
-                                siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
-                                onSuccess={setTurnstileToken}
-                                onError={() => setTurnstileToken('')}
-                                onExpire={() => setTurnstileToken('')}
-                            />
+                            {!isDevServer && (
+                                <Turnstile
+                                    ref={turnstileRef}
+                                    siteKey={process.env.NEXT_PUBLIC_CF_TURNSTILE_SITE_KEY!}
+                                    onSuccess={setTurnstileToken}
+                                    onError={() => setTurnstileToken('')}
+                                    onExpire={() => setTurnstileToken('')}
+                                />
+                            )}
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={loading || !turnstileToken}
+                                disabled={loading || (!isDevServer && !turnstileToken)}
                             >
                                 {loading ? t('button.sending') : t('button.send')}
                             </Button>

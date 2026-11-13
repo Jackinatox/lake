@@ -9,6 +9,7 @@ import {
     sendPasswordResetSuccessEmail,
     sendResetPasswordEmail,
 } from './lib/email/sendEmailEmailsFromLake';
+import { isDevServer, isLoopbackUrl } from './lib/devMode';
 import { logger } from './lib/logger';
 import { captureServerEvent } from './lib/posthog';
 import prisma from './lib/prisma';
@@ -73,6 +74,14 @@ export const auth = betterAuth({
     advanced: {
         database: { joins: true },
     },
+    // BETTER_AUTH_URL (always trusted) is the public host. Under `next dev` also trust the page's
+    // own origin when it is localhost, so the app works from a local/agent browser too.
+    ...(isDevServer && {
+        trustedOrigins: (request?: Request) => {
+            const origin = request?.headers.get('origin');
+            return isLoopbackUrl(origin) ? [origin] : [];
+        },
+    }),
     user: {
         additionalFields: {
             ptUserId: {
@@ -183,10 +192,15 @@ export const auth = betterAuth({
             storeInDatabase: true,
         }),
         admin(),
-        captcha({
-            provider: 'cloudflare-turnstile',
-            secretKey: process.env.CF_TURNSTILE_SECRET_KEY!,
-        }),
+        // No captcha under `next dev`, so agents and local testing can log in (docs/dev-agent-login.md).
+        ...(isDevServer
+            ? []
+            : [
+                  captcha({
+                      provider: 'cloudflare-turnstile',
+                      secretKey: process.env.CF_TURNSTILE_SECRET_KEY!,
+                  }),
+              ]),
     ],
     databaseHooks: {
         user: {

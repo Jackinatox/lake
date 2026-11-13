@@ -20,6 +20,10 @@ e.g. "whitelist on but empty" (the default since Minecraft 26.3, where `white-li
   `propertiesSchema.ts`, `PropertiesPanel.tsx`, `WhitelistPanel.tsx`, `useMinecraftWhitelist.ts`.
 - `app/actions/gameservers/minecraftProfile.ts`: name → UUID lookup (Mojang API, server-side
   because Mojang sends no CORS headers; offline-mode UUIDs are derived from the name).
+- `components/gameserver/gameConfig/satisfactory/`: the interactive-map panel (no file editor,
+  see docs/satisfactory-interactive-map.md). It sets `tab: { labelKey: 'map', icon }`, so its
+  tab reads "Map" / "Karte". A module's optional `tab` overrides the "Config" label (key under
+  `gameserver.tabs`) and icon. The tab's value stays `config`.
 - Wiring: `components/gameserver/Console/gameDashboard.tsx` → `GameserverTabs.tsx`
   (`configComponent`, `configAttention`). Messages: `gameserver.tabs.config`, `gameserver.config.*`.
 
