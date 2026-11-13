@@ -97,8 +97,12 @@ are UUIDs. The HMAC is checked before any database lookup.
    "this save no longer exists" when the named file is gone, or 502 when the panel is
    unreachable. A file name is only served when it is in the listing, which also keeps it
    inside the save folder.
-4. If `If-Modified-Since` is at or after the save's mtime (second precision), return 304.
-   `HEAD` returns only the headers.
+4. Return 304 when the request's `If-None-Match` contains the save's `ETag` (a hash of name,
+   mtime and size). Without `If-None-Match`, return 304 only when `If-Modified-Since` equals
+   the save's mtime (second precision), not when it is later: after the newest save is
+   deleted, the next one is older than the cached copy and must still be sent. The map loads
+   with a plain jQuery GET, so these headers come from the browser cache. `HEAD` returns only
+   the headers.
 5. Otherwise request a fresh Wings download link (`getDownloadUrl`) and stream its body through.
 
 For share links the route answers a turned-off link with 410 and an unknown one or an unavailable
@@ -107,8 +111,9 @@ link and minute, sliding window, in memory per instance, then 429 with `Retry-Af
 enough for a group opening a freshly shared link or reloading together. Each full download sets
 `lastUsedAt`, at most once per hour. Visitors' IP addresses are not logged.
 
-Every response carries `Access-Control-Allow-Origin` for `MAP_ORIGINS`, plus `Last-Modified`
-and `Cache-Control: private, no-cache`. `OPTIONS` answers the preflight and allows any
+Every response carries `Access-Control-Allow-Origin` for `MAP_ORIGINS`. Save responses (200
+and 304) add `ETag`, `Last-Modified` and `Cache-Control: private, no-cache`; errors send
+`Cache-Control: no-store`. `OPTIONS` answers the preflight and allows any
 requested header. The Wings link can't be handed to the map directly: it works only once, a
 second GET returns 404, and Wings only sends CORS for the panel origin.
 
