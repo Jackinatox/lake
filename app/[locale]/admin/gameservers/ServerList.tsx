@@ -2,7 +2,16 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Loader2, Trash2, X } from 'lucide-react';
+import {
+    ArrowDown,
+    ArrowUp,
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+    Trash2,
+    TriangleAlert,
+    X,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     AlertDialog,
@@ -28,12 +37,15 @@ import { GameServerAdminRow } from '@/models/prisma';
 import { EditServerDialog } from './EditServerDialog';
 import ServerRow from './ServerRow';
 import type { SortKey, SortState } from './types';
+import type { ServerWingsResult } from '@/lib/Pterodactyl/serverWings';
 import { useServerParams } from './useServerParams';
 
 type ServerListProps = {
     servers: GameServerAdminRow[];
     /** Error/fatal log entries per server id in the last 24 h — drives the red row badge. */
     errorCounts: Record<string, number>;
+    /** Wing per `ptAdminId`, or why the worker could not say (2 s timeout). */
+    serverWings: ServerWingsResult;
     totalCount: number;
     page: number;
     limit: number;
@@ -47,6 +59,7 @@ const COLUMNS: { key: SortKey | null; label: string; className: string }[] = [
     { key: null, label: 'Owner', className: 'hidden w-36 shrink-0 md:block' },
     { key: null, label: 'Game', className: 'hidden w-20 shrink-0 xl:block' },
     { key: null, label: 'Loc', className: 'hidden w-16 shrink-0 xl:block' },
+    { key: null, label: 'Wing', className: 'hidden w-20 shrink-0 xl:block' },
     { key: 'ram', label: 'CPU · RAM · Disk', className: 'hidden w-32 shrink-0 truncate lg:block' },
     { key: null, label: 'Backups · Ports', className: 'hidden w-28 shrink-0 truncate lg:block' },
     { key: 'price', label: 'Price', className: 'w-14 shrink-0 text-right' },
@@ -60,6 +73,7 @@ const COLUMNS: { key: SortKey | null; label: string; className: string }[] = [
 export default function ServerList({
     servers,
     errorCounts,
+    serverWings,
     totalCount,
     page,
     limit,
@@ -145,6 +159,12 @@ export default function ServerList({
                 </div>
 
                 <div className="flex items-center gap-2">
+                    {!serverWings.ok && (
+                        <span className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
+                            <TriangleAlert className="h-3.5 w-3.5" />
+                            Wing lookup failed: {serverWings.error}
+                        </span>
+                    )}
                     {pending && (
                         <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
                     )}
@@ -226,6 +246,12 @@ export default function ServerList({
                             key={server.id}
                             server={server}
                             errorCount={errorCounts[server.id] ?? 0}
+                            wing={
+                                serverWings.ok && server.ptAdminId
+                                    ? (serverWings.wings[server.ptAdminId] ?? null)
+                                    : null
+                            }
+                            wingError={serverWings.ok ? null : serverWings.error}
                             selected={selectedIds.includes(server.id)}
                             onSelect={(checked) =>
                                 setSelectedIds((previous) =>
