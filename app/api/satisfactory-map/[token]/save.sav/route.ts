@@ -4,6 +4,7 @@ import { describeFetchError, logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import { listSaves, SATISFACTORY_SAVE_DIR } from '@/lib/satisfactoryMap/saves';
 import { MAP_ORIGINS, verifyMapToken } from '@/lib/satisfactoryMap/token';
+import { createHash } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,7 @@ function corsHeaders(req: NextRequest): Record<string, string> {
     return {
         'Access-Control-Allow-Origin':
             origin && MAP_ORIGINS.includes(origin) ? origin : MAP_ORIGINS[0],
-        'Access-Control-Expose-Headers': 'Last-Modified, Content-Length, Content-Disposition',
+        'Access-Control-Expose-Headers': 'ETag, Last-Modified, Content-Length, Content-Disposition',
         Vary: 'Origin',
         'X-Robots-Tag': 'noindex',
     };
@@ -107,21 +108,48 @@ function contentDisposition(name: string) {
     return `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`;
 }
 
-function saveHeaders(req: NextRequest, name: string, size: number, lastModified: Date) {
+/**
+ * Identifies one version of one save. Name, mtime and size all go in, so the tag also changes
+ * when the "newest save" switches to an older file, which an `If-Modified-Since` check misses.
+ */
+function saveETag(name: string, modifiedAt: string, size: number) {
+    const hash = createHash('sha256').update(`${name}\0${modifiedAt}\0${size}`).digest('base64url');
+    return `"${hash.slice(0, 22)}"`;
+}
+
+function saveHeaders(
+    req: NextRequest,
+    name: string,
+    size: number,
+    lastModified: Date,
+    etag: string,
+) {
     return {
         ...corsHeaders(req),
         'Content-Type': 'application/octet-stream',
         'Content-Length': String(size),
         'Content-Disposition': contentDisposition(name),
+        ETag: etag,
         'Last-Modified': lastModified.toUTCString(),
         'Cache-Control': 'private, no-cache',
     };
 }
 
-/** HTTP dates have second precision; compare on that, or every refresh would re-download. */
-function isNotModified(req: NextRequest, lastModified: Date) {
+/**
+ * `If-None-Match` wins over `If-Modified-Since` (RFC 9110 13.2.2). The date check only matches
+ * the exact mtime, not "not newer": when the newest save is deleted, the next one is older than
+ * the cached copy and must still be sent. HTTP dates have second precision, so compare on that.
+ */
+function isNotModified(req: NextRequest, etag: string, lastModified: Date) {
+    const ifNoneMatch = req.headers.get('if-none-match');
+    if (ifNoneMatch !== null) {
+        return ifNoneMatch
+            .split(',')
+            .map((tag) => tag.trim().replace(/^W\//, ''))
+            .some((tag) => tag === '*' || tag === etag);
+    }
     const since = Date.parse(req.headers.get('if-modified-since') ?? '');
-    return !Number.isNaN(since) && Math.floor(lastModified.getTime() / 1000) * 1000 <= since;
+    return !Number.isNaN(since) && Math.floor(lastModified.getTime() / 1000) * 1000 === since;
 }
 
 async function handle(req: NextRequest, context: RouteContext, withBody: boolean) {
@@ -130,9 +158,10 @@ async function handle(req: NextRequest, context: RouteContext, withBody: boolean
 
     const { save, ptServerId, apiKey, logContext } = resolved;
     const lastModified = new Date(save.modifiedAt);
-    const headers = saveHeaders(req, save.name, save.size, lastModified);
+    const etag = saveETag(save.name, save.modifiedAt, save.size);
+    const headers = saveHeaders(req, save.name, save.size, lastModified, etag);
 
-    if (isNotModified(req, lastModified)) {
+    if (isNotModified(req, etag, lastModified)) {
         const { 'Content-Length': _length, ...notModifiedHeaders } = headers;
         return new Response(null, { status: 304, headers: notModifiedHeaders });
     }
