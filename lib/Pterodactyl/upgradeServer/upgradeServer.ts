@@ -4,6 +4,7 @@ import { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
 import { createPtClient } from '../ptAdminClient';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
+import { allocationLimitToKeep, getAssignedAllocationCount } from '../allocationLimit';
 
 /**
  * Upgrades a gameserver's resources (CPU and RAM) based on a server order.
@@ -39,6 +40,14 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             });
         }
 
+        // The order is paid, so a failed allocation lookup must not block the upgrade:
+        // fall back to never lowering the current limit.
+        const allocationLimit = await getAssignedAllocationCount(gameServer.ptAdminId!)
+            .then((assigned) => allocationLimitToKeep(serverOrder.allocations, assigned))
+            .catch(() =>
+                allocationLimitToKeep(serverOrder.allocations, ptServer.featureLimits.allocations),
+            );
+
         const response = await fetch(
             `${panelUrl}/api/application/servers/${gameServer.ptAdminId}/build`,
             {
@@ -55,7 +64,7 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
                     io: ptServer.limits.io,
                     cpu: serverOrder.cpuPercent,
                     feature_limits: {
-                        allocations: serverOrder.allocations,
+                        allocations: allocationLimit,
                         databases: ptServer.featureLimits.databases,
                         backups: serverOrder.backupCount,
                     },
