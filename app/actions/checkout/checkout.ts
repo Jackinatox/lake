@@ -1,5 +1,6 @@
 'use server';
 
+import { PAID_UPGRADE_DISABLED } from '@/lib/paidUpgrade';
 import { auth } from '@/auth';
 import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
@@ -234,6 +235,9 @@ export async function checkoutAction(
             return { client_secret, orderId: order.id, sessionId: stripeSession.id };
         }
         case 'UPGRADE': {
+            if (PAID_UPGRADE_DISABLED) {
+                throw new Error('Upgrade und Verlängerung sind vorübergehend nicht verfügbar.');
+            }
             const { ptServerId, upgradeConfig, resourceTierId } = validatedParams;
             const { cpuPercent, ramMb, durationsDays } = upgradeConfig;
 

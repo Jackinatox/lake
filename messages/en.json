@@ -271,6 +271,13 @@
     }
   },
   "upgrade": {
+    "unavailable": {
+      "title": "Upgrade & extension temporarily unavailable",
+      "description": "This feature is not fully implemented yet. We're working on it and will enable it as soon as possible. Your server keeps running unchanged.",
+      "support": "If you'd like to extend or upgrade your server, please contact support and we'll take care of it personally.",
+      "contactSupport": "Contact support",
+      "back": "Back to server"
+    },
     "info": {
       "title": "Upgrade Information",
       "description": "Here you can only extend or upgrade your server. Downgrades aren't possible yet."
