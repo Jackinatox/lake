@@ -113,7 +113,30 @@ model GameServer {
   feedbacks   Feedback[]
   tickets     Ticket[]
 
+  mapShareLink MapShareLink?
+
   @@index([resourceTierId])
+}
+
+// The shareable "interactive map" link of a Satisfactory server (one per server). The URL token
+// is `s.<id>.<hmac(id)>` signed with MAP_SHARE_SECRET, so no secret is stored here: regenerating
+// deletes the row and creates a new id, which invalidates the old URL. No expiry; the owner
+// disables it (revokedAt) or it stops working while the server isn't ACTIVE or is suspended.
+// See docs/satisfactory-interactive-map.md.
+model MapShareLink {
+  id String @id @default(cuid())
+
+  gameServerId String     @unique
+  gameServer   GameServer @relation(fields: [gameServerId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation("MapShareLinkCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+
+  revokedAt  DateTime? // null = enabled
+  lastUsedAt DateTime? // last full save download, updated at most once per hour
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // A suspension is orthogonal to GameServerStatus: a server can be suspended while it is
@@ -536,6 +559,8 @@ model User {
 
   suspensionsCreated GameServerSuspension[] @relation("SuspensionCreatedBy")
   suspensionsLifted  GameServerSuspension[] @relation("SuspensionLiftedBy")
+
+  mapShareLinksCreated MapShareLink[] @relation("MapShareLinkCreatedBy")
 
   tickets          Ticket[]          @relation("TicketCustomer")
   assignedTickets  Ticket[]          @relation("TicketAssignee")

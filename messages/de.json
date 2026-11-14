@@ -990,6 +990,7 @@
       "console": "Konsole",
       "files": "Dateien",
       "config": "Konfiguration",
+      "map": "Karte",
       "network": "Netzwerk",
       "backups": "Backups",
       "settings": "Einstellungen",
@@ -1256,6 +1257,46 @@
               "description": "Wird durch Deine Server-Zuweisung festgelegt."
             }
           }
+        }
+      },
+      "satisfactory": {
+        "map": {
+          "title": "Interaktive Karte",
+          "description": "Sieh dir deine Fabrik auf der interaktiven Karte von satisfactory-calculator.com an. Sie lädt immer den neuesten Spielstand dieses Servers.",
+          "refresh": "Nach neuerem Spielstand suchen",
+          "latestSave": "Neuester Spielstand",
+          "savedAt": "Gespeichert {time} · {size}",
+          "noSaveTitle": "Noch kein Spielstand",
+          "noSaveDescription": "Starte den Server, erstelle eine Sitzung und warte auf das erste Autosave. Danach kannst du es auf der Karte öffnen.",
+          "loadFailed": "Der Speicherordner konnte nicht gelesen werden. Versuche es gleich noch einmal.",
+          "openLatest": "Neuesten Spielstand öffnen",
+          "latestHint": "Dieser Link lädt immer den neuesten Spielstand. Wenn du die Karte später neu lädst, siehst du deinen aktuellen Fortschritt.",
+          "allSaves": "Alle Spielstände ({count})",
+          "openSave": "Öffnen",
+          "openSaveLabel": "{name} in der interaktiven Karte öffnen",
+          "linkHint": "Öffnet satisfactory-calculator.com, eine unabhängige Seite, in einem neuen Tab. Diese Links gelten 24 Stunden. Einen dauerhaften Link für deine Mitspieler findest du unten unter „Mit deinen Mitspielern teilen“.",
+          "openFailedTitle": "Karte konnte nicht geöffnet werden",
+          "openFailedDescription": "Bitte versuche es gleich noch einmal."
+        },
+        "share": {
+          "title": "Mit deinen Mitspielern teilen",
+          "description": "Ein Link für alle auf deinem Server. Er öffnet die interaktive Karte mit dem neuesten Spielstand, braucht kein Konto und funktioniert, bis du ihn ausschaltest.",
+          "enabledLabel": "Link zum Teilen aktiviert",
+          "linkLabel": "Link zum Teilen",
+          "copy": "Kopieren",
+          "copied": "Kopiert",
+          "copyFailed": "Der Link konnte nicht kopiert werden",
+          "lastUsed": "Zuletzt geöffnet {time}",
+          "neverUsed": "Noch nicht geöffnet",
+          "regenerate": "Neuen Link erstellen",
+          "regenerateTitle": "Neuen Link erstellen?",
+          "regenerateDescription": "Der aktuelle Link funktioniert sofort nicht mehr. Alle, mit denen du ihn geteilt hast, brauchen den neuen.",
+          "regenerateConfirm": "Neuen Link erstellen",
+          "cancel": "Abbrechen",
+          "loadFailed": "Der Link zum Teilen konnte nicht geladen werden. Versuche es gleich noch einmal.",
+          "actionFailedTitle": "Der Link konnte nicht geändert werden",
+          "actionFailedDescription": "Bitte versuche es gleich noch einmal.",
+          "warning": "Jeder mit diesem Link kann deinen neuesten Spielstand herunterladen. Wenn er an die falschen Leute gelangt, erstelle einen neuen Link oder schalte ihn aus."
         }
       }
     },
@@ -2261,5 +2302,21 @@
     "bannerTitle": "Wartung: Gameserver sind vorübergehend offline",
     "bannerDescription": "Aufgrund einer kritischen Sicherheitslücke in PHP haben wir unser Gameserver-Panel vorsorglich abgeschaltet.",
     "bannerLink": "Mehr erfahren"
+  },
+  "SatisfactoryMapShare": {
+    "title": "Interaktive Karte",
+    "invalid": {
+      "title": "Diesen Karten-Link gibt es nicht",
+      "description": "Prüfe, ob du den ganzen Link kopiert hast, oder frag den Serverbesitzer nach einem neuen."
+    },
+    "disabled": {
+      "title": "Dieser Karten-Link ist ausgeschaltet",
+      "description": "Der Serverbesitzer hat diesen Link ausgeschaltet. Frag ihn nach einem neuen."
+    },
+    "unavailable": {
+      "title": "Der Server ist nicht verfügbar",
+      "description": "Die Karte kann nicht laden, solange der Server bei uns nicht aktiv ist, zum Beispiel weil er abgelaufen ist. Frag den Serverbesitzer."
+    },
+    "home": "Zur Startseite"
   }
 }
