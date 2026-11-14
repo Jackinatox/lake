@@ -82,6 +82,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   `SupportTicket`: status flow, internal notes, emails/Telegram, the worker
   auto-close contract and the switch-over checklist. Read when touching
   tickets or support pages.
+- `server-ports.md` — Ports a server owns: tier `ports` = Pterodactyl allocation limit,
+  `GameServer.allocations`, the `max` rules in the worker and lake (upgrade, refund revert,
+  admin edit), and the backfill scripts. Read when touching allocations, ports, tiers'
+  `ports`, or `feature_limits` in any `PATCH /build`.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

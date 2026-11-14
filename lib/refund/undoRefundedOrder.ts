@@ -2,6 +2,7 @@ import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
 import { RefundServerAction } from '@/app/client/generated/browser';
+import { allocationLimitToKeep } from '@/lib/Pterodactyl/allocationLimit';
 
 /**
  * Execute the server-side effect of a refund/withdrawal.
@@ -191,15 +192,17 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         previousOrder.cpuPercent !== refundedOrder.cpuPercent ||
         previousOrder.ramMB !== refundedOrder.ramMB ||
         previousOrder.diskMB !== refundedOrder.diskMB ||
-        previousOrder.backupCount !== refundedOrder.backupCount;
+        previousOrder.backupCount !== refundedOrder.backupCount ||
+        previousOrder.allocations !== refundedOrder.allocations;
 
     // Revert resources in Pterodactyl if they changed
     if (resourcesChanged) {
         // Get current allocation from PT so we keep it unchanged
         let currentAllocation: number;
+        let assignedAllocations: number;
         try {
             const serverInfoRes = await fetch(
-                `${panelUrl}/api/application/servers/${gameServer.ptAdminId}`,
+                `${panelUrl}/api/application/servers/${gameServer.ptAdminId}?include=allocations`,
                 {
                     headers: {
                         Authorization: `Bearer ${ptApiKey}`,
@@ -209,6 +212,8 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             );
             const serverInfo = await serverInfoRes.json();
             currentAllocation = serverInfo.attributes?.allocation;
+            assignedAllocations =
+                serverInfo.attributes?.relationships?.allocations?.data?.length ?? 0;
         } catch {
             logger.error(
                 'revertToPreviousOrder: Failed to get current server info from PT',
@@ -240,7 +245,10 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
                     io: 500,
                     cpu: previousOrder.cpuPercent,
                     feature_limits: {
-                        allocations: previousOrder.allocations,
+                        allocations: allocationLimitToKeep(
+                            previousOrder.allocations,
+                            assignedAllocations,
+                        ),
                         databases: 0,
                         backups: previousOrder.backupCount,
                     },
@@ -277,6 +285,8 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             ramMB: previousOrder.ramMB,
             diskMB: previousOrder.diskMB,
             backupCount: previousOrder.backupCount,
+            allocations: previousOrder.allocations,
+            resourceTierId: previousOrder.resourceTierId,
             expires: previousExpiry,
             status: isExpired ? 'EXPIRED' : 'ACTIVE',
         },
@@ -325,6 +335,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
                     ramMB: previousOrder.ramMB,
                     diskMB: previousOrder.diskMB,
                     backupCount: previousOrder.backupCount,
+                    allocations: previousOrder.allocations,
                 },
             },
         },

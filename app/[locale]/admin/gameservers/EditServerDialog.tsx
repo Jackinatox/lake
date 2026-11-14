@@ -23,6 +23,7 @@ interface EditServerDialogProps {
         ramMB: number;
         diskMB: number;
         backupCount: number;
+        allocations: number;
     };
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -37,6 +38,7 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
         ramMB: server.ramMB,
         diskMB: server.diskMB,
         backupCount: server.backupCount,
+        allocations: server.allocations,
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -155,6 +157,26 @@ export function EditServerDialog({ server, open, onOpenChange, onSuccess }: Edit
                                 }
                                 className="col-span-3"
                                 min="0"
+                                max="50"
+                                required
+                            />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="allocations" className="text-right">
+                                Ports
+                            </Label>
+                            <Input
+                                id="allocations"
+                                type="number"
+                                value={formData.allocations}
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        allocations: parseInt(e.target.value) || 0,
+                                    }))
+                                }
+                                className="col-span-3"
+                                min="1"
                                 max="50"
                                 required
                             />
