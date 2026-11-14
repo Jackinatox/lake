@@ -274,7 +274,7 @@
     "unavailable": {
       "title": "Upgrade & extension temporarily unavailable",
       "description": "This feature is not fully implemented yet. We're working on it and will enable it as soon as possible. Your server keeps running unchanged.",
-      "support": "If you'd like to extend or upgrade your server, please contact support and we'll take care of it personally.",
+      "support": "If it's urgent, please contact support and we'll personally take care of extending or upgrading your server.",
       "contactSupport": "Contact support",
       "back": "Back to server"
     },

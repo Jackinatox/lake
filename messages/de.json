@@ -286,7 +286,7 @@
     "unavailable": {
       "title": "Upgrade & Verlängerung vorübergehend nicht verfügbar",
       "description": "Diese Funktion ist noch nicht fertig implementiert. Wir arbeiten daran und schalten sie so bald wie möglich frei. Dein Server läuft unverändert weiter.",
-      "support": "Wenn Du Deinen Server verlängern oder upgraden möchtest, melde Dich gerne beim Support – wir kümmern uns persönlich darum.",
+      "support": "Falls es dringend ist, kontaktiere bitte den Support – wir kümmern uns persönlich um die Verlängerung oder das Upgrade Deines Servers.",
       "contactSupport": "Support kontaktieren",
       "back": "Zurück zum Server"
     },
