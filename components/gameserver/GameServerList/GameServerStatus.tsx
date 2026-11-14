@@ -6,6 +6,8 @@ import { Status } from '../Console/status';
 import { ClientServer } from '@/models/prisma';
 import { getActiveSuspension } from '@/lib/gameserver/suspension';
 
+const STATUS_POLL_INTERVAL_MS = 60_000;
+
 function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: string }) {
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState('Loading');
@@ -33,15 +35,22 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
                 return;
             }
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server.ptServerId}/resources`,
-                {
-                    headers: {
-                        Accept: 'application/json',
-                        Authorization: `Bearer ${apiKey}`,
+            let response: Response;
+            try {
+                response = await fetch(
+                    `${process.env.NEXT_PUBLIC_PTERODACTYL_URL}/api/client/servers/${server.ptServerId}/resources`,
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                            Authorization: `Bearer ${apiKey}`,
+                        },
                     },
-                },
-            );
+                );
+            } catch {
+                setLoading(false);
+                setStatus('Error');
+                return;
+            }
             setLoading(false);
 
             if (response.ok) {
@@ -60,8 +69,15 @@ function GameServerStatus({ server, apiKey }: { server: ClientServer; apiKey: st
         };
 
         fetchStatus();
+        // Re-poll so the badge follows the live Pterodactyl state without a page reload.
+        const interval = setInterval(() => {
+            if (document.visibilityState === 'visible') fetchStatus();
+        }, STATUS_POLL_INTERVAL_MS);
         const timer = setTimeout(() => setLoading(false), 5000);
-        return () => clearTimeout(timer);
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timer);
+        };
     }, [server.status, server.ptServerId, suspensionId, apiKey]);
 
     return (

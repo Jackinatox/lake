@@ -28,6 +28,7 @@ import {
 } from '@/lib/gameserver/adminServers';
 import { GameServerAdminRow } from '@/models/prisma';
 import { hasGameIcon } from '@/lib/gameIcons';
+import { fetchServerWings } from '@/lib/Pterodactyl/serverWings';
 import ServerSummary from './ServerSummary';
 import ServerDistribution from './ServerDistribution';
 import ServerFilters from './ServerFilters';
@@ -299,18 +300,23 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
     ]);
 
     // ---- per-row error badges: closes the loop with /admin/logs ------------------------
+    // Runs alongside the wing lookup, which goes to the worker and is capped at 2 s.
     const serverIds = servers.map((server) => server.id);
-    const errorGroups = serverIds.length
-        ? await prisma.log.groupBy({
-              by: ['gameServerId'],
-              where: {
-                  gameServerId: { in: serverIds },
-                  level: { in: ['ERROR', 'FATAL'] },
-                  createdAt: { gte: errorWindowStart(now) },
-              },
-              _count: { _all: true },
-          })
-        : [];
+    const [errorGroups, serverWings] = await Promise.all([
+        serverIds.length
+            ? prisma.log.groupBy({
+                  by: ['gameServerId'],
+                  where: {
+                      gameServerId: { in: serverIds },
+                      level: { in: ['ERROR', 'FATAL'] },
+                      createdAt: { gte: errorWindowStart(now) },
+                  },
+                  _count: { _all: true },
+              })
+            : [],
+        // Which wing each row runs on — only the worker can read the PT database
+        fetchServerWings(servers.flatMap((server) => (server.ptAdminId ? [server.ptAdminId] : []))),
+    ]);
 
     const errorCounts: Record<string, number> = {};
     for (const group of errorGroups) {
@@ -427,6 +433,7 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
             <ServerList
                 servers={servers as GameServerAdminRow[]}
                 errorCounts={errorCounts}
+                serverWings={serverWings}
                 totalCount={totalCount}
                 page={page}
                 limit={limit}

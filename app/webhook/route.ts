@@ -18,17 +18,17 @@ export async function POST(req: NextRequest) {
 
     const signature = req.headers.get('stripe-signature');
     if (!signature) {
-        logger.error('Missing stripe-signature header', 'PAYMENT_LOG');
+        logger.error('Missing stripe-signature header', 'PAYMENT');
         throw new Error('Missing signature header');
     }
 
     try {
         event = stripe.webhooks.constructEvent(body, signature, endpointSecret);
-        logger.info(`Webhook event`, 'PAYMENT_LOG', {
+        logger.info(`Webhook event`, 'PAYMENT', {
             details: { eventType: event.type, event: event },
         });
     } catch (error) {
-        logger.error('Webhook signature failed: ', 'PAYMENT_LOG', {
+        logger.error('Webhook signature failed: ', 'PAYMENT', {
             details: {
                 error: error,
                 secretType: endpointSecret.startsWith('whsec_')
@@ -45,14 +45,14 @@ export async function POST(req: NextRequest) {
         case 'payment_intent.succeeded':
             // TODO: For Sepa this can fire up to 14 days later, handle accordingly, maybe block server
             const paymentIntent = event.data.object as Stripe.PaymentIntent;
-            logger.info('PaymentIntent succeeded', 'PAYMENT_LOG', {
+            logger.info('PaymentIntent succeeded', 'PAYMENT', {
                 details: { paymentIntent: paymentIntent },
             });
             break;
 
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
-            logger.info('Handling checkout.session.completed', 'PAYMENT_LOG', {
+            logger.info('Handling checkout.session.completed', 'PAYMENT', {
                 details: { sessionId: checkoutSession.id },
             });
             // Persist Stripe IDs synchronously so invoice.payment_succeeded
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
                 },
                 select: { userId: true, gameServerId: true },
             });
-            logger.info('Session expired', 'PAYMENT_LOG', {
+            logger.info('Session expired', 'PAYMENT', {
                 userId: expiredOrders[0]?.userId,
                 gameServerId: expiredOrders[0]?.gameServerId ?? undefined,
                 details: { session: expiredSession },
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
                 },
                 select: { userId: true, gameServerId: true },
             });
-            logger.error('Async payment failed - Admin attention required', 'PAYMENT_LOG', {
+            logger.error('Async payment failed - Admin attention required', 'PAYMENT', {
                 userId: failedAsyncOrders[0]?.userId,
                 gameServerId: failedAsyncOrders[0]?.gameServerId ?? undefined,
                 details: {
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
                       })
                     : [];
 
-            logger.error('Payment failed', 'PAYMENT_LOG', {
+            logger.error('Payment failed', 'PAYMENT', {
                 userId: failedOrders[0]?.userId,
                 gameServerId: failedOrders[0]?.gameServerId ?? undefined,
                 details: {
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
         case 'refund.updated':
         case 'charge.refund.updated' as Stripe.Event.Type:
             const refundEvent = event.data.object as Stripe.Refund;
-            logger.info(`${event.type} webhook received`, 'PAYMENT_LOG', {
+            logger.info(`${event.type} webhook received`, 'PAYMENT', {
                 details: { refundId: refundEvent.id, status: refundEvent.status },
             });
             await handleRefundUpdated(refundEvent);
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
 
         case 'charge.dispute.created':
             const dispute = event.data.object as Stripe.Dispute;
-            logger.error('Charge dispute created - Admin attention required', 'PAYMENT_LOG', {
+            logger.error('Charge dispute created - Admin attention required', 'PAYMENT', {
                 details: { disputeId: dispute.id, chargeId: dispute.charge },
             });
             await handleChargeDisputeCreated(dispute);
@@ -159,14 +159,14 @@ export async function POST(req: NextRequest) {
 
         case 'invoice.payment_succeeded':
             const invoice = event.data.object as Stripe.Invoice;
-            logger.info('Invoice payment succeeded', 'PAYMENT_LOG', {
+            logger.info('Invoice payment succeeded', 'PAYMENT', {
                 details: { invoiceId: invoice.id },
             });
             await handlePaymentSucceded(invoice);
             break;
 
         default:
-            logger.error(`Unhandeld Webhook type: ${event.type}`, 'PAYMENT_LOG', {
+            logger.error(`Unhandeld Webhook type: ${event.type}`, 'PAYMENT', {
                 details: {
                     event,
                 },

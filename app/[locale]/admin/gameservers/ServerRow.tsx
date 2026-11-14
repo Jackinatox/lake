@@ -28,11 +28,13 @@ import {
     formatThreads,
 } from '@/lib/gameserver/adminServers';
 import {
+    panelAdminWingUrl,
     panelAdminServerUrl,
     panelAdminUserUrl,
     panelServerUrl,
 } from '@/lib/Pterodactyl/panelUrls';
 import { GameServerAdminRow } from '@/models/prisma';
+import type { ServerWing } from '@/lib/Pterodactyl/serverWings';
 import { AdminServerActionsMenu } from './AdminServerActionsMenu';
 import { STATUS_META, TYPE_META, expiryTone } from './presentation';
 import { Link } from '@/i18n/navigation';
@@ -40,6 +42,10 @@ import { Link } from '@/i18n/navigation';
 type ServerRowProps = {
     server: GameServerAdminRow;
     errorCount: number;
+    /** Wing from the worker; `null` when unknown, unprovisioned or the lookup failed. */
+    wing: ServerWing | null;
+    /** Set when the worker lookup failed (or timed out) for the whole page. */
+    wingError: string | null;
     selected: boolean;
     onSelect: (checked: boolean) => void;
     onFilterUser: (userId: string) => void;
@@ -149,6 +155,8 @@ function IconLink({
 export default function ServerRow({
     server,
     errorCount,
+    wing,
+    wingError,
     selected,
     onSelect,
     onFilterUser,
@@ -164,6 +172,7 @@ export default function ServerRow({
     const ptPanel = panelServerUrl(server.ptServerId);
     const ptAdmin = panelAdminServerUrl(server.ptAdminId);
     const ptUser = panelAdminUserUrl(server.user.ptUserId);
+    const ptWing = panelAdminWingUrl(wing?.id);
     const missingPtLink =
         (server.status === 'ACTIVE' || server.status === 'CREATED') &&
         (!server.ptServerId || !server.ptAdminId);
@@ -305,6 +314,15 @@ export default function ServerRow({
                     </span>
                     <span className="hidden w-16 shrink-0 truncate text-muted-foreground xl:block">
                         {server.location.name}
+                    </span>
+                    <span
+                        className={cn(
+                            'hidden w-20 shrink-0 truncate xl:block',
+                            wingError ? 'text-red-500/70' : 'text-muted-foreground',
+                        )}
+                        title={wingError ?? wing?.name}
+                    >
+                        {wingError ? 'error' : (wing?.name ?? '—')}
                     </span>
 
                     <span className="hidden w-32 shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground lg:block">
@@ -449,6 +467,28 @@ export default function ServerRow({
                                     <span className="text-muted-foreground">
                                         ({server.gameData.slug})
                                     </span>
+                                </Detail>
+                                <Detail label="Wing">
+                                    {wingError ? (
+                                        <span className="text-red-600 dark:text-red-400">
+                                            {wingError}
+                                        </span>
+                                    ) : wing ? (
+                                        ptWing ? (
+                                            <a
+                                                href={ptWing}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="underline underline-offset-2"
+                                            >
+                                                {wing.name}
+                                            </a>
+                                        ) : (
+                                            wing.name
+                                        )
+                                    ) : (
+                                        <span className="text-muted-foreground">—</span>
+                                    )}
                                 </Detail>
                                 <Detail label="Plan">
                                     <span className={type.text}>{type.label}</span>

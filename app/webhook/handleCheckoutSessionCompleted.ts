@@ -19,7 +19,7 @@ async function provisionWithRetry(
             if (attempt < PROVISION_RETRIES) {
                 logger.warn(
                     `Worker unreachable, retrying in ${RETRY_DELAY_MS / 1000}s (attempt ${attempt + 1}/${PROVISION_RETRIES + 1})`,
-                    'PAYMENT_LOG',
+                    'PAYMENT',
                     { userId: order.userId, gameServerId: order.gameServerId ?? undefined, details: { orderId: order.id, error } },
                 );
                 await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
@@ -51,7 +51,7 @@ export async function recordCheckoutSession(
     });
 
     if (orderUnprocessed.status === 'PAID') {
-        logger.warn('Order already processed, skipping', 'PAYMENT_LOG', {
+        logger.warn('Order already processed, skipping', 'PAYMENT', {
             userId: orderUnprocessed.userId,
             gameServerId: orderUnprocessed.gameServerId ?? undefined,
             details: { serverOrderId },
@@ -111,7 +111,7 @@ export async function provisionCheckoutSession(
                 });
             }
         } catch (enrichError) {
-            logger.warn('Failed to enrich order with chargeId/paidAt', 'PAYMENT_LOG', {
+            logger.warn('Failed to enrich order with chargeId/paidAt', 'PAYMENT', {
                 details: { serverOrderId, error: enrichError },
             });
         }
@@ -151,7 +151,7 @@ export async function provisionCheckoutSession(
                     });
             }
         } catch (provisionError) {
-            logger.error('Provisioning failed after all retries', 'PAYMENT_LOG', {
+            logger.error('Provisioning failed after all retries', 'PAYMENT', {
                 userId: order.userId,
                 gameServerId: order.gameServerId ?? undefined,
                 details: { error: provisionError, serverOrderId, orderType: order.type },
@@ -165,7 +165,7 @@ export async function provisionCheckoutSession(
             });
         }
     } catch (error) {
-        logger.fatal('Error provisioning checkout session', 'PAYMENT_LOG', {
+        logger.fatal('Error provisioning checkout session', 'PAYMENT', {
             userId,
             gameServerId,
             details: { error, serverOrderId },
