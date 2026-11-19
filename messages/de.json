@@ -163,7 +163,8 @@
     "creationDisabled": {
       "title": "Die Erstellung kostenloser Server pausiert derzeit",
       "description": "Aktuell vergeben wir keine neuen kostenlosen Server — meistens, weil unsere Free-Tier Kapazität ausgelastet ist oder wir Wartungsarbeiten durchführen. Bestehende kostenlose Server laufen ganz normal weiter. Schau später nochmal vorbei oder wähle einen kostenpflichtigen Tarif, wenn du sofort einen Server brauchst."
-    }
+    },
+    "termsNotice": "Mit der Erstellung des kostenlosen Gameservers akzeptiere ich die <terms>Nutzungsbedingungen für kostenlose Gameserver</terms> und die <tos>AGB</tos>."
   },
   "hardware-config": {
     "duration": "Laufzeit",
@@ -882,6 +883,10 @@
         "title": "Allgemeine Geschäftsbedingungen",
         "description": "Regeln und Bedingungen für die Nutzung unserer Dienste."
       },
+      "free-terms": {
+        "title": "Nutzungsbedingungen für kostenlose Gameserver",
+        "description": "Zusätzliche Regeln für kostenlose Gameserver: zulässige Nutzung, Laufzeit und Löschung der Daten."
+      },
       "privacy": {
         "title": "Datenschutzerklärung",
         "description": "Wie wir Deine persönlichen Daten erheben, verwenden und schützen."
@@ -920,6 +925,7 @@
   "footer": {
     "impressum": "Impressum",
     "agb": "AGB",
+    "freeTerms": "Nutzungsbedingungen kostenlose Server",
     "datenschutz": "Datenschutz",
     "support_center": "Support-Center",
     "blog": "Blog",

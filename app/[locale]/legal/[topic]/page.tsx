@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { createPublicMetadata } from '@/lib/metadata';
 
-const topics = ['tos', 'privacy', 'imprint', 'returns', 'payments'] as const;
+const topics = ['tos', 'free-terms', 'privacy', 'imprint', 'returns', 'payments'] as const;
 export type LegalTopic = (typeof topics)[number];
 
 export default async function page({

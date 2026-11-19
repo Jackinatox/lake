@@ -67,6 +67,12 @@ export default function Footer() {
                                 {t('agb')}
                             </Link>
                             <Link
+                                href="/legal/free-terms"
+                                className="hover:text-foreground transition-colors"
+                            >
+                                {t('freeTerms')}
+                            </Link>
+                            <Link
                                 href="/legal/privacy"
                                 className="hover:text-foreground transition-colors"
                             >

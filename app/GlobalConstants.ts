@@ -9,6 +9,9 @@ export const LEGAL_PAYMENTS_DE = 'legal_payments_de';
 export const LEGAL_PAYMENTS_EN = 'legal_payments_en';
 export const LEGAL_RETURNS_DE = 'legal_returns_de';
 export const LEGAL_RETURNS_EN = 'legal_returns_en';
+// Terms of use for free game servers, apply in addition to the AGB
+export const LEGAL_FREE_TERMS_DE = 'legal_free_terms_de';
+export const LEGAL_FREE_TERMS_EN = 'legal_free_terms_en';
 
 // Free Tier Configuration Keys
 export const FREE_TIER_CPU_PERCENT = 'free_tier_cpu_percent';

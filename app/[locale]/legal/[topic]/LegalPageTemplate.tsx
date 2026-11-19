@@ -3,6 +3,8 @@ import {
     LEGAL_AGB_EN,
     LEGAL_DATENSCHUTZ_DE,
     LEGAL_DATENSCHUTZ_EN,
+    LEGAL_FREE_TERMS_DE,
+    LEGAL_FREE_TERMS_EN,
     LEGAL_IMPRESSUM_DE,
     LEGAL_IMPRESSUM_EN,
     LEGAL_PAYMENTS_DE,
@@ -20,6 +22,7 @@ const LEGAL_CONSTANTS_MAP: Record<LegalTopic, { de: string; en: string }> = {
     imprint: { de: LEGAL_IMPRESSUM_DE, en: LEGAL_IMPRESSUM_EN },
     payments: { de: LEGAL_PAYMENTS_DE, en: LEGAL_PAYMENTS_EN },
     returns: { de: LEGAL_RETURNS_DE, en: LEGAL_RETURNS_EN },
+    'free-terms': { de: LEGAL_FREE_TERMS_DE, en: LEGAL_FREE_TERMS_EN },
 };
 
 interface LegalPageTemplateProps {

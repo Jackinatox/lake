@@ -153,7 +153,8 @@
     "creationDisabled": {
       "title": "Free server creation is currently paused",
       "description": "We are not handing out new free servers at the moment — this is usually because our free tier capacity is full or we are doing maintenance. Existing free servers keep running as normal. Please check back later, or pick a paid plan if you need a server right away."
-    }
+    },
+    "termsNotice": "By creating the free game server I accept the <terms>Terms of Use for Free Game Servers</terms> and the <tos>Terms of Service</tos>."
   },
   "hardware-config": {
     "duration": "Duration",
@@ -870,6 +871,10 @@
         "title": "Terms of Service",
         "description": "Rules and conditions governing the use of our services."
       },
+      "free-terms": {
+        "title": "Terms of Use for Free Game Servers",
+        "description": "Additional rules for free game servers: permitted use, runtime and deletion of data."
+      },
       "privacy": {
         "title": "Privacy Policy",
         "description": "How we collect, use, and protect your personal data."
@@ -908,6 +913,7 @@
   "footer": {
     "impressum": "Imprint",
     "agb": "Terms",
+    "freeTerms": "Free server terms of use",
     "datenschutz": "Privacy",
     "support_center": "Support-Center",
     "blog": "Blog",

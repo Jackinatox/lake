@@ -23,6 +23,8 @@ import {
     LEGAL_PAYMENTS_EN,
     LEGAL_RETURNS_DE,
     LEGAL_RETURNS_EN,
+    LEGAL_FREE_TERMS_DE,
+    LEGAL_FREE_TERMS_EN,
     CONFIG_KEY_DELETE_GAMESERVER_AFTER_DAYS,
     CONFIG_DUMMY_NUMBER,
     CONFIG_KEY_SUPPORT_EMAIL,
@@ -270,6 +272,18 @@ async function main() {
                 type: 'STRING',
                 string: '<div></div>',
                 note: 'English Payments content',
+            },
+            {
+                key: LEGAL_FREE_TERMS_DE,
+                type: 'STRING',
+                string: '<div></div>',
+                note: 'German terms of use for free game servers',
+            },
+            {
+                key: LEGAL_FREE_TERMS_EN,
+                type: 'STRING',
+                string: '<div></div>',
+                note: 'English terms of use for free game servers',
             },
             {
                 key: FREE_TIER_CPU_PERCENT,

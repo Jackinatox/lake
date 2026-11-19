@@ -5,7 +5,7 @@ import { ChevronRight, FileText } from 'lucide-react';
 import { createPublicMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
-const topics = ['tos', 'privacy', 'imprint', 'returns', 'payments'] as const;
+const topics = ['tos', 'free-terms', 'privacy', 'imprint', 'returns', 'payments'] as const;
 
 export async function generateMetadata({
     params,

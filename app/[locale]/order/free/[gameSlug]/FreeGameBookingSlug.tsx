@@ -153,12 +153,35 @@ export default function FreeGameServerBooking({
 
             {/* Sticky bottom bar */}
             <div className="sticky bottom-0 z-10 bg-background/95 backdrop-blur-md border-t p-3">
-                <div className="w-full max-w-5xl mx-auto flex items-center justify-between gap-3">
-                    {isCreationDisabled && (
+                <div className="w-full max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    {isCreationDisabled ? (
                         <p className="text-xs text-muted-foreground hidden sm:block">
                             {isGloballyDisabled
                                 ? t('creationDisabled.title')
                                 : getDisabledMessage()}
+                        </p>
+                    ) : (
+                        <p className="text-sm text-muted-foreground leading-snug">
+                            {t.rich('termsNotice', {
+                                terms: (chunks) => (
+                                    <Link
+                                        href="/legal/free-terms"
+                                        target="_blank"
+                                        className="underline underline-offset-2 hover:text-foreground"
+                                    >
+                                        {chunks}
+                                    </Link>
+                                ),
+                                tos: (chunks) => (
+                                    <Link
+                                        href="/legal/tos"
+                                        target="_blank"
+                                        className="underline underline-offset-2 hover:text-foreground"
+                                    >
+                                        {chunks}
+                                    </Link>
+                                ),
+                            })}
                         </p>
                     )}
                     <Button

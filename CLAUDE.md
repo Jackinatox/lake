@@ -58,6 +58,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `free-server-terms.md` — The terms of use for free game servers: the `legal_free_terms_*`
+  KeyValue keys, the `/legal/free-terms` page and the notice on the free order page that
+  creating a server accepts them together with the AGB. Read when touching free server creation or legal pages.
 - `content-placement.md` — Where user-facing information goes: rendered by lake from its
   own data, FAQ entries, or the Starlight docs (`Scyed/lake-docs`, scyed.com/docs). Read
   before writing FAQ texts, docs pages or page copy that states prices, limits or rules.
