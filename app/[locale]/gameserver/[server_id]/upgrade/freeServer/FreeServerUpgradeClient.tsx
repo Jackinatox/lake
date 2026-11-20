@@ -23,6 +23,7 @@ import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import formatVCores from '@/lib/GlobalFunctions/formatVCores';
 import { Link } from '@/i18n/navigation';
 import { Euro } from '@/components/Euro';
+import FreeTermsNotice from '@/components/order/free/FreeTermsNotice';
 
 interface FreeServerUpgradeClientProps {
     server: ClientServer;
@@ -170,7 +171,8 @@ export default function FreeServerUpgradeClient({
                             </p>
                         </div>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex-col gap-3">
+                        <FreeTermsNotice action="extend" />
                         <Button
                             className="w-full "
                             size="lg"

@@ -13,6 +13,7 @@ import { Game, GameConfig } from '@/models/config';
 import { ArrowLeft, Gift, Server } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import FreeCreationDisabledBanner from '@/components/order/free/FreeCreationDisabledBanner';
+import FreeTermsNotice from '@/components/order/free/FreeTermsNotice';
 import { useRef, useState } from 'react';
 import { Link, useRouter } from '@/i18n/navigation';
 
@@ -161,28 +162,7 @@ export default function FreeGameServerBooking({
                                 : getDisabledMessage()}
                         </p>
                     ) : (
-                        <p className="text-sm text-muted-foreground leading-snug">
-                            {t.rich('termsNotice', {
-                                terms: (chunks) => (
-                                    <Link
-                                        href="/legal/free-terms"
-                                        target="_blank"
-                                        className="underline underline-offset-2 hover:text-foreground"
-                                    >
-                                        {chunks}
-                                    </Link>
-                                ),
-                                tos: (chunks) => (
-                                    <Link
-                                        href="/legal/tos"
-                                        target="_blank"
-                                        className="underline underline-offset-2 hover:text-foreground"
-                                    >
-                                        {chunks}
-                                    </Link>
-                                ),
-                            })}
-                        </p>
+                        <FreeTermsNotice action="create" />
                     )}
                     <Button
                         onClick={handleCreateFreeServer}
