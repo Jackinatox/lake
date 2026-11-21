@@ -3,11 +3,13 @@ import Navbar from '@/components/Navbar';
 import CookieBanner from '@/components/CookieBanner';
 import { Toaster } from '@/components/ui/toaster';
 import { Metadata } from 'next';
-import { NextIntlClientProvider, useLocale } from 'next-intl';
-import { getLocale } from 'next-intl/server';
+import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
 import { ThemeProvider } from 'next-themes';
 import { Geist, Inter } from 'next/font/google';
-import './globals.css';
+import '../globals.css';
 import DevSessionInfo from '@/components/auth/DevSessionInfo';
 import MaintenanceBanner from '@/components/MaintenanceBanner';
 import { cn } from '@/lib/utils';
@@ -39,13 +41,20 @@ const geistSans = Geist({
     subsets: ['latin'],
 });
 
+// The root layout lives inside `[locale]` so it re-renders when the locale changes. A layout
+// above the segment stays mounted across client navigations, so a language switch would leave the
+// provider's messages, the navbar, the footer and `<html lang>` in the old language.
 export default async function RootLayout({
     children,
+    params,
 }: Readonly<{
     children: React.ReactNode;
+    params: Promise<{ locale: string }>;
 }>) {
-    const locale = await getLocale();
-    const messages = (await import(`../messages/${locale}.json`)).default;
+    const { locale } = await params;
+    if (!hasLocale(routing.locales, locale)) notFound();
+    setRequestLocale(locale);
+    const messages = await getMessages();
 
     return (
         <html
@@ -53,8 +62,6 @@ export default async function RootLayout({
             className={cn(geistSans.className, 'font-sans', inter.variable)}
             suppressHydrationWarning
         >
-            <head>
-            </head>
             <NextIntlClientProvider locale={locale} messages={messages}>
                 <body className="bg-background text-foreground flex flex-col min-h-screen">
                     <ThemeProvider
