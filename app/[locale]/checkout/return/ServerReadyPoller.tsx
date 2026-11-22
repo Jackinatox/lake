@@ -78,7 +78,11 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
         let url: string;
         if (ptServerId) {
-            url = `/gameserver/${ptServerId}`;
+            // After an upgrade/extension `?start=true` makes the dashboard start the server once
+            // the websocket connects (e.g. an expired one that was just unsuspended); a running
+            // server is left alone (useServerWebSocket).
+            const autoStart = orderType === 'UPGRADE' || orderType === 'RENEW';
+            url = `/gameserver/${ptServerId}${autoStart ? '?start=true' : ''}`;
         } else if (orderType === 'UPGRADE' || orderType === 'RENEW') {
             url = `/gameserver`;
         } else if (workerJobId) {
