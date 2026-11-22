@@ -17,6 +17,8 @@ import {
     suspendGameServerSchema,
     type ExtendSuspensionInput,
     type SuspendGameServerInput,
+    SUSPENSION_TOO_SHORT_MESSAGE,
+    minSuspensionEnd,
 } from '@/lib/validation/suspension';
 
 type ActionResult = { success: true } | { success: false; error: string };
@@ -68,6 +70,13 @@ export async function suspendGameServer(input: SuspendGameServerInput): Promise<
         if (!gameServer) return { success: false, error: 'Gameserver not found' };
         if (gameServer.status === 'DELETED')
             return { success: false, error: 'This server is already deleted' };
+
+        const minEnd = minSuspensionEnd({
+            deleteAfterExpiry,
+            startedAt: new Date(),
+        });
+        if (minEnd && expiresAt.getTime() < minEnd.getTime())
+            return { success: false, error: SUSPENSION_TOO_SHORT_MESSAGE };
 
         // Same cutoff the UI uses, so an admin can never suspend a server that still shows as
         // suspended — including one whose suspension lapsed but is still waiting for the worker.
@@ -260,6 +269,8 @@ export async function extendGameServerSuspension(
                 gameServerId: true,
                 expiresAt: true,
                 liftedAt: true,
+                deleteAfterExpiry: true,
+                createdAt: true,
                 gameServer: { select: { userId: true } },
             },
         });
@@ -268,6 +279,13 @@ export async function extendGameServerSuspension(
             return { success: false, error: 'This suspension is already lifted' };
         if (expiresAt.getTime() <= suspension.expiresAt.getTime())
             return { success: false, error: 'The new date must be after the current end date' };
+
+        const minEnd = minSuspensionEnd({
+            deleteAfterExpiry: suspension.deleteAfterExpiry,
+            startedAt: suspension.createdAt,
+        });
+        if (minEnd && expiresAt.getTime() < minEnd.getTime())
+            return { success: false, error: SUSPENSION_TOO_SHORT_MESSAGE };
 
         await prisma.gameServerSuspension.update({
             where: { id: suspensionId },

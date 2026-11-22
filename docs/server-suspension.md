@@ -161,6 +161,10 @@ during that window — the rare case the cushion would otherwise strand. Extendi
 too: `futureDateSchema` forces a date in the future, which pulls the row back out of the
 worker's queue.
 
+A suspension with `deleteAfterExpiry` runs at least 14 days (required for free servers by their
+terms § 6, applied to paid servers too). `minSuspensionEnd()` in `lib/validation/suspension.ts`
+gives the earliest end date; both actions and both dialogs enforce it.
+
 ### History
 
 Every action writes a `Log` row (source `APP`) with `type: 'GAME_SERVER'` and
@@ -185,7 +189,8 @@ now.
 All three dialogs stay **mounted while closed** (`AdminServerActionsMenu` renders them
 unconditionally and only flips `open`), so their state must be restored when they are
 *opened*, never when they are closed. `SuspendDialog` does that in one `useEffect` on `open`:
-end date `DEFAULT_SUSPENSION_DAYS` (14) out from *now*, `deleteAfterExpiry` on, and the reason
+end date `DEFAULT_SUSPENSION_DAYS` (14) out from *now* plus an hour of slack for the minimum
+above, `deleteAfterExpiry` on, and the reason
 re-fetched (see below). `ExtendSuspensionDialog` does the same, keyed on the *value* of
 `suspension.expiresAt` — not the object, which the parent rebuilds on every render and which
 would therefore wipe what an admin is typing.

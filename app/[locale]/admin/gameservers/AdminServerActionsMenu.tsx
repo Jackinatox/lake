@@ -83,6 +83,7 @@ export function AdminServerActionsMenu({
                   reason: suspension.reason,
                   expiresAt: suspension.expiresAt,
                   deleteAfterExpiry: suspension.deleteAfterExpiry,
+                  createdAt: suspension.createdAt,
               }
             : null,
     };

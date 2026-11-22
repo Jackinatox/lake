@@ -14,6 +14,28 @@ const futureDateSchema = z.coerce
     .date({ error: 'A valid date is required' })
     .refine((date) => date.getTime() > Date.now(), 'The date must be in the future');
 
+/**
+ * A server that is deleted when its suspension ends stays suspended at least this long, counted
+ * from the start of the suspension. Required for free servers by their terms of use (§ 6: 14 days
+ * of data retention, handover on request); paid servers use the same rule to keep it simple.
+ */
+export const DELETING_SUSPENSION_MIN_DAYS = 14;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Earliest allowed end date, or null for a suspension that releases the server instead. */
+export function minSuspensionEnd({
+    deleteAfterExpiry,
+    startedAt,
+}: {
+    deleteAfterExpiry: boolean;
+    startedAt: Date;
+}): Date | null {
+    if (!deleteAfterExpiry) return null;
+    return new Date(startedAt.getTime() + DELETING_SUSPENSION_MIN_DAYS * DAY_MS);
+}
+
+export const SUSPENSION_TOO_SHORT_MESSAGE = `A server that is deleted afterwards must stay suspended for at least ${DELETING_SUSPENSION_MIN_DAYS} days`;
+
 export const suspendGameServerSchema = z.object({
     gameServerId: nonEmptyIdSchema,
     type: z.nativeEnum(SuspensionType).default(SuspensionType.QUARANTINE),

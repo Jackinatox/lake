@@ -28,7 +28,11 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { SUSPENSION_REASON_MIN_LENGTH } from '@/lib/validation/suspension';
+import {
+    DELETING_SUSPENSION_MIN_DAYS,
+    minSuspensionEnd,
+    SUSPENSION_REASON_MIN_LENGTH,
+} from '@/lib/validation/suspension';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -40,6 +44,7 @@ interface SuspensionTarget {
         reason: string;
         expiresAt: Date;
         deleteAfterExpiry: boolean;
+        createdAt: Date;
     } | null;
 }
 
@@ -56,6 +61,35 @@ const DEFAULT_SUSPENSION_DAYS = 14;
 
 function daysFromNow(days: number) {
     return toDatetimeLocal(new Date(Date.now() + days * DAY_MS));
+}
+
+/**
+ * Default end date: 14 days plus at least one hour, rounded up to the full hour. The input
+ * drops seconds and time passes while the admin types, so exactly "now + 14 days" would already
+ * be too short for the minimum when the form is sent.
+ */
+function defaultSuspensionEnd() {
+    const end = new Date(Date.now() + DEFAULT_SUSPENSION_DAYS * DAY_MS + HOUR_MS);
+    end.setMinutes(0, 0, 0);
+    end.setTime(end.getTime() + HOUR_MS);
+    return toDatetimeLocal(end);
+}
+
+/** True when the entered end date is before the minimum (null = no minimum). */
+function isBeforeMinimum(value: string, minEnd: Date | null) {
+    if (!minEnd) return false;
+    const end = new Date(value);
+    return !Number.isNaN(end.getTime()) && end.getTime() < minEnd.getTime();
+}
+
+function MinimumHint({ minEnd, tooShort }: { minEnd: Date | null; tooShort: boolean }) {
+    if (!minEnd) return null;
+    return (
+        <p className={tooShort ? 'text-xs text-destructive' : 'text-xs text-muted-foreground'}>
+            Deleted afterwards: at least {DELETING_SUSPENSION_MIN_DAYS} days, until{' '}
+            {minEnd.toLocaleString()} or later.
+        </p>
+    );
 }
 
 /** Adds days on top of what is currently in the input; falls back to now when it is empty/invalid. */
@@ -154,17 +188,22 @@ export function SuspendDialog({
 }) {
     const { toast } = useToast();
     const [reason, setReason] = useState(defaultReason);
-    const [expiresAt, setExpiresAt] = useState(() => daysFromNow(DEFAULT_SUSPENSION_DAYS));
+    const [expiresAt, setExpiresAt] = useState(defaultSuspensionEnd);
     const [deleteAfterExpiry, setDeleteAfterExpiry] = useState(true);
     const [loading, setLoading] = useState(false);
     const suspendedFor = durationFromNow(expiresAt);
+    const minEnd = minSuspensionEnd({
+        deleteAfterExpiry,
+        startedAt: new Date(),
+    });
+    const tooShort = isBeforeMinimum(expiresAt, minEnd);
 
     // The dialog stays mounted while closed, so the defaults have to be restored every time it
     // is opened — that also keeps the end date 14 days from *now* rather than from page load.
     useEffect(() => {
         if (!open) return;
         setReason(defaultReason);
-        setExpiresAt(daysFromNow(DEFAULT_SUSPENSION_DAYS));
+        setExpiresAt(defaultSuspensionEnd());
         setDeleteAfterExpiry(true);
     }, [open, defaultReason]);
 
@@ -255,6 +294,7 @@ export function SuspendDialog({
                         <DatePresets
                             onAdd={(days) => setExpiresAt((current) => addDays(current, days))}
                         />
+                        <MinimumHint minEnd={minEnd} tooShort={tooShort} />
                     </div>
 
                     <div className="flex items-start gap-2">
@@ -286,7 +326,11 @@ export function SuspendDialog({
                     >
                         Cancel
                     </Button>
-                    <Button variant="destructive" onClick={handleSubmit} disabled={loading}>
+                    <Button
+                        variant="destructive"
+                        onClick={handleSubmit}
+                        disabled={loading || tooShort}
+                    >
                         Suspend
                     </Button>
                 </DialogFooter>
@@ -325,6 +369,11 @@ export function ExtendSuspensionDialog({
     if (!suspension) return null;
 
     const remaining = durationFromNow(expiresAt);
+    const minEnd = minSuspensionEnd({
+        deleteAfterExpiry: suspension.deleteAfterExpiry,
+        startedAt: new Date(suspension.createdAt),
+    });
+    const tooShort = isBeforeMinimum(expiresAt, minEnd);
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -381,6 +430,7 @@ export function ExtendSuspensionDialog({
                         <DatePresets
                             onAdd={(days) => setExpiresAt((current) => addDays(current, days))}
                         />
+                        <MinimumHint minEnd={minEnd} tooShort={tooShort} />
                     </div>
 
                     <div className="space-y-2">
@@ -415,7 +465,7 @@ export function ExtendSuspensionDialog({
                     >
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={loading}>
+                    <Button onClick={handleSubmit} disabled={loading || tooShort}>
                         Extend
                     </Button>
                 </DialogFooter>
