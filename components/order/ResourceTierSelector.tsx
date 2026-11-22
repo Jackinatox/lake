@@ -15,6 +15,9 @@ interface ResourceTierSelectorProps {
     days?: number;
     currentDiskUsageMb?: number;
     persistedTierId?: number | null;
+    /** Tiers that cannot be picked, with the reason shown on the card (server upgrade page).
+     *  An empty string disables the tier without text on the card. */
+    unavailableReasons?: Record<number, string>;
 }
 
 export default function ResourceTierSelector({
@@ -24,6 +27,7 @@ export default function ResourceTierSelector({
     days,
     currentDiskUsageMb = 0,
     persistedTierId = null,
+    unavailableReasons,
 }: ResourceTierSelectorProps) {
     const t = useTranslations('order.resourceTier');
     const perMonth = days === undefined;
@@ -40,14 +44,23 @@ export default function ResourceTierSelector({
             {tiers.map((tier) => {
                 const isPersistedTier = persistedTierId === tier.id;
                 const exceedsDiskUsage = tier.diskMB < currentDiskUsageMb;
-                const selectable = (tier.enabled || isPersistedTier) && !exceedsDiskUsage;
-                const unavailableReason = exceedsDiskUsage
-                    ? t('diskUsageExceeded', {
-                          usedGiB: (Math.ceil((currentDiskUsageMb / 1024) * 10) / 10).toFixed(1),
-                      })
-                    : !tier.enabled && !isPersistedTier
-                      ? t('unavailable')
-                      : null;
+                const overrideReason = unavailableReasons?.[tier.id];
+                const selectable =
+                    (tier.enabled || isPersistedTier) &&
+                    !exceedsDiskUsage &&
+                    overrideReason === undefined;
+                const unavailableReason =
+                    overrideReason !== undefined
+                        ? overrideReason || null
+                        : exceedsDiskUsage
+                          ? t('diskUsageExceeded', {
+                                usedGiB: (Math.ceil((currentDiskUsageMb / 1024) * 10) / 10).toFixed(
+                                    1,
+                                ),
+                            })
+                          : !tier.enabled && !isPersistedTier
+                            ? t('unavailable')
+                            : null;
 
                 return (
                     <button
@@ -59,7 +72,9 @@ export default function ResourceTierSelector({
                         }}
                         className={cn(
                             'rounded-lg border transition-colors text-left',
-                            selectable ? 'cursor-pointer' : 'cursor-not-allowed opacity-70',
+                            selectable
+                                ? 'cursor-pointer'
+                                : 'cursor-not-allowed bg-muted/60 opacity-50 grayscale',
                             selectedId === tier.id
                                 ? 'border-primary/60 bg-primary/5'
                                 : 'border-border hover:bg-muted/50 disabled:hover:bg-transparent',

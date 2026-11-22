@@ -86,6 +86,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   `SupportTicket`: status flow, internal notes, emails/Telegram, the worker
   auto-close contract and the switch-over checklist. Read when touching
   tickets or support pages.
+- `server-upgrade.md` — Up/downgrade + extension of paid servers: the pricing formula
+  (`lib/upgrade/pricing.ts`, remaining-time adjustment + full-price extension, no refunds),
+  the usage checks for smaller tiers, the checkout/webhook flow and the kill switch. Read when
+  touching upgrade prices, `UPGRADE` orders or the upgrade page.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

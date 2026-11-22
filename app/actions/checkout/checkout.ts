@@ -2,7 +2,7 @@
 
 import { PAID_UPGRADE_DISABLED } from '@/lib/paidUpgrade';
 import { auth } from '@/auth';
-import { calculateNew, calculateUpgradeCost } from '@/lib/GlobalFunctions/paymentLogic';
+import { calculateNew } from '@/lib/GlobalFunctions/paymentLogic';
 import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import { JobId, provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
@@ -12,10 +12,24 @@ import { getKeyValueBooleanFresh, getKeyValueNumber } from '@/lib/keyValue';
 import { refuseIfSuspended, SERVER_SUSPENDED_MESSAGE } from '@/lib/gameserver/requireUnsuspended';
 import { logger } from '@/lib/logger';
 import prisma from '@/lib/prisma';
-import { resolveResourceTier } from '@/lib/resourceTier';
-import { checkoutParamsSchema, gameConfigSchema } from '@/lib/validation/order';
+import {
+    checkoutParamsSchema,
+    checkoutUpgradeParamsSchema,
+    gameConfigSchema,
+} from '@/lib/validation/order';
 import { stripe } from '@/lib/stripe';
 import { GameConfig, HardwareConfig, ServerConfig } from '@/models/config';
+import { loadUpgradeContext } from '@/lib/upgrade/loadUpgradeContext';
+import { fetchServerUsage } from '@/lib/upgrade/serverUsage';
+import { tierBlockers } from '@/lib/upgrade/tierEligibility';
+import {
+    extendedExpiry,
+    isValidHardware,
+    quoteServerChange,
+    type ServerSpec,
+} from '@/lib/upgrade/pricing';
+import type { UPGRADE_DURATIONS } from '@/lib/validation/common';
+import type { z } from 'zod';
 import { headers } from 'next/headers';
 import {
     FREE_SERVER_CREATION_ENABLED,
@@ -36,10 +50,12 @@ type CreateCheckoutSessionParams = {
     locale?: 'de' | 'en';
     startDate: Date;
     endDate: Date;
+    /** When the Stripe session stops accepting payment (Stripe default: 24 h, minimum 30 min) */
+    expiresAt?: Date;
 };
 
 async function createCheckoutSession(params: CreateCheckoutSessionParams) {
-    const { lineItems, orderId, stripeUserId, locale, startDate, endDate } = params;
+    const { lineItems, orderId, stripeUserId, locale, startDate, endDate, expiresAt } = params;
 
     const formatDate = (d: Date) =>
         d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -83,6 +99,7 @@ async function createCheckoutSession(params: CreateCheckoutSessionParams) {
         tax_id_collection: { enabled: false },
         automatic_tax: { enabled: false },
         customer: stripeUserId,
+        ...(expiresAt && { expires_at: Math.floor(expiresAt.getTime() / 1000) }),
     });
 }
 
@@ -118,9 +135,11 @@ export type CheckoutParams =
     | {
           type: 'UPGRADE';
           locale: 'de' | 'en';
-          upgradeConfig: HardwareConfig;
           ptServerId: string;
           resourceTierId: number;
+          cpuPercent: number;
+          ramMb: number;
+          extendDays: (typeof UPGRADE_DURATIONS)[number];
       }
     | {
           type: 'TO_PAYED';
@@ -238,164 +257,173 @@ export async function checkoutAction(
             if (PAID_UPGRADE_DISABLED) {
                 throw new Error('Upgrade und Verlängerung sind vorübergehend nicht verfügbar.');
             }
-            const { ptServerId, upgradeConfig, resourceTierId } = validatedParams;
-            const { cpuPercent, ramMb, durationsDays } = upgradeConfig;
-
-            const server = await prisma.gameServer.findFirst({
-                where: { ptServerId: ptServerId, userId: user.id },
-            });
-
-            if (!server)
-                throw new Error(
-                    `No Server Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id}`,
-                );
-
-            // Never take money for a server the user cannot reach: the unsuspend guard in
-            // `upgradeGameServer` would refuse to release it once the payment lands.
-            if (await refuseIfSuspended(server.id, 'checkoutUpgrade', user.id)) {
-                throw new Error(SERVER_SUSPENDED_MESSAGE);
-            }
-
-            const performanceGroup = await prisma.location.findUnique({
-                where: { id: server.locationId },
-                include: { cpu: true, ram: true },
-            });
-
-            if (!performanceGroup)
-                throw new Error(
-                    `No performanceGroup Found for upgrade. ptServerId: ${ptServerId}, userId: ${user.id} pfId: ${server.locationId}`,
-                );
-
-            const resourceTiers = await prisma.resourceTier.findMany({
-                orderBy: [{ sorting: 'asc' }, { id: 'asc' }],
-                select: {
-                    id: true,
-                    name: true,
-                    diskMB: true,
-                    backups: true,
-                    ports: true,
-                    priceCents: true,
-                    enabled: true,
-                },
-            });
-
-            const currentTier = resolveResourceTier(resourceTiers, {
-                resourceTierId: server.resourceTierId,
-                diskMB: server.diskMB,
-                backupCount: server.backupCount,
-                allocations: server.allocations,
-            });
-            const newTier = resourceTiers.find((tier) => tier.id === resourceTierId);
-
-            if (!newTier) throw new Error(`ResourceTier not found: ${resourceTierId}`);
-            if (!newTier.enabled && currentTier?.id !== newTier.id) {
-                throw new Error('Selected resource tier is no longer available');
-            }
-
-            const oldConfig: HardwareConfig = {
-                cpuPercent: server.cpuPercent,
-                ramMb: server.ramMB,
-                diskMb: server.diskMB,
-                backupCount: server.backupCount,
-                allocations: server.allocations,
-                durationsDays: Math.max(
-                    0,
-                    Math.round(
-                        (server.expires.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
-                    ),
-                ),
-                pfGroupId: server.locationId,
-            };
-
-            const targetConfig: HardwareConfig = {
-                cpuPercent,
-                ramMb,
-                diskMb: newTier.diskMB,
-                backupCount: newTier.backups,
-                allocations: newTier.ports,
-                durationsDays: durationsDays,
-                pfGroupId: server.locationId,
-            };
-
-            const price = calculateUpgradeCost({
-                currentConfig: oldConfig,
-                targetConfig,
-                performanceGroup,
-                currentTierPriceCents: currentTier?.priceCents ?? 0,
-                newTierPriceCents: newTier.priceCents,
-            });
-
-            const order = await prisma.gameServerOrder.create({
-                data: {
-                    type: params.type,
-                    gameServerId: server.id,
-                    userId: user.id,
-                    ramMB: targetConfig.ramMb,
-                    cpuPercent: targetConfig.cpuPercent,
-                    backupCount: targetConfig.backupCount,
-                    allocations: targetConfig.allocations,
-                    diskMB: targetConfig.diskMb,
-                    creationLocationId: server.locationId,
-                    creationGameDataId: server.gameDataId,
-                    resourceTierId: newTier.id,
-                    price: price.totalCents,
-                    expiresAt: new Date(
-                        Math.max(server.expires.getTime(), new Date().getTime()) +
-                            durationsDays * 24 * 60 * 60 * 1000 +
-                            LEGAL_GRACE_PERIOD_MS,
-                    ),
-                    status: 'PENDING',
-                },
-            });
-
-            // 2. Create Stripe Checkout Session
-            const cpuDiff = cpuPercent - oldConfig.cpuPercent;
-            const ramDiffMb = ramMb - oldConfig.ramMb;
-            const tierChanged = currentTier?.id !== newTier.id;
-
-            const changeParts: string[] = [];
-            if (cpuDiff !== 0) changeParts.push(`+${cpuDiff}% CPU`);
-            if (ramDiffMb !== 0) changeParts.push(`+${formatMBToGiB(ramDiffMb)} RAM`);
-            if (tierChanged) {
-                changeParts.push(
-                    `Tier ${currentTier?.name ?? formatMBToGiB(oldConfig.diskMb)} -> ${newTier.name ?? formatMBToGiB(newTier.diskMB)}`,
-                );
-            }
-            const changeStr = changeParts.length > 0 ? `${changeParts.join(', ')}; ` : '';
-            const finalStr: string[] = [];
-            if (cpuPercent !== oldConfig.cpuPercent) finalStr.push(`${cpuPercent}% CPU`);
-            if (ramMb !== oldConfig.ramMb) finalStr.push(`${formatMBToGiB(ramMb)} RAM`);
-            finalStr.push(`${newTier.name ?? formatMBToGiB(newTier.diskMB)} Tier`);
-            const upgradeDescription = `${changeStr}${finalStr.join(', ')}${finalStr.length > 0 ? ', ' : ''}+${durationsDays} Tage`;
-
-            const stripeSession = await createCheckoutSession({
-                lineItems: [
-                    {
-                        name: `Server Upgrade: ${upgradeDescription}`,
-                        amountCents: price.totalCents,
-                    },
-                ],
-                orderId: String(order.id),
-                stripeUserId,
-                locale: params.locale,
-                startDate: new Date(),
-                endDate: order.expiresAt,
-            });
-
-            const client_secret = stripeSession.client_secret;
-
-            // 3. Save Stripe Session ID and Client Secret
-            await prisma.gameServerOrder.update({
-                where: { id: order.id },
-                data: { stripeSessionId: stripeSession.id, stripeClientSecret: client_secret },
-            });
-
-            return { client_secret, orderId: order.id, sessionId: stripeSession.id };
+            return checkoutServerChange(validatedParams, user.id, user.ptKey, stripeUserId);
         }
         case 'TO_PAYED': {
             throw new Error('Feature not implemented yet.');
             // const client_secret = await upgradeToPayed(params, dbUser);
             // return { client_secret: client_secret };
+        }
+    }
+}
+
+/** How long an upgrade checkout can be paid: short, because the price depends on the time left. */
+// Stripe requires at least 30 min; one extra minute absorbs clock skew.
+const UPGRADE_SESSION_TTL_MS = 31 * 60 * 1000;
+
+/**
+ * Checkout for changing (up- or downgrading) and/or extending a paid server. All numbers are
+ * recomputed here from the DB and live Pterodactyl usage; the client only sends the wish.
+ * See docs/server-upgrade.md.
+ */
+async function checkoutServerChange(
+    params: z.infer<typeof checkoutUpgradeParamsSchema>,
+    userId: string,
+    ptKey: string | null | undefined,
+    stripeUserId: string,
+): Promise<{ client_secret: string | null; orderId: string; sessionId: string }> {
+    const { ptServerId, resourceTierId, cpuPercent, ramMb, extendDays } = params;
+
+    const ctx = await loadUpgradeContext(ptServerId, userId);
+    if (!ctx) {
+        throw new Error(
+            `No Server Found for upgrade. ptServerId: ${ptServerId}, userId: ${userId}`,
+        );
+    }
+    const { server, location, currentTier, current } = ctx;
+
+    // Never take money for a server the user cannot reach: the unsuspend guard in
+    // `upgradeGameServer` would refuse to release it once the payment lands.
+    if (await refuseIfSuspended(server.id, 'checkoutUpgrade', userId)) {
+        throw new Error(SERVER_SUSPENDED_MESSAGE);
+    }
+
+    // Location stays the server's own. A location switch needs a server transfer in
+    // Pterodactyl and is being built separately — add it here once that exists.
+
+    if (!isValidHardware(location, current, { cpuPercent, ramMb })) {
+        throw new Error('CPU/RAM selection is outside the allowed range');
+    }
+
+    const newTier = ctx.tierOptions.find((tier) => tier.id === resourceTierId);
+    if (!newTier) throw new Error('Selected resource tier is not available');
+
+    if (newTier.id !== currentTier?.id) {
+        const usage = ptKey ? await fetchServerUsage(ptServerId, ptKey) : null;
+        const blockers = tierBlockers(newTier, currentTier, usage);
+        if (blockers.length > 0) {
+            logger.info('Refused upgrade checkout: tier does not fit the server', 'PAYMENT', {
+                userId,
+                gameServerId: server.id,
+                details: { resourceTierId, blockers, usage },
+            });
+            throw new Error('Selected resource tier does not fit the current server usage');
+        }
+    }
+
+    const target: ServerSpec = {
+        cpuPercent,
+        ramMb,
+        tierId: newTier.id,
+        tierPriceCents: newTier.priceCents,
+    };
+    const now = new Date();
+    const quote = quoteServerChange({
+        pf: location,
+        current,
+        target,
+        remainingMs: server.expires.getTime() - now.getTime(),
+        extendDays,
+    });
+    if (quote.status !== 'OK') {
+        throw new Error(`Upgrade cannot be checked out: ${quote.status}`);
+    }
+
+    const alreadyExpired = server.expires.getTime() <= now.getTime();
+    const expiresAt = new Date(
+        extendedExpiry(server.expires, extendDays, now).getTime() +
+            (alreadyExpired && extendDays > 0 ? LEGAL_GRACE_PERIOD_MS : 0),
+    );
+
+    // Only one open upgrade checkout per server: an older one was priced against the
+    // config it saw then, so paying it after this one would charge the wrong amount.
+    await expireOpenUpgradeCheckouts(server.id, userId);
+
+    const order = await prisma.gameServerOrder.create({
+        data: {
+            // Downgrades are UPGRADE orders too: refunds revert any UPGRADE to the previous
+            // order (lib/refund/undoRefundedOrder.ts), which is what a downgrade needs as well.
+            type: 'UPGRADE',
+            gameServerId: server.id,
+            userId,
+            ramMB: ramMb,
+            cpuPercent,
+            diskMB: newTier.diskMB,
+            backupCount: newTier.backups,
+            allocations: newTier.ports,
+            creationLocationId: location.id,
+            creationGameDataId: server.gameDataId,
+            resourceTierId: newTier.id,
+            price: quote.totalCents,
+            expiresAt,
+            status: 'PENDING',
+        },
+    });
+
+    const parts: string[] = [];
+    if (quote.specChanged) {
+        parts.push(
+            `${formatVCoresFromPercent(cpuPercent)}, ${formatMBToGiB(ramMb)} RAM, ${newTier.name?.trim() || formatMBToGiB(newTier.diskMB)} (${formatMBToGiB(newTier.diskMB)} Speicher, ${newTier.backups} Backups, ${newTier.ports} Ports)`,
+        );
+    }
+    if (extendDays > 0) parts.push(`+${extendDays} Tage`);
+    const title = quote.specChanged
+        ? extendDays > 0
+            ? 'Server-Änderung und Verlängerung'
+            : 'Server-Änderung'
+        : 'Server-Verlängerung';
+
+    const stripeSession = await createCheckoutSession({
+        lineItems: [{ name: `${title}: ${parts.join(', ')}`, amountCents: quote.totalCents }],
+        orderId: String(order.id),
+        stripeUserId,
+        locale: params.locale,
+        startDate: now,
+        endDate: order.expiresAt,
+        expiresAt: new Date(now.getTime() + UPGRADE_SESSION_TTL_MS),
+    });
+
+    await prisma.gameServerOrder.update({
+        where: { id: order.id },
+        data: {
+            stripeSessionId: stripeSession.id,
+            stripeClientSecret: stripeSession.client_secret,
+        },
+    });
+
+    return {
+        client_secret: stripeSession.client_secret,
+        orderId: order.id,
+        sessionId: stripeSession.id,
+    };
+}
+
+async function expireOpenUpgradeCheckouts(gameServerId: string, userId: string) {
+    const open = await prisma.gameServerOrder.findMany({
+        where: { gameServerId, type: 'UPGRADE', status: 'PENDING', stripeSessionId: { not: null } },
+        select: { id: true, stripeSessionId: true },
+    });
+    for (const order of open) {
+        try {
+            // The `checkout.session.expired` webhook then marks the order EXPIRED.
+            const session = await stripe.checkout.sessions.retrieve(order.stripeSessionId!);
+            if (session.status === 'open') await stripe.checkout.sessions.expire(session.id);
+        } catch (error) {
+            logger.warn('Could not expire an older upgrade checkout', 'PAYMENT', {
+                userId,
+                gameServerId,
+                details: { orderId: order.id, error },
+            });
         }
     }
 }
@@ -479,4 +507,3 @@ export async function checkoutFreeGameServer(gameConfig: GameConfig): Promise<Jo
         throw new Error('Interner Fehler - Server konnte nicht erstellt werden');
     }
 }
-

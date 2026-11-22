@@ -1,541 +1,496 @@
 'use client';
 
-import Loading from '@/app/[locale]/gameserver/[server_id]/upgrade/payedServer/loading';
-import InfoButton from '@/components/InfoButton';
+import { Euro } from '@/components/Euro';
+import ResourceTierSelector from '@/components/order/ResourceTierSelector';
 import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { calculateUpgradeCost, UpgradePriceDef } from '@/lib/GlobalFunctions/paymentLogic';
 import { formatVCores } from '@/lib/GlobalFunctions/formatVCores';
-import { resolveResourceTier, resolveUpgradePreselectedTier } from '@/lib/resourceTier';
-import type { HardwareConfig, UpgradeBaseConfig } from '@/models/config';
-import { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
-import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState } from 'react';
-import ResourceTierSelector from '@/components/order/ResourceTierSelector';
-import { Euro } from '@/components/Euro';
+import {
+    DAY_MS,
+    hardwareBounds,
+    quoteServerChange,
+    UPGRADE_MIN_CHARGE_CENTS,
+    type ServerSpec,
+} from '@/lib/upgrade/pricing';
+import { tierBlockers, type ServerUsage, type TierBlocker } from '@/lib/upgrade/tierEligibility';
+import type { PerformanceGroup, ResourceTierDisplay } from '@/models/prisma';
+import { UPGRADE_DURATIONS } from '@/lib/validation/common';
+import { Info } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
-interface HardwareConfigProps {
-    diskOptions?: { id: number; size_gb: number; price_per_gb: number }[];
-    performanceOptions: PerformanceGroup[];
-    resourceTiers: ResourceTierDisplay[];
-    draftSelection?: { hardwareConfig: HardwareConfig; resourceTierId: number } | null;
-    onNext: (selection: { hardwareConfig: HardwareConfig; resourceTierId: number }) => void;
-    initialConfig: UpgradeBaseConfig;
-    initialDays?: number;
+const EXTEND_OPTIONS = UPGRADE_DURATIONS;
+type ExtendDays = (typeof EXTEND_OPTIONS)[number];
+
+export type UpgradeSelection = {
+    cpuPercent: number;
+    ramMb: number;
+    resourceTierId: number;
+    extendDays: ExtendDays;
+};
+
+interface UpgradeHardwareConfigProps {
+    location: PerformanceGroup;
+    current: ServerSpec;
+    currentTier: ResourceTierDisplay | null;
+    tiers: ResourceTierDisplay[];
+    usage: ServerUsage | null;
+    remainingMs: number;
+    draftSelection?: UpgradeSelection | null;
+    onNext: (selection: UpgradeSelection) => void;
+    initialDays?: ExtendDays;
+    loading?: boolean;
 }
 
+const gib = (mb: number) => (Math.ceil((mb / 1024) * 10) / 10).toFixed(1);
+
+/**
+ * Configurator for changing a paid server in both directions and/or extending it. Prices come
+ * from `quoteServerChange`, the same function `checkoutAction` charges with.
+ * See docs/server-upgrade.md.
+ */
 export function UpgradeHardwareConfig({
-    initialConfig,
-    performanceOptions,
-    resourceTiers,
+    location,
+    current,
+    currentTier,
+    tiers,
+    usage,
+    remainingMs,
     draftSelection,
     onNext,
-    initialDays,
-}: HardwareConfigProps) {
+    initialDays = 0,
+    loading = false,
+}: UpgradeHardwareConfigProps) {
     const t = useTranslations('upgrade');
-    const draftConfig = draftSelection?.hardwareConfig ?? null;
+    const tTier = useTranslations('order.resourceTier');
+    const locale = useLocale();
+    const bounds = hardwareBounds(location);
 
-    const [selectedPFGroup, setSelectedPFGroup] = useState<PerformanceGroup | null>(null);
-
-    const [cpuCores, setCpuCores] = useState(
-        (draftConfig?.cpuPercent ?? initialConfig.cpuPercent) / 100,
-    );
-    const [ramGb, setRamGb] = useState((draftConfig?.ramMb ?? initialConfig.ramMb) / 1024);
-    const [days, setDays] = useState(draftConfig?.durationsDays ?? initialDays ?? 0);
-    const initialSelectedTier = useMemo(() => {
-        if (draftSelection?.resourceTierId) {
-            const selectedDraftTier = resourceTiers.find(
-                (tier) => tier.id === draftSelection.resourceTierId,
-            );
-            if (selectedDraftTier) return selectedDraftTier;
-        }
-
-        if (initialConfig.resourceTierId) {
-            const persisted = resourceTiers.find(
-                (tier) => tier.id === initialConfig.resourceTierId,
-            );
-            if (persisted) return persisted;
-        }
-
-        return resolveUpgradePreselectedTier(resourceTiers, {
-            persistedResourceTierId: initialConfig.resourceTierId,
-            currentDiskMB: initialConfig.diskMb,
-            currentDiskUsageMb: initialConfig.currentDiskUsageMb,
-        });
-    }, [
-        draftSelection?.resourceTierId,
-        initialConfig.currentDiskUsageMb,
-        initialConfig.diskMb,
-        initialConfig.resourceTierId,
-        resourceTiers,
-    ]);
-    const currentPricingTier = useMemo(
-        () =>
-            resolveResourceTier(resourceTiers, {
-                resourceTierId: initialConfig.resourceTierId,
-                diskMB: initialConfig.diskMb,
-                backupCount: initialConfig.backupCount,
-                allocations: initialConfig.allocations,
-            }),
-        [
-            initialConfig.allocations,
-            initialConfig.backupCount,
-            initialConfig.diskMb,
-            initialConfig.resourceTierId,
-            resourceTiers,
-        ],
-    );
-    const [selectedTierId, setSelectedTierId] = useState<number | null>(
-        initialSelectedTier?.id ?? null,
-    );
-    const [totalPrice, setTotalPrice] = useState<UpgradePriceDef>({
-        totalCents: 0,
-        upgradeCents: { cpu: 0, ram: 0, tier: 0 },
-        extendCents: { cpu: 0, ram: 0, tier: 0 },
-        discount: { cents: 0, percent: 0 },
+    const [cpuPercent, setCpuPercent] = useState(draftSelection?.cpuPercent ?? current.cpuPercent);
+    const [ramMb, setRamMb] = useState(draftSelection?.ramMb ?? current.ramMb);
+    // An expired server can only be changed together with an extension, so "don't extend" is
+    // not offered and the preselection falls back to one month.
+    const expired = remainingMs <= 0;
+    const extendOptions = expired ? EXTEND_OPTIONS.filter((d) => d !== 0) : EXTEND_OPTIONS;
+    const [days, setDays] = useState<ExtendDays>(() => {
+        const wanted = draftSelection?.extendDays ?? initialDays;
+        return expired && wanted === 0 ? 30 : wanted;
     });
-    const selectedTier = resourceTiers.find((tier) => tier.id === selectedTierId) ?? null;
-    const selectedTierUnavailable =
-        !selectedTier ||
-        selectedTier.diskMB < initialConfig.currentDiskUsageMb ||
-        (!selectedTier.enabled && selectedTier.id !== initialConfig.resourceTierId);
+    const [tierId, setTierId] = useState<number | null>(
+        draftSelection?.resourceTierId ?? currentTier?.id ?? null,
+    );
 
-    // Set initial values
-    useEffect(() => {
-        if (performanceOptions.length > 0 && !selectedPFGroup) {
-            setSelectedPFGroup(performanceOptions[0]);
-        }
-    }, [performanceOptions, selectedPFGroup]);
+    const blockersByTier = useMemo(
+        () =>
+            new Map<number, TierBlocker[]>(
+                tiers.map((tier) => [tier.id, tierBlockers(tier, currentTier, usage)]),
+            ),
+        [tiers, currentTier, usage],
+    );
 
-    useEffect(() => {
-        if (initialConfig && performanceOptions.length > 0) {
-            const group = performanceOptions.find((pf) => pf.id === initialConfig.pfGroupId);
-            if (group) {
-                setSelectedPFGroup(group);
-                setCpuCores((draftConfig?.cpuPercent ?? initialConfig.cpuPercent) / 100);
-                setRamGb((draftConfig?.ramMb ?? initialConfig.ramMb) / 1024);
-                setDays(draftConfig?.durationsDays ?? initialDays ?? 0);
-            }
-        }
-    }, [draftConfig, initialConfig, initialDays, performanceOptions]);
+    const blockerText = (blockers: TierBlocker[]) =>
+        blockers
+            .map((b) => {
+                switch (b.kind) {
+                    case 'unavailable':
+                        return tTier('unavailable');
+                    case 'usageUnknown':
+                        // Explained once in the box below the tiers
+                        return null;
+                    case 'disk':
+                        return t('usage.blockDisk', { used: gib(b.usedMb) });
+                    case 'backups':
+                        return t('usage.blockBackups', { count: b.used });
+                    case 'ports':
+                        return t('usage.blockPorts', { count: b.used });
+                }
+            })
+            .filter(Boolean)
+            .join(' · ');
 
-    useEffect(() => {
-        if (selectedTierId && resourceTiers.some((tier) => tier.id === selectedTierId)) return;
-        setSelectedTierId(initialSelectedTier?.id ?? null);
-    }, [initialSelectedTier?.id, resourceTiers, selectedTierId]);
+    const unavailableReasons = Object.fromEntries(
+        tiers
+            .filter((tier) => (blockersByTier.get(tier.id) ?? []).length > 0)
+            .map((tier) => [tier.id, blockerText(blockersByTier.get(tier.id)!)]),
+    );
+    const someTierBlockedByUsage = [...blockersByTier.values()].some((list) =>
+        list.some((b) => b.kind === 'disk' || b.kind === 'backups' || b.kind === 'ports'),
+    );
 
-    // Calculate total price whenever configuration changes
-    useEffect(() => {
-        if (selectedPFGroup?.cpu && selectedPFGroup?.ram && selectedTier) {
-            const targetConfig: HardwareConfig = {
-                cpuPercent: cpuCores * 100,
-                ramMb: ramGb * 1024,
-                durationsDays: days,
-                backupCount: selectedTier.backups,
-                allocations: selectedTier.ports,
-                pfGroupId: selectedPFGroup.id,
-                diskMb: selectedTier.diskMB,
-            };
+    const selectedTier = tiers.find((tier) => tier.id === tierId) ?? null;
+    const selectedTierBlocked = !selectedTier || unavailableReasons[selectedTier.id] !== undefined;
 
-            setTotalPrice(
-                calculateUpgradeCost({
-                    currentConfig: initialConfig,
-                    targetConfig,
-                    performanceGroup: selectedPFGroup,
-                    currentTierPriceCents: currentPricingTier?.priceCents ?? 0,
-                    newTierPriceCents: selectedTier.priceCents,
-                }),
-            );
-        } else {
-            setTotalPrice({
-                totalCents: 0,
-                upgradeCents: { cpu: 0, ram: 0, tier: 0 },
-                extendCents: { cpu: 0, ram: 0, tier: 0 },
-                discount: { cents: 0, percent: 0 },
-            });
-        }
-    }, [selectedPFGroup, cpuCores, ramGb, days, initialConfig, selectedTier, currentPricingTier]);
+    const quote = useMemo(
+        () =>
+            quoteServerChange({
+                pf: location,
+                current,
+                target: {
+                    cpuPercent,
+                    ramMb,
+                    tierId: selectedTier?.id ?? current.tierId,
+                    tierPriceCents: selectedTier?.priceCents ?? current.tierPriceCents,
+                },
+                remainingMs,
+                extendDays: days,
+            }),
+        [location, current, cpuPercent, ramMb, selectedTier, remainingMs, days],
+    );
 
-    if (!selectedPFGroup) {
-        return <Loading />;
-    }
-
-    const ramOption = selectedPFGroup.ram;
+    const canContinue = !loading && !selectedTierBlocked && quote.status === 'OK';
 
     const handleContinue = () => {
-        if (!selectedPFGroup || !selectedTier || selectedTierUnavailable) return;
-        const cpuPercent = Math.round(cpuCores * 100);
-        const ramMb = Math.round(ramGb * 1024);
-        const config: HardwareConfig = {
-            pfGroupId: selectedPFGroup.id,
-            cpuPercent,
-            allocations: selectedTier.ports,
-            backupCount: selectedTier.backups,
-            ramMb,
-            diskMb: selectedTier.diskMB,
-            durationsDays: days,
-        };
-        onNext({ hardwareConfig: config, resourceTierId: selectedTier.id });
+        if (!canContinue || !selectedTier) return;
+        onNext({ cpuPercent, ramMb, resourceTierId: selectedTier.id, extendDays: days });
     };
+
+    const remainingDays = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
+        quote.remainingMs / DAY_MS,
+    );
+    const tierLabel = (tier: ResourceTierDisplay | null) =>
+        tier ? tier.name?.trim() || `${tier.diskMB / 1024} GiB` : '–';
+
+    const statusMessage = (() => {
+        switch (quote.status) {
+            case 'NO_CHANGE':
+                return t('status.noChange');
+            case 'EXTENSION_REQUIRED':
+                return t('status.extensionRequired');
+            case 'CREDIT_EXCEEDS':
+                return t.rich('status.creditExceeds', {
+                    amount: () => <Euro cents={-quote.netCents} />,
+                });
+            case 'BELOW_MINIMUM':
+                return t.rich('status.belowMinimum', {
+                    amount: () => <Euro cents={UPGRADE_MIN_CHARGE_CENTS} />,
+                });
+            default:
+                return null;
+        }
+    })();
+
+    const continueButton = (className: string) => (
+        <Button className={className} size="lg" disabled={!canContinue} onClick={handleContinue}>
+            {t('footer.continue')}
+        </Button>
+    );
 
     return (
         <div className="flex flex-col min-h-[calc(100dvh-4rem)]">
-            {/* Mobile layout: stacked cards */}
             <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
-                {/* Configuration Section */}
+                {/* Configuration */}
                 <div className="lg:col-span-2 order-2 lg:order-1">
                     <Card className="shadow-lg">
-                        <CardHeader className="pb-4">
+                        <CardHeader className="pb-3 md:pb-4">
                             <CardTitle className="text-lg sm:text-xl">
                                 {t('config.title')}
                             </CardTitle>
-                            <CardDescription className="text-sm">
-                                {t('config.description')}
-                            </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4 sm:space-y-6">
-                            {/* Performance Group Tabs */}
+                        <CardContent className="space-y-6 md:pt-0">
+                            {/* Location: fixed for now. Switching locations needs a server
+                                transfer in Pterodactyl that is being built separately; offer
+                                the other locations here once checkoutAction supports it. */}
+                            <div className="text-sm">
+                                <span className="text-muted-foreground">
+                                    {t('config.performanceGroup')}:{' '}
+                                </span>
+                                <span className="font-medium">{location.name}</span>
+                                <span className="text-muted-foreground">
+                                    {' '}
+                                    · {location.cpu.name}
+                                </span>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    {t('config.performanceGroupFixed')}
+                                </p>
+                            </div>
+
+                            {/* Extension */}
                             <div className="space-y-3">
-                                <h3 className="text-sm font-medium text-foreground">
-                                    {t('config.performance-tier')}
-                                </h3>
+                                <h3 className="text-sm font-medium">{t('config.extend-title')}</h3>
                                 <Tabs
-                                    value={selectedPFGroup.id.toString()}
-                                    onValueChange={(value) => {
-                                        const pfGroup = performanceOptions.find(
-                                            (pf) => pf.id.toString() === value,
-                                        );
-                                        if (pfGroup) {
-                                            setSelectedPFGroup(pfGroup);
-                                            setCpuCores(Math.min(cpuCores, pfGroup.cpu.maxThreads));
-                                        }
-                                    }}
+                                    value={days.toString()}
+                                    onValueChange={(v) => setDays(Number(v) as ExtendDays)}
                                 >
-                                    <TabsList className="grid grid-cols-1 sm:grid-cols-2 gap-2 h-auto p-1 bg-muted/50">
-                                        {performanceOptions.map((pf) => (
+                                    <TabsList
+                                        className={`grid ${expired ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3 sm:grid-cols-5'} gap-1 sm:gap-2 h-auto p-1 bg-muted/50`}
+                                    >
+                                        {extendOptions.map((d) => (
                                             <TabsTrigger
-                                                disabled={true}
-                                                key={pf.id}
-                                                value={pf.id.toString()}
-                                                className="flex items-center justify-center gap-2 p-4 text-sm font-medium rounded-md transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md hover:bg-muted/80"
+                                                key={d}
+                                                value={d.toString()}
+                                                className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                                             >
-                                                <div className="flex flex-col items-center gap-1">
-                                                    <span className="font-semibold">{pf.name}</span>
-                                                    <div className="flex items-center gap-1 text-xs opacity-80">
-                                                        <span>{pf.cpu.name}</span>
-                                                        <InfoButton
-                                                            className="w-3 h-3"
-                                                            text={t('config.little-info')}
-                                                        />
-                                                    </div>
-                                                </div>
+                                                {t(`config.duration.d${d}`)}
                                             </TabsTrigger>
                                         ))}
                                     </TabsList>
                                 </Tabs>
                             </div>
 
-                            {/* Duration Selection */}
+                            {/* CPU */}
                             <div className="space-y-3">
-                                <h3 className="text-sm font-medium text-foreground">
-                                    {t('config.extend-title')}
-                                </h3>
-                                <Tabs
-                                    value={days.toString()}
-                                    onValueChange={(value) => setDays(parseInt(value))}
-                                >
-                                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/50">
-                                        <TabsTrigger
-                                            value="0"
-                                            className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                        >
-                                            <div className="text-center">
-                                                <div className="font-medium">
-                                                    {t('config.duration.none')}
-                                                </div>
-                                            </div>
-                                        </TabsTrigger>
-                                        <TabsTrigger
-                                            value="7"
-                                            className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                        >
-                                            <div className="text-center">
-                                                <div className="font-medium">
-                                                    {t('config.duration.week')}
-                                                </div>
-                                            </div>
-                                        </TabsTrigger>
-                                        <TabsTrigger
-                                            value="30"
-                                            className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                        >
-                                            <div className="text-center">
-                                                <div className="font-medium">
-                                                    {t('config.duration.month')}
-                                                </div>
-                                            </div>
-                                        </TabsTrigger>
-                                        <TabsTrigger
-                                            value="90"
-                                            className="text-xs sm:text-sm p-2 sm:p-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                                        >
-                                            <div className="text-center">
-                                                <div className="flex items-center gap-2 font-medium">
-                                                    <span>{t('config.duration.three-months')}</span>
-                                                    <span className="text-sm opacity-80 text-green-500 font-bold">
-                                                        {t('config.duration.discount-10')}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </TabsTrigger>
-                                    </TabsList>
-                                </Tabs>
-                            </div>
-
-                            {/* CPU Configuration */}
-                            <div className="space-y-3">
-                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-base sm:text-lg font-semibold">
-                                            {formatVCores(cpuCores)}
-                                        </div>
-                                        <span className="text-xs sm:text-sm text-muted-foreground">
-                                            {selectedPFGroup.cpu.name}
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-base sm:text-lg font-semibold">
+                                            {formatVCores(cpuPercent / 100)}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {t('config.currently', {
+                                                value: formatVCores(current.cpuPercent / 100),
+                                            })}
                                         </span>
                                     </div>
                                     <div className="text-xs sm:text-sm text-muted-foreground">
                                         <Euro
-                                            cents={selectedPFGroup.cpu.pricePerCore}
+                                            cents={location.cpu.pricePerCore}
                                             unit={t('config.cpu.price-suffix')}
                                         />
                                     </div>
                                 </div>
-                                <div className="px-2">
-                                    <Slider
-                                        value={[cpuCores]}
-                                        min={selectedPFGroup.cpu.minThreads}
-                                        max={selectedPFGroup.cpu.maxThreads}
-                                        step={1}
-                                        onValueChange={(value) =>
-                                            setCpuCores(
-                                                Math.max(value[0], initialConfig.cpuPercent / 100),
-                                            )
-                                        }
-                                        className="w-full"
-                                    />
-                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                        <span>{selectedPFGroup.cpu.minThreads}</span>
-                                        <span>{selectedPFGroup.cpu.maxThreads}</span>
-                                    </div>
+                                <Slider
+                                    value={[cpuPercent / 100]}
+                                    min={bounds.cpuMinPercent / 100}
+                                    max={bounds.cpuMaxPercent / 100}
+                                    step={1}
+                                    onValueChange={(v) => setCpuPercent(Math.round(v[0] * 100))}
+                                />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                    <span>{bounds.cpuMinPercent / 100}</span>
+                                    <span>{bounds.cpuMaxPercent / 100}</span>
                                 </div>
                             </div>
 
-                            {/* RAM Configuration */}
+                            {/* RAM */}
                             <div className="space-y-3">
-                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
-                                    <div className="text-base sm:text-lg font-semibold">
-                                        {ramGb} {t('config.ram.label-suffix')}
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-base sm:text-lg font-semibold">
+                                            {ramMb / 1024} {t('config.ram.label-suffix')}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {t('config.currently', {
+                                                value: `${current.ramMb / 1024} GiB`,
+                                            })}
+                                        </span>
                                     </div>
                                     <div className="text-xs sm:text-sm text-muted-foreground">
                                         <Euro
-                                            cents={selectedPFGroup.ram.pricePerGb}
+                                            cents={location.ram.pricePerGb}
                                             unit={t('config.ram.price-suffix')}
                                         />
                                     </div>
                                 </div>
-                                <div className="px-2">
-                                    <Slider
-                                        value={[ramGb]}
-                                        min={ramOption.minGb}
-                                        max={ramOption.maxGb}
-                                        step={1}
-                                        onValueChange={(value) =>
-                                            setRamGb(Math.max(value[0], initialConfig.ramMb / 1024))
-                                        }
-                                        className="w-full"
-                                    />
-                                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                        <span>{ramOption.minGb} GiB</span>
-                                        <span>{ramOption.maxGb} GiB</span>
-                                    </div>
+                                <Slider
+                                    value={[ramMb / 1024]}
+                                    min={bounds.ramMinMb / 1024}
+                                    max={bounds.ramMaxMb / 1024}
+                                    step={0.5}
+                                    onValueChange={(v) => setRamMb(Math.round(v[0] * 1024))}
+                                />
+                                <div className="flex justify-between text-xs text-muted-foreground">
+                                    <span>{bounds.ramMinMb / 1024} GiB</span>
+                                    <span>{bounds.ramMaxMb / 1024} GiB</span>
                                 </div>
                             </div>
 
-                            {resourceTiers.length > 0 && (
+                            {/* Resource tier */}
+                            {tiers.length > 0 && (
                                 <div className="space-y-3">
-                                    <h3 className="text-sm font-medium text-foreground">
+                                    <h3 className="text-sm font-medium">
                                         {t('config.resource-tier')}
                                     </h3>
                                     <ResourceTierSelector
-                                        tiers={resourceTiers}
-                                        selectedId={selectedTierId}
-                                        onSelect={setSelectedTierId}
-                                        days={days === 0 ? 30 : days}
-                                        currentDiskUsageMb={initialConfig.currentDiskUsageMb}
-                                        persistedTierId={initialConfig.resourceTierId}
+                                        tiers={tiers}
+                                        selectedId={tierId}
+                                        onSelect={setTierId}
+                                        persistedTierId={currentTier?.id ?? null}
+                                        unavailableReasons={unavailableReasons}
                                     />
+                                    {usage ? (
+                                        <p className="text-xs text-muted-foreground">
+                                            {t('usage.current', {
+                                                disk: gib(usage.diskUsageMb),
+                                                backups: usage.backupCount,
+                                                ports: usage.allocationCount,
+                                            })}
+                                        </p>
+                                    ) : null}
+                                    {(someTierBlockedByUsage || !usage) && (
+                                        <div className="flex gap-2 rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
+                                            <Info className="h-4 w-4 shrink-0" />
+                                            <p className="leading-4">
+                                                {usage
+                                                    ? t('usage.smallerTierHint')
+                                                    : t('usage.unknownHint')}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Price Overview Section */}
+                {/* Price overview */}
                 <div className="order-1 lg:order-2">
-                    <div className="lg:sticky lg:top-40">
+                    {/* Sticks just below the page's own top bar (~70px + 16px gap; the navbar
+                        scrolls away on this page). Must not exceed where the card rests, or it
+                        gets pushed down out of line with the configuration card. */}
+                    <div className="lg:sticky lg:top-[86px]">
                         <Card className="shadow-lg border-2 border-primary/20">
-                            <CardHeader className="pb-4">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-primary"></div>
-                                    <CardTitle className="text-lg sm:text-xl">
-                                        {t('pricing.title')}
-                                    </CardTitle>
-                                </div>
-                                <CardDescription className="text-sm">
-                                    {t('pricing.description')}
-                                </CardDescription>
+                            <CardHeader className="pb-3 md:pb-4">
+                                <CardTitle className="text-lg sm:text-xl">
+                                    {t('pricing.title')}
+                                </CardTitle>
                             </CardHeader>
-                            <CardContent className="space-y-3 sm:space-y-4">
-                                <div className="space-y-3">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableCell></TableCell>
-                                                <TableCell>{t('pricing.headers.vcpu')}</TableCell>
-                                                <TableCell>{t('pricing.headers.ram')}</TableCell>
-                                                <TableCell>{t('pricing.headers.tier')}</TableCell>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell>
-                                                    {t('pricing.rows.upgrade-for-days', {
-                                                        days: initialConfig.durationsDays,
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.upgradeCents.cpu} />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.upgradeCents.ram} />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.upgradeCents.tier} />
-                                                </TableCell>
-                                            </TableRow>
+                            <CardContent className="space-y-4 text-sm md:pt-0">
+                                <dl className="space-y-1">
+                                    <ChangeRow
+                                        label="vCPU"
+                                        from={formatVCores(current.cpuPercent / 100)}
+                                        to={formatVCores(cpuPercent / 100)}
+                                    />
+                                    <ChangeRow
+                                        label="RAM"
+                                        from={`${current.ramMb / 1024} GiB`}
+                                        to={`${ramMb / 1024} GiB`}
+                                    />
+                                    <ChangeRow
+                                        label={t('config.resource-tier')}
+                                        from={tierLabel(currentTier)}
+                                        to={tierLabel(selectedTier)}
+                                    />
+                                </dl>
 
-                                            <TableRow>
-                                                {totalPrice.discount.cents > 0 ? (
-                                                    <TableCell>
-                                                        {t('pricing.rows.extend-for-days', {
-                                                            days,
-                                                        })}
-                                                        <div className="text-primary">
-                                                            {t.rich(
-                                                                'pricing.discount-with-amount',
-                                                                {
-                                                                    amount: () => (
-                                                                        <Euro
-                                                                            cents={
-                                                                                totalPrice.discount
-                                                                                    .cents
-                                                                            }
-                                                                        />
-                                                                    ),
-                                                                },
-                                                            )}
-                                                        </div>
-                                                    </TableCell>
-                                                ) : (
-                                                    <TableCell>
-                                                        {t('pricing.rows.extend-for-days', {
-                                                            days,
-                                                        })}
-                                                    </TableCell>
+                                <div className="space-y-2 border-t pt-3">
+                                    {quote.specChanged && (
+                                        <div className="flex justify-between gap-3">
+                                            <span className="text-muted-foreground">
+                                                {quote.adjustmentCents >= 0
+                                                    ? t('pricing.adjustUp', { days: remainingDays })
+                                                    : t('pricing.adjustDown', {
+                                                          days: remainingDays,
+                                                      })}
+                                            </span>
+                                            <span className="tabular-nums">
+                                                {quote.adjustmentCents < 0 && '−'}
+                                                <Euro cents={Math.abs(quote.adjustmentCents)} />
+                                            </span>
+                                        </div>
+                                    )}
+                                    {days > 0 && (
+                                        <div className="flex justify-between gap-3">
+                                            <span className="text-muted-foreground">
+                                                {t(
+                                                    quote.specChanged
+                                                        ? 'pricing.extend'
+                                                        : 'pricing.extendOnly',
+                                                    { days },
                                                 )}
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.extendCents.cpu} />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.extendCents.ram} />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Euro cents={totalPrice.extendCents.tier} />
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
+                                                {quote.extension.modifierCents !== 0 && (
+                                                    <span className="block text-xs">
+                                                        {quote.extension.modifierCents > 0
+                                                            ? t.rich('pricing.discount', {
+                                                                  percent:
+                                                                      quote.extension
+                                                                          .modifierPercent,
+                                                                  amount: () => (
+                                                                      <Euro
+                                                                          cents={
+                                                                              quote.extension
+                                                                                  .modifierCents
+                                                                          }
+                                                                      />
+                                                                  ),
+                                                              })
+                                                            : t.rich('pricing.surcharge', {
+                                                                  percent:
+                                                                      -quote.extension
+                                                                          .modifierPercent,
+                                                                  amount: () => (
+                                                                      <Euro
+                                                                          cents={
+                                                                              -quote.extension
+                                                                                  .modifierCents
+                                                                          }
+                                                                      />
+                                                                  ),
+                                                              })}
+                                                    </span>
+                                                )}
+                                            </span>
+                                            <span className="tabular-nums">
+                                                <Euro cents={quote.extension.totalCents} />
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
+
+                                {statusMessage && (
+                                    <p className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-300">
+                                        {statusMessage}
+                                    </p>
+                                )}
+                                {/* Only relevant when something is charged or credited for the time left */}
+                                {quote.specChanged && quote.remainingMs > 0 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        {t('pricing.noRefund')}
+                                    </p>
+                                )}
                             </CardContent>
                             <CardFooter className="border-t pt-4 bg-muted/20 flex flex-col gap-3 font-semibold">
-                                <div className="flex justify-between items-start w-full text-lg">
+                                <div className="flex justify-between items-center w-full text-lg">
                                     <span className="text-primary">{t('footer.total')}</span>
-                                    <div className="text-right">
-                                        <div className="text-2xl font-bold text-primary tabular-nums">
-                                            <Euro cents={totalPrice.totalCents} />
-                                        </div>
-                                        {totalPrice.totalCents > 0 &&
-                                            totalPrice.totalCents < 100 && (
-                                                <div className="text-xs text-red-700 font-normal">
-                                                    {t.rich('footer.min-price-hint', {
-                                                        amount: () => <Euro cents={100} />,
-                                                    })}
-                                                </div>
-                                            )}
-                                    </div>
+                                    <span className="text-2xl font-bold text-primary tabular-nums">
+                                        <Euro cents={quote.totalCents} />
+                                    </span>
                                 </div>
-                                <Button
-                                    className="hidden lg:flex w-full font-bold"
-                                    size="lg"
-                                    disabled={
-                                        selectedTierUnavailable || totalPrice.totalCents < 100
-                                    }
-                                    onClick={handleContinue}
-                                >
-                                    {t('footer.continue')}
-                                </Button>
+                                {continueButton('hidden lg:flex w-full font-bold')}
                             </CardFooter>
                         </Card>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile-only fixed continue bar */}
+            {/* Mobile continue bar */}
             <div className="lg:hidden sticky bottom-0 z-20 p-4 bg-background/95 backdrop-blur-sm border-t shadow-lg">
                 <div className="flex items-center gap-4 max-w-7xl mx-auto">
                     <div className="shrink-0 min-w-25">
                         <div className="text-xs text-muted-foreground">{t('footer.total')}</div>
                         <div className="text-xl font-bold text-primary tabular-nums">
-                            <Euro cents={totalPrice.totalCents} />
-                        </div>
-                        <div
-                            className={`text-xs text-red-700 ${totalPrice.totalCents > 0 && totalPrice.totalCents < 100 ? 'visible' : 'invisible'}`}
-                        >
-                            {t.rich('footer.min-price-hint', {
-                                amount: () => <Euro cents={100} />,
-                            })}
+                            <Euro cents={quote.totalCents} />
                         </div>
                     </div>
-                    <Button
-                        className="flex-1 font-bold"
-                        size="lg"
-                        disabled={selectedTierUnavailable || totalPrice.totalCents < 100}
-                        onClick={handleContinue}
-                    >
-                        {t('footer.continue')}
-                    </Button>
+                    {continueButton('flex-1 font-bold')}
                 </div>
             </div>
+        </div>
+    );
+}
+
+function ChangeRow({ label, from, to }: { label: string; from: string; to: string }) {
+    const changed = from !== to;
+    return (
+        <div className="flex justify-between gap-3">
+            <dt className="text-muted-foreground">{label}</dt>
+            <dd className="text-right">
+                {changed ? (
+                    <>
+                        <span className="text-muted-foreground line-through mr-1.5">{from}</span>
+                        <span className="font-medium">{to}</span>
+                    </>
+                ) : (
+                    <span>{from}</span>
+                )}
+            </dd>
         </div>
     );
 }

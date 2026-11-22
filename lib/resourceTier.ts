@@ -49,32 +49,3 @@ export function resolveResourceTier(
         null
     );
 }
-
-export function resolveUpgradePreselectedTier(
-    enabledTiers: ResourceTierDisplay[],
-    source: {
-        persistedResourceTierId?: number | null;
-        currentDiskMB: number;
-        currentDiskUsageMb: number;
-    },
-): ResourceTierDisplay | null {
-    const sortedEnabled = sortAscending(enabledTiers.filter((tier) => tier.enabled));
-    if (sortedEnabled.length === 0) return null;
-
-    if (source.persistedResourceTierId) {
-        const persisted = sortedEnabled.find((tier) => tier.id === source.persistedResourceTierId);
-        if (persisted) return persisted;
-    }
-
-    const minimumDisk = Math.max(source.currentDiskMB, source.currentDiskUsageMb);
-    return sortedEnabled.find((tier) => tier.diskMB >= minimumDisk) ?? sortedEnabled.at(-1) ?? null;
-}
-
-export function mergeUpgradeResourceTierOptions(
-    enabledTiers: ResourceTierDisplay[],
-    currentTier: ResourceTierDisplay | null,
-): ResourceTierDisplay[] {
-    if (!currentTier) return enabledTiers;
-    if (enabledTiers.some((tier) => tier.id === currentTier.id)) return enabledTiers;
-    return [currentTier, ...enabledTiers];
-}
