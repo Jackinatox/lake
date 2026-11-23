@@ -42,6 +42,16 @@ function UpgradeGameServer({
     const extendParam = Number(searchParams.get('extend'));
     const initialDays = EXTEND_PARAM_VALUES.find((d) => d === extendParam) ?? 0;
     const [step, setStep] = React.useState<'configure' | 'pay'>('configure');
+    // Both steps live on one URL, so the browser keeps the scroll position when switching: on
+    // small screens "continue" sits at the bottom and the payment step would open scrolled down.
+    const isFirstStep = React.useRef(true);
+    React.useEffect(() => {
+        if (isFirstStep.current) {
+            isFirstStep.current = false;
+            return;
+        }
+        window.scrollTo({ top: 0 });
+    }, [step]);
     const [selectedConfig, setSelectedConfig] = React.useState<UpgradeSelection | null>(null);
     const [clientSecret, setClientSecret] = React.useState<string | null>(null);
     const [sessionId, setSessionId] = React.useState<string | null>(null);

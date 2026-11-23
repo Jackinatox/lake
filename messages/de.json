@@ -1957,7 +1957,7 @@
   "upgradeCheckout": {
     "errorTitle": "Checkout-Fehler",
     "errorDescription": "Beim Checkout ist ein Fehler aufgetreten.",
-    "backToConfig": "← Zurück zur Konfiguration",
+    "backToConfig": "Zurück zur Konfiguration",
     "preparing": "Checkout wird vorbereitet…",
     "goBack": "← Zurück"
   },

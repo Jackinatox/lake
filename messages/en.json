@@ -1945,7 +1945,7 @@
   "upgradeCheckout": {
     "errorTitle": "Checkout Error",
     "errorDescription": "An error occurred during the checkout process.",
-    "backToConfig": "← Back to configuration",
+    "backToConfig": "Back to configuration",
     "preparing": "Preparing checkout…",
     "goBack": "← Go back"
   },
