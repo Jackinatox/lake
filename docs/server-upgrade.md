@@ -50,7 +50,9 @@ the disk usage can lag a few minutes. CPU/RAM bounds come from the location
 4. Refund/withdrawal of an `UPGRADE` order: `revertToPreviousOrder` restores the previous
    order's build, expiry, `allocations` and `resourceTierId` (the quote resolves the current tier
    from that id first, so a stale id would credit a refunded tier). `requestUserWithdrawal`
-   refuses an order that has a later paid order on the same server.
+   refuses an order that has a later paid order on the same server. The withdrawal dialog
+   (`components/payments/RefundRequestButton.tsx`) mirrors the same `UPGRADE`/`RENEW` split
+   and says "upgrade will be undone" instead of "server will be suspended".
 
 **Performance group switch** (DB model `Location`; the UI always says "performance group") is not supported yet (needs a PT server transfer, built separately);
 the spots to extend are marked in `checkoutServerChange` and `UpgradeHardwareConfig`.
