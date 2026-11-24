@@ -46,7 +46,11 @@ export type GameServerAdminRow = Prisma.GameServerGetPayload<{
         gameData: { select: { id: true; name: true; slug: true } };
         resourceTier: { select: { id: true; name: true } };
     };
-}> & { suspensions: ActiveSuspension[] };
+}> & {
+    suspensions: ActiveSuspension[];
+    /** Newest paid upgrade that could not be applied (admin "Retry upgrade") */
+    ServerOrder: { id: string }[];
+};
 
 export type PackageWithCPURAM = Prisma.PackageGetPayload<{
     include: { location: { include: { cpu: true; ram: true } } };

@@ -92,6 +92,7 @@ always lists exactly those 3 servers.
 | Key        | Detects                                                                          |
 | ---------- | -------------------------------------------------------------------------------- |
 | `failed`   | `CREATION_FAILED` — PT rejected the create call                                  |
+| `upgradeFailed` | a `PAID` `UPGRADE` order with `provisioningStatus: FAILED` — retry via the actions menu (docs/server-upgrade.md) |
 | `stuck`    | still `CREATED` after `STUCK_INSTALL_MINUTES` (30) — install never reported back |
 | `orphaned` | live server with no `ptServerId`/`ptAdminId` — lake cannot reach it              |
 | `overdue`  | `ACTIVE` past its expiry — the worker has not caught up                          |

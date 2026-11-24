@@ -1960,7 +1960,9 @@
     "errorDescription": "An error occurred during the checkout process.",
     "backToConfig": "Back to configuration",
     "preparing": "Preparing checkout…",
-    "goBack": "← Go back"
+    "goBack": "← Go back",
+    "previousUpgradePending": "Your previous upgrade is still being applied. Please try again in a minute.",
+    "previousUpgradeFailed": "Your previous upgrade could not be applied yet. We have been notified and will fix it; please contact support if you need it sooner."
   },
   "menu": {
     "games": "Games",

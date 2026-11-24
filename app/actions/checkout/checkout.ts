@@ -148,9 +148,14 @@ export type CheckoutParams =
           hardwareConfig: HardwareConfig;
       };
 
+type CheckoutSuccess = { client_secret: string | null; orderId: string; sessionId: string };
+/** Expected refusals the UI explains itself; returned, because Next.js masks thrown messages. */
+export type CheckoutRefusal = { error: 'PREVIOUS_UPGRADE_PENDING' | 'PREVIOUS_UPGRADE_FAILED' };
+export type CheckoutResult = CheckoutSuccess | CheckoutRefusal;
+
 export async function checkoutAction(
     params: CheckoutParams,
-): Promise<{ client_secret: string | null; orderId: string; sessionId: string }> {
+): Promise<CheckoutResult> {
     // Destructure inside each switch branch so TypeScript can narrow the discriminated union correctly
 
     const session = await auth.api.getSession({
@@ -281,7 +286,7 @@ async function checkoutServerChange(
     userId: string,
     ptKey: string | null | undefined,
     stripeUserId: string,
-): Promise<{ client_secret: string | null; orderId: string; sessionId: string }> {
+): Promise<CheckoutResult> {
     const { ptServerId, resourceTierId, cpuPercent, ramMb, extendDays } = params;
 
     const ctx = await loadUpgradeContext(ptServerId, userId);
@@ -296,6 +301,32 @@ async function checkoutServerChange(
     // `upgradeGameServer` would refuse to release it once the payment lands.
     if (await refuseIfSuspended(server.id, 'checkoutUpgrade', userId)) {
         throw new Error(SERVER_SUSPENDED_MESSAGE);
+    }
+
+    // A paid upgrade that is not applied yet (webhook still running, or FAILED until an admin
+    // retries it) leaves the server row on its old spec/expiry: a new quote would be priced
+    // from that and, once applied, overwrite the paid order. See docs/server-upgrade.md.
+    const unapplied = await prisma.gameServerOrder.findFirst({
+        where: {
+            gameServerId: server.id,
+            type: 'UPGRADE',
+            status: 'PAID',
+            provisioningStatus: { not: 'SUBMITTED' },
+        },
+        select: { id: true, provisioningStatus: true },
+    });
+    if (unapplied) {
+        logger.info('Refused upgrade checkout: previous upgrade not applied yet', 'PAYMENT', {
+            userId,
+            gameServerId: server.id,
+            details: { orderId: unapplied.id, provisioningStatus: unapplied.provisioningStatus },
+        });
+        return {
+            error:
+                unapplied.provisioningStatus === 'FAILED'
+                    ? 'PREVIOUS_UPGRADE_FAILED'
+                    : 'PREVIOUS_UPGRADE_PENDING',
+        };
     }
 
     // Location stays the server's own. A location switch needs a server transfer in

@@ -17,6 +17,9 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     const [workerJobId, setWorkerJobId] = useState<string | null>(null);
     const [networkError, setNetworkError] = useState<string | null>(null);
     const [ptServerId, setPtServerId] = useState<string | null>(null);
+    // An upgrade is applied by the webhook (with retries) after the order turns PAID; until then
+    // the server still has its old build and an expired one is still suspended.
+    const [applyPending, setApplyPending] = useState(false);
     // error reported by the backend (order.errorText)
     const [generalError, setGeneralError] = useState<string | null>(null);
     const [pollingSignal, setPollingSignal] = useState(0);
@@ -34,13 +37,14 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
             try {
                 setNetworkError(null);
                 setGeneralError(null);
-                const { orderStatus, workerJobId, hasError, type, ptServerId } =
+                const { orderStatus, workerJobId, hasError, type, ptServerId, applyPending } =
                     await checkPaymentStatus(sessionId);
                 if (stopped) return;
 
                 setOrderStatus(orderStatus);
                 setOrderType(type);
                 setPtServerId(ptServerId);
+                setApplyPending(applyPending);
 
                 // backend side problem (order.errorText set)
                 if (hasError) {
@@ -73,7 +77,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
     }, [sessionId, pollerT, pollingSignal]);
 
     useEffect(() => {
-        if (orderStatus !== 'PAID') return;
+        if (orderStatus !== 'PAID' || applyPending) return;
         if (redirectStartedRef.current) return;
 
         let url: string;
@@ -94,7 +98,7 @@ export default function ServerReadyPoller({ sessionId }: { sessionId: string }) 
 
         redirectStartedRef.current = true;
         router.push(url);
-    }, [workerJobId, orderStatus, orderType, ptServerId, router]);
+    }, [workerJobId, orderStatus, orderType, ptServerId, applyPending, router]);
 
     const isError = orderStatus === 'PAYMENT_FAILED' || orderStatus === 'EXPIRED';
     const isGeneral = generalError !== null;

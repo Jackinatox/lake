@@ -4,6 +4,7 @@ import { deleteGameServers } from '@/app/actions/gameservers/deleteGameServers';
 import {
     expireGameServer,
     hardDeleteGameServer,
+    retryFailedUpgrade,
 } from '@/app/actions/gameservers/adminServerActions';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,6 +43,7 @@ import {
     ShieldAlert,
     ShieldCheck,
     CalendarClock,
+    RotateCw,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Label } from '@/components/ui/label';
@@ -53,6 +55,8 @@ interface Server {
     id: string;
     name: string;
     suspensions?: ActiveSuspension[];
+    /** Paid upgrade that could not be applied, see `FAILED_UPGRADE_ORDER_WHERE` */
+    ServerOrder?: { id: string }[];
 }
 
 interface AdminServerActionsMenuProps {
@@ -88,6 +92,22 @@ export function AdminServerActionsMenu({
     };
     const [deleteOrders, setDeleteOrders] = useState(false);
     const [loading, setLoading] = useState(false);
+    const failedUpgradeId = server.ServerOrder?.[0]?.id;
+
+    const handleRetryUpgrade = async () => {
+        if (!failedUpgradeId) return;
+        setLoading(true);
+        const result = await retryFailedUpgrade(failedUpgradeId);
+        setLoading(false);
+        toast({
+            title: result.success ? 'Upgrade applied' : 'Retry failed',
+            description: result.success
+                ? `The paid upgrade of "${server.name}" is now applied.`
+                : result.error,
+            variant: result.success ? 'default' : 'destructive',
+        });
+        if (result.success) onSuccess();
+    };
 
     const handleExpire = async () => {
         setLoading(true);
@@ -148,6 +168,12 @@ export function AdminServerActionsMenu({
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                     </DropdownMenuItem>
+                    {failedUpgradeId && (
+                        <DropdownMenuItem onClick={handleRetryUpgrade} disabled={loading}>
+                            <RotateCw className="mr-2 h-4 w-4" />
+                            Retry failed upgrade
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     {suspension ? (
                         <>

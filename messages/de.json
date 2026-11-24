@@ -1972,7 +1972,9 @@
     "errorDescription": "Beim Checkout ist ein Fehler aufgetreten.",
     "backToConfig": "Zurück zur Konfiguration",
     "preparing": "Checkout wird vorbereitet…",
-    "goBack": "← Zurück"
+    "goBack": "← Zurück",
+    "previousUpgradePending": "Dein vorheriges Upgrade wird gerade noch angewendet. Bitte versuche es in einer Minute erneut.",
+    "previousUpgradeFailed": "Dein vorheriges Upgrade konnte noch nicht angewendet werden. Wir wurden benachrichtigt und kümmern uns darum; melde Dich beim Support, wenn es eilt."
   },
   "menu": {
     "games": "Spiele",

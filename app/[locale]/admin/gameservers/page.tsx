@@ -10,6 +10,7 @@ import { getKeyValueString } from '@/lib/keyValue';
 import { SUSPENSION_DEFAULT_REASON } from '@/app/GlobalConstants';
 import {
     ATTENTION_KEYS,
+    FAILED_UPGRADE_ORDER_WHERE,
     AttentionKey,
     CREATED_RANGE_KEYS,
     CreatedRangeKey,
@@ -244,6 +245,12 @@ async function Gameservers({ searchParams }: { searchParams: Promise<SearchParam
                 location: { select: { id: true, name: true } },
                 gameData: { select: { id: true, name: true, slug: true } },
                 resourceTier: { select: { id: true, name: true } },
+                ServerOrder: {
+                    where: FAILED_UPGRADE_ORDER_WHERE,
+                    select: { id: true },
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                },
                 ...activeSuspensionInclude(),
             },
             orderBy: [{ [SORT_FIELDS[sort]]: dir }, { id: 'asc' }],

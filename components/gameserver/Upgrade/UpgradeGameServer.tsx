@@ -83,10 +83,22 @@ function UpgradeGameServer({
 
             setLoading(true);
             setSelectedConfig(selection);
-            const secret = await checkoutAction(parsedParams.data);
+            const result = await checkoutAction(parsedParams.data);
+            if ('error' in result) {
+                toast({
+                    title: t('errorTitle'),
+                    description: t(
+                        result.error === 'PREVIOUS_UPGRADE_FAILED'
+                            ? 'previousUpgradeFailed'
+                            : 'previousUpgradePending',
+                    ),
+                    variant: 'destructive',
+                });
+                return;
+            }
 
-            setClientSecret((secret as { client_secret: string }).client_secret);
-            setSessionId((secret as { sessionId: string }).sessionId);
+            setClientSecret(result.client_secret);
+            setSessionId(result.sessionId);
             setStep('pay');
         } catch (error) {
             console.error('Error during checkout:', error);

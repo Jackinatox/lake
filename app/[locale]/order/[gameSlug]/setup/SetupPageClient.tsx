@@ -150,7 +150,8 @@ export default function SetupPageClient({
             }
 
             const result = await checkoutAction(parsedCheckoutParams.data);
-            if (!result?.client_secret) {
+            // Refusals only come from UPGRADE checkouts
+            if ('error' in result || !result.client_secret) {
                 throw new Error('No client secret returned');
             }
 

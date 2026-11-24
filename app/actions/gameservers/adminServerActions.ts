@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import deleteServerAdmin from '@/lib/Pterodactyl/Functions/DeleteServerAdmin';
 import toggleSuspendGameServer from '@/lib/Pterodactyl/suspendServer/suspendServer';
 import { requireAdmin } from '@/lib/auth/requireAdmin';
+import { retryFailedUpgradeOrder } from '@/lib/upgrade/applyUpgradeOrder';
 
 export async function expireGameServer(id: string) {
     await requireAdmin();
@@ -70,4 +71,10 @@ export async function hardDeleteGameServer(id: string, deleteOrders: boolean) {
     } catch (error) {
         return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
+}
+
+/** Re-applies a paid upgrade whose automatic attempts all failed (docs/server-upgrade.md). */
+export async function retryFailedUpgrade(orderId: string) {
+    await requireAdmin();
+    return retryFailedUpgradeOrder(orderId);
 }

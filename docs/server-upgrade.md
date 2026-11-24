@@ -39,7 +39,10 @@ the disk usage can lag a few minutes. CPU/RAM bounds come from the location
    an extension (used by the "extend" links on the card and in settings).
 2. `checkoutAction({ type: 'UPGRADE', ptServerId, cpuPercent, ramMb, resourceTierId,
    extendDays })` (`app/actions/checkout/checkout.ts`, `checkoutServerChange`) re-loads
-   everything, re-checks bounds + tier usage + suspension, re-quotes, expires older open
+   everything, re-checks bounds + tier usage + suspension, refuses while a paid `UPGRADE` of
+   that server is not applied yet (`provisioningStatus` ≠ `SUBMITTED` — the server row would
+   still show the old spec/expiry; returned as `{ error: 'PREVIOUS_UPGRADE_PENDING' | 'PREVIOUS_UPGRADE_FAILED' }`
+   because Next.js masks thrown messages), re-quotes, expires older open
    UPGRADE sessions of that server, creates a `GameServerOrder` (type `UPGRADE` also for
    downgrades, so refund revert in `lib/refund/undoRefundedOrder.ts` works) and a Stripe
    session that expires after 30 min (the price depends on the time left).
@@ -47,6 +50,13 @@ the disk usage can lag a few minutes. CPU/RAM bounds come from the location
    (memory/cpu/disk/backups/allocations), unsuspends, and writes the order's values +
    `expiresAt` to the `GameServer`. The build is set before unsuspending, so a failed PATCH
    never leaves an expired server running.
+   `applyUpgradeOrderWithRetry` (`lib/upgrade/applyUpgradeOrder.ts`) runs it up to 3 times
+   (5 s / 30 s apart; it is idempotent). Only then is `provisioningStatus` set: `SUBMITTED`, or
+   `FAILED` + `errorText` + a `fatal` log. The checkout return page (`ServerReadyPoller`) waits
+   while a paid `UPGRADE` is still `PENDING` and shows the error on `FAILED`. A failed order shows
+   up as the **Upgrade failed** attention chip in `/admin/gameservers`. "Retry failed upgrade"
+   in the row's actions menu (`retryFailedUpgradeOrder`) applies it again, but refuses if
+   another paid order on the server came after it, because applying it would roll that order back.
 4. Refund/withdrawal of an `UPGRADE` order: `revertToPreviousOrder` restores the previous
    order's build, expiry, `allocations` and `resourceTierId` (the quote resolves the current tier
    from that id first, so a stale id would credit a refunded tier). `requestUserWithdrawal`

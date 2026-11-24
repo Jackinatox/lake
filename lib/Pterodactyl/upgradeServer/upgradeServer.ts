@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 
-import { GameServerOrder } from '@/app/client/generated/browser';
+import type { GameServerOrder } from '@/app/client/generated/browser';
 import { logger } from '@/lib/logger';
 import { createPtClient } from '../ptAdminClient';
 import toggleSuspendGameServer from '../suspendServer/suspendServer';
@@ -87,7 +87,9 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             },
         });
     } catch (error) {
-        logger.fatal('Error upgrading gameserver', 'GAME_SERVER', {
+        // `error`, not `fatal`: callers retry (lib/upgrade/applyUpgradeOrder.ts) and log the
+        // final failure themselves.
+        logger.error('Error upgrading gameserver', 'GAME_SERVER', {
             details: {
                 error: error instanceof Error ? error.message : error,
                 orderId: serverOrder.id,
@@ -98,6 +100,8 @@ export default async function upgradeGameServer(serverOrder: GameServerOrder) {
             gameServerId: gameServer.id,
             userId: gameServer.userId,
         });
-        throw new Error('Failed to upgrade gameserver');
+        throw new Error(
+            `Failed to upgrade gameserver: ${error instanceof Error ? error.message : String(error)}`,
+        );
     }
 }
