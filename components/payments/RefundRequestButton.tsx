@@ -173,7 +173,12 @@ export function RefundRequestButton({
                         footer action (inside the muted description it looked disabled). */}
                     {eligibility?.hasUpgradeOrders && (
                         <Button asChild>
-                            <Link href="/support/tickets">
+                            <Link
+                                href={supportTicketHref(
+                                    eligibility,
+                                    t('ticketSubject', { order: eligibility.orderReference }),
+                                )}
+                            >
                                 <MessageSquare className="h-4 w-4" />
                                 {t('openSupportTicket')}
                             </Link>
@@ -189,4 +194,11 @@ export function RefundRequestButton({
             </AlertDialogContent>
         </AlertDialog>
     );
+}
+
+/** New billing ticket with subject and server prefilled (`/support/tickets/new` reads these). */
+function supportTicketHref(eligibility: WithdrawalEligibilityResult, subject: string): string {
+    const params = new URLSearchParams({ category: 'BILLING', subject });
+    if (eligibility.ptServerId) params.set('server', eligibility.ptServerId);
+    return `/support/tickets/new?${params.toString()}`;
 }

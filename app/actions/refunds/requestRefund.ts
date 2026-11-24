@@ -17,6 +17,9 @@ export type WithdrawalEligibilityResult = {
     reason: string | null;
     orderId: string;
     hasUpgradeOrders: boolean;
+    /** For the prefilled support ticket: invoice number (or order id) and the server's PT id */
+    orderReference: string;
+    ptServerId: string | null;
 };
 
 /**
@@ -31,7 +34,10 @@ export async function checkWithdrawalEligibility(
 
     const order = await prisma.gameServerOrder.findFirstOrThrow({
         where: { id: parsedOrderId, userId: session.user.id },
-        include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
+        include: {
+            refunds: { select: { amount: true, status: true, isAutomatic: true } },
+            gameServer: { select: { ptServerId: true } },
+        },
     });
 
     // Check if there are subsequent orders (e.g. upgrades) on the same gameserver.
@@ -40,7 +46,13 @@ export async function checkWithdrawalEligibility(
     const hasUpgradeOrders = await hasLaterPaidOrders(order);
 
     const result = calculateWithdrawalEligibility(order, order.refunds);
-    return { ...result, orderId: parsedOrderId, hasUpgradeOrders };
+    return {
+        ...result,
+        orderId: parsedOrderId,
+        hasUpgradeOrders,
+        orderReference: order.stripeInvoiceNumber ?? order.id,
+        ptServerId: order.gameServer?.ptServerId ?? null,
+    };
 }
 
 /**

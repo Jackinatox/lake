@@ -773,6 +773,7 @@
     },
     "withdrawal": {
       "requestWithdrawal": "Withdraw (Widerruf)",
+      "ticketSubject": "Withdrawal of order {order}",
       "withdraw": "Withdraw",
       "dialogTitle": "Withdrawal (Widerruf §355 BGB)",
       "eligible": "You are eligible for a pro-rata withdrawal. Your contract will end and the server will be suspended.",

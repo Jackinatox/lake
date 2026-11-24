@@ -785,6 +785,7 @@
     },
     "withdrawal": {
       "requestWithdrawal": "Widerruf (§355 BGB)",
+      "ticketSubject": "Widerruf der Bestellung {order}",
       "withdraw": "Widerrufen",
       "dialogTitle": "Widerruf (§355 BGB)",
       "eligible": "Du hast Anspruch auf einen anteiligen Widerruf. Dein Vertrag wird beendet und der Server wird pausiert.",
