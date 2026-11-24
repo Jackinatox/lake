@@ -58,6 +58,9 @@ markdown files under `docs/`, NOT in this file. How to use it:
   boolean: startup requirement, the banner on the free order pages, and the
   uncached check in `checkoutFreeGameServer`. Read when touching free server
   availability or the free order pages.
+- `pride-logo.md` — The animated Pride logo (six color blocks in the baseline that grow around
+  the cloud on hover/tap): the u-map canvas engine, the animation variants, the dev-only lab at
+  `/dev/pride-logo`, and `DEV_EXTRA_ORIGINS` for testing on a phone.
 - `content-placement.md` — Where user-facing information goes: rendered by lake from its
   own data, FAQ entries, or the Starlight docs (`Scyed/lake-docs`, scyed.com/docs). Read
   before writing FAQ texts, docs pages or page copy that states prices, limits or rules.
