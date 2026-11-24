@@ -17,6 +17,9 @@ export type WithdrawalEligibilityResult = {
     reason: string | null;
     orderId: string;
     hasUpgradeOrders: boolean;
+    /** For the prefilled support ticket: invoice number (or order id) and the server's PT id */
+    orderReference: string;
+    ptServerId: string | null;
 };
 
 /**
@@ -31,27 +34,25 @@ export async function checkWithdrawalEligibility(
 
     const order = await prisma.gameServerOrder.findFirstOrThrow({
         where: { id: parsedOrderId, userId: session.user.id },
-        include: { refunds: { select: { amount: true, status: true, isAutomatic: true } } },
+        include: {
+            refunds: { select: { amount: true, status: true, isAutomatic: true } },
+            gameServer: { select: { ptServerId: true } },
+        },
     });
 
     // Check if there are subsequent orders (e.g. upgrades) on the same gameserver.
     // If the user bought a server and then upgraded it, we can't refund the original
     // order because suspending the server would also void the upgrade they paid for.
-    let hasUpgradeOrders = false;
-    if (order.gameServerId) {
-        const subsequentOrders = await prisma.gameServerOrder.count({
-            where: {
-                gameServerId: order.gameServerId,
-                id: { not: parsedOrderId },
-                status: { in: ['PAID', 'PARTIALLY_REFUNDED'] },
-                createdAt: { gt: order.createdAt },
-            },
-        });
-        hasUpgradeOrders = subsequentOrders > 0;
-    }
+    const hasUpgradeOrders = await hasLaterPaidOrders(order);
 
     const result = calculateWithdrawalEligibility(order, order.refunds);
-    return { ...result, orderId: parsedOrderId, hasUpgradeOrders };
+    return {
+        ...result,
+        orderId: parsedOrderId,
+        hasUpgradeOrders,
+        orderReference: order.stripeInvoiceNumber ?? order.id,
+        ptServerId: order.gameServer?.ptServerId ?? null,
+    };
 }
 
 /**
@@ -76,6 +77,16 @@ export async function requestUserWithdrawal(orderId: string): Promise<
     const eligibility = calculateWithdrawalEligibility(order, order.refunds);
     if (!eligibility.eligible) {
         return { success: false, message: eligibility.reason ?? 'Not eligible for withdrawal' };
+    }
+
+    // Same rule the refund dialog shows: reverting this order would also undo every later
+    // order on the server (`revertToPreviousOrder` jumps to the order before this one).
+    if (await hasLaterPaidOrders(order)) {
+        return {
+            success: false,
+            message:
+                'This order was followed by another order on the same server and can no longer be withdrawn. Please contact support.',
+        };
     }
 
     if (!order.stripePaymentIntent && !order.stripeChargeId) {
@@ -187,4 +198,22 @@ export async function requestUserWithdrawal(orderId: string): Promise<
 
         return { success: false, message: 'An error occurred while processing the refund' };
     }
+}
+
+/** Whether a later paid order exists on the same gameserver (e.g. an upgrade or extension). */
+async function hasLaterPaidOrders(order: {
+    id: string;
+    gameServerId: string | null;
+    createdAt: Date;
+}): Promise<boolean> {
+    if (!order.gameServerId) return false;
+    const count = await prisma.gameServerOrder.count({
+        where: {
+            gameServerId: order.gameServerId,
+            id: { not: order.id },
+            status: { in: ['PAID', 'PARTIALLY_REFUNDED'] },
+            createdAt: { gt: order.createdAt },
+        },
+    });
+    return count > 0;
 }

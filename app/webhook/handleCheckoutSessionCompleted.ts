@@ -1,6 +1,6 @@
 import { logger } from '@/lib/logger';
 import { provisionServerWithWorker } from '@/lib/Pterodactyl/createServers/provisionServer';
-import upgradeGameServer from '@/lib/Pterodactyl/upgradeServer/upgradeServer';
+import { applyUpgradeOrderWithRetry } from '@/lib/upgrade/applyUpgradeOrder';
 import { stripe } from '@/lib/stripe';
 import prisma from '@/lib/prisma';
 
@@ -135,7 +135,9 @@ export async function provisionCheckoutSession(
                     break;
                 }
                 case 'UPGRADE':
-                    await upgradeGameServer(order);
+                    // Retries itself; a final failure lands in the catch below and shows up
+                    // as "Upgrade failed" in the admin gameserver panel (manual retry there).
+                    await applyUpgradeOrderWithRetry(order);
                     await prisma.gameServerOrder.update({
                         where: { id: order.id },
                         data: { provisioningStatus: 'SUBMITTED' },
@@ -151,7 +153,10 @@ export async function provisionCheckoutSession(
                     });
             }
         } catch (provisionError) {
-            logger.error('Provisioning failed after all retries', 'PAYMENT', {
+            // A paid upgrade that could not be applied leaves the customer without what they
+            // paid for (an expired server stays suspended): fatal, someone has to look.
+            const level = order.type === 'UPGRADE' ? 'fatal' : 'error';
+            logger[level]('Provisioning failed after all retries', 'PAYMENT', {
                 userId: order.userId,
                 gameServerId: order.gameServerId ?? undefined,
                 details: { error: provisionError, serverOrderId, orderType: order.type },

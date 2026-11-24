@@ -191,7 +191,8 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
         previousOrder.cpuPercent !== refundedOrder.cpuPercent ||
         previousOrder.ramMB !== refundedOrder.ramMB ||
         previousOrder.diskMB !== refundedOrder.diskMB ||
-        previousOrder.backupCount !== refundedOrder.backupCount;
+        previousOrder.backupCount !== refundedOrder.backupCount ||
+        previousOrder.allocations !== refundedOrder.allocations;
 
     // Revert resources in Pterodactyl if they changed
     if (resourcesChanged) {
@@ -277,6 +278,10 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
             ramMB: previousOrder.ramMB,
             diskMB: previousOrder.diskMB,
             backupCount: previousOrder.backupCount,
+            allocations: previousOrder.allocations,
+            // The upgrade quote resolves the current tier from this id first, so a stale id
+            // would credit a downgrade from a tier that was refunded (docs/server-upgrade.md).
+            resourceTierId: previousOrder.resourceTierId,
             expires: previousExpiry,
             status: isExpired ? 'EXPIRED' : 'ACTIVE',
         },

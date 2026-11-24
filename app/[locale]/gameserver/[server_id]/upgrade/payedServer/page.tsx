@@ -9,6 +9,8 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
 import { redirect } from '@/i18n/navigation';
+import UpgradeUnavailable from '@/components/gameserver/Upgrade/UpgradeUnavailable';
+import { PAID_UPGRADE_DISABLED } from '@/lib/paidUpgrade';
 
 export async function generateMetadata({
     params,
@@ -63,6 +65,10 @@ async function UpgradePage({ params }: { params: Promise<{ locale: string; serve
 
     if (server.type === 'FREE') {
         redirect({ href: `/gameserver/${server_id}/upgrade/freeServer`, locale });
+    }
+
+    if (PAID_UPGRADE_DISABLED) {
+        return <UpgradeUnavailable serverId={server_id} />;
     }
 
     return (

@@ -6,7 +6,7 @@ export const LOCALES = ['de', 'en'] as const;
 export const localeSchema = z.enum(LOCALES);
 
 export const ORDER_DURATIONS = [7, 30, 90, 180] as const;
-export const UPGRADE_DURATIONS = [0, 7, 30, 90] as const;
+export const UPGRADE_DURATIONS = [0, 7, 30, 90, 180] as const;
 
 export function requiredStringSchema(field: string, maxLength: number) {
     return z

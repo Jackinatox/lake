@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
 
 import { CreditCard } from 'lucide-react';
-import { PaymentItem } from './paymentItem';
+import { ServerPaymentGroups } from './ServerPaymentGroups';
+import { PaymentRow } from './paymentShared';
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
 import { Euro } from '@/components/Euro';
 import { FreeServerSection } from './FreeServerSection';
 import { Separator } from '@/components/ui/separator';
+import { hasGameIcon } from '@/lib/gameIcons';
 
 async function PaymentList() {
     const session = await auth.api.getSession({
@@ -27,7 +29,17 @@ async function PaymentList() {
         },
         include: {
             gameServer: {
-                select: { ptServerId: true, status: true, type: true, id: true },
+                select: {
+                    ptServerId: true,
+                    status: true,
+                    type: true,
+                    id: true,
+                    name: true,
+                    cpuPercent: true,
+                    ramMB: true,
+                    expires: true,
+                    gameData: { select: { name: true, slug: true } },
+                },
             },
             refunds: {
                 select: { amount: true, status: true, isAutomatic: true, type: true },
@@ -53,6 +65,43 @@ async function PaymentList() {
     }, 0);
     const t = await getTranslations('payments');
 
+    const toRow = (pay: (typeof payments)[number]): PaymentRow => ({
+        amount: pay.price,
+        paymentType: pay.type,
+        date: pay.paidAt ?? pay.createdAt,
+        receiptUrl: pay.invoicePdfUrl ?? undefined,
+        gameServerId: pay.gameServer?.id,
+        gameServerUrl: pay.gameServer?.ptServerId
+            ? `/gameserver/${pay.gameServer.ptServerId}`
+            : undefined,
+        serverName: pay.gameServer?.name,
+        serverStatus: pay.gameServer?.status,
+        serverType: pay.gameServer?.type,
+        serverInfo: pay.gameServer
+            ? {
+                  gameName: pay.gameServer.gameData.name,
+                  // Only games with drawn art get an icon (docs/game-images.md)
+                  gameIconSlug: hasGameIcon(pay.gameServer.gameData.slug)
+                      ? pay.gameServer.gameData.slug
+                      : null,
+                  cpuPercent: pay.gameServer.cpuPercent,
+                  ramMB: pay.gameServer.ramMB,
+                  expires: pay.gameServer.expires,
+              }
+            : undefined,
+        orderId: pay.id,
+        orderStatus: pay.status,
+        refundStatus: pay.refundStatus,
+        totalRefundedCents: pay.refunds
+            .filter((r) => r.status === 'SUCCEEDED')
+            .reduce((sum, r) => sum + r.amount, 0),
+        hasUserRefund: pay.refunds.some(
+            (r) => r.type === 'WITHDRAWAL' && (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
+        ),
+    });
+    const paidRows = paidPayments.map(toRow);
+    const freeRows = freeServerPayments.map(toRow);
+
     return (
         <Card>
             <CardHeader>
@@ -76,49 +125,17 @@ async function PaymentList() {
                     </div>
                 </div>
 
-                {/* Paid payments section */}
-                <div className="space-y-3">
-                    {paidPayments.length === 0 && freeServerPayments.length === 0 && (
-                        <div>{t('noPayments')}</div>
-                    )}
-                    {paidPayments.map((pay) => {
-                        const refundedCents = pay.refunds
-                            .filter((r) => r.status === 'SUCCEEDED')
-                            .reduce((sum, r) => sum + r.amount, 0);
-                        const hasUserWithdrawal = pay.refunds.some(
-                            (r) =>
-                                r.type === 'WITHDRAWAL' &&
-                                (r.status === 'SUCCEEDED' || r.status === 'PENDING'),
-                        );
-                        return (
-                            <PaymentItem
-                                key={pay.id}
-                                amount={pay.price}
-                                paymentType={pay.type}
-                                date={pay.paidAt ?? pay.createdAt}
-                                receiptUrl={pay.invoicePdfUrl ?? undefined}
-                                gameServerUrl={
-                                    pay.gameServer?.ptServerId
-                                        ? `/gameserver/${pay.gameServer.ptServerId}`
-                                        : undefined
-                                }
-                                serverStatus={pay.gameServer?.status}
-                                serverType={pay.gameServer?.type}
-                                orderId={pay.id}
-                                orderStatus={pay.status}
-                                refundStatus={pay.refundStatus}
-                                totalRefundedCents={refundedCents}
-                                hasUserRefund={hasUserWithdrawal}
-                            />
-                        );
-                    })}
-                </div>
+                {/* Paid payments, grouped per server */}
+                {paidPayments.length === 0 && freeServerPayments.length === 0 && (
+                    <div>{t('noPayments')}</div>
+                )}
+                <ServerPaymentGroups rows={paidRows} />
 
                 {/* Free server section - collapsible */}
                 {freeServerPayments.length > 0 && (
                     <>
                         <Separator />
-                        <FreeServerSection payments={freeServerPayments} />
+                        <FreeServerSection rows={freeRows} />
                     </>
                 )}
             </CardContent>

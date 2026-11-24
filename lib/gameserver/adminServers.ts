@@ -56,15 +56,26 @@ export function suspensionFilterWhere(
     return key === 'suspended' ? suspended : { NOT: suspended };
 }
 
-export type AttentionKey = 'failed' | 'stuck' | 'orphaned' | 'overdue' | 'errors';
+export type AttentionKey = 'failed' | 'upgradeFailed' | 'stuck' | 'orphaned' | 'overdue' | 'errors';
 
-export const ATTENTION_KEYS: AttentionKey[] = ['failed', 'stuck', 'orphaned', 'overdue', 'errors'];
+export const ATTENTION_KEYS: AttentionKey[] = [
+    'failed',
+    'upgradeFailed',
+    'stuck',
+    'orphaned',
+    'overdue',
+    'errors',
+];
 
 /** Label plus the one-line explanation of *why* the state is wrong, shown as a tooltip. */
 export const ATTENTION_META: Record<AttentionKey, { label: string; hint: string }> = {
     failed: {
         label: 'Creation failed',
         hint: 'Pterodactyl rejected the create call — these were never provisioned.',
+    },
+    upgradeFailed: {
+        label: 'Upgrade failed',
+        hint: 'A paid upgrade/extension could not be applied after all retries — retry it from the actions menu.',
     },
     stuck: {
         label: 'Install stuck',
@@ -84,9 +95,17 @@ export const ATTENTION_META: Record<AttentionKey, { label: string; hint: string 
     },
 };
 
+/** A paid `UPGRADE` order that was never applied to its server (`applyUpgradeOrder.ts`). */
+export const FAILED_UPGRADE_ORDER_WHERE = {
+    type: 'UPGRADE',
+    status: 'PAID',
+    provisioningStatus: 'FAILED',
+} satisfies Prisma.GameServerOrderWhereInput;
+
 export function attentionWhere(key: AttentionKey, now: Date = new Date()) {
     const fragments: Record<AttentionKey, Prisma.GameServerWhereInput> = {
         failed: { status: 'CREATION_FAILED' },
+        upgradeFailed: { ServerOrder: { some: FAILED_UPGRADE_ORDER_WHERE } },
         stuck: {
             status: 'CREATED',
             createdAt: { lt: new Date(now.getTime() - STUCK_INSTALL_MINUTES * 60 * 1000) },

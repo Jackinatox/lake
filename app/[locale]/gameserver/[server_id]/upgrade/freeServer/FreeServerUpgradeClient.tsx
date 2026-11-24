@@ -17,11 +17,10 @@ import { HardwareConfig } from '@/models/config';
 import { ClientServer, PerformanceGroup } from '@/models/prisma';
 import { ArrowRight, Calendar, Check, Clock, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { formatMBToGiB } from '@/lib/GlobalFunctions/ptResourceLogic';
 import formatVCores from '@/lib/GlobalFunctions/formatVCores';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Euro } from '@/components/Euro';
 
 interface FreeServerUpgradeClientProps {
@@ -52,7 +51,8 @@ export default function FreeServerUpgradeClient({
                     title: t('extend.success.title'),
                     description: t('extend.success.description'),
                 });
-                router.refresh();
+                // `?start=true` makes the dashboard start the server once.
+                router.push(`/gameserver/${server.ptServerId}?start=true`);
             } else {
                 toast({
                     title: t('extend.error.title'),

@@ -38,6 +38,8 @@ development, so a newly added file shows up without a restart.
 
 - `app/[locale]/admin/gameservers/ServerFilters.tsx` — the admin panel's Game filter.
 - `app/[locale]/order/**` — game cards, landing, setup and configure flows.
+- `app/[locale]/profile/payments/ServerPaymentGroups.tsx` — server header in the payment
+  history; `PaymentList.tsx` checks `hasGameIcon` and passes `gameIconSlug: null` otherwise.
 - `app/[locale]/SupportedGamesList.tsx`, `components/order/PackageCard.tsx`.
 - `app/sitemap.ts` lists both theme variants as image entries, and
   `app/webhook/handleRefundWebhooks.ts` embeds the **light** icon in refund emails (mail

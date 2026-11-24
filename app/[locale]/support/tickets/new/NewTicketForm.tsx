@@ -25,13 +25,21 @@ import {
 } from '@/lib/tickets/constants';
 import { cn } from '@/lib/utils';
 import { ArrowLeft, Loader2, MessageSquareText } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { ThemeImage } from '@/components/ui/theme-image';
+import { formatVCoresFromPercent } from '@/lib/GlobalFunctions/formatVCores';
 import { useState, type FormEvent } from 'react';
 
 export type TicketServerOption = {
     id: string;
     name: string;
     gameName: string;
+    /** Only games with drawn art (docs/game-images.md) */
+    gameIconSlug: string | null;
+    cpuPercent: number;
+    ramMB: number;
+    expires: Date;
+    expired: boolean;
     suspended: boolean;
 };
 
@@ -57,6 +65,7 @@ export default function NewTicketForm({
     const { toast } = useToast();
     const [category, setCategory] = useState<TicketCategory>(defaultCategory);
     const [serverId, setServerId] = useState(defaultServerId ?? NO_SERVER);
+    const selectedServer = servers.find((server) => server.id === serverId);
     const [subject, setSubject] = useState(defaultSubject);
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -173,17 +182,28 @@ export default function NewTicketForm({
                             <div className="space-y-2">
                                 <Label htmlFor="ticket-server">{t('form.serverLabel')}</Label>
                                 <Select value={serverId} onValueChange={setServerId}>
-                                    <SelectTrigger id="ticket-server" className="h-10">
-                                        <SelectValue />
+                                    {/* Only a pointer-opened select loses the ring: Radix gives
+                                        focus back to the trigger on close, which flashed it. */}
+                                    <SelectTrigger
+                                        id="ticket-server"
+                                        className="h-10 focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-offset-2 [&>span]:line-clamp-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:text-left"
+                                    >
+                                        {/* The trigger shows one compact line, the list the details */}
+                                        <SelectValue>
+                                            {selectedServer ? (
+                                                <ServerOptionLabel server={selectedServer} compact />
+                                            ) : (
+                                                t('form.serverNone')
+                                            )}
+                                        </SelectValue>
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="max-w-[min(32rem,calc(100vw-2rem))]">
                                         <SelectItem value={NO_SERVER}>
                                             {t('form.serverNone')}
                                         </SelectItem>
                                         {servers.map((server) => (
                                             <SelectItem key={server.id} value={server.id}>
-                                                {server.name} · {server.gameName}
-                                                {server.suspended && ` (${t('form.suspended')})`}
+                                                <ServerOptionLabel server={server} />
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -241,5 +261,76 @@ export default function NewTicketForm({
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+/**
+ * A server in the picker: the name alone is often just the game's default name, so it shows the
+ * game icon, hardware and expiry below it (same details as
+ * the server header in the payment history). The details wrap on narrow screens.
+ */
+function ServerOptionLabel({
+    server,
+    compact = false,
+}: {
+    server: TicketServerOption;
+    /** One line (the closed select): icon + name */
+    compact?: boolean;
+}) {
+    const t = useTranslations('supportTickets');
+    const locale = useLocale();
+    const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(server.expires);
+    const ram = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
+        server.ramMB / 1024,
+    );
+    const details = [
+        server.gameName,
+        formatVCoresFromPercent(server.cpuPercent),
+        t('form.serverRam', { gb: ram }),
+        t(server.expired ? 'form.serverExpiredOn' : 'form.serverRunsUntil', { date }),
+    ].filter(Boolean);
+
+    if (compact) {
+        return (
+            <span className="flex min-w-0 items-center gap-2">
+                {server.gameIconSlug && (
+                    <ThemeImage
+                        src={`games/icons/${server.gameIconSlug}.webp`}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="h-5 w-5 shrink-0 rounded"
+                    />
+                )}
+                <span className="truncate">{server.name}</span>
+            </span>
+        );
+    }
+
+    return (
+        <span className="flex min-w-0 items-center gap-2.5">
+            {server.gameIconSlug && (
+                <ThemeImage
+                    src={`games/icons/${server.gameIconSlug}.webp`}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-6 w-6 shrink-0 rounded"
+                />
+            )}
+            <span className="min-w-0">
+                <span className="block break-words font-medium">
+                    {server.name}
+                    {server.suspended && (
+                        <span className="ml-2 text-xs font-normal text-destructive">
+                            {t('form.suspended')}
+                        </span>
+                    )}
+                </span>
+                <span className="block text-xs text-muted-foreground">
+                    {details.join(' · ')}
+                </span>
+            </span>
+        </span>
     );
 }

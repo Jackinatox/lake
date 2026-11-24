@@ -12,6 +12,8 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
     hasError: boolean;
     type: OrderType;
     ptServerId: string | null;
+    /** Paid UPGRADE order whose build/expiry has not been applied yet (webhook still running) */
+    applyPending: boolean;
 }> {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -30,6 +32,7 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
             workerJobId: true,
             errorText: true,
             type: true,
+            provisioningStatus: true,
             gameServer: {
                 select: {
                     ptServerId: true,
@@ -48,5 +51,6 @@ export default async function checkPaymentStatus(stripeSession: string): Promise
         hasError: serverOrder.errorText !== null,
         type: serverOrder.type,
         ptServerId: serverOrder.gameServer?.ptServerId || null,
+        applyPending: serverOrder.type === 'UPGRADE' && serverOrder.provisioningStatus === 'PENDING',
     };
 }

@@ -7,15 +7,15 @@ import {
     AccordionTrigger,
     AccordionContent,
 } from '@/components/ui/accordion';
-import { PaymentItem } from './paymentItem';
+import { ServerPaymentGroups } from './ServerPaymentGroups';
+import { PaymentRow } from './paymentShared';
 import { useTranslations } from 'next-intl';
-import { FreeServerPayment } from '@/models/prisma';
 
 interface FreeServerSectionProps {
-    payments: FreeServerPayment[];
+    rows: PaymentRow[];
 }
 
-export function FreeServerSection({ payments }: FreeServerSectionProps) {
+export function FreeServerSection({ rows }: FreeServerSectionProps) {
     const t = useTranslations('payments');
 
     return (
@@ -32,29 +32,13 @@ export function FreeServerSection({ payments }: FreeServerSectionProps) {
                             {t('freeServers.title')}
                         </span>
                         <span className="text-muted-foreground text-xs md:text-sm">
-                            ({payments.length})
+                            ({rows.length})
                         </span>
                     </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                    <div className="p-1 md:p-2 pt-0">
-                        {payments.map((pay) => (
-                            <div key={pay.id} className="py-1">
-                                <PaymentItem
-                                    amount={pay.price}
-                                    paymentType={pay.type}
-                                    date={pay.createdAt}
-                                    receiptUrl={pay.invoicePdfUrl ?? undefined}
-                                    gameServerUrl={
-                                        pay.gameServer?.ptServerId
-                                            ? `/gameserver/${pay.gameServer.ptServerId}`
-                                            : undefined
-                                    }
-                                    serverStatus={pay.gameServer?.status}
-                                    serverType={pay.gameServer?.type}
-                                />
-                            </div>
-                        ))}
+                    <div className="p-1 pt-0 md:p-2">
+                        <ServerPaymentGroups rows={rows} />
                     </div>
                 </AccordionContent>
             </AccordionItem>

@@ -177,12 +177,16 @@ export const checkoutConfiguredParamsSchema = z.object({
     resourceTierId: integerRangeSchema('Resource tier', 1, 10_000),
 });
 
+// Change (up/downgrade) and/or extend a paid server. Disk/backups/ports come from the tier,
+// the location is the server's own (no location switch yet). See docs/server-upgrade.md.
 export const checkoutUpgradeParamsSchema = z.object({
     type: z.literal('UPGRADE'),
     locale: localeSchema,
     ptServerId: serverIdentifierSchema,
     resourceTierId: integerRangeSchema('Resource tier', 1, 10_000),
-    upgradeConfig: upgradeHardwareConfigSchema,
+    cpuPercent: integerRangeSchema('CPU', 100, 3_200),
+    ramMb: integerRangeSchema('RAM', 512, 262_144),
+    extendDays: upgradeDurationSchema,
 });
 
 export const checkoutToPayedParamsSchema = z.object({
