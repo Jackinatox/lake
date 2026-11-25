@@ -18,7 +18,7 @@ import toggleSuspendGameServer from '../suspendServer/suspendServer';
 export default async function upgradeGameServer(serverOrder: GameServerOrder) {
     const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const ptApiKey = process.env.PTERODACTYL_API_KEY;
-    const gameServer = await prisma.gameServer.findUniqueOrThrow({
+    const gameServer = await prisma.gameServer.findFirstOrThrow({
         where: { id: serverOrder.gameServerId || '', ptAdminId: { not: null } },
     });
     const pt = createPtClient();
