@@ -93,6 +93,10 @@ markdown files under `docs/`, NOT in this file. How to use it:
   (`lib/upgrade/pricing.ts`, remaining-time adjustment + full-price extension, no refunds),
   the usage checks for smaller tiers, the checkout/webhook flow and the kill switch. Read when
   touching upgrade prices, `UPGRADE` orders or the upgrade page.
+- `server-ports.md` — Ports a server owns: tier `ports` = Pterodactyl allocation limit,
+  `GameServer.allocations`, the `max` rules in the worker and lake (refund revert, admin edit),
+  and the backfill scripts. Read when touching allocations, ports, tiers' `ports`, or
+  `feature_limits` in any `PATCH /build`.
 - `worker-modpack-provisioning.md` — Data contract between `lake` and the
   external provisioning worker for Modrinth modpack installs
   (`gameConfig.modpack`, egg variables). Read when changing the minecraft

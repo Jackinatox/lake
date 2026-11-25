@@ -12,6 +12,8 @@ export interface UpdateGameServerInput {
     ramMB: number;
     diskMB: number;
     backupCount: number;
+    /** Pterodactyl allocation limit (ports), including the primary port. */
+    allocations: number;
 }
 
 export async function updateGameServer(input: UpdateGameServerInput) {
@@ -26,7 +28,7 @@ export async function updateGameServer(input: UpdateGameServerInput) {
         };
     }
 
-    const { id, cpuPercent, ramMB, diskMB, backupCount } = input;
+    const { id, cpuPercent, ramMB, diskMB, backupCount, allocations } = input;
 
     // Validate inputs
     if (cpuPercent <= 0 || cpuPercent > 3200) {
@@ -54,6 +56,13 @@ export async function updateGameServer(input: UpdateGameServerInput) {
         return {
             success: false,
             error: 'Backup count must be between 0 and 50',
+        };
+    }
+
+    if (!Number.isInteger(allocations) || allocations < 1 || allocations > 50) {
+        return {
+            success: false,
+            error: 'Ports must be between 1 and 50',
         };
     }
 
@@ -94,7 +103,7 @@ export async function updateGameServer(input: UpdateGameServerInput) {
                     io: ptServer.limits.io,
                     cpu: cpuPercent,
                     feature_limits: {
-                        allocations: ptServer.featureLimits.allocations,
+                        allocations,
                         databases: ptServer.featureLimits.databases,
                         backups: backupCount,
                     },
@@ -117,6 +126,7 @@ export async function updateGameServer(input: UpdateGameServerInput) {
                 ramMB,
                 diskMB,
                 backupCount,
+                allocations,
             },
         });
 
@@ -130,8 +140,9 @@ export async function updateGameServer(input: UpdateGameServerInput) {
                     ramMB: gameServer.ramMB,
                     diskMB: gameServer.diskMB,
                     backupCount: gameServer.backupCount,
+                    allocations: gameServer.allocations,
                 },
-                after: { cpuPercent, ramMB, diskMB, backupCount },
+                after: { cpuPercent, ramMB, diskMB, backupCount, allocations },
             },
         });
 
