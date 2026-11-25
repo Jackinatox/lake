@@ -15,7 +15,7 @@ row, so the proxy can check it without a DB query; flip it and restart the conta
 - `app/[locale]/maintenance/page.tsx` — the explanation page. It redirects to `/` when
   maintenance is off, so links to it do not go stale.
 - `components/MaintenanceBanner.tsx` — rendered at the top of the content area in
-  `app/layout.tsx`, and links to the page.
+  `app/[locale]/layout.tsx`, and links to the page.
 - Copy: namespace `Maintenance` in `messages/{en,de}.json`. Update the text there if the
   cause of a future outage is different.
 

@@ -20,7 +20,7 @@ fetched, so crawlers would never see its noindex and could still index the bare 
   - `createPrivateMetadata({ title })` and `PRIVATE_ROBOTS`: `noindex, nofollow`.
   - `metadataCopy`: per-locale titles/descriptions for pages without their own message keys.
   - `SITE_URL`: absolute origin (`NEXT_PUBLIC_APP_URL`) for sitemap, robots and JSON-LD.
-- `app/layout.tsx`: `metadataBase`, which turns the relative canonical/hreflang URLs absolute.
+- `app/[locale]/layout.tsx`: `metadataBase`, which turns the relative canonical/hreflang URLs absolute.
 - `app/robots.ts`: `Disallow: /api/, /webhook/` plus two `Sitemap:` lines: lake's own and the
   docs' (`/docs/sitemap-index.xml`). The docs are a separate Starlight site (`Scyed/lake-docs`)
   that the reverse proxy serves under `/docs/`, outside lake and its locale routing; link to it
