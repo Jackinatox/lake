@@ -24,15 +24,16 @@ export default function Navbar({ locale }: { locale: string }) {
                 <div className="flex items-center font-semibold">
                     {/* shrink-0: in a crowded navbar the flex row would squeeze the logo's width */}
                     <Link href="/" className="mr-4 flex shrink-0 items-center">
-                        {/* Larger only on tablets (touch, md and up); sizes must cover that width (h-10 ≈ 90px) */}
+                        {/* 36px phones, 40px md, 44px from xl (full menu); the h-16 navbar keeps
+                            >=10px air. sizes = rendered widths (logo is 1084x482): 81 / 90 / 99px */}
                         <ThemeImage
-                            src="/images/logo/ScyedLogo.webp"
+                            src="/images/logo/ScyedLogoPride.webp"
                             alt="Scyed"
                             fill={false}
                             width={1084}
                             height={482}
-                            sizes="(min-width: 768px) and (pointer: coarse) 90px, 64px"
-                            className="h-7 w-auto md:pointer-coarse:h-10"
+                            sizes="(min-width: 1280px) 99px, (min-width: 768px) 90px, 81px"
+                            className="h-9 w-auto md:h-10 xl:h-11"
                             priority
                         />
                     </Link>

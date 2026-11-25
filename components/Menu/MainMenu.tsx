@@ -171,13 +171,13 @@ export default function MainMenu({ locale }: MainMenuInterface) {
                                     <SheetTitle>
                                         <Link href="/" onClick={() => setOpen(false)}>
                                             <ThemeImage
-                                                src="/images/logo/ScyedLogo.webp"
+                                                src="/images/logo/ScyedLogoPride.webp"
                                                 alt="Scyed"
                                                 fill={false}
                                                 width={1084}
                                                 height={482}
-                                                sizes="64px"
-                                                style={{ width: 'auto', maxHeight: '100%' }}
+                                                sizes="90px"
+                                                className="h-10 w-auto"
                                                 priority
                                             />
                                         </Link>
