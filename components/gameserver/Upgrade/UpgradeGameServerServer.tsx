@@ -1,9 +1,7 @@
-import { fetchPerformanceGroups } from '@/lib/actions';
-import UpgradeGameServer from './UpgradeGameServer';
-import { getGameServerConfig } from '@/app/data-access-layer/gameServer/getGameServerConfig';
 import NotAllowedMessage from '@/components/auth/NotAllowedMessage';
-import prisma from '@/lib/prisma';
-import { mergeUpgradeResourceTierOptions, resolveResourceTier } from '@/lib/resourceTier';
+import { loadUpgradeContext } from '@/lib/upgrade/loadUpgradeContext';
+import { fetchServerUsage } from '@/lib/upgrade/serverUsage';
+import UpgradeGameServer from './UpgradeGameServer';
 
 interface UpgradeGameServerServerProps {
     serverId: string;
@@ -16,49 +14,27 @@ export default async function UpgradeGameServerServer({
     apiKey,
     userId,
 }: UpgradeGameServerServerProps) {
-    const [performanceOptions, minOptions, allResourceTiers] = await Promise.all([
-        fetchPerformanceGroups(),
-        getGameServerConfig(serverId, userId),
-        prisma.resourceTier.findMany({
-            orderBy: [{ sorting: 'asc' }, { id: 'asc' }],
-            select: {
-                id: true,
-                name: true,
-                diskMB: true,
-                backups: true,
-                ports: true,
-                priceCents: true,
-                enabled: true,
-            },
-        }),
+    const [ctx, usage] = await Promise.all([
+        loadUpgradeContext(serverId, userId),
+        fetchServerUsage(serverId, apiKey),
     ]);
 
-    if (!minOptions) {
+    if (!ctx) {
         return <NotAllowedMessage />;
     }
-
-    const resolvedCurrentTier =
-        minOptions.resourceTier ??
-        resolveResourceTier(allResourceTiers, {
-            resourceTierId: minOptions.resourceTierId,
-            diskMB: minOptions.diskMb,
-            backupCount: minOptions.backupCount,
-            allocations: minOptions.allocations,
-        });
-
-    const resourceTiers = mergeUpgradeResourceTierOptions(
-        allResourceTiers.filter((tier) => tier.enabled),
-        resolvedCurrentTier,
-    );
 
     return (
         <div className="w-full max-w-7xl mx-auto">
             <UpgradeGameServer
                 serverId={serverId}
-                apiKey={apiKey}
-                performanceOptions={performanceOptions}
-                minOptions={{ ...minOptions, resourceTier: resolvedCurrentTier }}
-                resourceTiers={resourceTiers}
+                location={ctx.location}
+                current={ctx.current}
+                currentTier={ctx.currentTier}
+                tiers={ctx.tierOptions}
+                usage={usage}
+                // Taken once on the server so the server and client render the same price;
+                // checkoutAction recomputes it at the moment of checkout.
+                remainingMs={ctx.server.expires.getTime() - Date.now()}
             />
         </div>
     );

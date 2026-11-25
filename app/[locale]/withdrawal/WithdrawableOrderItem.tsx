@@ -98,7 +98,7 @@ export function WithdrawableOrderItem({
             </div>
 
             <div className="shrink-0 self-center">
-                <RefundRequestButton orderId={orderId} orderAmount={price} />
+                <RefundRequestButton orderId={orderId} orderAmount={price} orderType={orderType} />
             </div>
         </div>
     );

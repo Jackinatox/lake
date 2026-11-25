@@ -291,23 +291,23 @@
       "back": "Zurück zum Server"
     },
     "info": {
-      "title": "Upgrade Informationen",
-      "description": "Hier kannst Du Deinen Server nur verlängern oder upgraden. Downgrades sind noch nicht möglich."
+      "title": "Server ändern oder verlängern",
+      "description": "Upgrade, Downgrade oder Verlängerung Deines Servers."
     },
     "config": {
-      "title": "Performance-Konfiguration",
-      "description": "Passe die Hardware Deines Servers an.",
-      "performance-tier": "Performance-Stufe",
+      "title": "Konfiguration",
+      "performanceGroup": "Performance-Gruppe",
+      "performanceGroupFixed": "Die Performance-Gruppe zu wechseln ist noch nicht möglich.",
       "resource-tier": "Resource-Tier",
       "extend-title": "Server verlängern",
       "duration": {
-        "none": "Keine",
-        "week": "1 Woche",
-        "month": "1 Monat",
-        "three-months": "3 Monate",
-        "discount-10": "-10%"
+        "d0": "Nicht verlängern",
+        "d7": "1 Woche",
+        "d30": "1 Monat",
+        "d90": "3 Monate (−10 %)",
+        "d180": "6 Monate (−15 %)"
       },
-      "little-info": "Info",
+      "currently": "aktuell {value}",
       "cpu": {
         "price-suffix": "€/vCore/Mon."
       },
@@ -316,23 +316,32 @@
         "price-suffix": "€/GiB/Mon."
       }
     },
+    "usage": {
+      "current": "Dein Server belegt aktuell {disk} GiB Speicher, {backups, plural, one {# Backup} other {# Backups}} und {ports, plural, one {# Port} other {# Ports}}.",
+      "blockDisk": "{used} GiB belegt",
+      "blockBackups": "{count, plural, one {# Backup vorhanden} other {# Backups vorhanden}}",
+      "blockPorts": "{count, plural, one {# Port zugewiesen} other {# Ports zugewiesen}}",
+      "smallerTierHint": "Einige kleinere Tiers sind nicht verfügbar, weil Dein Server mehr belegt, als sie bieten. Lösche Dateien oder Backups (oder entferne Ports), um zu wechseln. Nach dem Löschen kann es ein paar Minuten dauern, bis der neue Speicherverbrauch hier ankommt – lade die Seite dann neu.",
+      "unknownHint": "Ein Downgrade ist für diesen Server nicht verfügbar."
+    },
     "pricing": {
       "title": "Preisübersicht",
-      "description": "Zusammenfassung Deiner Konfiguration.",
-      "headers": {
-        "vcpu": "vCPU",
-        "ram": "RAM",
-        "tier": "Tier"
-      },
-      "rows": {
-        "upgrade-for-days": "Upgrade für {days} Tage",
-        "extend-for-days": "Verlängerung für {days} Tage"
-      },
-      "discount-with-amount": "(-<amount></amount> Rabatt)"
+      "adjustUp": "Upgrade für die restlichen {days} Tage",
+      "adjustDown": "Gutschrift für die restlichen {days} Tage",
+      "extend": "Verlängerung um {days} Tage (neue Konfiguration)",
+      "extendOnly": "Verlängerung um {days} Tage",
+      "discount": "inkl. {percent} % Rabatt (−<amount></amount>)",
+      "surcharge": "inkl. {percent} % Kurzzeitaufschlag (+<amount></amount>)",
+      "noRefund": "Upgrades werden für die Restlaufzeit Deines Servers berechnet, die Verlängerung zum vollen Preis. Eine Downgrade-Gutschrift wird mit der Verlängerung verrechnet, aber nicht ausgezahlt."
+    },
+    "status": {
+      "noChange": "Ändere Deine Konfiguration oder wähle eine Verlängerung.",
+      "extensionRequired": "Dein Server ist abgelaufen. Wähle eine Verlängerung, um ihn zu ändern.",
+      "creditExceeds": "Deine Downgrade-Gutschrift ist <amount></amount> höher als die Verlängerung. Gutschriften werden nicht ausgezahlt – wähle eine längere Verlängerung, um diese Änderung zu machen.",
+      "belowMinimum": "Der Mindestbetrag ist <amount></amount>. Wähle eine Verlängerung oder eine größere Änderung."
     },
     "footer": {
       "total": "Gesamt",
-      "min-price-hint": "Mindestpreis <amount></amount>",
       "continue": "Weiter zur Zahlung"
     }
   },
@@ -739,6 +748,16 @@
     "oauthPasswordChangeNotice2": "angemeldet bist, kannst Du Dein Passwort nicht ändern.",
     "oauthPasswordChangeTooltip": "Passwortänderungen sind nur möglich, wenn Du Dich mit E-Mail angemeldet hast.",
     "noReceipt": "Kein Beleg",
+    "serverState": {
+      "runsUntil": "Läuft bis {date}",
+      "expiredOn": "Abgelaufen am {date}",
+      "ram": "{gb} GB RAM",
+      "expired": "Abgelaufen",
+      "deleted": "Server gelöscht"
+    },
+    "receipt": "Beleg",
+    "manage": "Server Dashboard",
+    "extend": "Verlängern",
     "refund": {
       "requestRefund": "Rückerstattung anfordern",
       "dialogTitle": "Rückerstattung anfordern",
@@ -766,14 +785,18 @@
     },
     "withdrawal": {
       "requestWithdrawal": "Widerruf (§355 BGB)",
+      "ticketSubject": "Widerruf der Bestellung {order}",
+      "withdraw": "Widerrufen",
       "dialogTitle": "Widerruf (§355 BGB)",
       "eligible": "Du hast Anspruch auf einen anteiligen Widerruf. Dein Vertrag wird beendet und der Server wird pausiert.",
+      "eligibleRevert": "Du hast Anspruch auf einen anteiligen Widerruf. Das Upgrade wird rückgängig gemacht: Dein Server bekommt wieder die Hardware und das Ablaufdatum von vor dieser Bestellung.",
       "notEligible": "Du hast keinen Anspruch auf einen Widerruf.",
       "originalAmount": "Ursprünglicher Betrag",
       "usedDays": "Genutzte Zeit",
       "days": "Tage",
       "withdrawalAmount": "Widerrufsbetrag",
       "withdrawalNote": "Dies ist ein gesetzlicher Widerruf gemäß §355 BGB. Der Vertrag wird beendet und Dein Server wird pausiert. Die Erstattung wird innerhalb von 5-10 Werktagen auf Deine ursprüngliche Zahlungsmethode überwiesen.",
+      "withdrawalNoteRevert": "Dies ist ein gesetzlicher Widerruf gemäß §355 BGB nur für diese Bestellung. Dein Server läuft mit der vorherigen Hardware und dem vorherigen Ablaufdatum weiter; ist dieses Datum bereits vorbei, wird der Server pausiert. Die Erstattung wird innerhalb von 5-10 Werktagen auf Deine ursprüngliche Zahlungsmethode überwiesen.",
       "cancel": "Abbrechen",
       "confirm": "Widerruf bestätigen",
       "successTitle": "Widerruf eingeleitet",
@@ -1948,9 +1971,11 @@
   "upgradeCheckout": {
     "errorTitle": "Checkout-Fehler",
     "errorDescription": "Beim Checkout ist ein Fehler aufgetreten.",
-    "backToConfig": "← Zurück zur Konfiguration",
+    "backToConfig": "Zurück zur Konfiguration",
     "preparing": "Checkout wird vorbereitet…",
-    "goBack": "← Zurück"
+    "goBack": "← Zurück",
+    "previousUpgradePending": "Dein vorheriges Upgrade wird gerade noch angewendet. Bitte versuche es in einer Minute erneut.",
+    "previousUpgradeFailed": "Dein vorheriges Upgrade konnte noch nicht angewendet werden. Wir wurden benachrichtigt und kümmern uns darum; melde Dich beim Support, wenn es eilt."
   },
   "menu": {
     "games": "Spiele",
@@ -2190,6 +2215,9 @@
       "serverLabel": "Betroffener Server",
       "serverNone": "Kein bestimmter Server",
       "serverHelper": "Optional, hilft uns aber, Deinen Server schneller zu finden.",
+      "serverRam": "{gb} GB RAM",
+      "serverRunsUntil": "läuft bis {date}",
+      "serverExpiredOn": "abgelaufen am {date}",
       "suspended": "gesperrt",
       "subjectLabel": "Betreff",
       "subjectPlaceholder": "Kurze Zusammenfassung Deines Anliegens",

@@ -3,6 +3,7 @@
 import { checkoutAction, CheckoutParams } from '@/app/actions/checkout/checkout';
 import CustomServerPaymentElements from '@/components/payments/PaymentElements';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
 import { useLakeLocale } from '@/hooks/useLakeLocale';
@@ -88,6 +89,7 @@ function UpgradeGameServerFromFree({
             {step === 'pay' && clientSecret && sessionId && (
                 <Card className="w-full max-w-4xl mx-auto space-y-6 p-4 md:p-6">
                     <Button variant="outline" onClick={() => handleBackToConfigure()}>
+                        <ArrowLeft className="h-4 w-4 mr-2" />
                         {t('backToConfig')}
                     </Button>
                     <div className="w-full">

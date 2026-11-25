@@ -279,23 +279,23 @@
       "back": "Back to server"
     },
     "info": {
-      "title": "Upgrade Information",
-      "description": "Here you can only extend or upgrade your server. Downgrades aren't possible yet."
+      "title": "Change or extend server",
+      "description": "Upgrade, downgrade or extend your server."
     },
     "config": {
-      "title": "Performance Configuration",
-      "description": "Customize your server hardware.",
-      "performance-tier": "Performance Tier",
+      "title": "Configuration",
+      "performanceGroup": "Performance group",
+      "performanceGroupFixed": "Changing the performance group isn't possible yet.",
       "resource-tier": "Resource Tier",
-      "extend-title": "Extend Server",
+      "extend-title": "Extend server",
       "duration": {
-        "none": "None",
-        "week": "1 Week",
-        "month": "1 Month",
-        "three-months": "3 Months",
-        "discount-10": "-10%"
+        "d0": "Don't extend",
+        "d7": "1 week",
+        "d30": "1 month",
+        "d90": "3 months (−10%)",
+        "d180": "6 months (−15%)"
       },
-      "little-info": "Info",
+      "currently": "currently {value}",
       "cpu": {
         "price-suffix": "€/vCore/mo"
       },
@@ -304,24 +304,33 @@
         "price-suffix": "€/GiB/mo"
       }
     },
+    "usage": {
+      "current": "Your server currently uses {disk} GiB of disk, {backups, plural, one {# backup} other {# backups}} and {ports, plural, one {# port} other {# ports}}.",
+      "blockDisk": "{used} GiB in use",
+      "blockBackups": "{count, plural, one {# backup exists} other {# backups exist}}",
+      "blockPorts": "{count, plural, one {# port assigned} other {# ports assigned}}",
+      "smallerTierHint": "Some smaller tiers are not available because your server uses more than they offer. Delete files or backups (or remove ports) to switch. After deleting, it can take a few minutes until the new disk usage shows up here — reload the page then.",
+      "unknownHint": "Downgrading is not available for this server."
+    },
     "pricing": {
-      "title": "Price Overview",
-      "description": "Summary of your configuration.",
-      "headers": {
-        "vcpu": "vCPU",
-        "ram": "RAM",
-        "tier": "Tier"
-      },
-      "rows": {
-        "upgrade-for-days": "Upgrade for {days} days",
-        "extend-for-days": "Extend for {days} days"
-      },
-      "discount-with-amount": "(minus <amount></amount> discount)"
+      "title": "Price overview",
+      "adjustUp": "Upgrade for the remaining {days} days",
+      "adjustDown": "Credit for the remaining {days} days",
+      "extend": "Extension by {days} days (new configuration)",
+      "extendOnly": "Extension by {days} days",
+      "discount": "incl. {percent}% discount (−<amount></amount>)",
+      "surcharge": "incl. {percent}% short-term surcharge (+<amount></amount>)",
+      "noRefund": "Upgrades are charged for the time left on your server, plus the full price of the extension. Downgrade credit is deducted from the extension; it is not paid out."
+    },
+    "status": {
+      "noChange": "Change your configuration or choose an extension.",
+      "extensionRequired": "Your server has expired. Choose an extension to change it.",
+      "creditExceeds": "Your downgrade credit is <amount></amount> more than the extension costs. Credit is not paid out, so choose a longer extension to make this change.",
+      "belowMinimum": "The minimum amount is <amount></amount>. Choose an extension or a bigger change."
     },
     "footer": {
       "total": "Total",
-      "min-price-hint": "Minimum price <amount></amount>",
-      "continue": "Continue to Payment"
+      "continue": "Continue to payment"
     }
   },
   "buyGameServer": {
@@ -727,6 +736,16 @@
     "oauthPasswordChangeNotice2": ", you can't change your password here.",
     "oauthPasswordChangeTooltip": "Password changes are only possible when you sign in with email.",
     "noReceipt": "No receipt",
+    "serverState": {
+      "runsUntil": "Runs until {date}",
+      "expiredOn": "Expired on {date}",
+      "ram": "{gb} GB RAM",
+      "expired": "Expired",
+      "deleted": "Server deleted"
+    },
+    "receipt": "Receipt",
+    "manage": "Server Dashboard",
+    "extend": "Extend",
     "refund": {
       "requestRefund": "Request Refund",
       "dialogTitle": "Request a Refund",
@@ -754,14 +773,18 @@
     },
     "withdrawal": {
       "requestWithdrawal": "Withdraw (Widerruf)",
+      "ticketSubject": "Withdrawal of order {order}",
+      "withdraw": "Withdraw",
       "dialogTitle": "Withdrawal (Widerruf §355 BGB)",
       "eligible": "You are eligible for a pro-rata withdrawal. Your contract will end and the server will be suspended.",
+      "eligibleRevert": "You are eligible for a pro-rata withdrawal. The upgrade will be undone: your server goes back to the hardware and end date it had before this order.",
       "notEligible": "You are not eligible for a withdrawal.",
       "originalAmount": "Original amount",
       "usedDays": "Used time",
       "days": "days",
       "withdrawalAmount": "Withdrawal amount",
       "withdrawalNote": "This is a legal withdrawal under §355 BGB. The contract will be terminated, and your server will be suspended. The refund will be processed within 5-10 business days to your original payment method.",
+      "withdrawalNoteRevert": "This is a legal withdrawal under §355 BGB for this order only. Your server keeps running with its previous hardware and end date; if that end date has already passed, the server will be suspended. The refund will be processed within 5-10 business days to your original payment method.",
       "cancel": "Cancel",
       "confirm": "Confirm Withdrawal",
       "successTitle": "Withdrawal Initiated",
@@ -1936,9 +1959,11 @@
   "upgradeCheckout": {
     "errorTitle": "Checkout Error",
     "errorDescription": "An error occurred during the checkout process.",
-    "backToConfig": "← Back to configuration",
+    "backToConfig": "Back to configuration",
     "preparing": "Preparing checkout…",
-    "goBack": "← Go back"
+    "goBack": "← Go back",
+    "previousUpgradePending": "Your previous upgrade is still being applied. Please try again in a minute.",
+    "previousUpgradeFailed": "Your previous upgrade could not be applied yet. We have been notified and will fix it; please contact support if you need it sooner."
   },
   "menu": {
     "games": "Games",
@@ -2178,6 +2203,9 @@
       "serverLabel": "Affected server",
       "serverNone": "No specific server",
       "serverHelper": "Optional, but it helps us find your server faster.",
+      "serverRam": "{gb} GB RAM",
+      "serverRunsUntil": "runs until {date}",
+      "serverExpiredOn": "expired on {date}",
       "suspended": "suspended",
       "subjectLabel": "Subject",
       "subjectPlaceholder": "Short summary of your issue",

@@ -8,6 +8,7 @@ import { TICKET_CATEGORIES, TICKET_SUBJECT_MAX_LENGTH } from '@/lib/tickets/cons
 import { headers } from 'next/headers';
 import { createPrivateMetadata, getMetadataCopy } from '@/lib/metadata';
 import type { Metadata } from 'next';
+import { hasGameIcon } from '@/lib/gameIcons';
 import NewTicketForm, { type TicketServerOption } from './NewTicketForm';
 
 export async function generateMetadata({
@@ -44,6 +45,11 @@ export default async function NewTicketPage({
         id: server.id,
         name: server.name,
         gameName: server.gameData.name,
+        gameIconSlug: hasGameIcon(server.gameData.slug) ? server.gameData.slug : null,
+        cpuPercent: server.cpuPercent,
+        ramMB: server.ramMB,
+        expires: server.expires,
+        expired: server.status === 'EXPIRED' || server.expires.getTime() <= Date.now(),
         suspended: Boolean(getActiveSuspension(server)),
     }));
 

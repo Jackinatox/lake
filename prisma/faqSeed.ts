@@ -33,9 +33,9 @@ export const FAQ_SEED: Prisma.FAQCreateManyInput[] = [
         question_de: 'Kann ich später upgraden?',
         question_en: 'Can I upgrade later?',
         answer_de:
-            'Ja. Du kannst Deinen Server jederzeit upgraden oder die Laufzeit verlängern. Beim Upgrade wird die Preisdifferenz anteilig auf Deine verbleibende Laufzeit angerechnet.',
+            'Ja. Du kannst Deinen Server jederzeit up- oder downgraden und die Laufzeit verlängern. Bei einem Upgrade zahlst Du die Preisdifferenz anteilig für Deine verbleibende Laufzeit. Eine Downgrade-Gutschrift wird mit einer Verlängerung verrechnet, aber nicht ausgezahlt.',
         answer_en:
-            'Yes. You can upgrade your server or extend its duration at any time. When upgrading, the price difference is credited proportionally to your remaining runtime.',
+            'Yes. You can upgrade or downgrade your server and extend its duration at any time. When upgrading, you pay the price difference for the time your server has left. Downgrade credit is deducted from an extension, but not paid out.',
         sorting: 20,
         enabled: true,
         category: ['pricing'],

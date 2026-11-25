@@ -1,5 +1,5 @@
 import { ThemeSwitcher } from '@/components/Menu/theme-switcher';
-import { ThemeImage } from '@/components/ui/theme-image';
+import PrideLogo from '@/components/brand/prideLogo/PrideLogo';
 import CookieSettingsButton from '@/components/CookieSettingsButton';
 import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
@@ -123,15 +123,10 @@ export default function Footer() {
                             className="mr-4 flex items-center"
                             style={{ height: '100%' }}
                         >
-                            <ThemeImage
-                                src="/images/logo/ScyedLogo.webp"
-                                alt="Scyed"
-                                fill={false}
-                                width={1084}
-                                height={482}
-                                sizes="64px"
-                                style={{ width: 'auto', maxHeight: '100%' }}
-                                priority
+                            {/* Pride colors grow around the cloud on hover (tap on touch) */}
+                            <PrideLogo
+                                variant="stretch"
+                                className="w-16 text-black dark:text-white"
                             />
                         </Link>
                         <span className="text-sm text-muted-foreground">

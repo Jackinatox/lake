@@ -31,6 +31,8 @@ const nextConfig: NextConfig = {
         'scyed.com',
         'devlake.scyed.com',
         'devlakelars.scyed.com',
+        // e.g. DEV_EXTRA_ORIGINS=10.1.17.5 to open the dev server from a phone on the LAN
+        ...(process.env.DEV_EXTRA_ORIGINS?.split(',').filter(Boolean) ?? []),
     ],
 };
 
