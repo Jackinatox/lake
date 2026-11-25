@@ -183,7 +183,7 @@ async function revertToPreviousOrder(refundedOrderId: string, gameServerId: stri
     const panelUrl = process.env.NEXT_PUBLIC_PTERODACTYL_URL;
     const ptApiKey = process.env.PTERODACTYL_API_KEY;
 
-    const gameServer = await prisma.gameServer.findUniqueOrThrow({
+    const gameServer = await prisma.gameServer.findFirstOrThrow({
         where: { id: gameServerId, ptAdminId: { not: null } },
     });
 

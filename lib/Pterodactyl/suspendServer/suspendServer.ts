@@ -61,7 +61,7 @@ export default async function toggleSuspendGameServer(
     action: 'suspend' | 'unsuspend',
     options: { force?: boolean } = {},
 ): Promise<ToggleSuspensionResult | undefined> {
-    const gameServer = await prisma.gameServer.findUniqueOrThrow({
+    const gameServer = await prisma.gameServer.findFirstOrThrow({
         where: { id: gameServerId, ptAdminId: { not: null } },
         include: { user: true },
     });
